@@ -70,16 +70,11 @@ public final class SystemBootstrap {
                 log.debug("Trying System.loadLibrary(\"cef4j\")");
                 System.loadLibrary("cef4j");
                 if (OS.isMacOS()) {
-                    Path libcefDir = libcefDir().orElse(null);
+                    final Path libcefDir = libcefDir().orElse(null);
                     if (libcefDir == null) {
                         throw new UnsatisfiedLinkError("LIBCEF_DIR must be set on macOS to locate the CEF framework");
                     }
-                    Path frameworkBinary = libcefDir
-                            .resolve("Chromium Embedded Framework.framework")
-                            .resolve("Chromium Embedded Framework");
-                    if (!loadCefLibrary0(frameworkBinary.toAbsolutePath().toString())) {
-                        throw new UnsatisfiedLinkError("cef_load_library() failed for: " + frameworkBinary);
-                    }
+                    loadCefFramework(libcefDir);
                 }
                 loaded = true;
                 log.debug("Loaded cef4j native library from system path");
@@ -105,21 +100,23 @@ public final class SystemBootstrap {
     public static void loadFrom(Path libraryPath) {
         synchronized (LOAD_LOCK) {
             if (loaded) return;
-            String libName = OS.mapLibraryName("cef4j");
-            Path fullPath = libraryPath.resolve(libName);
+            final String libName = OS.mapLibraryName("cef4j");
+            final Path fullPath = libraryPath.resolve(libName);
             log.debug("Loading native library from explicit path: {}", fullPath);
             System.load(fullPath.toAbsolutePath().toString());
-            if (OS.isMacOS()) {
-                Path frameworkBinary = libraryPath
-                        .resolve("Chromium Embedded Framework.framework")
-                        .resolve("Chromium Embedded Framework");
-                if (!loadCefLibrary0(frameworkBinary.toAbsolutePath().toString())) {
-                    throw new UnsatisfiedLinkError("cef_load_library() failed for: " + frameworkBinary);
-                }
-            }
+            if (OS.isMacOS()) loadCefFramework(libraryPath);
             loaded = true;
             log.debug("Loaded cef4j native library from filesystem path {}", fullPath);
             finishLoad();
+        }
+    }
+
+    /** Loads the CEF framework of the directory, which the library of the build needs on macOS. */
+    private static void loadCefFramework(Path directory) {
+        final Path frameworkBinary =
+                directory.resolve("Chromium Embedded Framework.framework").resolve("Chromium Embedded Framework");
+        if (!loadCefLibrary0(frameworkBinary.toAbsolutePath().toString())) {
+            throw new UnsatisfiedLinkError("cef_load_library() failed for: " + frameworkBinary);
         }
     }
 
@@ -142,32 +139,32 @@ public final class SystemBootstrap {
     /** Returns the resolved LIBCEF_DIR, or empty if not set. Result is cached after first call. */
     public static Optional<Path> libcefDir() {
         if (libcefDirResolved) return Optional.ofNullable(cachedLibcefDir);
-        Path configured = configuredLibcefDir();
-        Path result = configured != null ? configured : discoverCefDist();
-        cachedLibcefDir = result;
+        final Optional<Path> result = configuredLibcefDir().or(SystemBootstrap::discoverCefDist);
+        cachedLibcefDir = result.orElse(null);
         libcefDirResolved = true;
-        return Optional.ofNullable(result);
+        return result;
     }
 
-    private static @Nullable Path configuredLibcefDir() {
+    private static Optional<Path> configuredLibcefDir() {
         String value = System.getenv("LIBCEF_DIR");
         if (value == null || value.isEmpty()) value = System.getProperty("cef4j.libcef.dir");
-        return value == null || value.isEmpty() ? null : Paths.get(value);
+        return value == null || value.isEmpty() ? Optional.empty() : Optional.of(Paths.get(value));
     }
 
-    private static @Nullable Path discoverCefDist() {
-        return discoverCefDist(Paths.get(System.getProperty("user.dir")), expectedCefMajor());
+    private static Optional<Path> discoverCefDist() {
+        return discoverCefDist(
+                Paths.get(System.getProperty("user.dir")), expectedCefMajor().orElse(null));
     }
 
-    static @Nullable Path discoverCefDist(Path start, @Nullable String expectedMajor) {
+    static Optional<Path> discoverCefDist(Path start, @Nullable String expectedMajor) {
         Path dir = start;
         for (int i = 0; i < 5 && dir != null; i++, dir = dir.getParent()) {
-            Path cefDist = dir.resolve(".cef-dist");
+            final Path cefDist = dir.resolve(".cef-dist");
             if (!Files.isDirectory(cefDist)) continue;
             try (java.util.stream.Stream<Path> children = Files.list(cefDist)) {
-                String suffix = "_" + OS.platform() + "_minimal";
+                final String suffix = "_" + OS.platform() + "_minimal";
                 List<Path> candidates = children.filter(child -> {
-                            Path fileName = child.getFileName();
+                            final Path fileName = child.getFileName();
                             return fileName != null && fileName.toString().endsWith(suffix);
                         })
                         .map(child -> child.resolve("Release"))
@@ -177,48 +174,51 @@ public final class SystemBootstrap {
                 if (expectedMajor != null) {
                     candidates = candidates.stream()
                             .filter(path -> {
-                                Path parent = path.getParent();
-                                Path fileName = parent == null ? null : parent.getFileName();
+                                final Path parent = path.getParent();
+                                final Path fileName = parent == null ? null : parent.getFileName();
                                 return parent != null
                                         && fileName != null
                                         && fileName.toString().startsWith("cef_binary_" + expectedMajor + ".");
                             })
                             .collect(Collectors.toList());
                 }
-                if (candidates.size() == 1) {
-                    log.debug("Auto-discovered CEF dist: {}", candidates.get(0));
-                    return candidates.get(0);
-                }
-                if (candidates.size() > 1) {
-                    log.warn("Multiple CEF distributions match this build; set LIBCEF_DIR explicitly: {}", candidates);
-                    return null;
-                }
+                if (!candidates.isEmpty()) return selectCandidate(candidates);
             } catch (IOException e) {
                 log.trace("skipping unreadable CEF dist candidate {}: {}", cefDist, e.toString());
             }
         }
-        return null;
+        return Optional.empty();
     }
 
-    private static @Nullable String expectedCefMajor() {
-        String version = System.getProperty("cef4j.test.cefApiVersion");
-        if (version == null || version.isBlank()) {
-            version = packagedCefApiVersion();
+    /** The only candidate of the list, or nothing when the list holds more than one of them. */
+    private static Optional<Path> selectCandidate(List<Path> candidates) {
+        if (candidates.size() == 1) {
+            log.debug("Auto-discovered CEF dist: {}", candidates.get(0));
+            return Optional.of(candidates.get(0));
         }
-        if (version == null) return null;
-        java.util.regex.Matcher matcher =
-                java.util.regex.Pattern.compile("^(\\d+)").matcher(version);
-        return matcher.find() ? matcher.group(1) : null;
+        log.warn("Multiple CEF distributions match this build; set LIBCEF_DIR explicitly: {}", candidates);
+        return Optional.empty();
     }
 
-    static @Nullable String packagedCefApiVersion() {
+    private static Optional<String> expectedCefMajor() {
+        final String override = System.getProperty("cef4j.test.cefApiVersion");
+        final Optional<String> version =
+                override == null || override.isBlank() ? packagedCefApiVersion() : Optional.of(override);
+        return version.flatMap(value -> {
+            final java.util.regex.Matcher matcher =
+                    java.util.regex.Pattern.compile("^(\\d+)").matcher(value);
+            return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+        });
+    }
+
+    static Optional<String> packagedCefApiVersion() {
         try (InputStream stream = SystemBootstrap.class.getResourceAsStream(CEF_API_VERSION_RESOURCE)) {
-            if (stream == null) return null;
-            String version = new String(stream.readAllBytes(), StandardCharsets.UTF_8).trim();
-            return version.isEmpty() ? null : version;
+            if (stream == null) return Optional.empty();
+            final String version = new String(stream.readAllBytes(), StandardCharsets.UTF_8).trim();
+            return version.isEmpty() ? Optional.empty() : Optional.of(version);
         } catch (IOException e) {
             log.warn("Unable to read packaged CEF API version", e);
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -228,7 +228,7 @@ public final class SystemBootstrap {
      */
     public static OptionalInt runtimeCefMajor() {
         if (loaded) {
-            int major = runtimeCefMajor0();
+            final int major = runtimeCefMajor0();
             if (major > 0) return OptionalInt.of(major);
         }
         return packagedCefApiMajor();
@@ -236,11 +236,12 @@ public final class SystemBootstrap {
 
     /** Return the major CEF API version embedded in this cef4j build, if available. */
     public static OptionalInt packagedCefApiMajor() {
-        String version = packagedCefApiVersion();
-        if (version == null) return OptionalInt.empty();
-        java.util.regex.Matcher matcher =
-                java.util.regex.Pattern.compile("^(\\d+)").matcher(version);
-        return matcher.find() ? OptionalInt.of(Integer.parseInt(matcher.group(1))) : OptionalInt.empty();
+        final java.util.regex.Pattern major = java.util.regex.Pattern.compile("^(\\d+)");
+        return packagedCefApiVersion()
+                .map(major::matcher)
+                .filter(java.util.regex.Matcher::find)
+                .map(matcher -> OptionalInt.of(Integer.parseInt(matcher.group(1))))
+                .orElse(OptionalInt.empty());
     }
 
     private static boolean isValidCefReleaseDir(Path release) {
@@ -248,7 +249,7 @@ public final class SystemBootstrap {
         if (OS.isMacOS()) {
             return Files.isDirectory(release.resolve("Chromium Embedded Framework.framework"));
         }
-        String cefLib = OS.isWindows() ? "libcef.dll" : "libcef.so";
+        final String cefLib = OS.isWindows() ? "libcef.dll" : "libcef.so";
         return Files.isRegularFile(release.resolve(cefLib));
     }
 
@@ -257,34 +258,37 @@ public final class SystemBootstrap {
      * then empty.
      */
     public static Optional<String> helperPath() {
-        String launcherName = OS.isWindows() ? "cef4j_launcher.exe" : "cef4j_launcher";
-        Path extracted = extractionDir;
+        final String launcherName = OS.isWindows() ? "cef4j_launcher.exe" : "cef4j_launcher";
+        final Path extracted = extractionDir;
         if (extracted != null) {
-            Path launcher = extracted.resolve(launcherName);
-            if (Files.exists(launcher)) {
-                return Optional.of(launcher.toAbsolutePath().toString());
-            }
+            final Optional<String> path = launcherPath(extracted, launcherName);
+            if (path.isPresent()) return path;
         }
-        Path libcefDir = libcefDir().orElse(null);
-        if (libcefDir != null) {
-            Path launcher = libcefDir.resolve(launcherName);
-            if (Files.exists(launcher)) {
-                return Optional.of(launcher.toAbsolutePath().toString());
-            }
-        }
+        final Path libcefDir = libcefDir().orElse(null);
+        if (libcefDir != null) return launcherPath(libcefDir, launcherName);
         return Optional.empty();
     }
 
+    /** The path of the launcher of the directory, which is empty when the directory holds none. */
+    private static Optional<String> launcherPath(Path directory, String launcherName) {
+        final Path launcher = directory.resolve(launcherName);
+        if (!Files.exists(launcher)) return Optional.empty();
+        return Optional.of(launcher.toAbsolutePath().toString());
+    }
+
     private static void loadFromClasspath() throws IOException {
-        String platform = OS.platform();
-        String libName = OS.mapLibraryName("cef4j");
-        String resourceBase = "native/" + platform + "/";
+        final String platform = OS.platform();
+        final String libName = OS.mapLibraryName("cef4j");
+        final String resourceBase = "native/" + platform + "/";
         log.debug("Detected platform: {}, native lib: {}", platform, libName);
 
-        boolean packagedRuntimeAvailable = isPackagedRuntimeAvailable();
-        Path configuredLibcefDir = configuredLibcefDir();
-        Path discoveredLibcefDir = configuredLibcefDir == null && !packagedRuntimeAvailable ? discoverCefDist() : null;
-        Path libcefDir = selectLibcefDir(configuredLibcefDir, discoveredLibcefDir, packagedRuntimeAvailable);
+        final boolean packagedRuntimeAvailable = isPackagedRuntimeAvailable();
+        final Optional<Path> configuredLibcefDir = configuredLibcefDir();
+        final Optional<Path> discoveredLibcefDir =
+                configuredLibcefDir.isEmpty() && !packagedRuntimeAvailable ? discoverCefDist() : Optional.empty();
+        final Path libcefDir = selectLibcefDir(
+                        configuredLibcefDir.orElse(null), discoveredLibcefDir.orElse(null), packagedRuntimeAvailable)
+                .orElse(null);
         if (libcefDir == null && !packagedRuntimeAvailable) {
             throw new IOException("CEF runtime not found: no cef-runtime/" + platform
                     + " resources, LIBCEF_DIR env var, or -Dcef4j.libcef.dir system property");
@@ -293,17 +297,18 @@ public final class SystemBootstrap {
             throw new IOException("LIBCEF_DIR is not a directory: " + libcefDir);
         }
 
-        Path cacheDir = resolveExtractionCacheDir(platform, libName, resourceBase, libcefDir, packagedRuntimeAvailable);
+        final Path cacheDir =
+                resolveExtractionCacheDir(platform, libName, resourceBase, libcefDir, packagedRuntimeAvailable);
         log.debug("Extraction cache dir: {}", cacheDir);
         createPrivateDirectory(cacheDir);
 
-        String launcherName = OS.isWindows() ? "cef4j_launcher.exe" : "cef4j_launcher";
-        Path launcher = cacheDir.resolve(launcherName);
-        Path extractionLock = cacheDir.resolve(".extract.lock");
+        final String launcherName = OS.isWindows() ? "cef4j_launcher.exe" : "cef4j_launcher";
+        final Path launcher = cacheDir.resolve(launcherName);
+        final Path extractionLock = cacheDir.resolve(".extract.lock");
         try (FileChannel lockChannel =
                 FileChannel.open(extractionLock, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
-            java.nio.channels.FileLock extractionFileLock = lockChannel.lock();
-            try {
+            final java.nio.channels.FileLock extractionFileLock = lockChannel.lock();
+            try (extractionFileLock) {
                 extractResource(resourceBase + libName, cacheDir.resolve(libName));
                 extractResource(resourceBase + launcherName, launcher);
                 makeExecutable(launcher);
@@ -316,8 +321,6 @@ public final class SystemBootstrap {
                     extractPackagedRuntime(cacheDir);
                 }
                 extractionDir = cacheDir;
-            } finally {
-                extractionFileLock.close();
             }
         }
 
@@ -327,7 +330,7 @@ public final class SystemBootstrap {
             // XXX: CEF 109-150 requires macOS framework loading through cef_load_library before API use; replace this
             // sequence only when the minimum supported CEF documents a different loader contract.
             System.load(cacheDir.resolve(libName).toAbsolutePath().toString());
-            Path frameworkBinary =
+            final Path frameworkBinary =
                     cacheDir.resolve("Chromium Embedded Framework.framework").resolve("Chromium Embedded Framework");
             if (!loadCefLibrary0(frameworkBinary.toAbsolutePath().toString())) {
                 throw new IOException("cef_load_library() failed for: " + frameworkBinary);
@@ -345,12 +348,12 @@ public final class SystemBootstrap {
                         .waitFor();
             } catch (IOException e) {
                 log.trace("Unable to clear macOS quarantine attribute from {}: {}", cacheDir, e.toString());
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignored) {
                 Thread.currentThread().interrupt();
             }
         } else if (OS.isWindows()) {
             for (String dep : new String[] {"chrome_elf.dll", "libcef.dll"}) {
-                Path depPath = cacheDir.resolve(dep);
+                final Path depPath = cacheDir.resolve(dep);
                 if (Files.exists(depPath)) {
                     System.load(depPath.toAbsolutePath().toString());
                 }
@@ -371,8 +374,8 @@ public final class SystemBootstrap {
             @Nullable Path libcefDir,
             boolean packagedRuntimeAvailable)
             throws IOException {
-        String configured = System.getProperty("cef4j.native.cache");
-        Path baseDir = configured == null || configured.isBlank()
+        final String configured = System.getProperty("cef4j.native.cache");
+        final Path baseDir = configured == null || configured.isBlank()
                 ? Paths.get(System.getProperty("user.home"), ".cache", "cef4j", "native", platform)
                 : Paths.get(configured).resolve(platform);
         createPrivateDirectory(baseDir);
@@ -401,8 +404,8 @@ public final class SystemBootstrap {
     }
 
     static boolean isOwnedByCurrentUser(Path directory) throws IOException {
-        UserPrincipal owner = Files.getOwner(directory, LinkOption.NOFOLLOW_LINKS);
-        Path probe = Files.createTempFile("cef4j-owner-", ".tmp");
+        final UserPrincipal owner = Files.getOwner(directory, LinkOption.NOFOLLOW_LINKS);
+        final Path probe = Files.createTempFile("cef4j-owner-", ".tmp");
         try {
             return owner.equals(Files.getOwner(probe, LinkOption.NOFOLLOW_LINKS));
         } finally {
@@ -417,7 +420,7 @@ public final class SystemBootstrap {
             @Nullable Path libcefDir,
             boolean packagedRuntimeAvailable)
             throws IOException {
-        MessageDigest digest = newSha256Digest();
+        final MessageDigest digest = newSha256Digest();
         updateDigestFromResource(digest, resourceBase + libName);
         updateDigestFromResource(digest, resourceBase + (OS.isWindows() ? "cef4j_launcher.exe" : "cef4j_launcher"));
         updateDigestWithString(digest, platform);
@@ -426,9 +429,10 @@ public final class SystemBootstrap {
             updateDigestFromResource(digest, platformRuntimeResource("file-list.txt"));
             updateDigestFromResource(digest, platformRuntimeFingerprintResource());
         } else {
-            Path resolvedLibcefDir = java.util.Objects.requireNonNull(libcefDir).toRealPath();
+            final Path resolvedLibcefDir =
+                    java.util.Objects.requireNonNull(libcefDir).toRealPath();
             updateDigestWithString(digest, resolvedLibcefDir.toString());
-            Path runtimeBinary = resolvedLibcefDir.resolve(platformRuntimeBinaryName());
+            final Path runtimeBinary = resolvedLibcefDir.resolve(platformRuntimeBinaryName());
             if (Files.exists(runtimeBinary)) {
                 updateDigestWithString(digest, Long.toString(Files.size(runtimeBinary)));
                 updateDigestWithString(
@@ -436,8 +440,8 @@ public final class SystemBootstrap {
                         Long.toString(Files.getLastModifiedTime(runtimeBinary).toMillis()));
             }
         }
-        StringBuilder out = new StringBuilder();
-        byte[] bytes = digest.digest();
+        final StringBuilder out = new StringBuilder();
+        final byte[] bytes = digest.digest();
         for (int i = 0; i < 8; i++) {
             out.append(String.format(Locale.ROOT, "%02x", bytes[i]));
         }
@@ -448,15 +452,15 @@ public final class SystemBootstrap {
         return SystemBootstrap.class.getClassLoader().getResource(platformRuntimeResource("file-list.txt")) != null;
     }
 
-    static @Nullable Path selectLibcefDir(
+    static Optional<Path> selectLibcefDir(
             @Nullable Path configured, @Nullable Path discovered, boolean packagedRuntimeAvailable) {
-        if (configured != null) return configured;
-        return packagedRuntimeAvailable ? null : discovered;
+        if (configured != null) return Optional.of(configured);
+        return packagedRuntimeAvailable ? Optional.empty() : Optional.ofNullable(discovered);
     }
 
     private static void extractPackagedRuntime(Path cacheDir) throws IOException {
-        String fileListResource = platformRuntimeResource("file-list.txt");
-        InputStream in = SystemBootstrap.class.getClassLoader().getResourceAsStream(fileListResource);
+        final String fileListResource = platformRuntimeResource("file-list.txt");
+        final InputStream in = SystemBootstrap.class.getClassLoader().getResourceAsStream(fileListResource);
         if (in == null) {
             throw new IOException(fileListResource + " not found in packaged CEF resources");
         }
@@ -465,17 +469,17 @@ public final class SystemBootstrap {
             while ((line = reader.readLine()) != null) {
                 line = line.trim().replace('\\', '/');
                 if (line.isEmpty()) continue;
-                Path target = cacheDir.resolve(line).normalize();
+                final Path target = cacheDir.resolve(line).normalize();
                 if (!target.startsWith(cacheDir)) {
                     throw new IOException("manifest entry escapes extraction directory: " + line);
                 }
                 if (isUsableExistingFile(target)) continue;
-                Path parent = target.getParent();
+                final Path parent = target.getParent();
                 if (parent != null) Files.createDirectories(parent);
                 Files.deleteIfExists(target);
                 extractResource(platformRuntimeResource(line), target);
-                Path fileName = target.getFileName();
-                String fileNameStr = fileName == null ? "" : fileName.toString();
+                final Path fileName = target.getFileName();
+                final String fileNameStr = fileName == null ? "" : fileName.toString();
                 if (line.endsWith(".so")
                         || line.endsWith(".so.1")
                         || line.endsWith(".dylib")
@@ -491,19 +495,19 @@ public final class SystemBootstrap {
     private static boolean isUsableExistingFile(Path target) {
         try {
             return Files.isRegularFile(target, LinkOption.NOFOLLOW_LINKS) && Files.size(target) > 0;
-        } catch (IOException e) {
+        } catch (IOException ignored) {
             return false;
         }
     }
 
     private static void linkCefRuntime(Path libcefDir, Path cacheDir) throws IOException {
         if (OS.isMacOS()) {
-            String framework = "Chromium Embedded Framework.framework";
+            final String framework = "Chromium Embedded Framework.framework";
             linkOrCopy(libcefDir.resolve(framework), cacheDir.resolve(framework));
             return;
         }
 
-        Path resourcesDir = libcefDir.resolveSibling("Resources");
+        final Path resourcesDir = libcefDir.resolveSibling("Resources");
         if (Files.isDirectory(resourcesDir)) {
             for (String res :
                     new String[] {"icudtl.dat", "resources.pak", "chrome_100_percent.pak", "chrome_200_percent.pak"}) {
@@ -543,7 +547,7 @@ public final class SystemBootstrap {
     }
 
     private static void prepareMacAngleLibraries(Path runtimeDir) throws IOException {
-        Path frameworkLibs =
+        final Path frameworkLibs =
                 runtimeDir.resolve("Chromium Embedded Framework.framework").resolve("Libraries");
         for (String lib :
                 new String[] {"libEGL.dylib", "libGLESv2.dylib", "libvk_swiftshader.dylib", "vk_swiftshader_icd.json"
@@ -614,7 +618,7 @@ public final class SystemBootstrap {
 
     static void extractResource(String resourcePath, Path target) throws IOException {
         if (Files.isSymbolicLink(target)) throw new IOException("Refusing symbolic link resource target: " + target);
-        byte[] expectedDigest = resourceDigest(resourcePath);
+        final byte[] expectedDigest = resourceDigest(resourcePath);
         if (Files.isRegularFile(target, LinkOption.NOFOLLOW_LINKS)) {
             if (Arrays.equals(expectedDigest, fileDigest(target))) return;
             Files.delete(target);
@@ -625,12 +629,12 @@ public final class SystemBootstrap {
             if (in == null) {
                 throw new IOException("Resource not found on classpath: " + resourcePath);
             }
-            Path parent = target.toAbsolutePath().getParent();
+            final Path parent = target.toAbsolutePath().getParent();
             if (parent == null) throw new IOException("target has no parent directory: " + target);
             Files.createDirectories(parent);
-            Path fileName = target.getFileName();
-            String prefix = fileName == null ? "cef4j" : fileName.toString();
-            Path temporary = Files.createTempFile(parent, prefix, ".part");
+            final Path fileName = target.getFileName();
+            final String prefix = fileName == null ? "cef4j" : fileName.toString();
+            final Path temporary = Files.createTempFile(parent, prefix, ".part");
             try {
                 Files.copy(in, temporary, StandardCopyOption.REPLACE_EXISTING);
                 try {
@@ -645,15 +649,15 @@ public final class SystemBootstrap {
     }
 
     private static byte[] resourceDigest(String resourcePath) throws IOException {
-        MessageDigest digest = newSha256Digest();
+        final MessageDigest digest = newSha256Digest();
         updateDigestFromResource(digest, resourcePath);
         return digest.digest();
     }
 
     private static byte[] fileDigest(Path path) throws IOException {
-        MessageDigest digest = newSha256Digest();
+        final MessageDigest digest = newSha256Digest();
         try (InputStream in = Files.newInputStream(path, LinkOption.NOFOLLOW_LINKS)) {
-            byte[] buffer = new byte[8192];
+            final byte[] buffer = new byte[8192];
             int read;
             while ((read = in.read(buffer)) != -1) digest.update(buffer, 0, read);
         }
@@ -665,7 +669,7 @@ public final class SystemBootstrap {
             if (in == null) {
                 throw new IOException("Resource not found on classpath: " + resourcePath);
             }
-            byte[] buffer = new byte[8192];
+            final byte[] buffer = new byte[8192];
             int read;
             while ((read = in.read(buffer)) != -1) {
                 digest.update(buffer, 0, read);
@@ -726,7 +730,7 @@ public final class SystemBootstrap {
         try (java.util.stream.Stream<Path> walk = Files.walk(source)) {
             walk.forEach(s -> {
                 try {
-                    Path dest = target.resolve(source.relativize(s));
+                    final Path dest = target.resolve(source.relativize(s));
                     if (Files.isDirectory(s)) {
                         Files.createDirectories(dest);
                     } else {

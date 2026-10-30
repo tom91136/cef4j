@@ -4,11 +4,13 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class V8GetValueByIndexResponse implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 23;
@@ -75,7 +77,7 @@ public final class V8GetValueByIndexResponse implements CefMessageView, CefMessa
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(valueKind);
@@ -93,26 +95,15 @@ public final class V8GetValueByIndexResponse implements CefMessageView, CefMessa
     }
 
     public static final CefMessageDecoder<V8GetValueByIndexResponse> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "valueKind");
-        int valueKind = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, 1, "boolValue");
-        boolean boolValue = __buf.get() != 0;
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "intValue");
-        int intValue = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "doubleValue");
-        long doubleValue = __buf.getLong();
-        int stringValueLen = WireDecoder.length(__buf, "stringValue");
-        byte[] stringValueBuf = new byte[stringValueLen];
-        __buf.get(stringValueBuf);
-        String stringValue = new String(stringValueBuf, StandardCharsets.UTF_8);
-        int errorMessageLen = WireDecoder.length(__buf, "errorMessage");
-        byte[] errorMessageBuf = new byte[errorMessageLen];
-        __buf.get(errorMessageBuf);
-        String errorMessage = new String(errorMessageBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "valueHandle");
-        int valueHandle = __buf.getInt();
+        final int valueKind = WireDecoder.int32(__buf, "valueKind");
+        final boolean boolValue = WireDecoder.bool(__buf, "boolValue");
+        final int intValue = WireDecoder.int32(__buf, "intValue");
+        final long doubleValue = WireDecoder.int64(__buf, "doubleValue");
+        final String stringValue = WireDecoder.utf8(__buf, "stringValue");
+        final String errorMessage = WireDecoder.utf8(__buf, "errorMessage");
+        final int valueHandle = WireDecoder.int32(__buf, "valueHandle");
         WireDecoder.requireFullyConsumed(__buf, "V8GetValueByIndexResponse");
         return new V8GetValueByIndexResponse(valueKind, boolValue, intValue, doubleValue, stringValue, errorMessage, valueHandle);
     };

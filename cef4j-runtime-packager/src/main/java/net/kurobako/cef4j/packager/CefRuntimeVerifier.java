@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 
 final class CefRuntimeVerifier {
     List<String> verify(Path root, CefPlatform platform) throws IOException {
-        List<String> problems = new ArrayList<>();
-        Path runtime = root.resolve("cef-runtime").resolve(platform.cefName());
+        final List<String> problems = new ArrayList<>();
+        final Path runtime = root.resolve("cef-runtime").resolve(platform.cefName());
         if (!Files.isDirectory(runtime)) {
             problems.add("missing runtime directory: " + runtime);
             return problems;
@@ -24,27 +24,27 @@ final class CefRuntimeVerifier {
     }
 
     static List<String> verifyRuntime(Path runtime, CefPlatform platform) throws IOException {
-        List<String> problems = new ArrayList<>();
-        Path fileList = runtime.resolve("file-list.txt");
-        Path metadata = runtime.resolve("cef-runtime.properties");
+        final List<String> problems = new ArrayList<>();
+        final Path fileList = runtime.resolve("file-list.txt");
+        final Path metadata = runtime.resolve("cef-runtime.properties");
         if (!Files.isRegularFile(fileList)) problems.add("missing file-list.txt");
         if (!Files.isRegularFile(metadata)) problems.add("missing cef-runtime.properties");
         if (!problems.isEmpty()) return problems;
 
-        List<String> listed = Files.readAllLines(fileList, StandardCharsets.UTF_8);
-        Set<String> unique = new HashSet<>();
+        final List<String> listed = Files.readAllLines(fileList, StandardCharsets.UTF_8);
+        final Set<String> unique = new HashSet<>();
         for (String relative : listed) {
             if (relative.isBlank()) {
                 problems.add("file-list.txt contains a blank entry");
                 continue;
             }
-            Path path = Path.of(relative);
-            Path resolved = runtime.resolve(path).normalize();
+            final Path path = Path.of(relative);
+            final Path resolved = runtime.resolve(path).normalize();
             if (path.isAbsolute() || path.startsWith("..") || !resolved.startsWith(runtime.normalize())) {
                 problems.add("file-list.txt entry escapes runtime: " + relative);
                 continue;
             }
-            String normalized = path.toString().replace('\\', '/');
+            final String normalized = path.toString().replace('\\', '/');
             if (!unique.add(normalized)) problems.add("duplicate file-list.txt entry: " + relative);
             if (!Files.isRegularFile(resolved)) problems.add("missing listed file: " + relative);
             else if (Files.size(resolved) == 0) problems.add("empty listed file: " + relative);
@@ -52,14 +52,14 @@ final class CefRuntimeVerifier {
 
         try (var files = Files.walk(runtime)) {
             for (Path file : files.filter(Files::isRegularFile).collect(Collectors.toList())) {
-                String relative = runtime.relativize(file).toString().replace('\\', '/');
+                final String relative = runtime.relativize(file).toString().replace('\\', '/');
                 if (!relative.equals("file-list.txt") && !unique.contains(relative)) {
                     problems.add("unlisted runtime file: " + relative);
                 }
             }
         }
 
-        Properties properties = new Properties();
+        final Properties properties = new Properties();
         try (var reader = Files.newBufferedReader(metadata, StandardCharsets.UTF_8)) {
             properties.load(reader);
         }
@@ -67,11 +67,11 @@ final class CefRuntimeVerifier {
         requireProperty(properties, "cef.platform", platform.cefName(), problems);
         requireNonBlank(properties, "cef.version", problems);
         requireNonBlank(properties, "cef.api.version", problems);
-        String sha256 = properties.getProperty("archive.sha256", "");
+        final String sha256 = properties.getProperty("archive.sha256", "");
         if (!sha256.matches("(?i)[0-9a-f]{64}")) problems.add("invalid archive.sha256 metadata");
         try {
-            int expected = Integer.parseInt(properties.getProperty("file.count", ""));
-            int actual = unique.contains("cef-runtime.properties") ? unique.size() - 1 : unique.size();
+            final int expected = Integer.parseInt(properties.getProperty("file.count", ""));
+            final int actual = unique.contains("cef-runtime.properties") ? unique.size() - 1 : unique.size();
             if (expected != actual) problems.add("file.count metadata is " + expected + " but expected " + actual);
         } catch (NumberFormatException ignored) {
             problems.add("invalid file.count metadata");

@@ -48,7 +48,7 @@ public final class CefWebHistory {
     }
 
     public void go(int offset) {
-        int target = getCurrentIndex() + offset;
+        final int target = getCurrentIndex() + offset;
         if (offset == 0) return;
         if (target < 0 || target >= entries.size()) {
             throw new IndexOutOfBoundsException("History index out of bounds: " + target);
@@ -78,9 +78,9 @@ public final class CefWebHistory {
     }
 
     private void trimToMaxSize() {
-        int limit = getMaxSize();
+        final int limit = getMaxSize();
         if (limit < 0 || entries.size() <= limit) return;
-        int removeCount = entries.size() - limit;
+        final int removeCount = entries.size() - limit;
         entries.subList(0, removeCount).clear();
         currentIndex.set(Math.max(-1, currentIndex.get() - removeCount));
     }

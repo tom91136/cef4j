@@ -4,11 +4,13 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class NavigateResult implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 101;
@@ -61,7 +63,7 @@ public final class NavigateResult implements CefMessageView, CefMessageEncoder {
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(browserId);
@@ -76,20 +78,13 @@ public final class NavigateResult implements CefMessageView, CefMessageEncoder {
     }
 
     public static final CefMessageDecoder<NavigateResult> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browserId");
-        int browserId = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "httpStatus");
-        int httpStatus = __buf.getInt();
-        int finalUrlLen = WireDecoder.length(__buf, "finalUrl");
-        byte[] finalUrlBuf = new byte[finalUrlLen];
-        __buf.get(finalUrlBuf);
-        String finalUrl = new String(finalUrlBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "bytesLoaded");
-        long bytesLoaded = __buf.getLong();
-        WireDecoder.requireRemaining(__buf, 1, "ok");
-        boolean ok = __buf.get() != 0;
+        final int browserId = WireDecoder.int32(__buf, "browserId");
+        final int httpStatus = WireDecoder.int32(__buf, "httpStatus");
+        final String finalUrl = WireDecoder.utf8(__buf, "finalUrl");
+        final long bytesLoaded = WireDecoder.int64(__buf, "bytesLoaded");
+        final boolean ok = WireDecoder.bool(__buf, "ok");
         WireDecoder.requireFullyConsumed(__buf, "NavigateResult");
         return new NavigateResult(browserId, httpStatus, finalUrl, bytesLoaded, ok);
     };

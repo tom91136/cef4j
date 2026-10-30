@@ -317,5 +317,83 @@
                 <codegen.test.argLine>--sun-misc-unsafe-memory-access=allow</codegen.test.argLine>
             </properties>
         </profile>
+
+        <!-- The baumkuchen tools, which have no published release and are installed into the Maven repository by
+             the scripts of the baumkuchen build. A build without them runs without their checks, which is what a
+             CI server that has not installed them does. This profile holds the parts of the wiring that concern the
+             Scala code, the Java code being wired by the profile of the parent. -->
+        <profile>
+            <id>baumkuchen-scala</id>
+            <activation>
+                <file>
+                    <!-- The plugin is found in the local repository, and its presence there says that the tools are
+                         installed, as the presence of the sbt plugin says in a build of sbt. -->
+                    <exists>${user.home}/.m2/repository/net/kurobako/baumkuchen-maven-plugin</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>net.kurobako</groupId>
+                        <artifactId>baumkuchen-maven-plugin</artifactId>
+                        <version>${baumkuchen.version}</version>
+                        <configuration>
+                            <version>${baumkuchen.version}</version>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>prepare</id>
+                                <goals>
+                                    <goal>prepare</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>check</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>scalafix</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- The compiler reads the options the plugin writes from a response file. -->
+                    <plugin>
+                        <groupId>net.alchim31.maven</groupId>
+                        <artifactId>scala-maven-plugin</artifactId>
+                        <configuration>
+                            <args combine.children="append">
+                                <arg>@${baumkuchen.scalac.args}</arg>
+                            </args>
+                        </configuration>
+                    </plugin>
+
+                    <!-- The SemanticDB the rules read is not part of the published artifact. -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>META-INF/semanticdb/**</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <configuration>
+                            <filters combine.children="append">
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/semanticdb/**</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 </project>

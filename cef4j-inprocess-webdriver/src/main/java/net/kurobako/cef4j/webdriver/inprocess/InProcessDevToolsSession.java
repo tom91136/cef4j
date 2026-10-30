@@ -25,6 +25,13 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A DevTools session of an in-process browser.
+ *
+ * <p>An action that fails on the CEF UI thread must be reported to the caller, so every failure of the action is caught
+ * and delivered through the returned future rather than being lost in the completion stage.
+ */
+@SuppressWarnings("baumkuchen:catch-throwable")
 public final class InProcessDevToolsSession implements CdpTransport {
     private static final Logger LOG = LoggerFactory.getLogger(InProcessDevToolsSession.class);
 
@@ -56,18 +63,18 @@ public final class InProcessDevToolsSession implements CdpTransport {
         Class<?> observerType;
         try {
             observerType = Class.forName("net.kurobako.cef4j.gen.CefDevToolsMessageObserver");
-        } catch (ClassNotFoundException unavailableInOlderCef) {
+        } catch (ClassNotFoundException ignored) {
             return CompletableFuture.failedFuture(
                     new UnsupportedOperationException("DevTools requires CEF 81 or newer"));
         }
-        CefBrowserHost host = browser.getHost().orElse(null);
+        final CefBrowserHost host = browser.getHost().orElse(null);
         if (host == null)
             return CompletableFuture.failedFuture(new IllegalStateException("in-process browser has no host"));
-        InProcessDevToolsSession session = new InProcessDevToolsSession(host, codec);
+        final InProcessDevToolsSession session = new InProcessDevToolsSession(host, codec);
         return onUiThread(() -> {
                     session.observer = createObserver(observerType, session);
                     @SuppressWarnings("unchecked")
-                    java.util.Optional<Object> registration = (java.util.Optional<Object>) host.getClass()
+                    final java.util.Optional<Object> registration = (java.util.Optional<Object>) host.getClass()
                             .getMethod("addDevToolsMessageObserver", observerType)
                             .invoke(host, session.observer);
                     session.registration =
@@ -85,26 +92,25 @@ public final class InProcessDevToolsSession implements CdpTransport {
         Objects.requireNonNull(method, "method");
         if (!method.matches("[A-Za-z0-9_.-]+")) throw new IllegalArgumentException("invalid CDP method name");
         if (!open.get()) return CompletableFuture.failedFuture(new IllegalStateException("DevTools session is closed"));
-        CdpRequestTracker.Request<byte[]> request = requests.register();
-        int id = request.id();
+        final CdpRequestTracker.Request<byte[]> request = requests.register();
+        final int id = request.id();
         if (!open.get()) {
             requests.fail(id, new IllegalStateException("DevTools session is closed"));
             return request;
         }
-        byte[] prefix = ("{\"id\":" + id + ",\"method\":\"" + method + "\"").getBytes(StandardCharsets.UTF_8);
+        final byte[] prefix = ("{\"id\":" + id + ",\"method\":\"" + method + "\"").getBytes(StandardCharsets.UTF_8);
         byte[] bytes;
         if (params == null) {
             bytes = java.util.Arrays.copyOf(prefix, prefix.length + 1);
-            bytes[bytes.length - 1] = '}';
         } else {
-            byte[] separator = ",\"params\":".getBytes(StandardCharsets.UTF_8);
+            final byte[] separator = ",\"params\":".getBytes(StandardCharsets.UTF_8);
             bytes = new byte[prefix.length + separator.length + params.length + 1];
             System.arraycopy(prefix, 0, bytes, 0, prefix.length);
             System.arraycopy(separator, 0, bytes, prefix.length, separator.length);
             System.arraycopy(params, 0, bytes, prefix.length + separator.length, params.length);
-            bytes[bytes.length - 1] = '}';
         }
-        ByteBuffer message = ByteBuffer.allocateDirect(bytes.length);
+        bytes[bytes.length - 1] = '}';
+        final ByteBuffer message = ByteBuffer.allocateDirect(bytes.length);
         message.put(bytes).flip();
         onUiThread(() -> sendDevToolsMessage(host, message)).whenComplete((accepted, failure) -> {
             if (failure != null) completeFailure(id, failure);
@@ -123,7 +129,7 @@ public final class InProcessDevToolsSession implements CdpTransport {
         Objects.requireNonNull(method, "method");
         Objects.requireNonNull(handler, "handler");
         if (!open.get()) throw new IllegalStateException("DevTools session is closed");
-        CopyOnWriteArrayList<Consumer<byte[]>> current =
+        final CopyOnWriteArrayList<Consumer<byte[]>> current =
                 handlers.computeIfAbsent(method, ignored -> new CopyOnWriteArrayList<>());
         current.add(handler);
         return () -> current.remove(handler);
@@ -137,7 +143,7 @@ public final class InProcessDevToolsSession implements CdpTransport {
     @SuppressWarnings("UnusedVariable")
     private void onDevToolsMethodResult(
             @Nullable CefBrowser browser, int messageId, boolean success, @Nullable ByteBuffer result) {
-        byte[] bytes = bytes(result);
+        final byte[] bytes = bytes(result);
         if (success) requests.complete(messageId, bytes);
         else requests.fail(messageId, decodeError(bytes));
     }
@@ -145,9 +151,9 @@ public final class InProcessDevToolsSession implements CdpTransport {
     @SuppressWarnings("UnusedVariable")
     private void onDevToolsEvent(@Nullable CefBrowser browser, @Nullable String method, @Nullable ByteBuffer params) {
         if (!open.get() || method == null) return;
-        CopyOnWriteArrayList<Consumer<byte[]>> current = handlers.get(method);
+        final CopyOnWriteArrayList<Consumer<byte[]>> current = handlers.get(method);
         if (current == null) return;
-        byte[] bytes = bytes(params);
+        final byte[] bytes = bytes(params);
         for (Consumer<byte[]> handler : current) {
             try {
                 handler.accept(bytes);
@@ -171,7 +177,7 @@ public final class InProcessDevToolsSession implements CdpTransport {
         if (!open.compareAndSet(true, false)) return;
         handlers.clear();
         requests.failAll(failure);
-        Object current = registration;
+        final Object current = registration;
         registration = null;
         observer = null;
         if (current != null)
@@ -187,11 +193,11 @@ public final class InProcessDevToolsSession implements CdpTransport {
 
     private CdpException decodeError(byte[] bytes) {
         try {
-            Object decoded = codec.decode(bytes);
+            final Object decoded = codec.decode(bytes).orElse(null);
             if (decoded instanceof Map) {
-                Map<?, ?> error = (Map<?, ?>) decoded;
-                Object code = error.get("code");
-                Object message = error.get("message");
+                final Map<?, ?> error = (Map<?, ?>) decoded;
+                final Object code = error.get("code");
+                final Object message = error.get("message");
                 if (code instanceof Number && message != null) {
                     return new CdpException(((Number) code).intValue(), message.toString(), error.get("data"));
                 }
@@ -241,7 +247,7 @@ public final class InProcessDevToolsSession implements CdpTransport {
     }
 
     private static boolean sendDevToolsMessage(CefBrowserHost host, ByteBuffer message) throws Exception {
-        Object accepted = host.getClass()
+        final Object accepted = host.getClass()
                 .getMethod("sendDevToolsMessage", ByteBuffer.class)
                 .invoke(host, message);
         if (accepted instanceof Boolean) return (Boolean) accepted;
@@ -250,19 +256,19 @@ public final class InProcessDevToolsSession implements CdpTransport {
 
     private static byte[] bytes(@Nullable ByteBuffer source) {
         if (source == null) return new byte[0];
-        ByteBuffer copy = source.duplicate();
-        byte[] result = new byte[copy.remaining()];
+        final ByteBuffer copy = source.duplicate();
+        final byte[] result = new byte[copy.remaining()];
         copy.get(result);
         return result;
     }
 
     static <T> CompletableFuture<T> onUiThread(UiCallable<T> action) {
-        CefTaskRunner runner =
+        final CefTaskRunner runner =
                 CefTaskRunner.getForThread(CefThreadId.of(CefThreadId.Kind.UI)).orElse(null);
         if (runner == null)
             return CompletableFuture.failedFuture(new IllegalStateException("CEF UI thread is unavailable"));
-        CompletableFuture<T> result = new CompletableFuture<>();
-        Runnable invoke = () -> {
+        final CompletableFuture<T> result = new CompletableFuture<>();
+        final Runnable invoke = () -> {
             try {
                 result.complete(action.call());
             } catch (Throwable failure) {

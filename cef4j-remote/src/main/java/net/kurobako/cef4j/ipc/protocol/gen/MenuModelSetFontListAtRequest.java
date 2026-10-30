@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class MenuModelSetFontListAtRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 1560002105;
@@ -50,7 +52,7 @@ public final class MenuModelSetFontListAtRequest implements CefMessageView, CefM
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
@@ -63,16 +65,11 @@ public final class MenuModelSetFontListAtRequest implements CefMessageView, CefM
     }
 
     public static final CefMessageDecoder<MenuModelSetFontListAtRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "index");
-        int index = __buf.getInt();
-        int fontListLen = WireDecoder.length(__buf, "fontList");
-        byte[] fontListBuf = new byte[fontListLen];
-        __buf.get(fontListBuf);
-        String fontList = new String(fontListBuf, StandardCharsets.UTF_8);
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final int index = WireDecoder.int32(__buf, "index");
+        final String fontList = WireDecoder.utf8(__buf, "fontList");
         WireDecoder.requireFullyConsumed(__buf, "MenuModelSetFontListAtRequest");
         return new MenuModelSetFontListAtRequest(self, index, fontList);
     };

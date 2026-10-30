@@ -3,12 +3,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class ViewDelegateGetHeightForWidthRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 1413160424;
@@ -47,7 +49,7 @@ public final class ViewDelegateGetHeightForWidthRequest implements CefMessageVie
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
@@ -59,14 +61,11 @@ public final class ViewDelegateGetHeightForWidthRequest implements CefMessageVie
     }
 
     public static final CefMessageDecoder<ViewDelegateGetHeightForWidthRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "view");
-        RemoteHandle view = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "width");
-        int width = __buf.getInt();
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final RemoteHandle view = WireDecoder.handle(__buf, "view");
+        final int width = WireDecoder.int32(__buf, "width");
         WireDecoder.requireFullyConsumed(__buf, "ViewDelegateGetHeightForWidthRequest");
         return new ViewDelegateGetHeightForWidthRequest(self, view, width);
     };

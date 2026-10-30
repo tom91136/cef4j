@@ -3,7 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
@@ -11,6 +11,7 @@ import net.kurobako.cef4j.ipc.session.WireDecoder;
  * to facade methods (or factory requests) that take this struct. The dispatcher decodes them on the
  * runtime-server side and fills the matching {@code cef_insets_t} before invoking CEF.
  */
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class Insets {
 
     private final int top;
@@ -41,12 +42,13 @@ public final class Insets {
         return right;
     }
 
+    @SuppressWarnings("SameReturnValue")
     public int encodedSize() {
         return 16;
     }
 
     public void encodeInto(ByteBuffer dst) {
-        ByteOrder originalOrder = dst.order();
+        final ByteOrder originalOrder = dst.order();
         try {
             dst.order(ByteOrder.LITTLE_ENDIAN);
             dst.putInt(top);
@@ -64,14 +66,10 @@ public final class Insets {
       * configured the buffer.
       */
     public static Insets decode(ByteBuffer __buf) {
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "top");
-        int top = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "left");
-        int left = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "bottom");
-        int bottom = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "right");
-        int right = __buf.getInt();
+        final int top = WireDecoder.int32(__buf, "top");
+        final int left = WireDecoder.int32(__buf, "left");
+        final int bottom = WireDecoder.int32(__buf, "bottom");
+        final int right = WireDecoder.int32(__buf, "right");
         return new Insets(top, left, bottom, right);
     }
 
@@ -82,28 +80,28 @@ public final class Insets {
     /** Lombok-style builder. */
     public static final class Builder {
 
-        private int top = 0;
-        private int left = 0;
-        private int bottom = 0;
-        private int right = 0;
+        private int top;
+        private int left;
+        private int bottom;
+        private int right;
 
-        public Builder top(int top) {
-            this.top = top;
+        public Builder top(int value) {
+            this.top = value;
             return this;
         }
 
-        public Builder left(int left) {
-            this.left = left;
+        public Builder left(int value) {
+            this.left = value;
             return this;
         }
 
-        public Builder bottom(int bottom) {
-            this.bottom = bottom;
+        public Builder bottom(int value) {
+            this.bottom = value;
             return this;
         }
 
-        public Builder right(int right) {
-            this.right = right;
+        public Builder right(int value) {
+            this.right = value;
             return this;
         }
 

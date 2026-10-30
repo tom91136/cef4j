@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
@@ -13,6 +12,7 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Chrome DevTools Protocol ServiceWorker domain.
@@ -21,6 +21,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class ServiceWorker {
     private ServiceWorker() {}
     /**
@@ -29,7 +30,7 @@ public final class ServiceWorker {
     public static final class RegistrationID implements CdpValue<String> {
         public final String value;
         public RegistrationID(String value) { this.value = java.util.Objects.requireNonNull(value); }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof RegistrationID)) return false;
@@ -106,7 +107,7 @@ public final class ServiceWorker {
         STOPPING("stopping");
         public final String value;
         ServiceWorkerVersionRunningStatus(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static ServiceWorkerVersionRunningStatus of(String value) {
             for (ServiceWorkerVersionRunningStatus constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -126,7 +127,7 @@ public final class ServiceWorker {
         REDUNDANT("redundant");
         public final String value;
         ServiceWorkerVersionStatus(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static ServiceWorkerVersionStatus of(String value) {
             for (ServiceWorkerVersionStatus constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -183,40 +184,35 @@ public final class ServiceWorker {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble scriptLastModified() {
-            Double value = CdpObject.numberAsDouble(raw("scriptLastModified"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("scriptLastModified").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * The time at which the response headers of the main script were received from the server. For cached script it is the last time the cache entry was validated.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble scriptResponseTime() {
-            Double value = CdpObject.numberAsDouble(raw("scriptResponseTime"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("scriptResponseTime").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Returns the controlledClients field.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Target.TargetID>> controlledClients() {
-            Object value = raw("controlledClients");
-            return Optional.ofNullable(list(value, element0 -> new Target.TargetID((String) element0)));
+            return raw("controlledClients").flatMap(value -> list(value, element0 -> new Target.TargetID((String) element0)));
         }
         /**
          * Returns the targetId field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Target.TargetID> targetId() {
-            Object value = raw("targetId");
-            return Optional.ofNullable(value == null ? null : new Target.TargetID((String) value));
+            return raw("targetId").map(value -> new Target.TargetID((String) value));
         }
         /**
          * Returns the routerRules field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> routerRules() {
-            Object value = raw("routerRules");
-            return Optional.ofNullable((String) value);
+            return raw("routerRules").map(value -> (String) value);
         }
         /**
          * Sets the versionId field.
@@ -265,52 +261,25 @@ public final class ServiceWorker {
         }
         /**
          * The Last-Modified header value of the main script.
-         * @param scriptLastModified field value; empty omits the value
+         * @param scriptLastModified field value
          * @return this model
          */
-        public ServiceWorkerVersion scriptLastModified(OptionalDouble scriptLastModified) {
-            set("scriptLastModified", scriptLastModified.isPresent() ? scriptLastModified.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * The Last-Modified header value of the main script.
-         * @param scriptLastModified field value; null removes the value
-         * @return this model
-         */
-        public ServiceWorkerVersion scriptLastModified(Double scriptLastModified) {
+        public ServiceWorkerVersion scriptLastModified(double scriptLastModified) {
             set("scriptLastModified", scriptLastModified);
             return this;
         }
         /**
          * The time at which the response headers of the main script were received from the server. For cached script it is the last time the cache entry was validated.
-         * @param scriptResponseTime field value; empty omits the value
+         * @param scriptResponseTime field value
          * @return this model
          */
-        public ServiceWorkerVersion scriptResponseTime(OptionalDouble scriptResponseTime) {
-            set("scriptResponseTime", scriptResponseTime.isPresent() ? scriptResponseTime.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * The time at which the response headers of the main script were received from the server. For cached script it is the last time the cache entry was validated.
-         * @param scriptResponseTime field value; null removes the value
-         * @return this model
-         */
-        public ServiceWorkerVersion scriptResponseTime(Double scriptResponseTime) {
+        public ServiceWorkerVersion scriptResponseTime(double scriptResponseTime) {
             set("scriptResponseTime", scriptResponseTime);
             return this;
         }
         /**
          * Sets the controlledClients field.
-         * @param controlledClients field value; empty omits the value
-         * @return this model
-         */
-        public ServiceWorkerVersion controlledClients(Optional<java.util.List<Target.TargetID>> controlledClients) {
-            set("controlledClients", controlledClients.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the controlledClients field.
-         * @param controlledClients field value; null removes the value
+         * @param controlledClients field value
          * @return this model
          */
         public ServiceWorkerVersion controlledClients(java.util.List<Target.TargetID> controlledClients) {
@@ -319,16 +288,7 @@ public final class ServiceWorker {
         }
         /**
          * Sets the targetId field.
-         * @param targetId field value; empty omits the value
-         * @return this model
-         */
-        public ServiceWorkerVersion targetId(Optional<Target.TargetID> targetId) {
-            set("targetId", targetId.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the targetId field.
-         * @param targetId field value; null removes the value
+         * @param targetId field value
          * @return this model
          */
         public ServiceWorkerVersion targetId(Target.TargetID targetId) {
@@ -337,16 +297,7 @@ public final class ServiceWorker {
         }
         /**
          * Sets the routerRules field.
-         * @param routerRules field value; empty omits the value
-         * @return this model
-         */
-        public ServiceWorkerVersion routerRules(Optional<String> routerRules) {
-            set("routerRules", routerRules.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the routerRules field.
-         * @param routerRules field value; null removes the value
+         * @param routerRules field value
          * @return this model
          */
         public ServiceWorkerVersion routerRules(String routerRules) {
@@ -472,12 +423,10 @@ public final class ServiceWorker {
          * @param data protocol value
          */
         public DeliverPushMessageRequest(String origin, ServiceWorker.RegistrationID registrationId, String data) {
-            set("origin", origin);
-            set("registrationId", registrationId);
-            set("data", data);
+            origin(origin).registrationId(registrationId).data(data);
         }
         public static DeliverPushMessageRequest fromMap(Map<String, Object> values) {
-            DeliverPushMessageRequest instance_ = new DeliverPushMessageRequest();
+            final DeliverPushMessageRequest instance_ = new DeliverPushMessageRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -543,13 +492,10 @@ public final class ServiceWorker {
          * @param lastChance protocol value
          */
         public DispatchSyncEventRequest(String origin, ServiceWorker.RegistrationID registrationId, String tag, boolean lastChance) {
-            set("origin", origin);
-            set("registrationId", registrationId);
-            set("tag", tag);
-            set("lastChance", lastChance);
+            origin(origin).registrationId(registrationId).tag(tag).lastChance(lastChance);
         }
         public static DispatchSyncEventRequest fromMap(Map<String, Object> values) {
-            DispatchSyncEventRequest instance_ = new DispatchSyncEventRequest();
+            final DispatchSyncEventRequest instance_ = new DispatchSyncEventRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -630,12 +576,10 @@ public final class ServiceWorker {
          * @param tag protocol value
          */
         public DispatchPeriodicSyncEventRequest(String origin, ServiceWorker.RegistrationID registrationId, String tag) {
-            set("origin", origin);
-            set("registrationId", registrationId);
-            set("tag", tag);
+            origin(origin).registrationId(registrationId).tag(tag);
         }
         public static DispatchPeriodicSyncEventRequest fromMap(Map<String, Object> values) {
-            DispatchPeriodicSyncEventRequest instance_ = new DispatchPeriodicSyncEventRequest();
+            final DispatchPeriodicSyncEventRequest instance_ = new DispatchPeriodicSyncEventRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -698,10 +642,10 @@ public final class ServiceWorker {
          * @param forceUpdateOnPageLoad protocol value
          */
         public SetForceUpdateOnPageLoadRequest(boolean forceUpdateOnPageLoad) {
-            set("forceUpdateOnPageLoad", forceUpdateOnPageLoad);
+            forceUpdateOnPageLoad(forceUpdateOnPageLoad);
         }
         public static SetForceUpdateOnPageLoadRequest fromMap(Map<String, Object> values) {
-            SetForceUpdateOnPageLoadRequest instance_ = new SetForceUpdateOnPageLoadRequest();
+            final SetForceUpdateOnPageLoadRequest instance_ = new SetForceUpdateOnPageLoadRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -732,10 +676,10 @@ public final class ServiceWorker {
          * @param scopeURL protocol value
          */
         public SkipWaitingRequest(String scopeURL) {
-            set("scopeURL", scopeURL);
+            scopeURL(scopeURL);
         }
         public static SkipWaitingRequest fromMap(Map<String, Object> values) {
-            SkipWaitingRequest instance_ = new SkipWaitingRequest();
+            final SkipWaitingRequest instance_ = new SkipWaitingRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -766,10 +710,10 @@ public final class ServiceWorker {
          * @param scopeURL protocol value
          */
         public StartWorkerRequest(String scopeURL) {
-            set("scopeURL", scopeURL);
+            scopeURL(scopeURL);
         }
         public static StartWorkerRequest fromMap(Map<String, Object> values) {
-            StartWorkerRequest instance_ = new StartWorkerRequest();
+            final StartWorkerRequest instance_ = new StartWorkerRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -800,10 +744,10 @@ public final class ServiceWorker {
          * @param versionId protocol value
          */
         public StopWorkerRequest(String versionId) {
-            set("versionId", versionId);
+            versionId(versionId);
         }
         public static StopWorkerRequest fromMap(Map<String, Object> values) {
-            StopWorkerRequest instance_ = new StopWorkerRequest();
+            final StopWorkerRequest instance_ = new StopWorkerRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -834,10 +778,10 @@ public final class ServiceWorker {
          * @param scopeURL protocol value
          */
         public UnregisterRequest(String scopeURL) {
-            set("scopeURL", scopeURL);
+            scopeURL(scopeURL);
         }
         public static UnregisterRequest fromMap(Map<String, Object> values) {
-            UnregisterRequest instance_ = new UnregisterRequest();
+            final UnregisterRequest instance_ = new UnregisterRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -868,10 +812,10 @@ public final class ServiceWorker {
          * @param scopeURL protocol value
          */
         public UpdateRegistrationRequest(String scopeURL) {
-            set("scopeURL", scopeURL);
+            scopeURL(scopeURL);
         }
         public static UpdateRegistrationRequest fromMap(Map<String, Object> values) {
-            UpdateRegistrationRequest instance_ = new UpdateRegistrationRequest();
+            final UpdateRegistrationRequest instance_ = new UpdateRegistrationRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -906,7 +850,7 @@ public final class ServiceWorker {
          * @return the protocol field value
          */
         public ServiceWorker.ServiceWorkerErrorMessage errorMessage() {
-            return java.util.Objects.requireNonNull(ServiceWorker.ServiceWorkerErrorMessage.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("errorMessage")))));
+            return java.util.Objects.requireNonNull(ServiceWorker.ServiceWorkerErrorMessage.fromMap(CdpObject.requireObjectMap(require("errorMessage"))));
         }
         /**
          * Sets the errorMessage field.
@@ -932,7 +876,7 @@ public final class ServiceWorker {
          * @return the protocol field value
          */
         public java.util.List<ServiceWorker.ServiceWorkerRegistration> registrations() {
-            return CdpObject.requireList(require("registrations"), element0 -> java.util.Objects.requireNonNull(ServiceWorker.ServiceWorkerRegistration.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("registrations"), element0 -> java.util.Objects.requireNonNull(ServiceWorker.ServiceWorkerRegistration.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Sets the registrations field.
@@ -958,7 +902,7 @@ public final class ServiceWorker {
          * @return the protocol field value
          */
         public java.util.List<ServiceWorker.ServiceWorkerVersion> versions() {
-            return CdpObject.requireList(require("versions"), element0 -> java.util.Objects.requireNonNull(ServiceWorker.ServiceWorkerVersion.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("versions"), element0 -> java.util.Objects.requireNonNull(ServiceWorker.ServiceWorkerVersion.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Sets the versions field.
@@ -981,7 +925,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deliverPushMessage(String origin, ServiceWorker.RegistrationID registrationId, String data) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("origin", CdpObject.json(origin));
             params.put("registrationId", CdpObject.json(registrationId));
             params.put("data", CdpObject.json(data));
@@ -1011,7 +955,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchSyncEvent(String origin, ServiceWorker.RegistrationID registrationId, String tag, boolean lastChance) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("origin", CdpObject.json(origin));
             params.put("registrationId", CdpObject.json(registrationId));
             params.put("tag", CdpObject.json(tag));
@@ -1034,7 +978,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchPeriodicSyncEvent(String origin, ServiceWorker.RegistrationID registrationId, String tag) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("origin", CdpObject.json(origin));
             params.put("registrationId", CdpObject.json(registrationId));
             params.put("tag", CdpObject.json(tag));
@@ -1061,7 +1005,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setForceUpdateOnPageLoad(boolean forceUpdateOnPageLoad) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("forceUpdateOnPageLoad", CdpObject.json(forceUpdateOnPageLoad));
             return client.call("ServiceWorker.setForceUpdateOnPageLoad", params);
         }
@@ -1079,7 +1023,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> skipWaiting(String scopeURL) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("scopeURL", CdpObject.json(scopeURL));
             return client.call("ServiceWorker.skipWaiting", params);
         }
@@ -1097,7 +1041,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startWorker(String scopeURL) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("scopeURL", CdpObject.json(scopeURL));
             return client.call("ServiceWorker.startWorker", params);
         }
@@ -1122,7 +1066,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopWorker(String versionId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("versionId", CdpObject.json(versionId));
             return client.call("ServiceWorker.stopWorker", params);
         }
@@ -1140,7 +1084,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> unregister(String scopeURL) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("scopeURL", CdpObject.json(scopeURL));
             return client.call("ServiceWorker.unregister", params);
         }
@@ -1158,7 +1102,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> updateRegistration(String scopeURL) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("scopeURL", CdpObject.json(scopeURL));
             return client.call("ServiceWorker.updateRegistration", params);
         }

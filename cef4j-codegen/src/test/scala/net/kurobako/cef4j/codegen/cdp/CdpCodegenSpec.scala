@@ -4,7 +4,8 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Duration
-import scala.collection.mutable.ListBuffer
+import java.util.concurrent.atomic.AtomicInteger
+import scala.collection.mutable
 
 import net.kurobako.cef4j.codegen.FileSystem
 import net.kurobako.cef4j.codegen.TempDirectorySuite
@@ -21,7 +22,6 @@ class CdpCodegenSpec extends TempDirectorySuite {
             "Page",
             Some("A small `Page` fixture."),
             PDL.Flags(),
-            Nil,
             List(
               PDL.Decl.Type("FrameId", PDL.TypeExpr.Str, None, None, PDL.Flags()),
               PDL.Decl.Type(
@@ -33,7 +33,6 @@ class CdpCodegenSpec extends TempDirectorySuite {
               ),
               PDL.Decl.Command(
                 "enable",
-                None,
                 List(PDL.SubItem("includeDebug", PDL.TypeExpr.Boolean, optional = true)),
                 Nil,
                 None,
@@ -41,7 +40,6 @@ class CdpCodegenSpec extends TempDirectorySuite {
               ),
               PDL.Decl.Command(
                 "navigate",
-                None,
                 List(PDL.SubItem("url", PDL.TypeExpr.Str)),
                 List(PDL.SubItem("frameId", PDL.TypeExpr.Ref(None, "FrameId"))),
                 None,
@@ -99,19 +97,19 @@ class CdpCodegenSpec extends TempDirectorySuite {
   }
 
   test("retries five consecutive transient download failures") {
-    var attempts = 0
-    val delays   = ListBuffer.empty[Duration]
+    val attempts = AtomicInteger()
+    val delays   = mutable.ListBuffer.empty[Duration]
     val result   = SchemaFetcher.retry(
       () => {
-        attempts += 1
-        if (attempts <= 5) Left(IOException("transient")) else Right("schema")
+        attempts.incrementAndGet()
+        if (attempts.get() <= 5) Left(IOException("transient")) else Right("schema")
       },
       delay => delays += delay
     )
 
     assertEquals(result, "schema")
-    assertEquals(attempts, 6)
-    assertEquals(delays.toList, List(1L, 2L, 4L, 8L, 16L).map(Duration.ofSeconds))
+    assertEquals(attempts.get(), 6)
+    assertEquals(delays.toList, List(1L, 2L, 4L, 8L, 16L).map(Duration.ofSeconds(_)))
   }
 
   test("uses a complete cached schema without network access") {
@@ -157,8 +155,8 @@ class CdpCodegenSpec extends TempDirectorySuite {
       assert(page.contains("import javax.annotation.processing.Generated;"))
       assert(page.contains("@Generated(\"./mvnw generate-sources -pl cef4j-cdp\")"))
       assert(page.contains("public CompletionStage<Page.FrameId> navigate(String url)"))
-      assert(page.contains("public CompletionStage<Void> enable(Optional<Boolean> includeDebug)"))
-      assert(page.contains("return enable(Optional.empty());"))
+      assert(page.contains("public CompletionStage<Void> enable(boolean includeDebug)"))
+      assert(page.contains("public CompletionStage<Void> enable()"))
       assert(page.contains("@Deprecated\n        public CdpSubscription onLoadEventFired"))
       assert(page.contains("{@code Page}"))
       assert(runtime.contains("public Optional<String> classValue()"))

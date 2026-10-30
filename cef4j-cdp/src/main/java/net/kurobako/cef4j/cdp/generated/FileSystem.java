@@ -4,15 +4,11 @@ package net.kurobako.cef4j.cdp.generated;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
-import net.kurobako.cef4j.cdp.CdpSubscription;
-import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Chrome DevTools Protocol FileSystem domain.
@@ -21,6 +17,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class FileSystem {
     private FileSystem() {}
     /**
@@ -123,7 +120,7 @@ public final class FileSystem {
          * @return the protocol field value
          */
         public java.util.List<FileSystem.File> nestedFiles() {
-            return CdpObject.requireList(require("nestedFiles"), element0 -> java.util.Objects.requireNonNull(FileSystem.File.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("nestedFiles"), element0 -> java.util.Objects.requireNonNull(FileSystem.File.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Sets the name field.
@@ -173,8 +170,7 @@ public final class FileSystem {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> bucketName() {
-            Object value = raw("bucketName");
-            return Optional.ofNullable((String) value);
+            return raw("bucketName").map(value -> (String) value);
         }
         /**
          * Path to the directory using each path component as an array item.
@@ -194,16 +190,7 @@ public final class FileSystem {
         }
         /**
          * Bucket name. Not passing a {@code bucketName} will retrieve the default Bucket. (https://developer.mozilla.org/en-US/docs/Web/API/Storage_API#storage_buckets)
-         * @param bucketName field value; empty omits the value
-         * @return this model
-         */
-        public BucketFileSystemLocator bucketName(Optional<String> bucketName) {
-            set("bucketName", bucketName.orElse(null));
-            return this;
-        }
-        /**
-         * Bucket name. Not passing a {@code bucketName} will retrieve the default Bucket. (https://developer.mozilla.org/en-US/docs/Web/API/Storage_API#storage_buckets)
-         * @param bucketName field value; null removes the value
+         * @param bucketName field value
          * @return this model
          */
         public BucketFileSystemLocator bucketName(String bucketName) {
@@ -230,10 +217,10 @@ public final class FileSystem {
          * @param bucketFileSystemLocator protocol value
          */
         public GetDirectoryRequest(FileSystem.BucketFileSystemLocator bucketFileSystemLocator) {
-            set("bucketFileSystemLocator", bucketFileSystemLocator);
+            bucketFileSystemLocator(bucketFileSystemLocator);
         }
         public static GetDirectoryRequest fromMap(Map<String, Object> values) {
-            GetDirectoryRequest instance_ = new GetDirectoryRequest();
+            final GetDirectoryRequest instance_ = new GetDirectoryRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -242,7 +229,7 @@ public final class FileSystem {
          * @return the protocol field value
          */
         public FileSystem.BucketFileSystemLocator bucketFileSystemLocator() {
-            return java.util.Objects.requireNonNull(FileSystem.BucketFileSystemLocator.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("bucketFileSystemLocator")))));
+            return java.util.Objects.requireNonNull(FileSystem.BucketFileSystemLocator.fromMap(CdpObject.requireObjectMap(require("bucketFileSystemLocator"))));
         }
         /**
          * Sets the bucketFileSystemLocator field.
@@ -263,9 +250,9 @@ public final class FileSystem {
          * @return a stage completing with the command result
          */
         public CompletionStage<FileSystem.Directory> getDirectory(FileSystem.BucketFileSystemLocator bucketFileSystemLocator) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("bucketFileSystemLocator", CdpObject.json(bucketFileSystemLocator));
-            return client.call("FileSystem.getDirectory", params, result_ -> java.util.Objects.requireNonNull(FileSystem.Directory.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("directory")))))));
+            return client.call("FileSystem.getDirectory", params, result_ -> java.util.Objects.requireNonNull(FileSystem.Directory.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("directory"))))));
         }
         /**
          * Invokes FileSystem.getDirectory with a request object.
@@ -273,7 +260,7 @@ public final class FileSystem {
          * @return a stage completing with the command result
          */
         public CompletionStage<FileSystem.Directory> getDirectory(GetDirectoryRequest request) {
-            return client.call("FileSystem.getDirectory", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(FileSystem.Directory.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("directory")))))));
+            return client.call("FileSystem.getDirectory", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(FileSystem.Directory.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("directory"))))));
         }
     }
 }

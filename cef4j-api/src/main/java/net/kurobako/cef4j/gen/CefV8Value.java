@@ -25,7 +25,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:482</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefV8Value extends CefLibraryObject {
 
@@ -331,6 +330,7 @@ public interface CefV8Value extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:798</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setRethrowExceptions(boolean rethrow);
 
     /**
@@ -486,6 +486,7 @@ public interface CefV8Value extends CefLibraryObject {
      * @param userData may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:889</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setUserData(@Nullable NativePointer userData);
 
     /**

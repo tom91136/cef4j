@@ -3,12 +3,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class MenuModelDelegateUnhandledCloseSubmenuEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 1691796163;
@@ -41,7 +43,7 @@ public final class MenuModelDelegateUnhandledCloseSubmenuEvent implements CefMes
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(menuModel.id());
@@ -52,12 +54,10 @@ public final class MenuModelDelegateUnhandledCloseSubmenuEvent implements CefMes
     }
 
     public static final CefMessageDecoder<MenuModelDelegateUnhandledCloseSubmenuEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "menuModel");
-        RemoteHandle menuModel = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "isRtl");
-        int isRtl = __buf.getInt();
+        final RemoteHandle menuModel = WireDecoder.handle(__buf, "menuModel");
+        final int isRtl = WireDecoder.int32(__buf, "isRtl");
         WireDecoder.requireFullyConsumed(__buf, "MenuModelDelegateUnhandledCloseSubmenuEvent");
         return new MenuModelDelegateUnhandledCloseSubmenuEvent(menuModel, isRtl);
     };

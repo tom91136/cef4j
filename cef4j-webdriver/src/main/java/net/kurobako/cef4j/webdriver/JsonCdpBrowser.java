@@ -31,10 +31,10 @@ public interface JsonCdpBrowser extends CdpTransport {
     WebDriverJsonCodec jsonCodec();
 
     default CompletableFuture<JsonObject> send(String method, @Nullable JsonObject params) {
-        byte[] encoded = params == null ? null : jsonCodec().encode(params);
+        final byte[] encoded = params == null ? null : jsonCodec().encode(params);
         return execute(method, encoded)
                 .thenApply(bytes -> {
-                    JsonElement value =
+                    final JsonElement value =
                             bytes.length == 0 ? new JsonObject() : jsonCodec().decode(bytes);
                     if (!value.isObject()) throw new IllegalArgumentException("DevTools payload is not an object");
                     return value.asObject();
@@ -43,8 +43,8 @@ public interface JsonCdpBrowser extends CdpTransport {
     }
 
     default EventRegistration on(String method, Consumer<JsonObject> handler) {
-        CdpSubscription subscription = subscribe(method, bytes -> {
-            JsonElement value = jsonCodec().decode(bytes);
+        final CdpSubscription subscription = subscribe(method, bytes -> {
+            final JsonElement value = jsonCodec().decode(bytes);
             if (!value.isObject()) throw new IllegalArgumentException("DevTools event payload is not an object");
             handler.accept(value.asObject());
         });

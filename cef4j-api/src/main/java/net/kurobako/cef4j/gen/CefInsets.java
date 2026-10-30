@@ -21,7 +21,6 @@ import net.kurobako.cef4j.policy.NullableBoundary;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types__geometry_8h.html">internal/cef_types_geometry.h:64</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefInsets {
 
@@ -39,14 +38,14 @@ public final class CefInsets {
 
     /** Create a mutable copy of this instance. */
     public Mutable toMutable() {
-        return new Mutable(this.top, this.left, this.bottom, this.right);
+        return new Mutable(top, left, bottom, right);
     }
 
     @Override
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefInsets)) return false;
-        CefInsets other = (CefInsets) obj;
+        final CefInsets other = (CefInsets) obj;
         return this.top == other.top
                 && this.left == other.left
                 && this.bottom == other.bottom
@@ -90,14 +89,14 @@ public final class CefInsets {
 
         /** Create an immutable snapshot of this instance. */
         public CefInsets toImmutable() {
-            return new CefInsets(this.top, this.left, this.bottom, this.right);
+            return new CefInsets(top, left, bottom, right);
         }
 
         @Override
         public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
-            Mutable other = (Mutable) obj;
+            final Mutable other = (Mutable) obj;
             return this.top == other.top
                     && this.left == other.left
                     && this.bottom == other.bottom

@@ -70,27 +70,35 @@ public final class Envelope {
 
     private Envelope() {}
 
+    /** Checks that the buffer holds the header, which the code of it needs. */
+    private static void requireHeaderSpace(ByteBuffer buffer) {
+        if (buffer.remaining() < HEADER_SIZE) {
+            throw new IllegalArgumentException(
+                    "buffer has " + buffer.remaining() + " bytes remaining, need " + HEADER_SIZE);
+        }
+    }
+
     /**
      * Write a header into {@code dst} starting at its current position. Advances position by {@link #HEADER_SIZE}. The
      * buffer's byte order is preserved on return; bytes are always written in little-endian regardless of the caller's
      * setting.
      */
-    public static void writeHeader(ByteBuffer dst, Kind kind, int flags, int corrId, int messageId, int payloadLength) {
-        if (payloadLength < 0) throw new IllegalArgumentException("payloadLength must be >= 0, got " + payloadLength);
-        if ((flags & ~0xFF) != 0)
-            throw new IllegalArgumentException("flags must fit in a byte, got 0x" + Integer.toHexString(flags));
-        if (dst.remaining() < HEADER_SIZE) {
-            throw new IllegalArgumentException(
-                    "buffer has " + dst.remaining() + " bytes remaining, need " + HEADER_SIZE);
+    public static void writeHeader(ByteBuffer dst, Header header) {
+        if (header.payloadLength < 0) {
+            throw new IllegalArgumentException("payloadLength must be >= 0, got " + header.payloadLength);
         }
-        ByteOrder originalOrder = dst.order();
+        if ((header.flags & ~0xFF) != 0) {
+            throw new IllegalArgumentException("flags must fit in a byte, got 0x" + Integer.toHexString(header.flags));
+        }
+        requireHeaderSpace(dst);
+        final ByteOrder originalOrder = dst.order();
         try {
             dst.order(ByteOrder.LITTLE_ENDIAN);
-            dst.putInt(payloadLength);
-            dst.put(kind.code);
-            dst.put((byte) (flags & 0xFF));
-            dst.putInt(corrId);
-            dst.putInt(messageId);
+            dst.putInt(header.payloadLength);
+            dst.put(header.kind.code);
+            dst.put((byte) (header.flags & 0xFF));
+            dst.putInt(header.corrId);
+            dst.putInt(header.messageId);
         } finally {
             dst.order(originalOrder);
         }
@@ -101,19 +109,16 @@ public final class Envelope {
      * buffer's byte order is preserved on return.
      */
     public static Header readHeader(ByteBuffer src) {
-        if (src.remaining() < HEADER_SIZE) {
-            throw new IllegalArgumentException(
-                    "buffer has " + src.remaining() + " bytes remaining, need " + HEADER_SIZE);
-        }
-        ByteOrder originalOrder = src.order();
+        requireHeaderSpace(src);
+        final ByteOrder originalOrder = src.order();
         try {
             src.order(ByteOrder.LITTLE_ENDIAN);
-            int len = src.getInt();
-            byte kindByte = src.get();
-            int flags = src.get() & 0xFF;
-            int corrId = src.getInt();
-            int messageId = src.getInt();
-            Kind kind = Kind.of(kindByte);
+            final int len = src.getInt();
+            final byte kindByte = src.get();
+            final int flags = src.get() & 0xFF;
+            final int corrId = src.getInt();
+            final int messageId = src.getInt();
+            final Kind kind = Kind.of(kindByte);
             if (len < 0) throw new IllegalArgumentException("payloadLength must be >= 0, got " + len);
             if (len != src.remaining()) {
                 throw new IllegalArgumentException(

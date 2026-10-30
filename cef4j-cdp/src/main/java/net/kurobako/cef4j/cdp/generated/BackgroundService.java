@@ -3,9 +3,6 @@ package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
@@ -13,6 +10,7 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Defines events for background web platform features.
@@ -21,6 +19,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class BackgroundService {
     private BackgroundService() {}
     /**
@@ -35,7 +34,7 @@ public final class BackgroundService {
         PERIODICBACKGROUNDSYNC("periodicBackgroundSync");
         public final String value;
         ServiceName(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static ServiceName of(String value) {
             for (ServiceName constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -140,7 +139,7 @@ public final class BackgroundService {
          * @return the protocol field value
          */
         public java.util.List<BackgroundService.EventMetadata> eventMetadata() {
-            return CdpObject.requireList(require("eventMetadata"), element0 -> java.util.Objects.requireNonNull(BackgroundService.EventMetadata.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("eventMetadata"), element0 -> java.util.Objects.requireNonNull(BackgroundService.EventMetadata.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Storage key this event belongs to.
@@ -232,10 +231,10 @@ public final class BackgroundService {
          * @param service protocol value
          */
         public StartObservingRequest(BackgroundService.ServiceName service) {
-            set("service", service);
+            service(service);
         }
         public static StartObservingRequest fromMap(Map<String, Object> values) {
-            StartObservingRequest instance_ = new StartObservingRequest();
+            final StartObservingRequest instance_ = new StartObservingRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -266,10 +265,10 @@ public final class BackgroundService {
          * @param service protocol value
          */
         public StopObservingRequest(BackgroundService.ServiceName service) {
-            set("service", service);
+            service(service);
         }
         public static StopObservingRequest fromMap(Map<String, Object> values) {
-            StopObservingRequest instance_ = new StopObservingRequest();
+            final StopObservingRequest instance_ = new StopObservingRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -301,11 +300,10 @@ public final class BackgroundService {
          * @param service protocol value
          */
         public SetRecordingRequest(boolean shouldRecord, BackgroundService.ServiceName service) {
-            set("shouldRecord", shouldRecord);
-            set("service", service);
+            shouldRecord(shouldRecord).service(service);
         }
         public static SetRecordingRequest fromMap(Map<String, Object> values) {
-            SetRecordingRequest instance_ = new SetRecordingRequest();
+            final SetRecordingRequest instance_ = new SetRecordingRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -352,10 +350,10 @@ public final class BackgroundService {
          * @param service protocol value
          */
         public ClearEventsRequest(BackgroundService.ServiceName service) {
-            set("service", service);
+            service(service);
         }
         public static ClearEventsRequest fromMap(Map<String, Object> values) {
-            ClearEventsRequest instance_ = new ClearEventsRequest();
+            final ClearEventsRequest instance_ = new ClearEventsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -432,7 +430,7 @@ public final class BackgroundService {
          * @return the protocol field value
          */
         public BackgroundService.BackgroundServiceEvent backgroundServiceEvent() {
-            return java.util.Objects.requireNonNull(BackgroundService.BackgroundServiceEvent.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("backgroundServiceEvent")))));
+            return java.util.Objects.requireNonNull(BackgroundService.BackgroundServiceEvent.fromMap(CdpObject.requireObjectMap(require("backgroundServiceEvent"))));
         }
         /**
          * Sets the backgroundServiceEvent field.
@@ -453,7 +451,7 @@ public final class BackgroundService {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startObserving(BackgroundService.ServiceName service) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("service", CdpObject.json(service));
             return client.call("BackgroundService.startObserving", params);
         }
@@ -471,7 +469,7 @@ public final class BackgroundService {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopObserving(BackgroundService.ServiceName service) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("service", CdpObject.json(service));
             return client.call("BackgroundService.stopObserving", params);
         }
@@ -490,7 +488,7 @@ public final class BackgroundService {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setRecording(boolean shouldRecord, BackgroundService.ServiceName service) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("shouldRecord", CdpObject.json(shouldRecord));
             params.put("service", CdpObject.json(service));
             return client.call("BackgroundService.setRecording", params);
@@ -509,7 +507,7 @@ public final class BackgroundService {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearEvents(BackgroundService.ServiceName service) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("service", CdpObject.json(service));
             return client.call("BackgroundService.clearEvents", params);
         }

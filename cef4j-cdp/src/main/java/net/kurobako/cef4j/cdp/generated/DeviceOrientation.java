@@ -3,16 +3,11 @@ package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
-import net.kurobako.cef4j.cdp.CdpSubscription;
-import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Chrome DevTools Protocol DeviceOrientation domain.
@@ -21,6 +16,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class DeviceOrientation {
     private DeviceOrientation() {}
     /**
@@ -35,12 +31,10 @@ public final class DeviceOrientation {
          * @param gamma protocol value
          */
         public SetDeviceOrientationOverrideRequest(double alpha, double beta, double gamma) {
-            set("alpha", alpha);
-            set("beta", beta);
-            set("gamma", gamma);
+            alpha(alpha).beta(beta).gamma(gamma);
         }
         public static SetDeviceOrientationOverrideRequest fromMap(Map<String, Object> values) {
-            SetDeviceOrientationOverrideRequest instance_ = new SetDeviceOrientationOverrideRequest();
+            final SetDeviceOrientationOverrideRequest instance_ = new SetDeviceOrientationOverrideRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -111,7 +105,7 @@ public final class DeviceOrientation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDeviceOrientationOverride(double alpha, double beta, double gamma) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("alpha", CdpObject.json(alpha));
             params.put("beta", CdpObject.json(beta));
             params.put("gamma", CdpObject.json(gamma));

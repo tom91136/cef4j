@@ -24,7 +24,6 @@ public final class LoopbackTransport implements CefTransport {
     private final String name;
     private final BlockingQueue<byte[]> inbound = new LinkedBlockingQueue<>();
     private final CountDownLatch handlerReady = new CountDownLatch(1);
-    private final Thread reader;
 
     @Nullable
     private volatile LoopbackTransport peer;
@@ -41,9 +40,9 @@ public final class LoopbackTransport implements CefTransport {
 
     /** Creates a connected pair. */
     public static Pair create() {
-        int id = PAIR_ID.incrementAndGet();
-        LoopbackTransport a = new LoopbackTransport("loopback-" + id + "-a");
-        LoopbackTransport b = new LoopbackTransport("loopback-" + id + "-b");
+        final int id = PAIR_ID.incrementAndGet();
+        final LoopbackTransport a = new LoopbackTransport("loopback-" + id + "-a");
+        final LoopbackTransport b = new LoopbackTransport("loopback-" + id + "-b");
         a.peer = b;
         b.peer = a;
         return new Pair(a, b);
@@ -62,19 +61,19 @@ public final class LoopbackTransport implements CefTransport {
 
     private LoopbackTransport(String name) {
         this.name = name;
-        this.reader = new Thread(this::readerLoop, name);
-        this.reader.setDaemon(true);
-        this.reader.start();
+        final Thread reader = new Thread(this::readerLoop, name);
+        reader.setDaemon(true);
+        reader.start();
     }
 
     @Override
     public void send(ByteBuffer frame) throws CefTransportException {
         if (closed) throw new CefTransportException(name + ": send on closed transport");
-        LoopbackTransport p = peer;
+        final LoopbackTransport p = peer;
         if (p == null || peerClosed || p.closed) {
             throw new CefTransportException(name + ": peer disconnected");
         }
-        byte[] copy = new byte[frame.remaining()];
+        final byte[] copy = new byte[frame.remaining()];
         frame.get(copy);
         p.inbound.add(copy);
     }
@@ -87,7 +86,7 @@ public final class LoopbackTransport implements CefTransport {
 
     @Override
     public void onDisconnect(Runnable handler) {
-        this.disconnectHandler = handler;
+        disconnectHandler = handler;
         if (peerClosed) notifyDisconnect();
     }
 
@@ -102,7 +101,7 @@ public final class LoopbackTransport implements CefTransport {
         closed = true;
         inbound.add(EOF);
         handlerReady.countDown();
-        LoopbackTransport p = peer;
+        final LoopbackTransport p = peer;
         if (p != null && !p.closed) p.notifyPeerClosed();
     }
 
@@ -112,7 +111,7 @@ public final class LoopbackTransport implements CefTransport {
     }
 
     private void notifyDisconnect() {
-        Runnable r = disconnectHandler;
+        final Runnable r = disconnectHandler;
         if (r != null && disconnectNotified.compareAndSet(false, true)) {
             try {
                 r.run();
@@ -125,13 +124,12 @@ public final class LoopbackTransport implements CefTransport {
     private void readerLoop() {
         try {
             handlerReady.await();
-            while (true) {
-                byte[] frame = inbound.take();
-                if (frame == EOF) return;
-                Consumer<ByteBuffer> h = receiveHandler;
+            byte[] frame;
+            while ((frame = inbound.take()) != EOF) {
+                final Consumer<ByteBuffer> h = receiveHandler;
                 if (h != null) h.accept(ByteBuffer.wrap(frame));
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt();
         }
     }

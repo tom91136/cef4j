@@ -46,7 +46,7 @@ public final class StubRuntimeServerMain {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.US_ASCII))) {
             if ("CEF4J_SHUTDOWN".equals(reader.readLine())) running.set(false);
         } catch (java.io.IOException ignored) {
-            return;
+            /* The failure is expected or cannot be handled here. */
         }
     }
 
@@ -71,7 +71,7 @@ public final class StubRuntimeServerMain {
         if (h.kind != Envelope.Kind.REQUEST) return;
 
         ByteBuffer ack = ByteBuffer.allocate(Envelope.HEADER_SIZE).order(ByteOrder.LITTLE_ENDIAN);
-        Envelope.writeHeader(ack, Envelope.Kind.RESPONSE, 0, h.corrId, h.messageId, 0);
+        Envelope.writeHeader(ack, new Envelope.Header(0, Envelope.Kind.RESPONSE, 0, h.corrId, h.messageId));
         ack.flip();
         sock.send(toArray(ack), 0);
 
@@ -80,11 +80,12 @@ public final class StubRuntimeServerMain {
                 ByteBuffer.allocate(Envelope.HEADER_SIZE + ev.encodedSize()).order(ByteOrder.LITTLE_ENDIAN);
         Envelope.writeHeader(
                 evBuf,
-                Envelope.Kind.EVENT,
-                0,
-                Envelope.NO_CORR_ID,
-                LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
-                ev.encodedSize());
+                new Envelope.Header(
+                        ev.encodedSize(),
+                        Envelope.Kind.EVENT,
+                        0,
+                        Envelope.NO_CORR_ID,
+                        LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID));
         ev.encodeInto(evBuf);
         evBuf.flip();
         sock.send(toArray(evBuf), 0);

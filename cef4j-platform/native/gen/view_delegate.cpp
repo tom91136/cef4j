@@ -34,7 +34,7 @@ struct JniCefViewDelegate : public cef_view_delegate_t {
   static cef_size_t CEF_CALLBACK _get_preferred_size(cef_view_delegate_t *self, struct _cef_view_t *view) {
     auto *h = reinterpret_cast<JniCefViewDelegate *>(self);
     ScopedJNIEnv env(h->jvm);
-    if (env->PushLocalFrame(8) < 0) {
+    if (env->PushLocalFrame(12) < 0) {
       return cef_size_t{};
     }
     cef_view_t *_p_view = view;
@@ -46,16 +46,19 @@ struct JniCefViewDelegate : public cef_view_delegate_t {
     auto j_view_ctor = env->GetMethodID(j_view_cls, "<init>", "(J)V");
     auto j_view = _p_view ? env->NewObject(j_view_cls, j_view_ctor, reinterpret_cast<jlong>(_p_view)) : nullptr;
     auto cls = env->GetObjectClass(h->javaHandler);
-    auto mid = env->GetMethodID(cls, "getPreferredSize", "(Lnet/kurobako/cef4j/gen/views/CefView;)Lnet/kurobako/cef4j/gen/CefSize;");
+    auto mid = env->GetMethodID(cls, "getPreferredSize", "(Lnet/kurobako/cef4j/gen/views/CefView;)Ljava/util/Optional;");
     if (!mid) {
       env->PopLocalFrame(nullptr);
       return cef_size_t{};
     }
-    auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_view);
+    auto jOptional = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_view);
     if (CheckJNIException(env)) {
       env->PopLocalFrame(nullptr);
       return cef_size_t{};
     }
+    auto _optCls = FindClassCached(env, "java/util/Optional");
+    auto _orElseMid = env->GetMethodID(_optCls, "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    auto jResult = jOptional ? (jobject)env->CallObjectMethod(jOptional, _orElseMid, (jobject) nullptr) : nullptr;
     cef_size_t nativeResult = ([&]() {
       cef_size_t _result = {};
       if (jResult) {
@@ -72,7 +75,7 @@ struct JniCefViewDelegate : public cef_view_delegate_t {
   static cef_size_t CEF_CALLBACK _get_minimum_size(cef_view_delegate_t *self, struct _cef_view_t *view) {
     auto *h = reinterpret_cast<JniCefViewDelegate *>(self);
     ScopedJNIEnv env(h->jvm);
-    if (env->PushLocalFrame(8) < 0) {
+    if (env->PushLocalFrame(12) < 0) {
       return cef_size_t{};
     }
     cef_view_t *_p_view = view;
@@ -84,16 +87,19 @@ struct JniCefViewDelegate : public cef_view_delegate_t {
     auto j_view_ctor = env->GetMethodID(j_view_cls, "<init>", "(J)V");
     auto j_view = _p_view ? env->NewObject(j_view_cls, j_view_ctor, reinterpret_cast<jlong>(_p_view)) : nullptr;
     auto cls = env->GetObjectClass(h->javaHandler);
-    auto mid = env->GetMethodID(cls, "getMinimumSize", "(Lnet/kurobako/cef4j/gen/views/CefView;)Lnet/kurobako/cef4j/gen/CefSize;");
+    auto mid = env->GetMethodID(cls, "getMinimumSize", "(Lnet/kurobako/cef4j/gen/views/CefView;)Ljava/util/Optional;");
     if (!mid) {
       env->PopLocalFrame(nullptr);
       return cef_size_t{};
     }
-    auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_view);
+    auto jOptional = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_view);
     if (CheckJNIException(env)) {
       env->PopLocalFrame(nullptr);
       return cef_size_t{};
     }
+    auto _optCls = FindClassCached(env, "java/util/Optional");
+    auto _orElseMid = env->GetMethodID(_optCls, "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    auto jResult = jOptional ? (jobject)env->CallObjectMethod(jOptional, _orElseMid, (jobject) nullptr) : nullptr;
     cef_size_t nativeResult = ([&]() {
       cef_size_t _result = {};
       if (jResult) {
@@ -110,7 +116,7 @@ struct JniCefViewDelegate : public cef_view_delegate_t {
   static cef_size_t CEF_CALLBACK _get_maximum_size(cef_view_delegate_t *self, struct _cef_view_t *view) {
     auto *h = reinterpret_cast<JniCefViewDelegate *>(self);
     ScopedJNIEnv env(h->jvm);
-    if (env->PushLocalFrame(8) < 0) {
+    if (env->PushLocalFrame(12) < 0) {
       return cef_size_t{};
     }
     cef_view_t *_p_view = view;
@@ -122,16 +128,19 @@ struct JniCefViewDelegate : public cef_view_delegate_t {
     auto j_view_ctor = env->GetMethodID(j_view_cls, "<init>", "(J)V");
     auto j_view = _p_view ? env->NewObject(j_view_cls, j_view_ctor, reinterpret_cast<jlong>(_p_view)) : nullptr;
     auto cls = env->GetObjectClass(h->javaHandler);
-    auto mid = env->GetMethodID(cls, "getMaximumSize", "(Lnet/kurobako/cef4j/gen/views/CefView;)Lnet/kurobako/cef4j/gen/CefSize;");
+    auto mid = env->GetMethodID(cls, "getMaximumSize", "(Lnet/kurobako/cef4j/gen/views/CefView;)Ljava/util/Optional;");
     if (!mid) {
       env->PopLocalFrame(nullptr);
       return cef_size_t{};
     }
-    auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_view);
+    auto jOptional = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_view);
     if (CheckJNIException(env)) {
       env->PopLocalFrame(nullptr);
       return cef_size_t{};
     }
+    auto _optCls = FindClassCached(env, "java/util/Optional");
+    auto _orElseMid = env->GetMethodID(_optCls, "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    auto jResult = jOptional ? (jobject)env->CallObjectMethod(jOptional, _orElseMid, (jobject) nullptr) : nullptr;
     cef_size_t nativeResult = ([&]() {
       cef_size_t _result = {};
       if (jResult) {

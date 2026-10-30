@@ -40,16 +40,14 @@ object CppDispatcherEmitter {
       val isRenderer      = f.affinity == ProcessAffinity.Renderer
       hasOwnDispatchable || referencedByOther || isFrameForRelay || isRenderer
     }
-    val tableFields = tableStructs.map(tableField)
+    val tableFields = tableStructs.map(tableField(_))
     // CEF < 133 used cef_v8value_t; keep one stable internal table name.
     val tableAliases =
       if (tableStructs.exists(_.cefStructName == "cef_v8value_t")) "    inline auto& v8Value = v8value;"
       else ""
     val capiIncludes = in.capiHeaders.sorted.map(h => s"""#include "$h"""").mkString("\n")
-    val genIncludes  = dispatchableByFac.flatMap { case (_, ms) =>
-      ms.flatMap(m => List(m.requestClassName, m.responseClassName))
-    }.distinct.sorted.map(c => s"""#include "$c.h"""").mkString("\n")
-    val cases = dispatchableByFac.flatMap { case (f, ms) =>
+    val genIncludes  = renderGenIncludes(dispatchableByFac)
+    val cases        = dispatchableByFac.flatMap { case (f, ms) =>
       ms.map(m => renderCase(f, m, in.messageSpecs, in.dataStructByCef, in.jvmVisitorByCef))
     }.mkString("\n")
     val dispatchableCount = dispatchableByFac.map(_._2.size).sum
@@ -340,6 +338,11 @@ object CppDispatcherEmitter {
        |""".stripMargin
   }
 
+  def renderGenIncludes(dispatchableByFac: List[(FacadeSpec, List[FacadeMethod])]): String =
+    dispatchableByFac.flatMap { case (_, ms) =>
+      ms.flatMap(m => List(m.requestClassName, m.responseClassName))
+    }.distinct.sorted.map(c => s"""#include "$c.h"""").mkString("\n")
+
   private def isDispatchable(
       m: FacadeMethod,
       facadeStructs: Set[String],
@@ -420,7 +423,7 @@ object CppDispatcherEmitter {
               List(
                 s"                $struct* ${p.name}_ptr = ${p.name} != 0 ?",
                 s"                        reinterpret_cast<$struct*>(new genvisitors::$syntheticCls(${p.name}, ipc)) :",
-                s"                        nullptr;"
+                "                        nullptr;"
               )
             case None =>
               val tbl = tableFieldName(struct)
@@ -437,11 +440,11 @@ object CppDispatcherEmitter {
           List(
             s"                cef_string_list_t ${p.name}_list = cef_string_list_alloc();",
             s"                for (const auto& __s : ${p.name}) {",
-            s"                    cef_string_t __cs{};",
-            s"                    if (!__s.empty()) cef_string_utf8_to_utf16(__s.data(), __s.size(), &__cs);",
+            "                    cef_string_t __cs{};",
+            "                    if (!__s.empty()) cef_string_utf8_to_utf16(__s.data(), __s.size(), &__cs);",
             s"                    cef_string_list_append(${p.name}_list, &__cs);",
-            s"                    cef_string_clear(&__cs);",
-            s"                }"
+            "                    cef_string_clear(&__cs);",
+            "                }"
           )
         case _ => Nil
       }
@@ -483,7 +486,7 @@ object CppDispatcherEmitter {
               val p = byName(name)
               paramArgExpr(p, cFnRef, cArgIdx)
             case CCallArg.BytesSize(bytesField) =>
-              s"static_cast<size_t>(${bytesField}.size())"
+              s"static_cast<size_t>($bytesField.size())"
           }
         }
         ("receiver" :: pieces).mkString(", ")
@@ -529,7 +532,7 @@ object CppDispatcherEmitter {
               case FieldType.Utf8String =>
                 "ScopedCefString::take(rawResult).toUtf8()"
               case FieldType.RemoteHandle =>
-                val tbl = resultStruct.map(tableFieldName).getOrElse("nullptr_table")
+                val tbl = resultStruct.fold("nullptr_table")(tableFieldName(_))
                 s"insertOrRelease(&tables::$tbl, rawResult)"
               case _ => "0"
             }

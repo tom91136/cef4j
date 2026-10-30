@@ -16,7 +16,7 @@ class CefWebViewInitialisationTest {
         assumeDisplayServer();
         startJavaFx();
         try {
-            assertThatThrownBy(() -> onFxThread(CefWebView::new))
+            assertThatThrownBy(() -> onFxThread(() -> new CefWebView()))
                     .hasCauseInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("CEF must be initialised for off-screen rendering");
         } finally {

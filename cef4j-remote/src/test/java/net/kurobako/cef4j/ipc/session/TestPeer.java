@@ -21,7 +21,7 @@ final class TestPeer implements AutoCloseable {
             Envelope.Header h = Envelope.readHeader(view);
             byte[] payload = new byte[view.remaining()];
             view.get(payload);
-            received.offer(new DecodedFrame(h, payload));
+            if (!received.offer(new DecodedFrame(h, payload))) throw new IllegalStateException("peer queue full");
         });
     }
 
@@ -53,7 +53,7 @@ final class TestPeer implements AutoCloseable {
     private void sendKind(Envelope.Kind k, int corrId, int messageId, byte[] payload) throws CefTransportException {
         ByteBuffer buf =
                 ByteBuffer.allocate(Envelope.HEADER_SIZE + payload.length).order(ByteOrder.LITTLE_ENDIAN);
-        Envelope.writeHeader(buf, k, 0, corrId, messageId, payload.length);
+        Envelope.writeHeader(buf, new Envelope.Header(payload.length, k, 0, corrId, messageId));
         buf.put(payload);
         buf.flip();
         transport.send(buf);

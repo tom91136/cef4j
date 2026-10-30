@@ -1,12 +1,14 @@
 package net.kurobako.cef4j;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,19 +41,19 @@ final class NativeStderr {
             return;
         }
 
-        Object[] result = redirectStderr0();
+        final Object[] result = redirectStderr0();
         if (result == null) {
             log.warn("Failed to redirect native stderr - CEF logs will go to stderr");
             installCrashHandler0();
             return;
         }
 
-        FileInputStream fis = (FileInputStream) result[0];
-        FileOutputStream originalStderr = (FileOutputStream) result[1];
+        final FileInputStream fis = (FileInputStream) result[0];
+        final FileOutputStream originalStderr = (FileOutputStream) result[1];
 
         System.setErr(new PrintStream(originalStderr, true, StandardCharsets.UTF_8));
 
-        Thread reader = new Thread(
+        final Thread reader = new Thread(
                 () -> {
                     try (BufferedReader br = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8))) {
                         String line;
@@ -82,9 +84,9 @@ final class NativeStderr {
      * Tell the native crash handler the exact path to chrome_debug.log so crash messages include it. Call after
      * {@code cef_initialize} once the cache path is known.
      */
-    static void setCrashLogPath(String cachePath) {
+    static void setCrashLogPath(@Nullable String cachePath) {
         if (!installed || cachePath == null || cachePath.isEmpty()) return;
-        String sep = cachePath.endsWith("/") || cachePath.endsWith("\\") ? "" : System.getProperty("file.separator");
+        final String sep = cachePath.endsWith("/") || cachePath.endsWith("\\") ? "" : File.separator;
         setCrashLogPath0(cachePath + sep + "chrome_debug.log");
     }
 

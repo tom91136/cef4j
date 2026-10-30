@@ -5,12 +5,14 @@ final class SigintHelper {
 
     private SigintHelper() {}
 
+    // no public API handles SIGINT on Java 11, so without sun.misc onSignal runs from a shutdown hook at JVM exit
+    @SuppressWarnings("baumkuchen:jdk-internal-api")
     static void install(Runnable onSignal) {
         try {
-            Class<?> signalClass = Class.forName("sun.misc.Signal");
-            Class<?> handlerClass = Class.forName("sun.misc.SignalHandler");
-            Object sigInt = signalClass.getConstructor(String.class).newInstance("INT");
-            Object handler = java.lang.reflect.Proxy.newProxyInstance(
+            final Class<?> signalClass = Class.forName("sun.misc.Signal");
+            final Class<?> handlerClass = Class.forName("sun.misc.SignalHandler");
+            final Object sigInt = signalClass.getConstructor(String.class).newInstance("INT");
+            final Object handler = java.lang.reflect.Proxy.newProxyInstance(
                     handlerClass.getClassLoader(), new Class<?>[] {handlerClass}, (proxy, method, margs) -> {
                         switch (method.getName()) {
                             case "handle":
@@ -27,7 +29,7 @@ final class SigintHelper {
                         }
                     });
             signalClass.getMethod("handle", signalClass, handlerClass).invoke(null, sigInt, handler);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
             Runtime.getRuntime().addShutdownHook(new Thread(onSignal));
         }
     }

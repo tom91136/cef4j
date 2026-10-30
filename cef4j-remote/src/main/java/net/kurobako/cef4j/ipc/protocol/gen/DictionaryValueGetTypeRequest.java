@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class DictionaryValueGetTypeRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 2050851519;
@@ -44,7 +46,7 @@ public final class DictionaryValueGetTypeRequest implements CefMessageView, CefM
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
@@ -56,14 +58,10 @@ public final class DictionaryValueGetTypeRequest implements CefMessageView, CefM
     }
 
     public static final CefMessageDecoder<DictionaryValueGetTypeRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int keyLen = WireDecoder.length(__buf, "key");
-        byte[] keyBuf = new byte[keyLen];
-        __buf.get(keyBuf);
-        String key = new String(keyBuf, StandardCharsets.UTF_8);
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final String key = WireDecoder.utf8(__buf, "key");
         WireDecoder.requireFullyConsumed(__buf, "DictionaryValueGetTypeRequest");
         return new DictionaryValueGetTypeRequest(self, key);
     };

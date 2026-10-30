@@ -4,8 +4,6 @@ package net.kurobako.cef4j.cdp.generated;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
@@ -13,6 +11,7 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Chrome DevTools Protocol WebMCP domain.
@@ -21,6 +20,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class WebMCP {
     private WebMCP() {}
     /**
@@ -37,76 +37,46 @@ public final class WebMCP {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> readOnly() {
-            Object value = raw("readOnly");
-            return Optional.ofNullable((Boolean) value);
+            return raw("readOnly").map(value -> (Boolean) value);
         }
         /**
          * A hint indicating that the tool output may contain untrusted content, ex: UGC, 3rd party data.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> untrustedContent() {
-            Object value = raw("untrustedContent");
-            return Optional.ofNullable((Boolean) value);
+            return raw("untrustedContent").map(value -> (Boolean) value);
         }
         /**
          * If the declarative tool was declared with the autosubmit attribute.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> autosubmit() {
-            Object value = raw("autosubmit");
-            return Optional.ofNullable((Boolean) value);
+            return raw("autosubmit").map(value -> (Boolean) value);
         }
         /**
          * A hint indicating that the tool does not modify any state.
-         * @param readOnly field value; empty omits the value
+         * @param readOnly field value
          * @return this model
          */
-        public Annotation readOnly(Optional<Boolean> readOnly) {
-            set("readOnly", readOnly.orElse(null));
-            return this;
-        }
-        /**
-         * A hint indicating that the tool does not modify any state.
-         * @param readOnly field value; null removes the value
-         * @return this model
-         */
-        public Annotation readOnly(Boolean readOnly) {
+        public Annotation readOnly(boolean readOnly) {
             set("readOnly", readOnly);
             return this;
         }
         /**
          * A hint indicating that the tool output may contain untrusted content, ex: UGC, 3rd party data.
-         * @param untrustedContent field value; empty omits the value
+         * @param untrustedContent field value
          * @return this model
          */
-        public Annotation untrustedContent(Optional<Boolean> untrustedContent) {
-            set("untrustedContent", untrustedContent.orElse(null));
-            return this;
-        }
-        /**
-         * A hint indicating that the tool output may contain untrusted content, ex: UGC, 3rd party data.
-         * @param untrustedContent field value; null removes the value
-         * @return this model
-         */
-        public Annotation untrustedContent(Boolean untrustedContent) {
+        public Annotation untrustedContent(boolean untrustedContent) {
             set("untrustedContent", untrustedContent);
             return this;
         }
         /**
          * If the declarative tool was declared with the autosubmit attribute.
-         * @param autosubmit field value; empty omits the value
+         * @param autosubmit field value
          * @return this model
          */
-        public Annotation autosubmit(Optional<Boolean> autosubmit) {
-            set("autosubmit", autosubmit.orElse(null));
-            return this;
-        }
-        /**
-         * If the declarative tool was declared with the autosubmit attribute.
-         * @param autosubmit field value; null removes the value
-         * @return this model
-         */
-        public Annotation autosubmit(Boolean autosubmit) {
+        public Annotation autosubmit(boolean autosubmit) {
             set("autosubmit", autosubmit);
             return this;
         }
@@ -120,7 +90,7 @@ public final class WebMCP {
         ERROR("Error");
         public final String value;
         InvocationStatus(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static InvocationStatus of(String value) {
             for (InvocationStatus constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -156,16 +126,14 @@ public final class WebMCP {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> inputSchema() {
-            Object value = raw("inputSchema");
-            return Optional.ofNullable(objectMap(value));
+            return raw("inputSchema").flatMap(CdpObject::objectMap);
         }
         /**
          * Optional annotations for the tool.
          * @return the protocol field value, empty when absent
          */
         public Optional<WebMCP.Annotation> annotations() {
-            Object value = raw("annotations");
-            return Optional.ofNullable(value == null ? null : WebMCP.Annotation.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("annotations").flatMap(CdpObject::objectMap).map(WebMCP.Annotation::fromMap);
         }
         /**
          * Frame identifier associated with the tool registration.
@@ -179,16 +147,14 @@ public final class WebMCP {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            Object value = raw("backendNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * The stack trace at the time of the registration.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.StackTrace> stackTrace() {
-            Object value = raw("stackTrace");
-            return Optional.ofNullable(value == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("stackTrace").flatMap(CdpObject::objectMap).map(Runtime.StackTrace::fromMap);
         }
         /**
          * Tool name.
@@ -210,16 +176,7 @@ public final class WebMCP {
         }
         /**
          * Schema for the tool&#x27;s input parameters.
-         * @param inputSchema field value; empty omits the value
-         * @return this model
-         */
-        public Tool inputSchema(Optional<java.util.Map<String, Object>> inputSchema) {
-            set("inputSchema", inputSchema.orElse(null));
-            return this;
-        }
-        /**
-         * Schema for the tool&#x27;s input parameters.
-         * @param inputSchema field value; null removes the value
+         * @param inputSchema field value
          * @return this model
          */
         public Tool inputSchema(java.util.Map<String, Object> inputSchema) {
@@ -228,16 +185,7 @@ public final class WebMCP {
         }
         /**
          * Optional annotations for the tool.
-         * @param annotations field value; empty omits the value
-         * @return this model
-         */
-        public Tool annotations(Optional<WebMCP.Annotation> annotations) {
-            set("annotations", annotations.orElse(null));
-            return this;
-        }
-        /**
-         * Optional annotations for the tool.
-         * @param annotations field value; null removes the value
+         * @param annotations field value
          * @return this model
          */
         public Tool annotations(WebMCP.Annotation annotations) {
@@ -255,16 +203,7 @@ public final class WebMCP {
         }
         /**
          * Optional node ID for declarative tools.
-         * @param backendNodeId field value; empty omits the value
-         * @return this model
-         */
-        public Tool backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
-            set("backendNodeId", backendNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Optional node ID for declarative tools.
-         * @param backendNodeId field value; null removes the value
+         * @param backendNodeId field value
          * @return this model
          */
         public Tool backendNodeId(DOM.BackendNodeId backendNodeId) {
@@ -273,16 +212,7 @@ public final class WebMCP {
         }
         /**
          * The stack trace at the time of the registration.
-         * @param stackTrace field value; empty omits the value
-         * @return this model
-         */
-        public Tool stackTrace(Optional<Runtime.StackTrace> stackTrace) {
-            set("stackTrace", stackTrace.orElse(null));
-            return this;
-        }
-        /**
-         * The stack trace at the time of the registration.
-         * @param stackTrace field value; null removes the value
+         * @param stackTrace field value
          * @return this model
          */
         public Tool stackTrace(Runtime.StackTrace stackTrace) {
@@ -344,12 +274,10 @@ public final class WebMCP {
          * @param input protocol value
          */
         public InvokeToolRequest(Page.FrameId frameId, String toolName, java.util.Map<String, Object> input) {
-            set("frameId", frameId);
-            set("toolName", toolName);
-            set("input", input);
+            frameId(frameId).toolName(toolName).input(input);
         }
         public static InvokeToolRequest fromMap(Map<String, Object> values) {
-            InvokeToolRequest instance_ = new InvokeToolRequest();
+            final InvokeToolRequest instance_ = new InvokeToolRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -372,7 +300,7 @@ public final class WebMCP {
          * @return the protocol field value
          */
         public java.util.Map<String, Object> input() {
-            return java.util.Objects.requireNonNull(CdpObject.objectMap(require("input")));
+            return CdpObject.requireObjectMap(require("input"));
         }
         /**
          * Frame in which to invoke the tool.
@@ -412,10 +340,10 @@ public final class WebMCP {
          * @param invocationId protocol value
          */
         public CancelInvocationRequest(String invocationId) {
-            set("invocationId", invocationId);
+            invocationId(invocationId);
         }
         public static CancelInvocationRequest fromMap(Map<String, Object> values) {
-            CancelInvocationRequest instance_ = new CancelInvocationRequest();
+            final CancelInvocationRequest instance_ = new CancelInvocationRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -450,7 +378,7 @@ public final class WebMCP {
          * @return the protocol field value
          */
         public java.util.List<WebMCP.Tool> tools() {
-            return CdpObject.requireList(require("tools"), element0 -> java.util.Objects.requireNonNull(WebMCP.Tool.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("tools"), element0 -> java.util.Objects.requireNonNull(WebMCP.Tool.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Array of tools that were added.
@@ -476,7 +404,7 @@ public final class WebMCP {
          * @return the protocol field value
          */
         public java.util.List<WebMCP.RemovedTool> tools() {
-            return CdpObject.requireList(require("tools"), element0 -> java.util.Objects.requireNonNull(WebMCP.RemovedTool.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("tools"), element0 -> java.util.Objects.requireNonNull(WebMCP.RemovedTool.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Array of tools that were removed.
@@ -590,24 +518,21 @@ public final class WebMCP {
          * @return the protocol field value, empty when absent
          */
         public Optional<Object> output() {
-            Object value = raw("output");
-            return Optional.ofNullable(value);
+            return raw("output");
         }
         /**
          * Error text for protocol users.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> errorText() {
-            Object value = raw("errorText");
-            return Optional.ofNullable((String) value);
+            return raw("errorText").map(value -> (String) value);
         }
         /**
          * The exception object, if the javascript tool threw an error&gt;
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObject> exception() {
-            Object value = raw("exception");
-            return Optional.ofNullable(value == null ? null : Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("exception").flatMap(CdpObject::objectMap).map(Runtime.RemoteObject::fromMap);
         }
         /**
          * Invocation identifier.
@@ -629,16 +554,7 @@ public final class WebMCP {
         }
         /**
          * Output or error delivered as delivered to the agent. Missing if {@code status} is anything other than Completed. Note: The output is untrusted and poses a prompt injection risk. Clients should treat this as potentially malicious user input.
-         * @param output field value; empty omits the value
-         * @return this model
-         */
-        public ToolRespondedEvent output(Optional<Object> output) {
-            set("output", output.orElse(null));
-            return this;
-        }
-        /**
-         * Output or error delivered as delivered to the agent. Missing if {@code status} is anything other than Completed. Note: The output is untrusted and poses a prompt injection risk. Clients should treat this as potentially malicious user input.
-         * @param output field value; null removes the value
+         * @param output field value
          * @return this model
          */
         public ToolRespondedEvent output(Object output) {
@@ -647,16 +563,7 @@ public final class WebMCP {
         }
         /**
          * Error text for protocol users.
-         * @param errorText field value; empty omits the value
-         * @return this model
-         */
-        public ToolRespondedEvent errorText(Optional<String> errorText) {
-            set("errorText", errorText.orElse(null));
-            return this;
-        }
-        /**
-         * Error text for protocol users.
-         * @param errorText field value; null removes the value
+         * @param errorText field value
          * @return this model
          */
         public ToolRespondedEvent errorText(String errorText) {
@@ -665,16 +572,7 @@ public final class WebMCP {
         }
         /**
          * The exception object, if the javascript tool threw an error&gt;
-         * @param exception field value; empty omits the value
-         * @return this model
-         */
-        public ToolRespondedEvent exception(Optional<Runtime.RemoteObject> exception) {
-            set("exception", exception.orElse(null));
-            return this;
-        }
-        /**
-         * The exception object, if the javascript tool threw an error&gt;
-         * @param exception field value; null removes the value
+         * @param exception field value
          * @return this model
          */
         public ToolRespondedEvent exception(Runtime.RemoteObject exception) {
@@ -707,7 +605,7 @@ public final class WebMCP {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> invokeTool(Page.FrameId frameId, String toolName, java.util.Map<String, Object> input) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("frameId", CdpObject.json(frameId));
             params.put("toolName", CdpObject.json(toolName));
             params.put("input", CdpObject.json(input));
@@ -727,7 +625,7 @@ public final class WebMCP {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> cancelInvocation(String invocationId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("invocationId", CdpObject.json(invocationId));
             return client.call("WebMCP.cancelInvocation", params);
         }

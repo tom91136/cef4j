@@ -3,12 +3,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class BinaryValueGetDataRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 152941109;
@@ -47,7 +49,7 @@ public final class BinaryValueGetDataRequest implements CefMessageView, CefMessa
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
@@ -60,15 +62,11 @@ public final class BinaryValueGetDataRequest implements CefMessageView, CefMessa
     }
 
     public static final CefMessageDecoder<BinaryValueGetDataRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int bufferLen = WireDecoder.length(__buf, "buffer");
-        byte[] buffer = new byte[bufferLen];
-        __buf.get(buffer);
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "dataOffset");
-        long dataOffset = __buf.getLong();
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final byte[] buffer = WireDecoder.bytes(__buf, "buffer");
+        final long dataOffset = WireDecoder.int64(__buf, "dataOffset");
         WireDecoder.requireFullyConsumed(__buf, "BinaryValueGetDataRequest");
         return new BinaryValueGetDataRequest(self, buffer, dataOffset);
     };

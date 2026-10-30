@@ -3,12 +3,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class StreamWriterSeekRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 1709416374;
@@ -47,7 +49,7 @@ public final class StreamWriterSeekRequest implements CefMessageView, CefMessage
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
@@ -59,14 +61,11 @@ public final class StreamWriterSeekRequest implements CefMessageView, CefMessage
     }
 
     public static final CefMessageDecoder<StreamWriterSeekRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "offset");
-        long offset = __buf.getLong();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "whence");
-        int whence = __buf.getInt();
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final long offset = WireDecoder.int64(__buf, "offset");
+        final int whence = WireDecoder.int32(__buf, "whence");
         WireDecoder.requireFullyConsumed(__buf, "StreamWriterSeekRequest");
         return new StreamWriterSeekRequest(self, offset, whence);
     };

@@ -4,19 +4,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import scala.annotation.tailrec
 
-case class HeaderMetadataIndex(
-    handlerNames: Set[String],
-    docs: Map[String, String],
-    cppTypeInfo: Map[String, CppMethodTypeInfo],
-    cppClassNames: Map[String, String],
-    enumDocs: Map[String, (String, Map[String, String])],
-    classDocs: Map[String, String],
-    structFieldDocs: Map[String, Map[String, String]]
-) {
-  def deriveCompoundSegments(cefIncludeDir: Path): Map[String, List[String]] =
-    HeaderMetadataIndex.deriveCompoundSegments(cppClassNames, cefIncludeDir)
-}
-
 object HeaderMetadataIndex {
   private val CppClassDeclRe                                    = """class\s+(\w+)\s*:""".r
   private val CppMethodRe                                       = """virtual\s+[\w:<>]+\s+(\w+)\s*\(""".r
@@ -24,6 +11,13 @@ object HeaderMetadataIndex {
   private val CamelCaseSplitRe                                  = """([a-z])([A-Z])""".r
   private val DigitUpperSplitRe                                 = """([0-9])([A-Z])""".r
   private val StructTypedefNameRe                               = """typedef\s+struct\s+_(\w+)\s*\{""".r
+  private val TypedefAliasRe                                    = """typedef\s+(cef_\w+_t)\s+(\w+)\s*;""".r
+  private val CapiNameRe                                        = """capi_name=(\w+)""".r
+  private val CppMethodWithParamsRe                             = """virtual\s+([\w:<>]+)\s+(\w+)\s*\(([^)]*)\)""".r
+  private val ClassInheritsRe                                   = """class\s+(Cef\w+)\s*:\s*public\s+(cef_\w+_t)""".r
+  private val UsingAliasRe                                      = """using\s+(Cef\w+)\s*=\s*\w+<\w+>""".r
+  private val WhitespaceRe                                      = """\s+""".r
+  private val ConstWordRe                                       = """\bconst\b""".r
   private val LegacyCppToCapiAliases: Map[String, List[String]] = Map(
     "CefV8Accessor"                   -> List("cef_v8accessor_t"),
     "CefV8ArrayBufferReleaseCallback" -> List("cef_v8array_buffer_release_callback_t"),
@@ -35,6 +29,23 @@ object HeaderMetadataIndex {
     "CefV8StackTrace"                 -> List("cef_v8stack_trace_t"),
     "CefV8Value"                      -> List("cef_v8value_t")
   )
+
+  private case class ClassState(depth: Int, cls: String, clsDepth: Int)
+
+  /** The class each line of the header is in, which the comments and the C++ declarations are attributed to. */
+  private def classNamesAtLine(lines: Vector[String]): Vector[String] =
+    lines
+      .scanLeft(ClassState(0, "", 0)) { (s, raw) =>
+        val line     = raw.trim
+        val decl     = CppClassDeclRe.findFirstMatchIn(line)
+        val cls      = decl.fold(s.cls)(_.group(1))
+        val cd       = if (decl.isDefined) s.depth else s.clsDepth
+        val newDepth = s.depth + line.count(_ == '{') - line.count(_ == '}')
+        val finalCls = if (newDepth <= cd && cls.nonEmpty && !line.contains("{")) "" else cls
+        ClassState(newDepth, finalCls, cd)
+      }
+      .tail
+      .map(_.cls)
 
   def apply(
       cefIncludeDir: Path,
@@ -60,12 +71,11 @@ object HeaderMetadataIndex {
       alignCompoundSegments(capiWords, cppWords)
     }
 
-    val typedefAliasRe = """typedef\s+(cef_\w+_t)\s+(\w+)\s*;""".r
-    val fromTypedefs   = (cppHeaders(cefIncludeDir, Nil) :+ cefIncludeDir.resolve("internal/cef_types_wrappers.h"))
+    val fromTypedefs = (cppHeaders(cefIncludeDir, Nil) :+ cefIncludeDir.resolve("internal/cef_types_wrappers.h"))
       .filter(Files.exists(_))
       .flatMap { header =>
         val content = Files.readString(header)
-        typedefAliasRe.findAllMatchIn(content).flatMap { m =>
+        TypedefAliasRe.findAllMatchIn(content).flatMap { m =>
           val cName  = m.group(1)
           val alias  = m.group(2)
           val cWords = cName.stripPrefix("cef_").stripSuffix("_t").split("_").toList
@@ -74,25 +84,22 @@ object HeaderMetadataIndex {
         }
       }
 
-    (fromClasses ++ fromTypedefs).toMap
+    fromClasses ++ fromTypedefs
   }
 
   private def cppHeaders(dir: Path, extraCppDirs: List[String]): List[Path] =
-    publicHeaderDirs(dir, extraCppDirs)
-      .flatMap(headerDir =>
-        FileSystem.children(headerDir).filter(p => Files.isRegularFile(p) && p.toString.endsWith(".h"))
-      )
-      .sorted
+    headerFiles(publicHeaderDirs(dir, extraCppDirs), ".h").sorted
 
   private def capiHeaders(dir: Path, extraCapiDirs: List[String]): List[Path] =
-    publicCapiHeaderDirs(dir, extraCapiDirs)
-      .flatMap(headerDir =>
-        FileSystem.children(headerDir).filter(p => Files.isRegularFile(p) && p.toString.endsWith(".h"))
-      )
-      .sorted
+    headerFiles(publicCapiHeaderDirs(dir, extraCapiDirs), ".h").sorted
+
+  def headerFiles(dirs: List[Path], suffix: String): List[Path] =
+    dirs.flatMap(headerDir =>
+      FileSystem.children(headerDir).filter(p => Files.isRegularFile(p) && p.toString.endsWith(suffix))
+    )
 
   private def publicHeaderDirs(cefIncludeDir: Path, extraCppDirs: List[String]): List[Path] =
-    (cefIncludeDir :: extraCppDirs.map(cefIncludeDir.resolve)).filter(Files.isDirectory(_))
+    (cefIncludeDir :: extraCppDirs.map(cefIncludeDir.resolve(_))).filter(Files.isDirectory(_))
 
   private def publicCapiHeaderDirs(cefIncludeDir: Path, extraCapiDirs: List[String]): List[Path] =
     (cefIncludeDir.resolve("capi") :: extraCapiDirs.map(subdir => cefIncludeDir.resolve("capi").resolve(subdir)))
@@ -121,8 +128,7 @@ object HeaderMetadataIndex {
     }
 
     val capiAliases = entries.flatMap { case (_, text) =>
-      val capiNamePattern = """capi_name=(\w+)""".r
-      capiNamePattern.findFirstMatchIn(text).map(m => (m.group(1), text))
+      CapiNameRe.findFirstMatchIn(text).map(m => (m.group(1), text))
     }
 
     (entries ++ capiAliases).toMap
@@ -134,9 +140,7 @@ object HeaderMetadataIndex {
       extraCapiDirs: List[String]
   ): Map[String, String] = {
     val allHeaders = {
-      val topLevel = publicHeaderDirs(cefIncludeDir, extraCppDirs).flatMap(dir =>
-        FileSystem.children(dir).filter(p => Files.isRegularFile(p) && p.toString.endsWith(".h"))
-      )
+      val topLevel    = headerFiles(publicHeaderDirs(cefIncludeDir, extraCppDirs), ".h")
       val capi        = capiHeaders(cefIncludeDir, extraCapiDirs)
       val internalDir = cefIncludeDir.resolve("internal")
       val internal    =
@@ -155,29 +159,14 @@ object HeaderMetadataIndex {
     (structDocs ++ cppDocs).toMap
   }
 
-  private def parseCppTypeInfo(cefIncludeDir: Path, extraCppDirs: List[String]): Map[String, CppMethodTypeInfo] = {
-    val cppMethodWithParamsRe = """virtual\s+([\w:<>]+)\s+(\w+)\s*\(([^)]*)\)""".r
-
+  private def parseCppTypeInfo(cefIncludeDir: Path, extraCppDirs: List[String]): Map[String, CppMethodTypeInfo] =
     cppHeaders(cefIncludeDir, extraCppDirs).flatMap { header =>
       val content = Files.readString(header)
       val lines   = content.linesIterator.toVector
 
-      case class ClassState(depth: Int, cls: String, clsDepth: Int)
-      val classAtLine = lines
-        .scanLeft(ClassState(0, "", 0)) { (s, raw) =>
-          val line      = raw.trim
-          val (cls, cd) = CppClassDeclRe.findFirstMatchIn(line) match {
-            case Some(m) => (m.group(1), s.depth)
-            case None    => (s.cls, s.clsDepth)
-          }
-          val newDepth = s.depth + line.count(_ == '{') - line.count(_ == '}')
-          val finalCls = if (newDepth <= cd && cls.nonEmpty && !line.contains("{")) "" else cls
-          ClassState(newDepth, finalCls, cd)
-        }
-        .tail
-        .map(_.cls)
+      val classAtLine = classNamesAtLine(lines)
 
-      cppMethodWithParamsRe.findAllMatchIn(content).flatMap { m =>
+      CppMethodWithParamsRe.findAllMatchIn(content).flatMap { m =>
         val retType = m.group(1).trim
         val name    = m.group(2).trim
         val params  = m.group(3).trim
@@ -189,10 +178,10 @@ object HeaderMetadataIndex {
           if (params.isEmpty || params == "void") Map.empty[String, String]
           else params.split(",").flatMap { p =>
             val trimmed = p.trim
-            val parts   = trimmed.split("\\s+")
+            val parts   = WhitespaceRe.split(trimmed)
             if (parts.length >= 2) {
               val pName = parts.last.stripPrefix("&").stripPrefix("*")
-              val pType = parts.init.mkString(" ").replaceAll("\\bconst\\b", "").replaceAll("&", "").trim
+              val pType = ConstWordRe.replaceAllIn(parts.init.mkString(" "), "").replace("&", "").trim
               Some(pName -> pType)
             } else None
           }.toMap
@@ -202,7 +191,6 @@ object HeaderMetadataIndex {
         else List(name                        -> info)
       }
     }.toMap
-  }
 
   private def parseEnumDocs(cefIncludeDir: Path): Map[String, (String, Map[String, String])] = {
     val typesHeaders = List(
@@ -298,14 +286,14 @@ object HeaderMetadataIndex {
     val fromClasses = cppHeaders(cefIncludeDir, extraCppDirs).flatMap { header =>
       val content = Files.readString(header)
       CppClassDeclRe.findAllMatchIn(content).flatMap(m => cppClassMappings(m.group(1)))
-    }.toList
+    }
 
     val wrappersFile = cefIncludeDir.resolve("internal/cef_types_wrappers.h")
     val fromWrappers = if (Files.exists(wrappersFile)) {
       val content       = Files.readString(wrappersFile)
-      val classInherits = """class\s+(Cef\w+)\s*:\s*public\s+(cef_\w+_t)""".r
+      val classInherits = ClassInheritsRe
         .findAllMatchIn(content).map(m => m.group(2) -> m.group(1)).toList
-      val usingAliases = """using\s+(Cef\w+)\s*=\s*\w+<\w+>""".r
+      val usingAliases = UsingAliasRe
         .findAllMatchIn(content).flatMap(m => cppClassMappings(m.group(1))).toList
       classInherits ++ usingAliases
     } else Nil
@@ -318,22 +306,7 @@ object HeaderMetadataIndex {
       if (fileName.nonEmpty) s"$comment\n@_cefsrc:$fileName:${lineIdx + 1}" else comment
 
     // Precompute class scope because comment collection skips source lines.
-    val classAtLine: Vector[String] = {
-      case class State(depth: Int, cls: String, clsDepth: Int)
-      lines
-        .scanLeft(State(0, "", 0)) { (s, raw) =>
-          val line      = raw.trim
-          val (cls, cd) = CppClassDeclRe.findFirstMatchIn(line) match {
-            case Some(m) => (m.group(1), s.depth)
-            case None    => (s.cls, s.clsDepth)
-          }
-          val newDepth = s.depth + line.count(_ == '{') - line.count(_ == '}')
-          val finalCls = if (newDepth <= cd && cls.nonEmpty && !line.contains("{")) "" else cls
-          State(newDepth, finalCls, cd)
-        }
-        .tail
-        .map(_.cls)
-    }
+    val classAtLine = classNamesAtLine(lines)
 
     def emitKeys(
         name: String,
@@ -343,6 +316,21 @@ object HeaderMetadataIndex {
     ): List[(String, String)] =
       if (cls.nonEmpty) (s"$cls::$name", value) :: (name, value) :: acc
       else (name, value) :: acc
+
+    def methodAt(
+        searchStart: Int,
+        comment: String,
+        commentIdx: Int,
+        acc: List[(String, String)]
+    ): List[(String, String)] = {
+      val methodLineIdx = lines.indices.drop(searchStart).find(i => lines(i).trim.nonEmpty)
+      val methodLine    = methodLineIdx.fold("")(i => lines(i).trim)
+      val cls           = methodLineIdx.fold("")(classAtLine)
+      extractMethodName(methodLine) match {
+        case Some(name) => emitKeys(name, withSrc(comment, commentIdx), cls, acc)
+        case None       => acc
+      }
+    }
 
     @tailrec
     def loop(idx: Int, acc: List[(String, String)]): List[(String, String)] =
@@ -357,32 +345,14 @@ object HeaderMetadataIndex {
           }
 
           val mergedComment = if (metaStr.nonEmpty) s"$comment\n$metaStr" else comment
-          val methodLineIdx = lines.indices.drop(methodSearchStart).find(i => lines(i).trim.nonEmpty)
-          val methodLine    = methodLineIdx.map(i => lines(i).trim).getOrElse("")
-          val cls           = methodLineIdx.map(classAtLine).getOrElse("")
-          extractMethodName(methodLine) match {
-            case Some(name) => loop(methodSearchStart, emitKeys(name, withSrc(mergedComment, idx), cls, acc))
-            case None       => loop(methodSearchStart, acc)
-          }
+          loop(methodSearchStart, methodAt(methodSearchStart, mergedComment, idx, acc))
         } else {
           collectMetaComment(lines, idx) match {
             case Some((meta, afterMeta)) =>
-              val methodLineIdx = lines.indices.drop(afterMeta).find(i => lines(i).trim.nonEmpty)
-              val methodLine    = methodLineIdx.map(i => lines(i).trim).getOrElse("")
-              val cls           = methodLineIdx.map(classAtLine).getOrElse("")
-              extractMethodName(methodLine) match {
-                case Some(name) => loop(afterMeta, emitKeys(name, withSrc(meta, idx), cls, acc))
-                case None       => loop(afterMeta, acc)
-              }
+              loop(afterMeta, methodAt(afterMeta, meta, idx, acc))
             case None if line.startsWith("/*") =>
               val (comment, afterComment) = collectComment(lines, idx)
-              val methodLineIdx           = lines.indices.drop(afterComment).find(i => lines(i).trim.nonEmpty)
-              val methodLine              = methodLineIdx.map(i => lines(i).trim).getOrElse("")
-              val cls                     = methodLineIdx.map(classAtLine).getOrElse("")
-              extractMethodName(methodLine) match {
-                case Some(name) => loop(afterComment, emitKeys(name, withSrc(comment, idx), cls, acc))
-                case None       => loop(afterComment, acc)
-              }
+              loop(afterComment, methodAt(afterComment, comment, idx, acc))
             case None =>
               loop(idx + 1, acc)
           }
@@ -402,12 +372,8 @@ object HeaderMetadataIndex {
       else {
         val line = lines(idx).trim
         if (line.startsWith("///")) {
-          val commentLines = lines.drop(idx)
-            .takeWhile(_.trim.startsWith("///"))
-            .map(_.trim.stripPrefix("///").trim)
-          val comment      = commentLines.filter(_.nonEmpty).mkString("\n")
-          val afterComment = idx + commentLines.length
-          val searchStart  = lines.drop(afterComment).headOption.map(_.trim) match {
+          val (comment, afterComment) = lineCommentText(lines, idx, docCommentText(_))
+          val searchStart             = lines.drop(afterComment).headOption.map(_.trim) match {
             case Some(nextLine) if isSingleLineMetaComment(nextLine) => afterComment + 1
             case _                                                   => afterComment
           }
@@ -439,13 +405,9 @@ object HeaderMetadataIndex {
       else {
         val line = lines(idx).trim
         if (line.startsWith("///")) {
-          val commentLines = lines.drop(idx)
-            .takeWhile(_.trim.startsWith("///"))
-            .map(_.trim.stripPrefix("///").trim)
-          val comment      = commentLines.filter(_.nonEmpty).mkString("\n")
-          val afterComment = idx + commentLines.length
-          val searchStart  = skipAdditionalDocBlocks(afterComment)
-          val nextLine     = lines.drop(searchStart).find(_.trim.nonEmpty).map(_.trim).getOrElse("")
+          val (comment, afterComment) = lineCommentText(lines, idx, docCommentText(_))
+          val searchStart             = skipAdditionalDocBlocks(afterComment)
+          val nextLine                = lines.drop(searchStart).find(_.trim.nonEmpty).map(_.trim).getOrElse("")
           StructTypedefNameRe.findFirstMatchIn(nextLine) match {
             case Some(m) => loop(searchStart + 1, (m.group(1), withSrc(comment, idx)) :: acc)
             case None    => loop(afterComment, acc)
@@ -468,12 +430,9 @@ object HeaderMetadataIndex {
       else {
         val line = lines(idx).trim
         if (line.startsWith("///")) {
-          val commentLines = lines.drop(idx)
-            .takeWhile(_.trim.startsWith("///"))
-            .map(_.trim.stripPrefix("///").trim)
-          val comment      = commentLines.mkString(" ").trim
-          val afterComment = idx + commentLines.length
-          val nextLine     = lines.drop(afterComment).find(_.trim.nonEmpty).map(_.trim).getOrElse("")
+          val (comment, afterComment) =
+            lineCommentText(lines, idx, commentLines => commentLines.mkString(" ").trim)
+          val nextLine = lines.drop(afterComment).find(_.trim.nonEmpty).map(_.trim).getOrElse("")
           if (nextLine.startsWith("typedef enum")) {
             val (constantDocs, enumEnd) = parseEnumConstantDocs(lines, afterComment)
             val closingLine             = lines.drop(enumEnd).find(_.trim.startsWith("}")).map(_.trim).getOrElse("")
@@ -533,13 +492,24 @@ object HeaderMetadataIndex {
     } else None
   }
 
+  private def lineCommentText(
+      lines: Vector[String],
+      startIdx: Int,
+      render: Vector[String] => String
+  ): (String, Int) = {
+    val commentLines = lines.drop(startIdx)
+      .takeWhile(_.trim.startsWith("///"))
+      .map(_.trim.stripPrefix("///").trim)
+    (render(commentLines), startIdx + commentLines.length)
+  }
+
+  private def docCommentText(commentLines: Vector[String]): String =
+    commentLines.filter(_.nonEmpty).mkString("\n")
+
   private def collectComment(lines: Vector[String], startIdx: Int): (String, Int) = {
     val firstLine = lines(startIdx).trim
     if (firstLine.startsWith("///")) {
-      val commentLines = lines.drop(startIdx)
-        .takeWhile(_.trim.startsWith("///"))
-        .map(_.trim.stripPrefix("///").trim)
-      (commentLines.mkString("\n"), startIdx + commentLines.length)
+      lineCommentText(lines, startIdx, commentLines => commentLines.mkString("\n"))
     } else {
       val endIdx       = lines.indexWhere(_.contains("*/"), startIdx)
       val actualEnd    = if (endIdx < 0) startIdx + 1 else endIdx + 1
@@ -593,4 +563,17 @@ object HeaderMetadataIndex {
 
   private def isMetaCommentEnd(line: String): Boolean =
     line.contains("--*/")
+}
+
+case class HeaderMetadataIndex(
+    handlerNames: Set[String],
+    docs: Map[String, String],
+    cppTypeInfo: Map[String, CppMethodTypeInfo],
+    cppClassNames: Map[String, String],
+    enumDocs: Map[String, (String, Map[String, String])],
+    classDocs: Map[String, String],
+    structFieldDocs: Map[String, Map[String, String]]
+) {
+  def deriveCompoundSegments(cefIncludeDir: Path): Map[String, List[String]] =
+    HeaderMetadataIndex.deriveCompoundSegments(cppClassNames, cefIncludeDir)
 }

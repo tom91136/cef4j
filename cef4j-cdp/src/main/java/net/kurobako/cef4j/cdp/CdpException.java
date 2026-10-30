@@ -1,5 +1,6 @@
 package net.kurobako.cef4j.cdp;
 
+import java.util.Optional;
 import net.kurobako.cef4j.policy.NullableBoundary;
 import org.jspecify.annotations.Nullable;
 
@@ -23,8 +24,7 @@ public final class CdpException extends RuntimeException {
         return code;
     }
 
-    @Nullable
-    public Object data() {
-        return data;
+    public Optional<Object> data() {
+        return Optional.ofNullable(data);
     }
 }

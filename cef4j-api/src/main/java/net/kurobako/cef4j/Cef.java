@@ -52,7 +52,9 @@ import org.slf4j.LoggerFactory;
  *
  * <p>CEF cannot be re-initialized after {@link #terminate()}.
  */
-@SuppressWarnings({"unused", "ImmutableEnumChecker"})
+// XXX: A native library that cannot be loaded is reported as an UnsatisfiedLinkError, which is an Error and not an
+// Exception, so the initialisation failure is caught as a Throwable and reported to the caller.
+@SuppressWarnings({"unused", "ImmutableEnumChecker", "baumkuchen:catch-throwable", "baumkuchen:reflection-member"})
 public enum Cef implements AutoCloseable {
     INSTANCE;
 
@@ -91,6 +93,33 @@ public enum Cef implements AutoCloseable {
         public List<String> args() {
             return args;
         }
+
+        /**
+         * Copies the launch-relevant fields of {@link #settings()} into {@code target}: windowless rendering, the
+         * external message pump and the multi-threaded message loop. Other fields of {@code target} are left as they
+         * are.
+         *
+         * @param target settings to update
+         */
+        public void applyTo(CefSettings.Mutable target) {
+            Objects.requireNonNull(target, "target");
+            target.windowlessRenderingEnabled = settings.windowlessRenderingEnabled;
+            target.externalMessagePump = settings.externalMessagePump;
+            target.multiThreadedMessageLoop = settings.multiThreadedMessageLoop;
+        }
+
+        /**
+         * Returns a new list of {@link #args()} followed by {@code extraArgs}; neither list is modified.
+         *
+         * @param extraArgs arguments appended after the defaults
+         * @return the combined argument list
+         */
+        public List<String> argsWith(List<String> extraArgs) {
+            final List<String> combined = new ArrayList<>(args.size() + extraArgs.size());
+            combined.addAll(args);
+            combined.addAll(extraArgs);
+            return combined;
+        }
     }
 
     /**
@@ -101,16 +130,15 @@ public enum Cef implements AutoCloseable {
      * sandbox before passing the settings to {@link #initialise(CefSettings.Mutable, List)}.
      */
     public static LaunchArgs osrLaunchArgs() {
-        CefSettings.Mutable settings = new CefSettings.Mutable();
+        final CefSettings.Mutable settings = new CefSettings.Mutable();
         settings.windowlessRenderingEnabled = 1;
+        settings.externalMessagePump = 0;
         if (OS.isLinux()) {
-            settings.externalMessagePump = 0;
             settings.multiThreadedMessageLoop = 1;
         } else {
-            settings.externalMessagePump = 0;
             settings.multiThreadedMessageLoop = 0;
         }
-        List<String> args = new ArrayList<>();
+        final List<String> args = new ArrayList<>();
         args.add("--disable-popup-blocking");
         if (OS.isLinux()) {
             args.add("--ozone-platform=x11");
@@ -122,7 +150,7 @@ public enum Cef implements AutoCloseable {
     private static final String DISABLE_FEATURES = "--disable-features=";
 
     private volatile State state = State.UNINITIALISED;
-    private volatile @Nullable Thread initThread = null;
+    private volatile @Nullable Thread initThread;
     private volatile boolean daemonManaged = false;
     private volatile boolean macOsManaged = false;
     private volatile @Nullable CountDownLatch shutdownLatch;
@@ -233,12 +261,12 @@ public enum Cef implements AutoCloseable {
             }
 
             if (settings.resourcesDirPath == null) {
-                Path baseDir = SystemBootstrap.extractionDir()
+                final Path baseDir = SystemBootstrap.extractionDir()
                         .or(SystemBootstrap::libcefDir)
                         .orElse(null);
                 if (baseDir != null) {
                     if (OS.isMacOS()) {
-                        Path frameworkDir = baseDir.resolve("Chromium Embedded Framework.framework");
+                        final Path frameworkDir = baseDir.resolve("Chromium Embedded Framework.framework");
                         if (settings.frameworkDirPath == null) {
                             settings.frameworkDirPath =
                                     frameworkDir.toAbsolutePath().toString();
@@ -265,15 +293,15 @@ public enum Cef implements AutoCloseable {
                     settings.browserSubprocessPath,
                     settings.resourcesDirPath);
 
-            CefApp appHandler = buildAppHandler(extraArgs);
+            final CefApp appHandler = buildAppHandler(extraArgs);
 
-            List<String> argv = processArguments(extraArgs);
+            final List<String> argv = processArguments(extraArgs);
 
-            boolean useExternalPump = settings.externalMessagePump != 0;
-            boolean useMultiThreadedLoop = settings.multiThreadedMessageLoop != 0;
+            final boolean useExternalPump = settings.externalMessagePump != 0;
+            final boolean useMultiThreadedLoop = settings.multiThreadedMessageLoop != 0;
 
             if (useExternalPump || useMultiThreadedLoop) {
-                CefSettings immutable = settings.toImmutable();
+                final CefSettings immutable = settings.toImmutable();
                 final int result = CefGlobals.initialize(mainArgs(argv), immutable, appHandler, null);
                 if (result == 0) {
                     log.error("CefGlobals.initialize (cef_initialize) failed");
@@ -300,13 +328,13 @@ public enum Cef implements AutoCloseable {
                             return result[0] != 0 && initError.get() == null;
                         },
                         () -> {
-                            int released = NativeCleaner.INSTANCE.releaseAll();
+                            final int released = NativeCleaner.INSTANCE.releaseAll();
                             log.debug("Released {} outstanding NativePeers before shutdown", released);
                         });
-                Throwable err = initError.get();
+                final Throwable err = initError.get();
                 if (err != null) {
                     state = State.UNINITIALISED;
-                    throw (err instanceof RuntimeException) ? (RuntimeException) err : new RuntimeException(err);
+                    throw initialisationFailure(err);
                 }
                 if (result[0] == 0) {
                     state = State.UNINITIALISED;
@@ -319,19 +347,19 @@ public enum Cef implements AutoCloseable {
                 daemonManaged = false;
                 macOsManaged = true;
             } else {
-                CountDownLatch initLatch = new CountDownLatch(1);
-                AtomicReference<@Nullable Throwable> initError = new AtomicReference<>();
-                CountDownLatch sdLatch = new CountDownLatch(1);
-                this.shutdownLatch = sdLatch;
+                final CountDownLatch initLatch = new CountDownLatch(1);
+                final AtomicReference<@Nullable Throwable> initError = new AtomicReference<>();
+                final CountDownLatch sdLatch = new CountDownLatch(1);
+                shutdownLatch = sdLatch;
 
                 final CefSettings finalSettings = settings.toImmutable();
                 final CefApp finalAppHandler = appHandler;
                 final List<String> finalArgv = List.copyOf(argv);
 
-                Thread daemon = new Thread(
+                final Thread daemon = new Thread(
                         () -> {
                             try {
-                                int result = CefGlobals.initialize(
+                                final int result = CefGlobals.initialize(
                                         mainArgs(finalArgv), finalSettings, finalAppHandler, null);
                                 if (result == 0) {
                                     initError.set(
@@ -344,7 +372,7 @@ public enum Cef implements AutoCloseable {
                                 CefGlobals.runMessageLoop();
 
                                 log.trace("CEF message loop exited, shutting down");
-                                int released = NativeCleaner.INSTANCE.releaseAll();
+                                final int released = NativeCleaner.INSTANCE.releaseAll();
                                 log.debug(
                                         "Released {} outstanding NativePeers from daemon thread before shutdown",
                                         released);
@@ -363,10 +391,10 @@ public enum Cef implements AutoCloseable {
 
                 awaitUninterruptibly(initLatch);
 
-                Throwable error = initError.get();
+                final Throwable error = initError.get();
                 if (error != null) {
                     state = State.UNINITIALISED;
-                    throw (error instanceof RuntimeException) ? (RuntimeException) error : new RuntimeException(error);
+                    throw initialisationFailure(error);
                 }
 
                 activeSettings = finalSettings;
@@ -376,24 +404,30 @@ public enum Cef implements AutoCloseable {
             }
 
             log.debug("CEF initialized");
-            CefSettings active = activeSettings;
+            final CefSettings active = activeSettings;
             if (active != null && active.cachePath != null) {
                 NativeStderr.setCrashLogPath(active.cachePath);
             }
         }
     }
 
+    /** The failure of the initialisation, which the caller of it is to report. */
+    private static RuntimeException initialisationFailure(Throwable failure) {
+        return (failure instanceof RuntimeException) ? (RuntimeException) failure : new RuntimeException(failure);
+    }
+
     private CefApp buildAppHandler(List<String> extraArgs) {
-        CefApp windowsArgsHandler = new CefApp() {
+        final CefApp windowsArgsHandler = new CefApp() {
             @Override
             public void onBeforeCommandLineProcessing(
                     @Nullable String processType, @Nullable CefCommandLine commandLine) {
                 if (OS.isWindows() && commandLine != null && (processType == null || processType.isEmpty())) {
-                    List<String> argv = processArguments(extraArgs);
-                    for (String arg : argv.subList(1, argv.size())) {
+                    final List<String> argv = processArguments(extraArgs);
+                    final List<String> switches = argv.subList(1, argv.size());
+                    for (String arg : switches) {
                         if (arg.isEmpty()) continue;
-                        String name = arg.startsWith("--") ? arg.substring(2) : arg;
-                        int separator = name.indexOf('=');
+                        final String name = arg.startsWith("--") ? arg.substring(2) : arg;
+                        final int separator = name.indexOf('=');
                         if (separator < 0) {
                             commandLine.appendSwitch(name);
                         } else {
@@ -407,7 +441,7 @@ public enum Cef implements AutoCloseable {
         if (appHandlers.isEmpty()) {
             return windowsArgsHandler;
         }
-        java.util.ArrayList<CefApp> composed = new java.util.ArrayList<>(appHandlers.size() + 1);
+        final java.util.ArrayList<CefApp> composed = new java.util.ArrayList<>(appHandlers.size() + 1);
         composed.add(windowsArgsHandler);
         composed.addAll(appHandlers);
         return new CefApp.Delegating(List.copyOf(composed));
@@ -420,10 +454,10 @@ public enum Cef implements AutoCloseable {
     }
 
     static List<String> processArguments(List<String> extraArgs) {
-        java.util.ArrayList<String> argv = new java.util.ArrayList<>(3 + extraArgs.size());
-        java.util.LinkedHashSet<String> disabledFeatures = new java.util.LinkedHashSet<>();
+        final java.util.ArrayList<String> argv = new java.util.ArrayList<>(3 + extraArgs.size());
+        final java.util.LinkedHashSet<String> disabledFeatures = new java.util.LinkedHashSet<>();
         argv.add("cef4j");
-        int cefApi = SystemBootstrap.runtimeCefMajor().orElse(Integer.MAX_VALUE);
+        final int cefApi = SystemBootstrap.runtimeCefMajor().orElse(Integer.MAX_VALUE);
         if (OS.isLinux() && cefApi == 75) {
             // CEF 75's GPU process races NetworkContext startup under Xvfb, and its out-of-process NetworkService
             // can dereference a destroyed PrefService while an AWT embedding is starting. Keep both workarounds
@@ -487,22 +521,25 @@ public enum Cef implements AutoCloseable {
      */
     public static boolean createBrowserAsync(
             CefWindowInfo info, CefClient client, String url, CefBrowserSettings settings) {
-        Class<?>[] signatures = {CefWindowInfo.class, CefClient.class, String.class, CefBrowserSettings.class};
+        final Class<?>[] signatures = {CefWindowInfo.class, CefClient.class, String.class, CefBrowserSettings.class};
         try {
-            var method = CefBrowserHost.class.getMethod(
+            final var method = CefBrowserHost.class.getMethod(
                     "createBrowser",
                     append(
                             append(signatures, net.kurobako.cef4j.gen.CefDictionaryValue.class),
                             net.kurobako.cef4j.gen.CefRequestContext.class));
             return ((Number) method.invoke(null, info, client, url, settings, null, null)).intValue() != 0;
-        } catch (NoSuchMethodException newerSignatureMissing) {
+        } catch (NoSuchMethodException ignoredNewerSignature) {
+            // The newest signature is unavailable on this CEF version; fall back to the request-context overload.
             try {
-                var method = CefBrowserHost.class.getMethod(
+                final var method = CefBrowserHost.class.getMethod(
                         "createBrowser", append(signatures, net.kurobako.cef4j.gen.CefRequestContext.class));
                 return ((Number) method.invoke(null, info, client, url, settings, null)).intValue() != 0;
-            } catch (NoSuchMethodException requestContextMissing) {
+            } catch (NoSuchMethodException ignoredRequestContext) {
+                // Neither the newest nor the request-context signature is available; fall back to the four-argument
+                // one.
                 try {
-                    var method = CefBrowserHost.class.getMethod("createBrowser", signatures);
+                    final var method = CefBrowserHost.class.getMethod("createBrowser", signatures);
                     return ((Number) method.invoke(null, info, client, url, settings)).intValue() != 0;
                 } catch (ReflectiveOperationException failure) {
                     throw new IllegalStateException("Unable to create CEF browser", failure);
@@ -550,18 +587,18 @@ public enum Cef implements AutoCloseable {
         if (isMacOs) {
             SystemBootstrap.quitAndWaitMainThreadMessageLoop();
         } else if (isDaemon) {
-            CefThreadId uiThread = CefThreadId.of(CefThreadId.Kind.UI);
-            boolean posted = CefGlobals.postTask(uiThread, new CefTask() {
+            final CefThreadId uiThread = CefThreadId.of(CefThreadId.Kind.UI);
+            final boolean posted = CefGlobals.postTask(uiThread, new CefTask() {
                 @Override
                 public void execute() {
                     CefGlobals.quitMessageLoop();
                 }
             });
             if (!posted) throw new IllegalStateException("CEF UI queue rejected message-loop shutdown");
-            CountDownLatch latch = shutdownLatch;
+            final CountDownLatch latch = shutdownLatch;
             if (latch != null) awaitUninterruptibly(latch);
         } else {
-            int released = NativeCleaner.INSTANCE.releaseAll();
+            final int released = NativeCleaner.INSTANCE.releaseAll();
             log.debug("Released {} outstanding NativePeers before shutdown", released);
             CefGlobals.shutdown();
             if (OS.isMacOS()) SystemBootstrap.purgeAppKitObservers();
@@ -580,10 +617,11 @@ public enum Cef implements AutoCloseable {
 
     static void awaitUninterruptibly(CountDownLatch latch) {
         boolean interrupted = false;
-        while (true) {
+        boolean awaited = false;
+        while (!awaited) {
             try {
                 latch.await();
-                break;
+                awaited = true;
             } catch (InterruptedException ignored) {
                 interrupted = true;
             }
@@ -597,17 +635,17 @@ public enum Cef implements AutoCloseable {
      */
     public static CefWindowInfo createWindowlessInfo(CefRect bounds) {
         if (OS.isMacOS()) {
-            var wi = new net.kurobako.cef4j.gen.mac.CefWindowInfo.Mutable();
+            final var wi = new net.kurobako.cef4j.gen.mac.CefWindowInfo.Mutable();
             setWindowInfoBounds(wi, bounds);
             wi.windowlessRenderingEnabled = 1;
             return wi.toImmutable();
         } else if (OS.isWindows()) {
-            var wi = new net.kurobako.cef4j.gen.win.CefWindowInfo.Mutable();
+            final var wi = new net.kurobako.cef4j.gen.win.CefWindowInfo.Mutable();
             setWindowInfoBounds(wi, bounds);
             wi.windowlessRenderingEnabled = 1;
             return wi.toImmutable();
         } else {
-            var wi = new net.kurobako.cef4j.gen.linux.CefWindowInfo.Mutable();
+            final var wi = new net.kurobako.cef4j.gen.linux.CefWindowInfo.Mutable();
             setWindowInfoBounds(wi, bounds);
             wi.windowlessRenderingEnabled = 1;
             return wi.toImmutable();
@@ -619,16 +657,17 @@ public enum Cef implements AutoCloseable {
         try {
             windowInfo.getClass().getField("windowlessRenderingEnabled").setInt(windowInfo, 1);
             try {
-                Field boundsField = windowInfo.getClass().getField("bounds");
-                CefRect bounds = (CefRect) boundsField.get(windowInfo);
+                final Field boundsField = windowInfo.getClass().getField("bounds");
+                final CefRect bounds = (CefRect) boundsField.get(windowInfo);
                 if (bounds == null) {
                     boundsField.set(windowInfo, defaultBounds);
                     return defaultBounds;
                 }
                 return bounds;
-            } catch (NoSuchFieldException oldLayout) {
-                int width = windowInfo.getClass().getField("width").getInt(windowInfo);
-                int height = windowInfo.getClass().getField("height").getInt(windowInfo);
+            } catch (NoSuchFieldException ignored) {
+                // CEF <= 94 stores the windowless bounds as x/y/width/height fields rather than as a CefRect.
+                final int width = windowInfo.getClass().getField("width").getInt(windowInfo);
+                final int height = windowInfo.getClass().getField("height").getInt(windowInfo);
                 if (width <= 0 || height <= 0) {
                     setWindowInfoBounds(windowInfo, defaultBounds);
                     return defaultBounds;
@@ -681,7 +720,7 @@ public enum Cef implements AutoCloseable {
 
     private static void setOptionalIntSetting(CefSettings.Mutable settings, String fieldName, int value) {
         try {
-            var field = settings.getClass().getField(fieldName);
+            final var field = settings.getClass().getField(fieldName);
             field.setInt(settings, value);
         } catch (NoSuchFieldException ignored) {
             // XXX: CEF 109.1.18 and 116.0.27 generated settings lack newer fields; remove reflection when those
@@ -693,10 +732,10 @@ public enum Cef implements AutoCloseable {
 
     private static void setWindowInfoBounds(Object wi, CefRect bounds) {
         try {
-            Field f = wi.getClass().getField("bounds");
+            final Field f = wi.getClass().getField("bounds");
             f.set(wi, bounds);
             return;
-        } catch (NoSuchFieldException oldLayout) {
+        } catch (NoSuchFieldException ignored) {
             // CEF <= 94 stores windowless bounds as x/y/width/height rather than a CefRect.
         } catch (ReflectiveOperationException failure) {
             throw new IllegalStateException("Unable to configure CEF window info bounds", failure);
@@ -713,7 +752,7 @@ public enum Cef implements AutoCloseable {
 
     @SuppressWarnings("unchecked") // Reflection supports the generated four-, five-, and six-argument CEF APIs.
     private static Optional<CefBrowser> createBrowserSync(Object info, CefClient client, String url, Object settings) {
-        Class<?>[] signatures = {
+        final Class<?>[] signatures = {
             net.kurobako.cef4j.gen.CefWindowInfo.class,
             CefClient.class,
             String.class,
@@ -721,20 +760,22 @@ public enum Cef implements AutoCloseable {
         };
         // Try decreasing param counts: 6 (CefDictionaryValue + CefRequestContext), 5 (CefRequestContext), 4 (none)
         try {
-            var m = CefBrowserHost.class.getMethod(
+            final var m = CefBrowserHost.class.getMethod(
                     "createBrowserSync",
                     append(
                             append(signatures, net.kurobako.cef4j.gen.CefDictionaryValue.class),
                             net.kurobako.cef4j.gen.CefRequestContext.class));
             return (Optional<CefBrowser>) m.invoke(null, info, client, url, settings, null, null);
-        } catch (NoSuchMethodException missingSixParameterOverload) {
+        } catch (NoSuchMethodException ignoredSixParameterOverload) {
+            // The six-argument overload is unavailable on this CEF version; fall back to the request-context one.
             try {
-                var m = CefBrowserHost.class.getMethod(
+                final var m = CefBrowserHost.class.getMethod(
                         "createBrowserSync", append(signatures, net.kurobako.cef4j.gen.CefRequestContext.class));
                 return (Optional<CefBrowser>) m.invoke(null, info, client, url, settings, null);
-            } catch (NoSuchMethodException missingFiveParameterOverload) {
+            } catch (NoSuchMethodException ignoredFiveParameterOverload) {
+                // Neither the six- nor the five-argument overload is available; fall back to the four-argument one.
                 try {
-                    var m = CefBrowserHost.class.getMethod("createBrowserSync", signatures);
+                    final var m = CefBrowserHost.class.getMethod("createBrowserSync", signatures);
                     return (Optional<CefBrowser>) m.invoke(null, info, client, url, settings);
                 } catch (ReflectiveOperationException failure) {
                     throw new IllegalStateException("Unable to create CEF browser", failure);
@@ -748,7 +789,7 @@ public enum Cef implements AutoCloseable {
     }
 
     private static Class<?>[] append(Class<?>[] arr, Class<?> elem) {
-        Class<?>[] result = new Class<?>[arr.length + 1];
+        final Class<?>[] result = new Class<?>[arr.length + 1];
         System.arraycopy(arr, 0, result, 0, arr.length);
         result[arr.length] = elem;
         return result;
@@ -756,11 +797,12 @@ public enum Cef implements AutoCloseable {
 
     private static CefMainArgs mainArgsWindows(List<String> argv) {
         try {
-            var ctor = net.kurobako.cef4j.gen.win.CefMainArgs.class.getConstructor(long.class);
+            final var ctor = net.kurobako.cef4j.gen.win.CefMainArgs.class.getConstructor(long.class);
             return ctor.newInstance(0L);
-        } catch (NoSuchMethodException missingLongConstructor) {
+        } catch (NoSuchMethodException ignored) {
+            // The long constructor is unavailable on this CEF version; fall back to the no-argument one.
             try {
-                var ctor = net.kurobako.cef4j.gen.win.CefMainArgs.class.getConstructor();
+                final var ctor = net.kurobako.cef4j.gen.win.CefMainArgs.class.getConstructor();
                 return ctor.newInstance();
             } catch (ReflectiveOperationException failure) {
                 throw new IllegalStateException("Unable to construct Windows CEF main args", failure);

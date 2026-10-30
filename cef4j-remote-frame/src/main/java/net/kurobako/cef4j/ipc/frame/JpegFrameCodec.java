@@ -30,28 +30,28 @@ public final class JpegFrameCodec implements FrameCodec {
 
     @Override
     public EncodedFrame encode(RawFrame frame) throws IOException {
-        BufferedImage image = new BufferedImage(frame.width(), frame.height(), BufferedImage.TYPE_INT_RGB);
-        int[] row = new int[frame.width()];
-        ByteBuffer pixels = frame.pixels();
+        final BufferedImage image = new BufferedImage(frame.width(), frame.height(), BufferedImage.TYPE_INT_RGB);
+        final int[] row = new int[frame.width()];
+        final ByteBuffer pixels = frame.pixels();
         for (int y = 0; y < frame.height(); y++) {
-            int offset = y * frame.stride();
+            final int offset = y * frame.stride();
             for (int x = 0; x < frame.width(); x++) {
-                int p = offset + x * 4;
-                int b = pixels.get(p) & 0xff;
-                int g = pixels.get(p + 1) & 0xff;
-                int r = pixels.get(p + 2) & 0xff;
+                final int p = offset + x * 4;
+                final int b = pixels.get(p) & 0xff;
+                final int g = pixels.get(p + 1) & 0xff;
+                final int r = pixels.get(p + 2) & 0xff;
                 row[x] = (r << 16) | (g << 8) | b;
             }
             image.setRGB(0, y, frame.width(), 1, row, 0, frame.width());
         }
 
-        Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpeg");
+        final Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpeg");
         if (!writers.hasNext()) throw new IOException("no JPEG ImageIO writer is installed");
-        ImageWriter writer = writers.next();
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        final ImageWriter writer = writers.next();
+        final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         try (ImageOutputStream output = ImageIO.createImageOutputStream(bytes)) {
             writer.setOutput(output);
-            ImageWriteParam params = writer.getDefaultWriteParam();
+            final ImageWriteParam params = writer.getDefaultWriteParam();
             if (params.canWriteCompressed()) {
                 params.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                 params.setCompressionQuality(quality);

@@ -6,6 +6,7 @@ import java.net.http.HttpClient;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -41,16 +42,54 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
     @Nullable
     private volatile Runnable disconnectHandler;
 
-    private volatile boolean closed;
-    private volatile boolean disconnected;
+    private volatile boolean closed = false;
+    private volatile boolean disconnected = false;
+
+    public static final class Options {
+        public static final Options DEFAULT = new Options(null, null);
+
+        private final @Nullable String bearerToken;
+        private final @Nullable SSLContext sslContext;
+
+        private Options(@Nullable String bearerToken, @Nullable SSLContext sslContext) {
+            this.bearerToken = bearerToken;
+            this.sslContext = sslContext;
+        }
+
+        public static Options defaults() {
+            return DEFAULT;
+        }
+
+        public Options withBearerToken(String bearerToken) {
+            return new Options(Objects.requireNonNull(bearerToken, "bearerToken"), sslContext);
+        }
+
+        public Options withSslContext(SSLContext sslContext) {
+            return new Options(bearerToken, Objects.requireNonNull(sslContext, "sslContext"));
+        }
+
+        public Optional<String> bearerToken() {
+            return Optional.ofNullable(bearerToken);
+        }
+
+        public Optional<SSLContext> sslContext() {
+            return Optional.ofNullable(sslContext);
+        }
+    }
 
     public static WebSocketTransport connect(String endpoint) throws CefTransportException {
-        return connect(endpoint, Optional.empty(), Optional.empty());
+        return connect(endpoint, Options.defaults());
     }
 
     /** Connects with optional bearer authentication and an explicit TLS context for {@code wss://}. */
-    public static WebSocketTransport connect(
-            String endpoint, Optional<String> bearerToken, Optional<SSLContext> sslContext)
+    public static WebSocketTransport connect(String endpoint, Options options) throws CefTransportException {
+        Objects.requireNonNull(endpoint, "endpoint");
+        Objects.requireNonNull(options, "options");
+        return connectImpl(endpoint, options.bearerToken, options.sslContext);
+    }
+
+    private static WebSocketTransport connectImpl(
+            String endpoint, @Nullable String bearerToken, @Nullable SSLContext sslContext)
             throws CefTransportException {
         URI uri;
         try {
@@ -61,20 +100,23 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
         if (!"ws".equalsIgnoreCase(uri.getScheme()) && !"wss".equalsIgnoreCase(uri.getScheme())) {
             throw new CefTransportException(endpoint + ": expected a ws:// or wss:// endpoint");
         }
-        WebSocketTransport transport = new WebSocketTransport(endpoint);
+        final WebSocketTransport transport = new WebSocketTransport(endpoint);
         try {
-            if (bearerToken.isPresent()
-                    && (bearerToken.get().isEmpty()
-                            || bearerToken.get().contains("\r")
-                            || bearerToken.get().contains("\n"))) {
+            if (bearerToken != null
+                    && (bearerToken.isEmpty() || bearerToken.contains("\r") || bearerToken.contains("\n"))) {
                 throw new CefTransportException("invalid WebSocket bearer token");
             }
-            HttpClient.Builder clientBuilder = HttpClient.newBuilder().connectTimeout(Duration.ofMillis(IO_TIMEOUT_MS));
-            sslContext.ifPresent(clientBuilder::sslContext);
-            WebSocket.Builder socketBuilder = clientBuilder.build().newWebSocketBuilder();
-            bearerToken.ifPresent(token -> socketBuilder.header("Authorization", "Bearer " + token));
-            CompletableFuture<WebSocket> connecting = socketBuilder.buildAsync(uri, transport);
-            CompletableFuture<WebSocket> ownedConnection = connecting.whenComplete((socket, ignored) -> {
+            final HttpClient.Builder clientBuilder =
+                    HttpClient.newBuilder().connectTimeout(Duration.ofMillis(IO_TIMEOUT_MS));
+            if (sslContext != null) {
+                clientBuilder.sslContext(sslContext);
+            }
+            final WebSocket.Builder socketBuilder = clientBuilder.build().newWebSocketBuilder();
+            if (bearerToken != null) {
+                socketBuilder.header("Authorization", "Bearer " + bearerToken);
+            }
+            final CompletableFuture<WebSocket> connecting = socketBuilder.buildAsync(uri, transport);
+            final CompletableFuture<WebSocket> ownedConnection = connecting.whenComplete((socket, ignored) -> {
                 transport.socket = socket;
                 if (socket != null && transport.closed) socket.abort();
             });
@@ -82,7 +124,7 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
                 transport.socket = ownedConnection.get(IO_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             } catch (InterruptedException | ExecutionException | TimeoutException failure) {
                 transport.closed = true;
-                WebSocket socket = transport.socket;
+                final WebSocket socket = transport.socket;
                 if (socket != null) socket.abort();
                 connecting.cancel(true);
                 ownedConnection.cancel(true);
@@ -111,11 +153,11 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
     public void send(ByteBuffer frame) throws CefTransportException {
         if (closed) throw new CefTransportException(endpoint + ": send on closed transport");
         if (disconnected) throw new CefTransportException(endpoint + ": peer disconnected");
-        byte[] copy = new byte[frame.remaining()];
+        final byte[] copy = new byte[frame.remaining()];
         frame.get(copy);
         if (copy.length > MAX_FRAME_SIZE) throw new CefTransportException(endpoint + ": frame is too large");
         synchronized (sendLock) {
-            WebSocket current = socket;
+            final WebSocket current = socket;
             if (current == null) throw new CefTransportException(endpoint + ": transport is not connected");
             try {
                 current.sendBinary(ByteBuffer.wrap(copy), true).get(IO_TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -135,8 +177,7 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
     public void onReceive(Consumer<ByteBuffer> handler) {
         synchronized (receiveLock) {
             receiveHandler = handler;
-            byte[] frame;
-            while ((frame = pending.poll()) != null) dispatch(handler, frame);
+            pending.drain(frame -> dispatch(handler, frame));
         }
     }
 
@@ -160,11 +201,11 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
     public void close() {
         if (closed) return;
         closed = true;
-        WebSocket current = socket;
+        final WebSocket current = socket;
         if (current == null) return;
         try {
             current.sendClose(WebSocket.NORMAL_CLOSURE, "").get(IO_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt();
             current.abort();
         } catch (ExecutionException | TimeoutException e) {
@@ -174,24 +215,14 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
     }
 
     @Override
-    public void onOpen(WebSocket webSocket) {
-        webSocket.request(1);
-    }
-
-    @Override
     public CompletableFuture<?> onBinary(WebSocket webSocket, ByteBuffer data, boolean last) {
         synchronized (fragmentLock) {
-            if (data.remaining() > MAX_FRAME_SIZE - fragments.size()) {
-                disconnected = true;
-                webSocket.abort();
-                fireDisconnectIfReady();
-                return CompletableFuture.completedFuture(null);
-            }
-            byte[] part = new byte[data.remaining()];
+            if (data.remaining() > MAX_FRAME_SIZE - fragments.size()) return abortConnection(webSocket);
+            final byte[] part = new byte[data.remaining()];
             data.get(part);
             fragments.write(part, 0, part.length);
             if (last) {
-                byte[] frame = fragments.toByteArray();
+                final byte[] frame = fragments.toByteArray();
                 fragments.reset();
                 accept(frame);
             }
@@ -202,10 +233,7 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
 
     @Override
     public CompletableFuture<?> onText(WebSocket webSocket, CharSequence data, boolean last) {
-        disconnected = true;
-        webSocket.abort();
-        fireDisconnectIfReady();
-        return CompletableFuture.completedFuture(null);
+        return abortConnection(webSocket);
     }
 
     @Override
@@ -235,7 +263,7 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
     private void accept(byte[] frame) {
         boolean overflow = false;
         synchronized (receiveLock) {
-            Consumer<ByteBuffer> handler = receiveHandler;
+            final Consumer<ByteBuffer> handler = receiveHandler;
             if (handler == null && !pending.offer(frame)) {
                 overflow = true;
             } else if (handler != null) dispatch(handler, frame);
@@ -243,7 +271,7 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
         if (overflow) {
             LOG.warn("pending receive queue on {} is full", endpoint);
             disconnected = true;
-            WebSocket current = socket;
+            final WebSocket current = socket;
             if (current != null) current.abort();
             fireDisconnectIfReady();
         }
@@ -257,6 +285,14 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
         }
     }
 
+    /** Aborts the connection, which the peer of it has to be told about. */
+    private CompletableFuture<?> abortConnection(WebSocket webSocket) {
+        disconnected = true;
+        webSocket.abort();
+        fireDisconnectIfReady();
+        return CompletableFuture.completedFuture(null);
+    }
+
     private void markDisconnected() {
         if (closed || disconnected) return;
         disconnected = true;
@@ -264,7 +300,7 @@ public final class WebSocketTransport implements CefTransport, WebSocket.Listene
     }
 
     private void fireDisconnectIfReady() {
-        Runnable handler = disconnectHandler;
+        final Runnable handler = disconnectHandler;
         if (disconnected && !closed && handler != null && disconnectNotified.compareAndSet(false, true)) {
             try {
                 handler.run();

@@ -19,7 +19,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:414</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefV8ArrayBufferReleaseCallback extends CefClientHandler {
 
@@ -38,8 +37,8 @@ public interface CefV8ArrayBufferReleaseCallback extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefV8ArrayBufferReleaseCallback {
         private final java.util.List<CefV8ArrayBufferReleaseCallback> delegates;
@@ -50,7 +49,7 @@ public interface CefV8ArrayBufferReleaseCallback extends CefClientHandler {
 
         @Override
         public void releaseBuffer(@Nullable NativePointer buffer) {
-            for (CefV8ArrayBufferReleaseCallback d : delegates) d.releaseBuffer(buffer);
+            for (final CefV8ArrayBufferReleaseCallback d : delegates) d.releaseBuffer(buffer);
         }
     }
 }

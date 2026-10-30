@@ -6,10 +6,10 @@ import java.util.List;
 
 public final class CefTestLaunch {
     public static List<String> extraArgs() {
-        List<String> args = new ArrayList<>();
-        String ozone = System.getProperty("cef4j.test.ozonePlatform");
+        final List<String> args = new ArrayList<>();
+        final String ozone = System.getProperty("cef4j.test.ozonePlatform");
         if (ozone != null && !ozone.isBlank()) args.add("--ozone-platform=" + ozone.trim());
-        String extra = System.getProperty("cef4j.test.extraArgs");
+        final String extra = System.getProperty("cef4j.test.extraArgs");
         if (extra != null && !extra.isBlank()) {
             java.util.regex.Pattern.compile(",")
                     .splitAsStream(extra)
@@ -23,7 +23,7 @@ public final class CefTestLaunch {
     /** Sets the cache root on CEF versions that expose the setting (CEF 74+). */
     public static void setRootCachePath(Object settings, String path) {
         try {
-            Field field = settings.getClass().getField("rootCachePath");
+            final Field field = settings.getClass().getField("rootCachePath");
             field.set(settings, path);
         } catch (NoSuchFieldException ignored) {
             // Older CEF versions use cachePath as the root and do not expose rootCachePath.

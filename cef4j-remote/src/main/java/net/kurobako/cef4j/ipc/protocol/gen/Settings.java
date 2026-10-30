@@ -4,6 +4,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
@@ -11,6 +12,7 @@ import net.kurobako.cef4j.ipc.session.WireDecoder;
  * to facade methods (or factory requests) that take this struct. The dispatcher decodes them on the
  * runtime-server side and fills the matching {@code cef_settings_t} before invoking CEF.
  */
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class Settings {
 
     private final long size;
@@ -208,65 +210,65 @@ public final class Settings {
     }
 
     public void encodeInto(ByteBuffer dst) {
-        ByteOrder originalOrder = dst.order();
+        final ByteOrder originalOrder = dst.order();
         try {
             dst.order(ByteOrder.LITTLE_ENDIAN);
             dst.putLong(size);
             dst.putInt(noSandbox);
-            byte[] browserSubprocessPathBytes = browserSubprocessPath.getBytes(StandardCharsets.UTF_8);
+            final byte[] browserSubprocessPathBytes = browserSubprocessPath.getBytes(StandardCharsets.UTF_8);
             dst.putInt(browserSubprocessPathBytes.length);
             dst.put(browserSubprocessPathBytes);
-            byte[] frameworkDirPathBytes = frameworkDirPath.getBytes(StandardCharsets.UTF_8);
+            final byte[] frameworkDirPathBytes = frameworkDirPath.getBytes(StandardCharsets.UTF_8);
             dst.putInt(frameworkDirPathBytes.length);
             dst.put(frameworkDirPathBytes);
-            byte[] mainBundlePathBytes = mainBundlePath.getBytes(StandardCharsets.UTF_8);
+            final byte[] mainBundlePathBytes = mainBundlePath.getBytes(StandardCharsets.UTF_8);
             dst.putInt(mainBundlePathBytes.length);
             dst.put(mainBundlePathBytes);
             dst.putInt(multiThreadedMessageLoop);
             dst.putInt(externalMessagePump);
             dst.putInt(windowlessRenderingEnabled);
             dst.putInt(commandLineArgsDisabled);
-            byte[] cachePathBytes = cachePath.getBytes(StandardCharsets.UTF_8);
+            final byte[] cachePathBytes = cachePath.getBytes(StandardCharsets.UTF_8);
             dst.putInt(cachePathBytes.length);
             dst.put(cachePathBytes);
-            byte[] rootCachePathBytes = rootCachePath.getBytes(StandardCharsets.UTF_8);
+            final byte[] rootCachePathBytes = rootCachePath.getBytes(StandardCharsets.UTF_8);
             dst.putInt(rootCachePathBytes.length);
             dst.put(rootCachePathBytes);
             dst.putInt(persistSessionCookies);
-            byte[] userAgentBytes = userAgent.getBytes(StandardCharsets.UTF_8);
+            final byte[] userAgentBytes = userAgent.getBytes(StandardCharsets.UTF_8);
             dst.putInt(userAgentBytes.length);
             dst.put(userAgentBytes);
-            byte[] userAgentProductBytes = userAgentProduct.getBytes(StandardCharsets.UTF_8);
+            final byte[] userAgentProductBytes = userAgentProduct.getBytes(StandardCharsets.UTF_8);
             dst.putInt(userAgentProductBytes.length);
             dst.put(userAgentProductBytes);
-            byte[] localeBytes = locale.getBytes(StandardCharsets.UTF_8);
+            final byte[] localeBytes = locale.getBytes(StandardCharsets.UTF_8);
             dst.putInt(localeBytes.length);
             dst.put(localeBytes);
-            byte[] logFileBytes = logFile.getBytes(StandardCharsets.UTF_8);
+            final byte[] logFileBytes = logFile.getBytes(StandardCharsets.UTF_8);
             dst.putInt(logFileBytes.length);
             dst.put(logFileBytes);
             dst.putInt(logSeverity);
             dst.putInt(logItems);
-            byte[] javascriptFlagsBytes = javascriptFlags.getBytes(StandardCharsets.UTF_8);
+            final byte[] javascriptFlagsBytes = javascriptFlags.getBytes(StandardCharsets.UTF_8);
             dst.putInt(javascriptFlagsBytes.length);
             dst.put(javascriptFlagsBytes);
-            byte[] resourcesDirPathBytes = resourcesDirPath.getBytes(StandardCharsets.UTF_8);
+            final byte[] resourcesDirPathBytes = resourcesDirPath.getBytes(StandardCharsets.UTF_8);
             dst.putInt(resourcesDirPathBytes.length);
             dst.put(resourcesDirPathBytes);
-            byte[] localesDirPathBytes = localesDirPath.getBytes(StandardCharsets.UTF_8);
+            final byte[] localesDirPathBytes = localesDirPath.getBytes(StandardCharsets.UTF_8);
             dst.putInt(localesDirPathBytes.length);
             dst.put(localesDirPathBytes);
             dst.putInt(remoteDebuggingPort);
             dst.putInt(uncaughtExceptionStackSize);
             dst.putInt(backgroundColor);
-            byte[] acceptLanguageListBytes = acceptLanguageList.getBytes(StandardCharsets.UTF_8);
+            final byte[] acceptLanguageListBytes = acceptLanguageList.getBytes(StandardCharsets.UTF_8);
             dst.putInt(acceptLanguageListBytes.length);
             dst.put(acceptLanguageListBytes);
-            byte[] cookieableSchemesListBytes = cookieableSchemesList.getBytes(StandardCharsets.UTF_8);
+            final byte[] cookieableSchemesListBytes = cookieableSchemesList.getBytes(StandardCharsets.UTF_8);
             dst.putInt(cookieableSchemesListBytes.length);
             dst.put(cookieableSchemesListBytes);
             dst.putInt(cookieableSchemesExcludeDefaults);
-            byte[] chromePolicyIdBytes = chromePolicyId.getBytes(StandardCharsets.UTF_8);
+            final byte[] chromePolicyIdBytes = chromePolicyId.getBytes(StandardCharsets.UTF_8);
             dst.putInt(chromePolicyIdBytes.length);
             dst.put(chromePolicyIdBytes);
             dst.putInt(chromeAppIconId);
@@ -283,98 +285,37 @@ public final class Settings {
       * configured the buffer.
       */
     public static Settings decode(ByteBuffer __buf) {
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "size");
-        long size = __buf.getLong();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "noSandbox");
-        int noSandbox = __buf.getInt();
-        int browserSubprocessPathLen = WireDecoder.length(__buf, "browserSubprocessPath");
-        byte[] browserSubprocessPathBuf = new byte[browserSubprocessPathLen];
-        __buf.get(browserSubprocessPathBuf);
-        String browserSubprocessPath = new String(browserSubprocessPathBuf, StandardCharsets.UTF_8);
-        int frameworkDirPathLen = WireDecoder.length(__buf, "frameworkDirPath");
-        byte[] frameworkDirPathBuf = new byte[frameworkDirPathLen];
-        __buf.get(frameworkDirPathBuf);
-        String frameworkDirPath = new String(frameworkDirPathBuf, StandardCharsets.UTF_8);
-        int mainBundlePathLen = WireDecoder.length(__buf, "mainBundlePath");
-        byte[] mainBundlePathBuf = new byte[mainBundlePathLen];
-        __buf.get(mainBundlePathBuf);
-        String mainBundlePath = new String(mainBundlePathBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "multiThreadedMessageLoop");
-        int multiThreadedMessageLoop = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "externalMessagePump");
-        int externalMessagePump = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "windowlessRenderingEnabled");
-        int windowlessRenderingEnabled = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "commandLineArgsDisabled");
-        int commandLineArgsDisabled = __buf.getInt();
-        int cachePathLen = WireDecoder.length(__buf, "cachePath");
-        byte[] cachePathBuf = new byte[cachePathLen];
-        __buf.get(cachePathBuf);
-        String cachePath = new String(cachePathBuf, StandardCharsets.UTF_8);
-        int rootCachePathLen = WireDecoder.length(__buf, "rootCachePath");
-        byte[] rootCachePathBuf = new byte[rootCachePathLen];
-        __buf.get(rootCachePathBuf);
-        String rootCachePath = new String(rootCachePathBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "persistSessionCookies");
-        int persistSessionCookies = __buf.getInt();
-        int userAgentLen = WireDecoder.length(__buf, "userAgent");
-        byte[] userAgentBuf = new byte[userAgentLen];
-        __buf.get(userAgentBuf);
-        String userAgent = new String(userAgentBuf, StandardCharsets.UTF_8);
-        int userAgentProductLen = WireDecoder.length(__buf, "userAgentProduct");
-        byte[] userAgentProductBuf = new byte[userAgentProductLen];
-        __buf.get(userAgentProductBuf);
-        String userAgentProduct = new String(userAgentProductBuf, StandardCharsets.UTF_8);
-        int localeLen = WireDecoder.length(__buf, "locale");
-        byte[] localeBuf = new byte[localeLen];
-        __buf.get(localeBuf);
-        String locale = new String(localeBuf, StandardCharsets.UTF_8);
-        int logFileLen = WireDecoder.length(__buf, "logFile");
-        byte[] logFileBuf = new byte[logFileLen];
-        __buf.get(logFileBuf);
-        String logFile = new String(logFileBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "logSeverity");
-        int logSeverity = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "logItems");
-        int logItems = __buf.getInt();
-        int javascriptFlagsLen = WireDecoder.length(__buf, "javascriptFlags");
-        byte[] javascriptFlagsBuf = new byte[javascriptFlagsLen];
-        __buf.get(javascriptFlagsBuf);
-        String javascriptFlags = new String(javascriptFlagsBuf, StandardCharsets.UTF_8);
-        int resourcesDirPathLen = WireDecoder.length(__buf, "resourcesDirPath");
-        byte[] resourcesDirPathBuf = new byte[resourcesDirPathLen];
-        __buf.get(resourcesDirPathBuf);
-        String resourcesDirPath = new String(resourcesDirPathBuf, StandardCharsets.UTF_8);
-        int localesDirPathLen = WireDecoder.length(__buf, "localesDirPath");
-        byte[] localesDirPathBuf = new byte[localesDirPathLen];
-        __buf.get(localesDirPathBuf);
-        String localesDirPath = new String(localesDirPathBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "remoteDebuggingPort");
-        int remoteDebuggingPort = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "uncaughtExceptionStackSize");
-        int uncaughtExceptionStackSize = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "backgroundColor");
-        int backgroundColor = __buf.getInt();
-        int acceptLanguageListLen = WireDecoder.length(__buf, "acceptLanguageList");
-        byte[] acceptLanguageListBuf = new byte[acceptLanguageListLen];
-        __buf.get(acceptLanguageListBuf);
-        String acceptLanguageList = new String(acceptLanguageListBuf, StandardCharsets.UTF_8);
-        int cookieableSchemesListLen = WireDecoder.length(__buf, "cookieableSchemesList");
-        byte[] cookieableSchemesListBuf = new byte[cookieableSchemesListLen];
-        __buf.get(cookieableSchemesListBuf);
-        String cookieableSchemesList = new String(cookieableSchemesListBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "cookieableSchemesExcludeDefaults");
-        int cookieableSchemesExcludeDefaults = __buf.getInt();
-        int chromePolicyIdLen = WireDecoder.length(__buf, "chromePolicyId");
-        byte[] chromePolicyIdBuf = new byte[chromePolicyIdLen];
-        __buf.get(chromePolicyIdBuf);
-        String chromePolicyId = new String(chromePolicyIdBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "chromeAppIconId");
-        int chromeAppIconId = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "disableSignalHandlers");
-        int disableSignalHandlers = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "useViewsDefaultPopup");
-        int useViewsDefaultPopup = __buf.getInt();
+        final long size = WireDecoder.int64(__buf, "size");
+        final int noSandbox = WireDecoder.int32(__buf, "noSandbox");
+        final String browserSubprocessPath = WireDecoder.utf8(__buf, "browserSubprocessPath");
+        final String frameworkDirPath = WireDecoder.utf8(__buf, "frameworkDirPath");
+        final String mainBundlePath = WireDecoder.utf8(__buf, "mainBundlePath");
+        final int multiThreadedMessageLoop = WireDecoder.int32(__buf, "multiThreadedMessageLoop");
+        final int externalMessagePump = WireDecoder.int32(__buf, "externalMessagePump");
+        final int windowlessRenderingEnabled = WireDecoder.int32(__buf, "windowlessRenderingEnabled");
+        final int commandLineArgsDisabled = WireDecoder.int32(__buf, "commandLineArgsDisabled");
+        final String cachePath = WireDecoder.utf8(__buf, "cachePath");
+        final String rootCachePath = WireDecoder.utf8(__buf, "rootCachePath");
+        final int persistSessionCookies = WireDecoder.int32(__buf, "persistSessionCookies");
+        final String userAgent = WireDecoder.utf8(__buf, "userAgent");
+        final String userAgentProduct = WireDecoder.utf8(__buf, "userAgentProduct");
+        final String locale = WireDecoder.utf8(__buf, "locale");
+        final String logFile = WireDecoder.utf8(__buf, "logFile");
+        final int logSeverity = WireDecoder.int32(__buf, "logSeverity");
+        final int logItems = WireDecoder.int32(__buf, "logItems");
+        final String javascriptFlags = WireDecoder.utf8(__buf, "javascriptFlags");
+        final String resourcesDirPath = WireDecoder.utf8(__buf, "resourcesDirPath");
+        final String localesDirPath = WireDecoder.utf8(__buf, "localesDirPath");
+        final int remoteDebuggingPort = WireDecoder.int32(__buf, "remoteDebuggingPort");
+        final int uncaughtExceptionStackSize = WireDecoder.int32(__buf, "uncaughtExceptionStackSize");
+        final int backgroundColor = WireDecoder.int32(__buf, "backgroundColor");
+        final String acceptLanguageList = WireDecoder.utf8(__buf, "acceptLanguageList");
+        final String cookieableSchemesList = WireDecoder.utf8(__buf, "cookieableSchemesList");
+        final int cookieableSchemesExcludeDefaults = WireDecoder.int32(__buf, "cookieableSchemesExcludeDefaults");
+        final String chromePolicyId = WireDecoder.utf8(__buf, "chromePolicyId");
+        final int chromeAppIconId = WireDecoder.int32(__buf, "chromeAppIconId");
+        final int disableSignalHandlers = WireDecoder.int32(__buf, "disableSignalHandlers");
+        final int useViewsDefaultPopup = WireDecoder.int32(__buf, "useViewsDefaultPopup");
         return new Settings(size, noSandbox, browserSubprocessPath, frameworkDirPath, mainBundlePath, multiThreadedMessageLoop, externalMessagePump, windowlessRenderingEnabled, commandLineArgsDisabled, cachePath, rootCachePath, persistSessionCookies, userAgent, userAgentProduct, locale, logFile, logSeverity, logItems, javascriptFlags, resourcesDirPath, localesDirPath, remoteDebuggingPort, uncaughtExceptionStackSize, backgroundColor, acceptLanguageList, cookieableSchemesList, cookieableSchemesExcludeDefaults, chromePolicyId, chromeAppIconId, disableSignalHandlers, useViewsDefaultPopup);
     }
 
@@ -385,190 +326,190 @@ public final class Settings {
     /** Lombok-style builder. */
     public static final class Builder {
 
-        private long size = 0L;
-        private int noSandbox = 0;
+        private long size;
+        private int noSandbox;
         private String browserSubprocessPath = "";
         private String frameworkDirPath = "";
         private String mainBundlePath = "";
-        private int multiThreadedMessageLoop = 0;
-        private int externalMessagePump = 0;
-        private int windowlessRenderingEnabled = 0;
-        private int commandLineArgsDisabled = 0;
+        private int multiThreadedMessageLoop;
+        private int externalMessagePump;
+        private int windowlessRenderingEnabled;
+        private int commandLineArgsDisabled;
         private String cachePath = "";
         private String rootCachePath = "";
-        private int persistSessionCookies = 0;
+        private int persistSessionCookies;
         private String userAgent = "";
         private String userAgentProduct = "";
         private String locale = "";
         private String logFile = "";
-        private int logSeverity = 0;
-        private int logItems = 0;
+        private int logSeverity;
+        private int logItems;
         private String javascriptFlags = "";
         private String resourcesDirPath = "";
         private String localesDirPath = "";
-        private int remoteDebuggingPort = 0;
-        private int uncaughtExceptionStackSize = 0;
-        private int backgroundColor = 0;
+        private int remoteDebuggingPort;
+        private int uncaughtExceptionStackSize;
+        private int backgroundColor;
         private String acceptLanguageList = "";
         private String cookieableSchemesList = "";
-        private int cookieableSchemesExcludeDefaults = 0;
+        private int cookieableSchemesExcludeDefaults;
         private String chromePolicyId = "";
-        private int chromeAppIconId = 0;
-        private int disableSignalHandlers = 0;
-        private int useViewsDefaultPopup = 0;
+        private int chromeAppIconId;
+        private int disableSignalHandlers;
+        private int useViewsDefaultPopup;
 
-        public Builder size(long size) {
-            this.size = size;
+        public Builder size(long value) {
+            this.size = value;
             return this;
         }
 
-        public Builder noSandbox(int noSandbox) {
-            this.noSandbox = noSandbox;
+        public Builder noSandbox(int value) {
+            this.noSandbox = value;
             return this;
         }
 
-        public Builder browserSubprocessPath(String browserSubprocessPath) {
-            this.browserSubprocessPath = browserSubprocessPath;
+        public Builder browserSubprocessPath(String value) {
+            this.browserSubprocessPath = value;
             return this;
         }
 
-        public Builder frameworkDirPath(String frameworkDirPath) {
-            this.frameworkDirPath = frameworkDirPath;
+        public Builder frameworkDirPath(String value) {
+            this.frameworkDirPath = value;
             return this;
         }
 
-        public Builder mainBundlePath(String mainBundlePath) {
-            this.mainBundlePath = mainBundlePath;
+        public Builder mainBundlePath(String value) {
+            this.mainBundlePath = value;
             return this;
         }
 
-        public Builder multiThreadedMessageLoop(int multiThreadedMessageLoop) {
-            this.multiThreadedMessageLoop = multiThreadedMessageLoop;
+        public Builder multiThreadedMessageLoop(int value) {
+            this.multiThreadedMessageLoop = value;
             return this;
         }
 
-        public Builder externalMessagePump(int externalMessagePump) {
-            this.externalMessagePump = externalMessagePump;
+        public Builder externalMessagePump(int value) {
+            this.externalMessagePump = value;
             return this;
         }
 
-        public Builder windowlessRenderingEnabled(int windowlessRenderingEnabled) {
-            this.windowlessRenderingEnabled = windowlessRenderingEnabled;
+        public Builder windowlessRenderingEnabled(int value) {
+            this.windowlessRenderingEnabled = value;
             return this;
         }
 
-        public Builder commandLineArgsDisabled(int commandLineArgsDisabled) {
-            this.commandLineArgsDisabled = commandLineArgsDisabled;
+        public Builder commandLineArgsDisabled(int value) {
+            this.commandLineArgsDisabled = value;
             return this;
         }
 
-        public Builder cachePath(String cachePath) {
-            this.cachePath = cachePath;
+        public Builder cachePath(String value) {
+            this.cachePath = value;
             return this;
         }
 
-        public Builder rootCachePath(String rootCachePath) {
-            this.rootCachePath = rootCachePath;
+        public Builder rootCachePath(String value) {
+            this.rootCachePath = value;
             return this;
         }
 
-        public Builder persistSessionCookies(int persistSessionCookies) {
-            this.persistSessionCookies = persistSessionCookies;
+        public Builder persistSessionCookies(int value) {
+            this.persistSessionCookies = value;
             return this;
         }
 
-        public Builder userAgent(String userAgent) {
-            this.userAgent = userAgent;
+        public Builder userAgent(String value) {
+            this.userAgent = value;
             return this;
         }
 
-        public Builder userAgentProduct(String userAgentProduct) {
-            this.userAgentProduct = userAgentProduct;
+        public Builder userAgentProduct(String value) {
+            this.userAgentProduct = value;
             return this;
         }
 
-        public Builder locale(String locale) {
-            this.locale = locale;
+        public Builder locale(String value) {
+            this.locale = value;
             return this;
         }
 
-        public Builder logFile(String logFile) {
-            this.logFile = logFile;
+        public Builder logFile(String value) {
+            this.logFile = value;
             return this;
         }
 
-        public Builder logSeverity(int logSeverity) {
-            this.logSeverity = logSeverity;
+        public Builder logSeverity(int value) {
+            this.logSeverity = value;
             return this;
         }
 
-        public Builder logItems(int logItems) {
-            this.logItems = logItems;
+        public Builder logItems(int value) {
+            this.logItems = value;
             return this;
         }
 
-        public Builder javascriptFlags(String javascriptFlags) {
-            this.javascriptFlags = javascriptFlags;
+        public Builder javascriptFlags(String value) {
+            this.javascriptFlags = value;
             return this;
         }
 
-        public Builder resourcesDirPath(String resourcesDirPath) {
-            this.resourcesDirPath = resourcesDirPath;
+        public Builder resourcesDirPath(String value) {
+            this.resourcesDirPath = value;
             return this;
         }
 
-        public Builder localesDirPath(String localesDirPath) {
-            this.localesDirPath = localesDirPath;
+        public Builder localesDirPath(String value) {
+            this.localesDirPath = value;
             return this;
         }
 
-        public Builder remoteDebuggingPort(int remoteDebuggingPort) {
-            this.remoteDebuggingPort = remoteDebuggingPort;
+        public Builder remoteDebuggingPort(int value) {
+            this.remoteDebuggingPort = value;
             return this;
         }
 
-        public Builder uncaughtExceptionStackSize(int uncaughtExceptionStackSize) {
-            this.uncaughtExceptionStackSize = uncaughtExceptionStackSize;
+        public Builder uncaughtExceptionStackSize(int value) {
+            this.uncaughtExceptionStackSize = value;
             return this;
         }
 
-        public Builder backgroundColor(int backgroundColor) {
-            this.backgroundColor = backgroundColor;
+        public Builder backgroundColor(int value) {
+            this.backgroundColor = value;
             return this;
         }
 
-        public Builder acceptLanguageList(String acceptLanguageList) {
-            this.acceptLanguageList = acceptLanguageList;
+        public Builder acceptLanguageList(String value) {
+            this.acceptLanguageList = value;
             return this;
         }
 
-        public Builder cookieableSchemesList(String cookieableSchemesList) {
-            this.cookieableSchemesList = cookieableSchemesList;
+        public Builder cookieableSchemesList(String value) {
+            this.cookieableSchemesList = value;
             return this;
         }
 
-        public Builder cookieableSchemesExcludeDefaults(int cookieableSchemesExcludeDefaults) {
-            this.cookieableSchemesExcludeDefaults = cookieableSchemesExcludeDefaults;
+        public Builder cookieableSchemesExcludeDefaults(int value) {
+            this.cookieableSchemesExcludeDefaults = value;
             return this;
         }
 
-        public Builder chromePolicyId(String chromePolicyId) {
-            this.chromePolicyId = chromePolicyId;
+        public Builder chromePolicyId(String value) {
+            this.chromePolicyId = value;
             return this;
         }
 
-        public Builder chromeAppIconId(int chromeAppIconId) {
-            this.chromeAppIconId = chromeAppIconId;
+        public Builder chromeAppIconId(int value) {
+            this.chromeAppIconId = value;
             return this;
         }
 
-        public Builder disableSignalHandlers(int disableSignalHandlers) {
-            this.disableSignalHandlers = disableSignalHandlers;
+        public Builder disableSignalHandlers(int value) {
+            this.disableSignalHandlers = value;
             return this;
         }
 
-        public Builder useViewsDefaultPopup(int useViewsDefaultPopup) {
-            this.useViewsDefaultPopup = useViewsDefaultPopup;
+        public Builder useViewsDefaultPopup(int value) {
+            this.useViewsDefaultPopup = value;
             return this;
         }
 

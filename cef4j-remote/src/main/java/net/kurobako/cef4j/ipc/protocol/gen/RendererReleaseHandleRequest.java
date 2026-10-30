@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class RendererReleaseHandleRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 24;
@@ -50,7 +52,7 @@ public final class RendererReleaseHandleRequest implements CefMessageView, CefMe
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(frame.id());
@@ -63,16 +65,11 @@ public final class RendererReleaseHandleRequest implements CefMessageView, CefMe
     }
 
     public static final CefMessageDecoder<RendererReleaseHandleRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "frame");
-        RemoteHandle frame = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "handle");
-        RemoteHandle handle = new RemoteHandle(__buf.getInt());
-        int kindLen = WireDecoder.length(__buf, "kind");
-        byte[] kindBuf = new byte[kindLen];
-        __buf.get(kindBuf);
-        String kind = new String(kindBuf, StandardCharsets.UTF_8);
+        final RemoteHandle frame = WireDecoder.handle(__buf, "frame");
+        final RemoteHandle handle = WireDecoder.handle(__buf, "handle");
+        final String kind = WireDecoder.utf8(__buf, "kind");
         WireDecoder.requireFullyConsumed(__buf, "RendererReleaseHandleRequest");
         return new RendererReleaseHandleRequest(frame, handle, kind);
     };

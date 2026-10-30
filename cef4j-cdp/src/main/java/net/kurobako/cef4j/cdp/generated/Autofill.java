@@ -4,8 +4,6 @@ package net.kurobako.cef4j.cdp.generated;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
@@ -13,6 +11,8 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Defines commands and events for Autofill.
@@ -21,6 +21,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Autofill {
     private Autofill() {}
     /**
@@ -167,7 +168,7 @@ public final class Autofill {
          * @return the protocol field value
          */
         public java.util.List<Autofill.AddressField> fields() {
-            return CdpObject.requireList(require("fields"), element0 -> java.util.Objects.requireNonNull(Autofill.AddressField.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("fields"), element0 -> java.util.Objects.requireNonNull(Autofill.AddressField.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Sets the fields field.
@@ -192,7 +193,7 @@ public final class Autofill {
          * @return the protocol field value
          */
         public java.util.List<Autofill.AddressField> fields() {
-            return CdpObject.requireList(require("fields"), element0 -> java.util.Objects.requireNonNull(Autofill.AddressField.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("fields"), element0 -> java.util.Objects.requireNonNull(Autofill.AddressField.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * fields and values defining an address.
@@ -218,7 +219,7 @@ public final class Autofill {
          * @return the protocol field value
          */
         public java.util.List<Autofill.AddressFields> addressFields() {
-            return CdpObject.requireList(require("addressFields"), element0 -> java.util.Objects.requireNonNull(Autofill.AddressFields.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("addressFields"), element0 -> java.util.Objects.requireNonNull(Autofill.AddressFields.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * A two dimension array containing the representation of values from an address profile.
@@ -238,7 +239,7 @@ public final class Autofill {
         AUTOFILLINFERRED("autofillInferred");
         public final String value;
         FillingStrategy(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static FillingStrategy of(String value) {
             for (FillingStrategy constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -393,10 +394,10 @@ public final class Autofill {
          * @param fieldId protocol value
          */
         public TriggerRequest(DOM.BackendNodeId fieldId) {
-            set("fieldId", fieldId);
+            fieldId(fieldId);
         }
         public static TriggerRequest fromMap(Map<String, Object> values) {
-            TriggerRequest instance_ = new TriggerRequest();
+            final TriggerRequest instance_ = new TriggerRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -412,24 +413,21 @@ public final class Autofill {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            Object value = raw("frameId");
-            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
+            return raw("frameId").map(value -> new Page.FrameId((String) value));
         }
         /**
          * Credit card information to fill out the form. Credit card data is not saved. Mutually exclusive with {@code address}.
          * @return the protocol field value, empty when absent
          */
         public Optional<Autofill.CreditCard> card() {
-            Object value = raw("card");
-            return Optional.ofNullable(value == null ? null : Autofill.CreditCard.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("card").flatMap(CdpObject::objectMap).map(Autofill.CreditCard::fromMap);
         }
         /**
          * Address to fill out the form. Address data is not saved. Mutually exclusive with {@code card}.
          * @return the protocol field value, empty when absent
          */
         public Optional<Autofill.Address> address() {
-            Object value = raw("address");
-            return Optional.ofNullable(value == null ? null : Autofill.Address.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("address").flatMap(CdpObject::objectMap).map(Autofill.Address::fromMap);
         }
         /**
          * Identifies a field that serves as an anchor for autofill.
@@ -442,16 +440,7 @@ public final class Autofill {
         }
         /**
          * Identifies the frame that field belongs to.
-         * @param frameId field value; empty omits the value
-         * @return this model
-         */
-        public TriggerRequest frameId(Optional<Page.FrameId> frameId) {
-            set("frameId", frameId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifies the frame that field belongs to.
-         * @param frameId field value; null removes the value
+         * @param frameId field value
          * @return this model
          */
         public TriggerRequest frameId(Page.FrameId frameId) {
@@ -460,16 +449,7 @@ public final class Autofill {
         }
         /**
          * Credit card information to fill out the form. Credit card data is not saved. Mutually exclusive with {@code address}.
-         * @param card field value; empty omits the value
-         * @return this model
-         */
-        public TriggerRequest card(Optional<Autofill.CreditCard> card) {
-            set("card", card.orElse(null));
-            return this;
-        }
-        /**
-         * Credit card information to fill out the form. Credit card data is not saved. Mutually exclusive with {@code address}.
-         * @param card field value; null removes the value
+         * @param card field value
          * @return this model
          */
         public TriggerRequest card(Autofill.CreditCard card) {
@@ -478,16 +458,7 @@ public final class Autofill {
         }
         /**
          * Address to fill out the form. Address data is not saved. Mutually exclusive with {@code card}.
-         * @param address field value; empty omits the value
-         * @return this model
-         */
-        public TriggerRequest address(Optional<Autofill.Address> address) {
-            set("address", address.orElse(null));
-            return this;
-        }
-        /**
-         * Address to fill out the form. Address data is not saved. Mutually exclusive with {@code card}.
-         * @param address field value; null removes the value
+         * @param address field value
          * @return this model
          */
         public TriggerRequest address(Autofill.Address address) {
@@ -505,10 +476,10 @@ public final class Autofill {
          * @param addresses protocol value
          */
         public SetAddressesRequest(java.util.List<Autofill.Address> addresses) {
-            set("addresses", addresses);
+            addresses(addresses);
         }
         public static SetAddressesRequest fromMap(Map<String, Object> values) {
-            SetAddressesRequest instance_ = new SetAddressesRequest();
+            final SetAddressesRequest instance_ = new SetAddressesRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -517,7 +488,7 @@ public final class Autofill {
          * @return the protocol field value
          */
         public java.util.List<Autofill.Address> addresses() {
-            return CdpObject.requireList(require("addresses"), element0 -> java.util.Objects.requireNonNull(Autofill.Address.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("addresses"), element0 -> java.util.Objects.requireNonNull(Autofill.Address.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Sets the addresses field.
@@ -543,14 +514,14 @@ public final class Autofill {
          * @return the protocol field value
          */
         public java.util.List<Autofill.FilledField> filledFields() {
-            return CdpObject.requireList(require("filledFields"), element0 -> java.util.Objects.requireNonNull(Autofill.FilledField.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("filledFields"), element0 -> java.util.Objects.requireNonNull(Autofill.FilledField.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * An UI representation of the address used to fill the form. Consists of a 2D array where each child represents an address/profile line.
          * @return the protocol field value
          */
         public Autofill.AddressUI addressUi() {
-            return java.util.Objects.requireNonNull(Autofill.AddressUI.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("addressUi")))));
+            return java.util.Objects.requireNonNull(Autofill.AddressUI.fromMap(CdpObject.requireObjectMap(require("addressUi"))));
         }
         /**
          * Information about the fields that were filled
@@ -582,12 +553,12 @@ public final class Autofill {
          * @param address protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> trigger(DOM.BackendNodeId fieldId, Optional<Page.FrameId> frameId, Optional<Autofill.CreditCard> card, Optional<Autofill.Address> address) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> trigger(DOM.BackendNodeId fieldId, Page.@Nullable FrameId frameId, Autofill.@Nullable CreditCard card, Autofill.@Nullable Address address) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("fieldId", CdpObject.json(fieldId));
-            frameId.ifPresent(value_ -> params.put("frameId", CdpObject.json(value_)));
-            card.ifPresent(value_ -> params.put("card", CdpObject.json(value_)));
-            address.ifPresent(value_ -> params.put("address", CdpObject.json(value_)));
+            if (frameId != null) params.put("frameId", CdpObject.json(frameId));
+            if (card != null) params.put("card", CdpObject.json(card));
+            if (address != null) params.put("address", CdpObject.json(address));
             return client.call("Autofill.trigger", params);
         }
         /**
@@ -596,7 +567,9 @@ public final class Autofill {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trigger(DOM.BackendNodeId fieldId) {
-            return trigger(fieldId, Optional.empty(), Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("fieldId", CdpObject.json(fieldId));
+            return client.call("Autofill.trigger", params);
         }
         /**
          * Trigger autofill on a form identified by the fieldId. If the field and related form cannot be autofilled, returns an error.
@@ -612,7 +585,7 @@ public final class Autofill {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAddresses(java.util.List<Autofill.Address> addresses) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("addresses", CdpObject.json(addresses));
             return client.call("Autofill.setAddresses", params);
         }

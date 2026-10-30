@@ -30,7 +30,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__overlay__controller_8h.html">views/cef_overlay_controller.h:46</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefOverlayController extends CefLibraryObject {
 

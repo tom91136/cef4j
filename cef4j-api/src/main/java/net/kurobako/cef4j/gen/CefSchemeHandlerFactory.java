@@ -21,7 +21,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__scheme_8h.html">cef_scheme.h:99</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefSchemeHandlerFactory extends CefClientHandler {
 
@@ -51,8 +50,8 @@ public interface CefSchemeHandlerFactory extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefSchemeHandlerFactory {
         private final java.util.List<CefSchemeHandlerFactory> delegates;
@@ -67,8 +66,8 @@ public interface CefSchemeHandlerFactory extends CefClientHandler {
                 @Nullable CefFrame frame,
                 @Nullable String schemeName,
                 @Nullable CefRequest request) {
-            java.util.ArrayList<CefResourceHandler> collected = new java.util.ArrayList<>();
-            for (CefSchemeHandlerFactory d : delegates)
+            final java.util.ArrayList<CefResourceHandler> collected = new java.util.ArrayList<>();
+            for (final CefSchemeHandlerFactory d : delegates)
                 d.create(browser, frame, schemeName, request).ifPresent(collected::add);
             return collected.isEmpty() ? Optional.empty() : Optional.of(new CefResourceHandler.Delegating(collected));
         }

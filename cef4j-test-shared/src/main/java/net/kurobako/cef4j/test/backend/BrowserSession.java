@@ -32,27 +32,27 @@ public interface BrowserSession extends AutoCloseable {
 
     /** Resize the browser's CSS viewport. Only valid when the backend advertises VIEWPORT_RESIZE. */
     default CompletableFuture<Void> resizeViewport(int width, int height) {
-        CompletableFuture<Void> failure = new CompletableFuture<>();
+        final CompletableFuture<Void> failure = new CompletableFuture<>();
         failure.completeExceptionally(new UnsupportedOperationException("viewport resize is not supported"));
         return failure;
     }
 
     /** Wait until a paint with the requested dimensions arrives. */
-    default PaintInfo awaitPaint(int width, int height, Duration timeout)
-            throws InterruptedException, TimeoutException {
-        TestDeadline deadline = TestDeadline.after(timeout);
+    default PaintInfo awaitPaint(PaintTarget target) throws InterruptedException, TimeoutException {
+        final TestDeadline deadline = TestDeadline.after(target.timeout);
         PaintInfo last = null;
         TimeoutException lastTimeout = null;
-        while (!deadline.isExpired()) {
+        while (deadline.hasTimeRemaining()) {
             try {
                 last = awaitNextPaint(deadline.remaining());
             } catch (TimeoutException exhausted) {
                 lastTimeout = exhausted;
                 break;
             }
-            if (last.width == width && last.height == height) return last;
+            if (last.width == target.width && last.height == target.height) return last;
         }
-        TimeoutException failure = new TimeoutException("no " + width + "x" + height + " paint within " + timeout
+        final TimeoutException failure = new TimeoutException("no " + target.width + "x" + target.height
+                + " paint within " + target.timeout
                 + (last == null ? "" : "; last was " + last.width + "x" + last.height)
                 + (lastTimeout == null ? "" : "; backend=" + lastTimeout.getMessage()));
         if (lastTimeout != null) failure.initCause(lastTimeout);

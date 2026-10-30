@@ -21,7 +21,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__handler_8h.html">cef_command_handler.h:44</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefCommandHandler extends CefClientHandler {
 
@@ -119,8 +118,8 @@ public interface CefCommandHandler extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefCommandHandler {
         private final java.util.List<CefCommandHandler> delegates;
@@ -132,7 +131,7 @@ public interface CefCommandHandler extends CefClientHandler {
         @Override
         public boolean onChromeCommand(
                 @Nullable CefBrowser browser, int commandId, CefWindowOpenDisposition disposition) {
-            for (CefCommandHandler d : delegates) {
+            for (final CefCommandHandler d : delegates) {
                 if (d.onChromeCommand(browser, commandId, disposition)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -141,7 +140,7 @@ public interface CefCommandHandler extends CefClientHandler {
 
         @Override
         public boolean isChromeAppMenuItemVisible(@Nullable CefBrowser browser, int commandId) {
-            for (CefCommandHandler d : delegates) {
+            for (final CefCommandHandler d : delegates) {
                 if (d.isChromeAppMenuItemVisible(browser, commandId)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -150,7 +149,7 @@ public interface CefCommandHandler extends CefClientHandler {
 
         @Override
         public boolean isChromeAppMenuItemEnabled(@Nullable CefBrowser browser, int commandId) {
-            for (CefCommandHandler d : delegates) {
+            for (final CefCommandHandler d : delegates) {
                 if (d.isChromeAppMenuItemEnabled(browser, commandId)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -159,7 +158,7 @@ public interface CefCommandHandler extends CefClientHandler {
 
         @Override
         public boolean isChromePageActionIconVisible(CefChromePageActionIconType iconType) {
-            for (CefCommandHandler d : delegates) {
+            for (final CefCommandHandler d : delegates) {
                 if (d.isChromePageActionIconVisible(iconType)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -168,7 +167,7 @@ public interface CefCommandHandler extends CefClientHandler {
 
         @Override
         public boolean isChromeToolbarButtonVisible(CefChromeToolbarButtonType buttonType) {
-            for (CefCommandHandler d : delegates) {
+            for (final CefCommandHandler d : delegates) {
                 if (d.isChromeToolbarButtonVisible(buttonType)) return true;
             }
             if (!delegates.isEmpty()) return false;

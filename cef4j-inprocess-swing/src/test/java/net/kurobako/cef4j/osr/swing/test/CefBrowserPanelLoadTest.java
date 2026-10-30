@@ -39,7 +39,7 @@ class CefBrowserPanelLoadTest extends SwingBrowserPanelTestBase {
         assertThat(waitUntil(() -> Objects.requireNonNull(STATES.get(panel)).canGoBack, 5_000))
                 .isTrue();
 
-        Objects.requireNonNull(panel.browser()).goBack();
+        panel.browser().orElseThrow().goBack();
         assertThat(waitUntil(() -> "one".equals(getTitle(panel)), 5_000)).isTrue();
     }
 
@@ -70,7 +70,7 @@ class CefBrowserPanelLoadTest extends SwingBrowserPanelTestBase {
             loadUrl(panel, server.url("/two"));
             assertThat(waitUntil(() -> "two".equals(getTitle(panel)), 5_000)).isTrue();
 
-            Objects.requireNonNull(panel.browser()).goBack();
+            panel.browser().orElseThrow().goBack();
             assertThat(waitUntil(() -> "one".equals(getTitle(panel)), 5_000)).isTrue();
         }
     }
@@ -88,10 +88,10 @@ class CefBrowserPanelLoadTest extends SwingBrowserPanelTestBase {
             loadUrl(panel, server.url("/two"));
             assertThat(waitUntil(() -> "two".equals(getTitle(panel)), 5_000)).isTrue();
 
-            Objects.requireNonNull(panel.browser()).goBack();
+            panel.browser().orElseThrow().goBack();
             assertThat(waitUntil(() -> "one".equals(getTitle(panel)), 5_000)).isTrue();
 
-            Objects.requireNonNull(panel.browser()).goForward();
+            panel.browser().orElseThrow().goForward();
             assertThat(waitUntil(() -> "two".equals(getTitle(panel)), 5_000)).isTrue();
         }
     }

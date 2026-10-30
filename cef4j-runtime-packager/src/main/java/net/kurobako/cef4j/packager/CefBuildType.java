@@ -29,7 +29,8 @@ public enum CefBuildType {
         try {
             return valueOf(value.trim().toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException failure) {
-            throw new IllegalArgumentException("Unsupported CEF build type: " + value + " (expected release or debug)");
+            throw new IllegalArgumentException(
+                    "Unsupported CEF build type: " + value + " (expected release or debug)", failure);
         }
     }
 }

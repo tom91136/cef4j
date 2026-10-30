@@ -7,7 +7,7 @@ public final class RemoteViewportConstraints {
     private RemoteViewportConstraints() {}
 
     public static void validate(int width, int height) {
-        long pixels = (long) width * height;
+        final long pixels = (long) width * height;
         if (width <= 0 || height <= 0 || width > MAX_DIMENSION || height > MAX_DIMENSION || pixels > MAX_PIXELS) {
             throw new IllegalArgumentException("viewport exceeds " + MAX_DIMENSION + " per dimension or " + MAX_PIXELS
                     + " pixels: " + width + "x" + height);

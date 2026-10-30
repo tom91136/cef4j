@@ -12,12 +12,12 @@ public final class RawFrame {
     private final FrameMetadata metadata;
 
     public RawFrame(int width, int height, int stride, ByteBuffer pixels, FrameMetadata metadata) {
-        long rowBytes = (long) width * 4L;
-        long requiredBytes = (long) stride * height;
+        final long rowBytes = (long) width * 4L;
+        final long requiredBytes = (long) stride * height;
         if (width <= 0 || height <= 0 || stride < rowBytes || requiredBytes > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("invalid dimensions");
         }
-        ByteBuffer source = Objects.requireNonNull(pixels, "pixels");
+        final ByteBuffer source = Objects.requireNonNull(pixels, "pixels");
         if (source.remaining() < requiredBytes) {
             throw new IllegalArgumentException(
                     "pixel buffer has " + source.remaining() + " bytes, requires " + requiredBytes);
@@ -51,8 +51,8 @@ public final class RawFrame {
 
     /** Makes an explicitly owned snapshot suitable for retaining beyond the callback. */
     public RawFrame snapshot() {
-        ByteBuffer source = pixels();
-        ByteBuffer copy = ByteBuffer.allocateDirect(source.remaining());
+        final ByteBuffer source = pixels();
+        final ByteBuffer copy = ByteBuffer.allocateDirect(source.remaining());
         copy.put(source).flip();
         return new RawFrame(width, height, stride, copy, metadata);
     }

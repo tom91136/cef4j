@@ -14,6 +14,7 @@ import com.google.errorprone.matchers.Matcher;
 import com.sun.source.tree.ExpressionStatementTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MethodInvocationTree;
+import java.io.Serial;
 
 /** {@link java.io.File} mutators report failure only through their boolean result, so ignoring it hides the error. */
 @AutoService(BugChecker.class)
@@ -21,6 +22,7 @@ import com.sun.source.tree.MethodInvocationTree;
         summary = "java.io.File operations report failure through their result; check it or use java.nio.file.Files",
         severity = SeverityLevel.ERROR)
 public final class IgnoredFileOperationResult extends BugChecker implements MethodInvocationTreeMatcher {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private static final Matcher<ExpressionTree> FILE_OPERATION = instanceMethod()

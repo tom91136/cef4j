@@ -1,9 +1,10 @@
 package net.kurobako.cef4j.codegen
 
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 
-import net.kurobako.cef4j.codegen.CodegenPlatform
+import net.kurobako.cef4j.codegen.Platform
 import net.kurobako.cef4j.codegen.passes.CleanOutputDirs
 import net.kurobako.cef4j.codegen.passes.DiscoverHeaders
 import net.kurobako.cef4j.codegen.passes.EmitMarkerInterfaces
@@ -34,8 +35,9 @@ object Main {
     val refinedTree       = RefineTree(parsedTree, parseState)
     val untypedPtrWarning = ValidateTypedPointers(refinedTree, parseState.handlerNames)
 
-    given namingContext: Naming.Context          = parseState.namingContext
-    given docCommentContext: DocComments.Context =
+    given Naming.Context = parseState.namingContext
+    type DocContext = DocComments.Context
+    given DocContext =
       InitialiseDocComments(parseState.docContext, parsedTree, refinedTree)
 
     CleanOutputDirs.cleanCppOutput(cfg.outCpp, cfg.outCppPlatformDir, cleanCommon = cfg.emitCommonCpp)
@@ -84,9 +86,10 @@ object Main {
     )
   }
 
-  private[codegen] def parseArgs(args: List[String]): Config = {
-    val required = List("--cef-include=", "--out-cpp=", "--out-java=")
-    required.foreach { prefix =>
+  private val RequiredArgs = List("--cef-include=", "--out-cpp=", "--out-java=")
+
+  def parseArgs(args: List[String]): Config = {
+    RequiredArgs.foreach { prefix =>
       require(args.exists(_.startsWith(prefix)), s"Missing required argument: ${prefix.dropRight(1)}")
     }
     val cfg = args.foldLeft(Config(
@@ -112,10 +115,10 @@ object Main {
         case s"--out-resource-dir=$path" =>
           cfg.copy(outResourceDir = Some(Paths.get(path)))
         case s"--target-platform=$platform" =>
-          CodegenPlatform.parse(platform) match {
+          Platform.parse(platform) match {
             case Some(p) => cfg.copy(targetPlatform = p)
             case None    =>
-              throw new IllegalArgumentException(
+              throw IllegalArgumentException(
                 s"Unknown target platform '$platform' (expected linux/mac/windows, linux64/linuxarm64, macosx64/macosarm64, windows64/windowsarm64, or auto)"
               )
           }
@@ -136,7 +139,7 @@ object Main {
         case s"--extra-capi-dirs=$dirs" =>
           cfg.copy(extraCapiDirs = parseDirList(dirs))
         case other =>
-          throw new IllegalArgumentException(s"Unknown argument: $other")
+          throw IllegalArgumentException(s"Unknown argument: $other")
       }
     }
     validateOutputPaths(cfg)
@@ -158,18 +161,18 @@ object Main {
   }
 
   private def parseDirList(value: String): List[String] =
-    value.split(",").iterator.map(_.trim).filter(_.nonEmpty).toList
+    value.split(",").view.map(_.trim).filter(_.nonEmpty).toList
 
   private def parseBoolean(value: String): Boolean =
     value.trim.toLowerCase match {
       case "1" | "true" | "yes" | "on"  => true
       case "0" | "false" | "no" | "off" => false
-      case other                        => throw new IllegalArgumentException(s"Invalid boolean value: $other")
+      case other                        => throw IllegalArgumentException(s"Invalid boolean value: $other")
     }
 
-  private[codegen] def generatedPackageDir(
-      javaSourceRoot: java.nio.file.Path,
+  def generatedPackageDir(
+      javaSourceRoot: Path,
       javaPackage: String
-  ): java.nio.file.Path =
+  ): Path =
     javaPackage.split('.').foldLeft(javaSourceRoot)((path, segment) => path.resolve(segment))
 }

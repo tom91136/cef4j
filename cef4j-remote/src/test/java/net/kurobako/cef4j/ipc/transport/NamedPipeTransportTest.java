@@ -55,7 +55,7 @@ class NamedPipeTransportTest {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         NamedPipeTransport transport =
                 new NamedPipeTransport("pipe://duplex-test", blockingInput, blockingInput, output);
-        try {
+        try (transport) {
             assertThat(availabilityChecked.await(1, TimeUnit.SECONDS)).isTrue();
             assertThat(readEntered.getCount()).isEqualTo(1L);
 
@@ -63,7 +63,6 @@ class NamedPipeTransportTest {
                     Duration.ofSeconds(1), () -> transport.send(ByteBuffer.wrap(new byte[] {1, 2, 3})));
             assertThat(output.toByteArray()).containsExactly(0, 0, 0, 3, 1, 2, 3);
         } finally {
-            transport.close();
             unblockRead.countDown();
         }
     }

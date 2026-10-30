@@ -15,7 +15,7 @@ object CefCachePublisher {
 
   def main(args: Array[String]): Unit = args match {
     case Array(staged, target, marker) => publish(Path.of(staged), Path.of(target), marker)
-    case _ => throw new IllegalArgumentException("Usage: CefCachePublisher <staged-dir> <target-dir> <marker-name>")
+    case _ => throw IllegalArgumentException("Usage: CefCachePublisher <staged-dir> <target-dir> <marker-name>")
   }
 
   def publish(staged: Path, target: Path, markerName: String): Unit = {
@@ -27,9 +27,9 @@ object CefCachePublisher {
         Option(root.getParent).contains(cacheRoot) && root.getFileName.toString.startsWith(".cef-extract-")
       case _ => false
     }
-    if (!insideCache) throw new IOException(s"CEF staging directory is outside the target cache: $normalizedStaged")
+    if (!insideCache) throw IOException(s"CEF staging directory is outside the target cache: $normalizedStaged")
     if (!isComplete(normalizedStaged, markerName))
-      throw new IOException(s"Incomplete staged CEF distribution: $normalizedStaged")
+      throw IOException(s"Incomplete staged CEF distribution: $normalizedStaged")
 
     val lockPath = normalizedTarget.resolveSibling(s"${normalizedTarget.getFileName}.cef4j.lock")
     Using.resource(FileChannel.open(lockPath, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) { channel =>
@@ -41,7 +41,7 @@ object CefCachePublisher {
             val _ = Files.move(normalizedStaged, normalizedTarget, StandardCopyOption.ATOMIC_MOVE)
           } catch {
             case e: AtomicMoveNotSupportedException =>
-              throw new IOException("CEF cache filesystem does not support atomic publication", e)
+              throw IOException("CEF cache filesystem does not support atomic publication", e)
           }
         }
       }

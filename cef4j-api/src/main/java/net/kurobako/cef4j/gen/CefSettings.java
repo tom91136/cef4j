@@ -49,7 +49,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:199</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefSettings {
 
@@ -338,43 +337,43 @@ public final class CefSettings {
     /** Create a mutable copy of this instance. */
     public Mutable toMutable() {
         return new Mutable(
-                this.noSandbox,
-                this.browserSubprocessPath,
-                this.frameworkDirPath,
-                this.mainBundlePath,
-                this.multiThreadedMessageLoop,
-                this.externalMessagePump,
-                this.windowlessRenderingEnabled,
-                this.commandLineArgsDisabled,
-                this.cachePath,
-                this.rootCachePath,
-                this.persistSessionCookies,
-                this.userAgent,
-                this.userAgentProduct,
-                this.locale,
-                this.logFile,
-                this.logSeverity,
-                this.logItems,
-                this.javascriptFlags,
-                this.resourcesDirPath,
-                this.localesDirPath,
-                this.remoteDebuggingPort,
-                this.uncaughtExceptionStackSize,
-                this.backgroundColor,
-                this.acceptLanguageList,
-                this.cookieableSchemesList,
-                this.cookieableSchemesExcludeDefaults,
-                this.chromePolicyId,
-                this.chromeAppIconId,
-                this.disableSignalHandlers,
-                this.useViewsDefaultPopup);
+                noSandbox,
+                browserSubprocessPath,
+                frameworkDirPath,
+                mainBundlePath,
+                multiThreadedMessageLoop,
+                externalMessagePump,
+                windowlessRenderingEnabled,
+                commandLineArgsDisabled,
+                cachePath,
+                rootCachePath,
+                persistSessionCookies,
+                userAgent,
+                userAgentProduct,
+                locale,
+                logFile,
+                logSeverity,
+                logItems,
+                javascriptFlags,
+                resourcesDirPath,
+                localesDirPath,
+                remoteDebuggingPort,
+                uncaughtExceptionStackSize,
+                backgroundColor,
+                acceptLanguageList,
+                cookieableSchemesList,
+                cookieableSchemesExcludeDefaults,
+                chromePolicyId,
+                chromeAppIconId,
+                disableSignalHandlers,
+                useViewsDefaultPopup);
     }
 
     @Override
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefSettings)) return false;
-        CefSettings other = (CefSettings) obj;
+        final CefSettings other = (CefSettings) obj;
         return this.noSandbox == other.noSandbox
                 && java.util.Objects.equals(this.browserSubprocessPath, other.browserSubprocessPath)
                 && java.util.Objects.equals(this.frameworkDirPath, other.frameworkDirPath)
@@ -764,43 +763,43 @@ public final class CefSettings {
         /** Create an immutable snapshot of this instance. */
         public CefSettings toImmutable() {
             return new CefSettings(
-                    this.noSandbox,
-                    this.browserSubprocessPath,
-                    this.frameworkDirPath,
-                    this.mainBundlePath,
-                    this.multiThreadedMessageLoop,
-                    this.externalMessagePump,
-                    this.windowlessRenderingEnabled,
-                    this.commandLineArgsDisabled,
-                    this.cachePath,
-                    this.rootCachePath,
-                    this.persistSessionCookies,
-                    this.userAgent,
-                    this.userAgentProduct,
-                    this.locale,
-                    this.logFile,
-                    this.logSeverity,
-                    this.logItems,
-                    this.javascriptFlags,
-                    this.resourcesDirPath,
-                    this.localesDirPath,
-                    this.remoteDebuggingPort,
-                    this.uncaughtExceptionStackSize,
-                    this.backgroundColor,
-                    this.acceptLanguageList,
-                    this.cookieableSchemesList,
-                    this.cookieableSchemesExcludeDefaults,
-                    this.chromePolicyId,
-                    this.chromeAppIconId,
-                    this.disableSignalHandlers,
-                    this.useViewsDefaultPopup);
+                    noSandbox,
+                    browserSubprocessPath,
+                    frameworkDirPath,
+                    mainBundlePath,
+                    multiThreadedMessageLoop,
+                    externalMessagePump,
+                    windowlessRenderingEnabled,
+                    commandLineArgsDisabled,
+                    cachePath,
+                    rootCachePath,
+                    persistSessionCookies,
+                    userAgent,
+                    userAgentProduct,
+                    locale,
+                    logFile,
+                    logSeverity,
+                    logItems,
+                    javascriptFlags,
+                    resourcesDirPath,
+                    localesDirPath,
+                    remoteDebuggingPort,
+                    uncaughtExceptionStackSize,
+                    backgroundColor,
+                    acceptLanguageList,
+                    cookieableSchemesList,
+                    cookieableSchemesExcludeDefaults,
+                    chromePolicyId,
+                    chromeAppIconId,
+                    disableSignalHandlers,
+                    useViewsDefaultPopup);
         }
 
         @Override
         public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
-            Mutable other = (Mutable) obj;
+            final Mutable other = (Mutable) obj;
             return this.noSandbox == other.noSandbox
                     && java.util.Objects.equals(this.browserSubprocessPath, other.browserSubprocessPath)
                     && java.util.Objects.equals(this.frameworkDirPath, other.frameworkDirPath)

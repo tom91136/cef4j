@@ -28,7 +28,7 @@ public class NativePointer {
     }
 
     /** Represents a nullptr (0), for use where CEF accepts NULL. */
-    public static NativePointer NULL = new NativePointer(0);
+    public static final NativePointer NULL = new NativePointer(0);
 
     @Override
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {

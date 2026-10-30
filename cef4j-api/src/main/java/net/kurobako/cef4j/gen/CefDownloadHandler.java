@@ -20,7 +20,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:86</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefDownloadHandler extends CefClientHandler {
 
@@ -87,8 +86,8 @@ public interface CefDownloadHandler extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefDownloadHandler {
         private final java.util.List<CefDownloadHandler> delegates;
@@ -99,7 +98,7 @@ public interface CefDownloadHandler extends CefClientHandler {
 
         @Override
         public boolean canDownload(@Nullable CefBrowser browser, @Nullable String url, @Nullable String requestMethod) {
-            for (CefDownloadHandler d : delegates) {
+            for (final CefDownloadHandler d : delegates) {
                 if (d.canDownload(browser, url, requestMethod)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -112,7 +111,7 @@ public interface CefDownloadHandler extends CefClientHandler {
                 @Nullable CefDownloadItem downloadItem,
                 @Nullable String suggestedName,
                 @Nullable CefBeforeDownloadCallback callback) {
-            for (CefDownloadHandler d : delegates) {
+            for (final CefDownloadHandler d : delegates) {
                 if (d.onBeforeDownload(browser, downloadItem, suggestedName, callback)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -124,7 +123,7 @@ public interface CefDownloadHandler extends CefClientHandler {
                 @Nullable CefBrowser browser,
                 @Nullable CefDownloadItem downloadItem,
                 @Nullable CefDownloadItemCallback callback) {
-            for (CefDownloadHandler d : delegates) d.onDownloadUpdated(browser, downloadItem, callback);
+            for (final CefDownloadHandler d : delegates) d.onDownloadUpdated(browser, downloadItem, callback);
         }
     }
 }

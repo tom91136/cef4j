@@ -89,19 +89,19 @@ public final class RemoteBrowserPanel extends JPanel implements AutoCloseable {
     }
 
     private void onFrame(int width, int height, ByteBuffer pixels, FrameMetadata meta) {
-        long expected = (long) width * height * 4L;
+        final long expected = (long) width * height * 4L;
         if (width <= 0 || height <= 0 || expected > Integer.MAX_VALUE || pixels.remaining() != expected) {
             LOG.warn("dropping malformed frame {}x{} with {} bytes", width, height, pixels.remaining());
             return;
         }
-        int[] snapshot = new int[width * height];
+        final int[] snapshot = new int[width * height];
         pixels.duplicate().order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().get(snapshot);
         frameDispatcher.submit(new FrameSnapshot(width, height, snapshot));
     }
 
     private void presentFrame(FrameSnapshot frame) {
-        if (!binding.isAttached()) return;
-        BufferedImage next = new BufferedImage(frame.width, frame.height, BufferedImage.TYPE_INT_ARGB_PRE);
+        if (binding.isDetached()) return;
+        final BufferedImage next = new BufferedImage(frame.width, frame.height, BufferedImage.TYPE_INT_ARGB_PRE);
         next.setRGB(0, 0, frame.width, frame.height, frame.pixels, 0, frame.width);
         image = next;
         repaint();
@@ -122,7 +122,7 @@ public final class RemoteBrowserPanel extends JPanel implements AutoCloseable {
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
-        BufferedImage current = image;
+        final BufferedImage current = image;
         if (current != null) graphics.drawImage(current, 0, 0, getWidth(), getHeight(), null);
     }
 
@@ -169,15 +169,15 @@ public final class RemoteBrowserPanel extends JPanel implements AutoCloseable {
 
             @Override
             public void keyTyped(KeyEvent event) {
-                char character = event.getKeyChar();
+                final char character = event.getKeyChar();
                 if (character != KeyEvent.CHAR_UNDEFINED) sendKey(KEYEVENT_CHAR, event, character, character);
             }
         });
     }
 
     private void forwardMouseClick(MouseEvent event, boolean mouseUp) {
-        BrowserHost host = binding.host().orElse(null);
-        int button = swingButtonToCef(event.getButton());
+        final BrowserHost host = binding.host().orElse(null);
+        final int button = swingButtonToCef(event.getButton());
         if (host == null || button < 0) return;
         binding.observe(
                 host.sendMouseClickEvent(mouseEvent(event), button, mouseUp ? 1 : 0, event.getClickCount()),
@@ -185,21 +185,21 @@ public final class RemoteBrowserPanel extends JPanel implements AutoCloseable {
     }
 
     private void forwardMouseMove(MouseEvent event, boolean mouseLeave) {
-        BrowserHost host = binding.host().orElse(null);
-        if (host != null)
-            binding.observe(host.sendMouseMoveEvent(mouseEvent(event), mouseLeave ? 1 : 0), "forward mouse move");
+        binding.host()
+                .ifPresent(host -> binding.observe(
+                        host.sendMouseMoveEvent(mouseEvent(event), mouseLeave ? 1 : 0), "forward mouse move"));
     }
 
     private void forwardMouseWheel(MouseWheelEvent event) {
-        BrowserHost host = binding.host().orElse(null);
+        final BrowserHost host = binding.host().orElse(null);
         if (host != null) {
-            int deltaY = (int) Math.round(-event.getPreciseWheelRotation() * 40.0);
+            final int deltaY = (int) Math.round(-event.getPreciseWheelRotation() * 40.0);
             binding.observe(host.sendMouseWheelEvent(mouseEvent(event), 0, deltaY), "forward mouse wheel");
         }
     }
 
     private void sendKey(int type, KeyEvent event, int keyCode, int character) {
-        BrowserHost host = binding.host().orElse(null);
+        final BrowserHost host = binding.host().orElse(null);
         if (host == null) return;
         binding.observe(
                 host.sendKeyEvent(net.kurobako.cef4j.ipc.protocol.gen.KeyEvent.builder()
@@ -225,7 +225,7 @@ public final class RemoteBrowserPanel extends JPanel implements AutoCloseable {
         if (event.isControlDown()) value |= 1 << 2;
         if (event.isAltDown()) value |= 1 << 3;
         if (event.isMetaDown()) value |= 1 << 7;
-        int extended = event.getModifiersEx();
+        final int extended = event.getModifiersEx();
         if ((extended & InputEvent.BUTTON1_DOWN_MASK) != 0) value |= 1 << 4;
         if ((extended & InputEvent.BUTTON2_DOWN_MASK) != 0) value |= 1 << 5;
         if ((extended & InputEvent.BUTTON3_DOWN_MASK) != 0) value |= 1 << 6;

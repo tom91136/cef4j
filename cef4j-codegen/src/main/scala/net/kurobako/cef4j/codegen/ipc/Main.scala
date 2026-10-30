@@ -5,11 +5,13 @@ import java.nio.file.Path
 import java.nio.file.Paths
 
 import net.kurobako.cef4j.codegen.AtomicFiles
+import net.kurobako.cef4j.codegen.Banners
 import net.kurobako.cef4j.codegen.CHeaderParser
 import net.kurobako.cef4j.codegen.CefDecl
 import net.kurobako.cef4j.codegen.DocComments
 import net.kurobako.cef4j.codegen.FileSystem
 import net.kurobako.cef4j.codegen.HeaderMetadataIndex
+import net.kurobako.cef4j.codegen.JavaCodeGen
 import net.kurobako.cef4j.codegen.Naming
 import net.kurobako.cef4j.codegen.Preprocessor
 import net.kurobako.cef4j.codegen.namedStruct
@@ -18,6 +20,7 @@ import net.kurobako.cef4j.codegen.passes.InitialiseDocContext
 import net.kurobako.cef4j.codegen.{Config => CodegenConfig}
 
 object Main {
+  private val CallbackIdField = FieldSpec("callbackId", FieldType.I32)
 
   def main(args: Array[String]): Unit = {
     val cfg         = parseArgs(args.toList)
@@ -37,6 +40,7 @@ object Main {
           )
       }
     given Naming.Context = derived.namingContext
+    given Banners        = cfg.regenerateCommand.fold(Banners.forIpc)(Banners.forCommand)
     val astSpecs         = derived.specs
     val astFacades       = derived.facades
     val astHandlersAll   = derived.handlers
@@ -51,7 +55,7 @@ object Main {
         className = v.eventClassName,
         packageName = v.packageName,
         messageId = SpecDeriver.stableId(v.eventClassName),
-        fields = FieldSpec("callbackId", FieldType.I32) :: v.params
+        fields = CallbackIdField :: v.params
       )
     }
     // Hand-written protocol shapes override derived ones.
@@ -124,11 +128,13 @@ object Main {
           val cefRoot = inc.getParent
           val capiDir = inc.resolve("capi")
           List(capiDir, capiDir.resolve("views"))
+            .view
             .filter(Files.isDirectory(_))
             .flatMap(dir =>
               FileSystem.children(dir).filter(p => Files.isRegularFile(p) && p.toString.endsWith("_capi.h"))
             )
             .map(p => cefRoot.relativize(p).toString.replace('\\', '/'))
+            .toList
         }
         // Renderer release is not associated with a derived facade.
         val manualRendererRelayIds: List[Int] =
@@ -192,11 +198,12 @@ object Main {
     if (!Files.exists(dir)) 0
     else {
       val files = FileSystem.children(dir).filter(path => Files.isRegularFile(path) && path.toString.endsWith(suffix))
-      files.foreach(Files.delete)
+      files.foreach(Files.delete(_))
       files.size
     }
 
-  private def write(target: Path, source: String): Unit = AtomicFiles.writeString(target, source)
+  private def write(target: Path, source: String): Unit =
+    AtomicFiles.writeString(target, JavaCodeGen.withoutUnusedImports(source))
 
   private case class Config(
       outJava: Option[Path] = None,
@@ -204,25 +211,27 @@ object Main {
       javaPackage: String = "net.kurobako.cef4j.ipc.protocol.gen",
       cefInclude: Option[Path] = None,
       compilerId: String = "gcc",
-      cefApiVersionRaw: Option[String] = None
+      cefApiVersionRaw: Option[String] = None,
+      regenerateCommand: Option[String] = None
   )
 
   private def parseArgs(args: List[String]): Config =
     args.foldLeft(Config()) { (cfg, arg) =>
       arg match {
-        case s"--out-java=$path"       => cfg.copy(outJava = Some(Paths.get(path)))
-        case s"--out-cpp=$path"        => cfg.copy(outCpp = Some(Paths.get(path)))
-        case s"--java-package=$value"  => cfg.copy(javaPackage = value)
-        case s"--cef-include=$path"    => cfg.copy(cefInclude = Some(Paths.get(path)))
-        case s"--compiler=$id"         => cfg.copy(compilerId = id)
-        case s"--cef-api-version=$raw" => cfg.copy(cefApiVersionRaw = Some(raw))
-        case other                     =>
-          throw new IllegalArgumentException(s"Unknown argument: $other")
+        case s"--out-java=$path"          => cfg.copy(outJava = Some(Paths.get(path)))
+        case s"--out-cpp=$path"           => cfg.copy(outCpp = Some(Paths.get(path)))
+        case s"--java-package=$value"     => cfg.copy(javaPackage = value)
+        case s"--cef-include=$path"       => cfg.copy(cefInclude = Some(Paths.get(path)))
+        case s"--compiler=$id"            => cfg.copy(compilerId = id)
+        case s"--cef-api-version=$raw"    => cfg.copy(cefApiVersionRaw = Some(raw))
+        case s"--regenerate-command=$cmd" => cfg.copy(regenerateCommand = Some(cmd))
+        case other                        =>
+          throw IllegalArgumentException(s"Unknown argument: $other")
       }
     }
 
   // Preprocessing must use the runtime's CEF_API_VERSION to preserve struct layout.
-  private final case class Derived(
+  private case class Derived(
       specs: List[MessageSpec],
       facades: List[FacadeSpec],
       handlers: List[HandlerSpec],
@@ -266,17 +275,21 @@ object Main {
       metadata.deriveCompoundSegments(cefInclude),
       packageName
     )
-    val structNames                          = decls.flatMap(_.namedStruct).toSet
-    val baseDocs                             = DocComments.withClassNames(InitialiseDocContext(cefInclude), structNames)
-    given ipcDocContext: DocComments.Context = DocComments.withMethodSignatures(baseDocs, decls)
+    val structNames           = decls.flatMap(_.namedStruct).toSet
+    val baseDocs              = DocComments.withClassNames(InitialiseDocContext(cefInclude), structNames)
+    given DocComments.Context = DocComments.withMethodSignatures(baseDocs, decls)
     val methodDocs: Map[(String, String), String] = decls.flatMap {
       case d: CefDecl.ObjectStruct =>
         d.fns.map(fn =>
-          (d.name, fn.name) -> remoteSafeDoc(DocComments.forMethod(fn, metadata.docs, d.sourceHeader, "", d.name))
+          (d.name, fn.name) -> remoteSafeDoc(
+            DocComments.forMethod(DocComments.MethodDoc(fn, metadata.docs, d.name), d.sourceHeader)
+          )
         )
       case d: CefDecl.HandlerStruct =>
         d.fns.map(fn =>
-          (d.name, fn.name) -> remoteSafeDoc(DocComments.forMethod(fn, metadata.docs, d.sourceHeader, "", d.name))
+          (d.name, fn.name) -> remoteSafeDoc(
+            DocComments.forMethod(DocComments.MethodDoc(fn, metadata.docs, d.name), d.sourceHeader)
+          )
         )
       case _ => Nil
     }.filter(_._2.nonEmpty).toMap
@@ -294,10 +307,11 @@ object Main {
     )
   }
 
+  private val LinkRe = """\{@link\s+([^\s}]+)(?:\s+[^}]*)?\}""".r
+
   // JNI-projection links do not resolve against remote wire signatures.
-  private def remoteSafeDoc(doc: String): String = {
-    val Link = """\{@link\s+([^\s}]+)(?:\s+[^}]*)?\}""".r
-    Link.replaceAllIn(
+  private def remoteSafeDoc(doc: String): String =
+    LinkRe.replaceAllIn(
       doc,
       matched => {
         val target       = matched.group(1)
@@ -313,5 +327,4 @@ object Main {
         s"{@code $className$member}"
       }
     )
-  }
 }

@@ -26,7 +26,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:1918</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefScreenInfo {
 
@@ -76,20 +75,14 @@ public final class CefScreenInfo {
 
     /** Create a mutable copy of this instance. */
     public Mutable toMutable() {
-        return new Mutable(
-                this.deviceScaleFactor,
-                this.depth,
-                this.depthPerComponent,
-                this.isMonochrome,
-                this.rect,
-                this.availableRect);
+        return new Mutable(deviceScaleFactor, depth, depthPerComponent, isMonochrome, rect, availableRect);
     }
 
     @Override
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefScreenInfo)) return false;
-        CefScreenInfo other = (CefScreenInfo) obj;
+        final CefScreenInfo other = (CefScreenInfo) obj;
         return this.deviceScaleFactor == other.deviceScaleFactor
                 && this.depth == other.depth
                 && this.depthPerComponent == other.depthPerComponent
@@ -170,20 +163,14 @@ public final class CefScreenInfo {
 
         /** Create an immutable snapshot of this instance. */
         public CefScreenInfo toImmutable() {
-            return new CefScreenInfo(
-                    this.deviceScaleFactor,
-                    this.depth,
-                    this.depthPerComponent,
-                    this.isMonochrome,
-                    this.rect,
-                    this.availableRect);
+            return new CefScreenInfo(deviceScaleFactor, depth, depthPerComponent, isMonochrome, rect, availableRect);
         }
 
         @Override
         public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
-            Mutable other = (Mutable) obj;
+            final Mutable other = (Mutable) obj;
             return this.deviceScaleFactor == other.deviceScaleFactor
                     && this.depth == other.depth
                     && this.depthPerComponent == other.depthPerComponent

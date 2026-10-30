@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Duration;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -93,20 +94,22 @@ public final class CefSessionImpl implements CefSession {
     }
 
     private void establishRuntimeSession() {
-        ByteBuffer buf = ByteBuffer.allocate(Envelope.HEADER_SIZE).order(ByteOrder.LITTLE_ENDIAN);
+        final ByteBuffer buf = ByteBuffer.allocate(Envelope.HEADER_SIZE).order(ByteOrder.LITTLE_ENDIAN);
         Envelope.writeHeader(
-                buf, Envelope.Kind.REQUEST, 0, RUNTIME_SESSION_READY_CORR_ID, RUNTIME_SESSION_READY_MESSAGE_ID, 0);
+                buf,
+                new Envelope.Header(
+                        0, Envelope.Kind.REQUEST, 0, RUNTIME_SESSION_READY_CORR_ID, RUNTIME_SESSION_READY_MESSAGE_ID));
         buf.flip();
         // Request timeouts begin only after startup. The transport may legitimately spend several minutes completing
         // its native handshake, so the TID_UI readiness barrier needs an independent budget rather than consuming the
         // caller's per-request timeout before a session exists.
-        long deadline = System.nanoTime() + RUNTIME_SESSION_READY_TIMEOUT.toNanos();
+        final long deadline = System.nanoTime() + RUNTIME_SESSION_READY_TIMEOUT.toNanos();
         try {
             while (!runtimeSessionReady.isDone()) {
                 // SessionReady is an idempotent bootstrap barrier. Retransmit it until acknowledged so a transport
                 // connection becoming writable concurrently with the first send cannot strand startup forever.
                 transport.send(buf.duplicate());
-                long remaining = deadline - System.nanoTime();
+                final long remaining = deadline - System.nanoTime();
                 if (remaining <= 0) throw new TimeoutException();
                 try {
                     runtimeSessionReady.get(
@@ -138,7 +141,7 @@ public final class CefSessionImpl implements CefSession {
 
     private static ScheduledExecutorService defaultTimer() {
         return Executors.newSingleThreadScheduledExecutor(r -> {
-            Thread t = new Thread(r, "cef-session-timer");
+            final Thread t = new Thread(r, "cef-session-timer");
             t.setDaemon(true);
             return t;
         });
@@ -146,7 +149,7 @@ public final class CefSessionImpl implements CefSession {
 
     @Override
     public <R extends CefMessageView> CompletableFuture<R> request(CefMessageEncoder enc, CefMessageDecoder<R> dec) {
-        RequestFuture<R> future = new RequestFuture<>();
+        final RequestFuture<R> future = new RequestFuture<>();
         if (closed) {
             future.completeExceptionally(new CefTransportException("session closed"));
             return future;
@@ -156,7 +159,7 @@ public final class CefSessionImpl implements CefSession {
                     new CefTransportException("pending request limit reached (max " + maxPendingRequests + ")"));
             return future;
         }
-        Pending<R> p = new Pending<>(future, dec, enc.messageId());
+        final Pending<R> p = new Pending<>(future, dec, enc.messageId());
         int corrId;
         try {
             corrId = correlationIds.allocate(candidate -> pending.putIfAbsent(candidate, p) == null);
@@ -199,9 +202,12 @@ public final class CefSessionImpl implements CefSession {
         }
 
         try {
-            ByteBuffer buf = ByteBuffer.allocate(Envelope.HEADER_SIZE + enc.encodedSize())
-                    .order(ByteOrder.LITTLE_ENDIAN);
-            Envelope.writeHeader(buf, Envelope.Kind.REQUEST, 0, corrId, enc.messageId(), enc.encodedSize());
+            final int payloadLength = enc.encodedSize();
+            final ByteBuffer buf =
+                    ByteBuffer.allocate(Envelope.HEADER_SIZE + payloadLength).order(ByteOrder.LITTLE_ENDIAN);
+            Envelope.writeHeader(
+                    buf, new Envelope.Header(payloadLength, Envelope.Kind.REQUEST, 0, corrId, enc.messageId()));
+
             enc.encodeInto(buf);
             buf.flip();
             transport.send(buf);
@@ -216,41 +222,61 @@ public final class CefSessionImpl implements CefSession {
     @Override
     public <E extends CefMessageView> HandlerRegistration on(
             int messageId, CefMessageDecoder<E> dec, Consumer<E> handler) {
-        EventBinding<E> binding = new EventBinding<>(dec, handler);
-        synchronized (registrationLock) {
-            requireOpen();
-            eventHandlers
-                    .computeIfAbsent(messageId, k -> new CopyOnWriteArrayList<>())
-                    .add(binding);
-        }
-        return () -> {
-            CopyOnWriteArrayList<EventBinding<?>> list = eventHandlers.get(messageId);
-            if (list != null && list.remove(binding) && list.isEmpty()) eventHandlers.remove(messageId, list);
-        };
+        final EventBinding<E> binding = register(messageId, dec, handler);
+        return () -> unregister(messageId, binding);
     }
 
     @Override
     public <E extends CefMessageView> HandlerRegistration onLatest(
             int messageId, CefMessageDecoder<E> dec, Consumer<E> handler) {
-        EventBinding<E> binding = new EventBinding<>(dec, handler);
+        final EventBinding<E> binding = register(messageId, dec, handler);
+        final LatestEvent latest = latestEvents.get(messageId);
+        if (latest != null) binding.dispatch(latest.sequence, latest.payload());
+        return () -> unregister(messageId, binding);
+    }
+
+    /** The pending request of the header, which is empty when it is unknown or does not match. */
+    private Optional<Pending<?>> pendingOf(Envelope.Header h, String kind) {
+        final Pending<?> raw = pending.get(h.corrId);
+        if (raw == null) {
+            LOG.debug("orphan {} corrId={} (ignored)", kind, h.corrId);
+            return Optional.empty();
+        }
+        if (raw.messageId != h.messageId) {
+            LOG.warn(
+                    "mismatched {} corrId={} expected messageId={} but received {} (ignored)",
+                    kind,
+                    h.corrId,
+                    raw.messageId,
+                    h.messageId);
+            return Optional.empty();
+        }
+        return Optional.of(raw);
+    }
+
+    /** Registers the binding of the message, which the events of it are dispatched to. */
+    private <E extends CefMessageView> EventBinding<E> register(
+            int messageId, CefMessageDecoder<E> dec, Consumer<E> handler) {
+        final EventBinding<E> binding = new EventBinding<>(dec, handler);
         synchronized (registrationLock) {
             requireOpen();
             eventHandlers
                     .computeIfAbsent(messageId, k -> new CopyOnWriteArrayList<>())
                     .add(binding);
         }
-        LatestEvent latest = latestEvents.get(messageId);
-        if (latest != null) binding.dispatch(latest.sequence, latest.payload());
-        return () -> {
-            CopyOnWriteArrayList<EventBinding<?>> list = eventHandlers.get(messageId);
-            if (list != null && list.remove(binding) && list.isEmpty()) eventHandlers.remove(messageId, list);
-        };
+        return binding;
+    }
+
+    /** Removes the binding from the handlers of the message. */
+    private void unregister(int messageId, EventBinding<?> binding) {
+        final CopyOnWriteArrayList<EventBinding<?>> list = eventHandlers.get(messageId);
+        if (list != null && list.remove(binding) && list.isEmpty()) eventHandlers.remove(messageId, list);
     }
 
     @Override
     public <E extends CefMessageView> HandlerRegistration intercept(
             int messageId, CefMessageDecoder<E> dec, InterceptHandler<E> handler) {
-        InterceptBinding<E> binding = new InterceptBinding<>(dec, handler);
+        final InterceptBinding<E> binding = new InterceptBinding<>(dec, handler);
         InterceptBinding<?> previous;
         synchronized (registrationLock) {
             requireOpen();
@@ -292,7 +318,7 @@ public final class CefSessionImpl implements CefSession {
 
     private void failAllPending(Throwable cause) {
         for (Map.Entry<Integer, Pending<?>> e : pending.entrySet()) {
-            Pending<?> p = e.getValue();
+            final Pending<?> p = e.getValue();
             if (removePending(e.getKey(), p)) {
                 cancelQuietly(p.timeoutTask);
                 p.future.completeExceptionally(cause);
@@ -311,7 +337,7 @@ public final class CefSessionImpl implements CefSession {
     }
 
     private void handleFrame(ByteBuffer raw) {
-        ByteBuffer buf = raw.duplicate();
+        final ByteBuffer buf = raw.duplicate();
         Envelope.Header h;
         try {
             h = Envelope.readHeader(buf);
@@ -319,7 +345,7 @@ public final class CefSessionImpl implements CefSession {
             LOG.warn("malformed envelope, dropping frame", e);
             return;
         }
-        ByteBuffer payload = buf.slice();
+        final ByteBuffer payload = buf.slice();
         switch (h.kind) {
             case RESPONSE:
                 handleResponse(h, payload);
@@ -351,31 +377,20 @@ public final class CefSessionImpl implements CefSession {
             completeStructuredError(runtimeSessionReady, payload);
             return;
         }
-        Pending<?> raw = pending.get(h.corrId);
-        if (raw == null) {
-            LOG.debug("orphan error corrId={} (ignored)", h.corrId);
-            return;
-        }
-        if (raw.messageId != h.messageId) {
-            LOG.warn(
-                    "mismatched error corrId={} expected messageId={} but received {} (ignored)",
-                    h.corrId,
-                    raw.messageId,
-                    h.messageId);
-            return;
-        }
-        if (!removePending(h.corrId, raw)) return;
-        cancelQuietly(raw.timeoutTask);
-        completeStructuredError(raw.future, payload);
+        pendingOf(h, "error").ifPresent(raw -> {
+            if (!removePending(h.corrId, raw)) return;
+            cancelQuietly(raw.timeoutTask);
+            completeStructuredError(raw.future, payload);
+        });
     }
 
     private static void completeStructuredError(CompletableFuture<?> future, ByteBuffer payload) {
         try {
-            ByteBuffer source = payload.duplicate().order(ByteOrder.LITTLE_ENDIAN);
+            final ByteBuffer source = payload.duplicate().order(ByteOrder.LITTLE_ENDIAN);
             WireDecoder.requireRemaining(source, Integer.BYTES, "error.code");
-            int code = source.getInt();
-            int messageLength = WireDecoder.length(source, "error.message");
-            byte[] message = new byte[messageLength];
+            final int code = source.getInt();
+            final int messageLength = WireDecoder.length(source, "error.message");
+            final byte[] message = new byte[messageLength];
             source.get(message);
             WireDecoder.requireFullyConsumed(source, "structured error");
             future.completeExceptionally(
@@ -391,37 +406,26 @@ public final class CefSessionImpl implements CefSession {
             runtimeSessionReady.complete(null);
             return;
         }
-        Pending<?> raw = pending.get(h.corrId);
-        if (raw == null) {
-            LOG.debug("orphan response corrId={} (ignored)", h.corrId);
-            return;
-        }
-        if (raw.messageId != h.messageId) {
-            LOG.warn(
-                    "mismatched response corrId={} expected messageId={} but received {} (ignored)",
-                    h.corrId,
-                    raw.messageId,
-                    h.messageId);
-            return;
-        }
-        if (!removePending(h.corrId, raw)) return;
-        Pending<R> p = (Pending<R>) raw;
-        cancelQuietly(p.timeoutTask);
-        try {
-            R view = p.decoder.decode(payload);
-            p.future.complete(view);
-        } catch (RuntimeException e) {
-            p.future.completeExceptionally(e);
-        }
+        pendingOf(h, "response").ifPresent(raw -> {
+            if (!removePending(h.corrId, raw)) return;
+            final Pending<R> p = (Pending<R>) raw;
+            cancelQuietly(p.timeoutTask);
+            try {
+                final R view = p.decoder.decode(payload);
+                p.future.complete(view);
+            } catch (RuntimeException e) {
+                p.future.completeExceptionally(e);
+            }
+        });
     }
 
     private void handleEvent(Envelope.Header h, ByteBuffer payload) {
-        ByteBuffer snapshot = payload.duplicate();
-        byte[] bytes = new byte[snapshot.remaining()];
+        final ByteBuffer snapshot = payload.duplicate();
+        final byte[] bytes = new byte[snapshot.remaining()];
         snapshot.get(bytes);
-        long sequence = nextEventSequence.incrementAndGet();
+        final long sequence = nextEventSequence.incrementAndGet();
         latestEvents.put(h.messageId, new LatestEvent(sequence, bytes));
-        CopyOnWriteArrayList<EventBinding<?>> list = eventHandlers.get(h.messageId);
+        final CopyOnWriteArrayList<EventBinding<?>> list = eventHandlers.get(h.messageId);
         if (list == null || list.isEmpty()) {
             LOG.debug("no event handlers for messageId={}", h.messageId);
             return;
@@ -432,8 +436,8 @@ public final class CefSessionImpl implements CefSession {
     }
 
     private void handleIntercept(Envelope.Header h, ByteBuffer payload) {
-        InterceptBinding<?> binding = interceptHandlers.get(h.messageId);
-        CefMessageEncoder responseEnc = null;
+        final InterceptBinding<?> binding = interceptHandlers.get(h.messageId);
+        Optional<? extends CefMessageEncoder> responseEnc = Optional.empty();
         if (binding != null) {
             try {
                 responseEnc = binding.invoke(payload);
@@ -443,7 +447,7 @@ public final class CefSessionImpl implements CefSession {
         } else {
             LOG.debug("no intercept handler for messageId={}; sending empty response", h.messageId);
         }
-        sendInterceptResponse(h.corrId, h.messageId, responseEnc);
+        sendInterceptResponse(h.corrId, h.messageId, responseEnc.orElse(null));
     }
 
     private void sendInterceptResponse(int corrId, int incomingMessageId, @Nullable CefMessageEncoder enc) {
@@ -451,10 +455,12 @@ public final class CefSessionImpl implements CefSession {
             LOG.debug("session closed before intercept response could be sent");
             return;
         }
-        int payloadLen = (enc == null) ? 0 : enc.encodedSize();
-        int messageId = (enc == null) ? incomingMessageId : enc.messageId();
-        ByteBuffer buf = ByteBuffer.allocate(Envelope.HEADER_SIZE + payloadLen).order(ByteOrder.LITTLE_ENDIAN);
-        Envelope.writeHeader(buf, Envelope.Kind.INTERCEPT_RESPONSE, 0, corrId, messageId, payloadLen);
+        final int payloadLen = (enc == null) ? 0 : enc.encodedSize();
+        final int messageId = (enc == null) ? incomingMessageId : enc.messageId();
+        final ByteBuffer buf =
+                ByteBuffer.allocate(Envelope.HEADER_SIZE + payloadLen).order(ByteOrder.LITTLE_ENDIAN);
+        Envelope.writeHeader(
+                buf, new Envelope.Header(payloadLen, Envelope.Kind.INTERCEPT_RESPONSE, 0, corrId, messageId));
         if (enc != null) enc.encodeInto(buf);
         buf.flip();
         try {
@@ -470,7 +476,7 @@ public final class CefSessionImpl implements CefSession {
 
     private void handleDisconnect() {
         if (!disconnectHandled.compareAndSet(false, true)) return;
-        CefTransportException failure = new CefTransportException("transport disconnected");
+        final CefTransportException failure = new CefTransportException("transport disconnected");
         synchronized (registrationLock) {
             closed = true;
             eventHandlers.clear();
@@ -519,7 +525,7 @@ public final class CefSessionImpl implements CefSession {
 
         @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
-            boolean cancelled = super.cancel(mayInterruptIfRunning);
+            final boolean cancelled = super.cancel(mayInterruptIfRunning);
             if (cancelled) onCancel.run();
             return cancelled;
         }
@@ -542,7 +548,7 @@ public final class CefSessionImpl implements CefSession {
                 if (sequence <= delivered) return;
             } while (!deliveredSequence.compareAndSet(delivered, sequence));
             try {
-                E view = decoder.decode(payload);
+                final E view = decoder.decode(payload);
                 handler.accept(view);
             } catch (RuntimeException e) {
                 LOG.warn("event handler threw", e);
@@ -573,9 +579,8 @@ public final class CefSessionImpl implements CefSession {
             this.handler = handler;
         }
 
-        @Nullable
-        CefMessageEncoder invoke(ByteBuffer payload) {
-            E view = decoder.decode(payload);
+        Optional<? extends CefMessageEncoder> invoke(ByteBuffer payload) {
+            final E view = decoder.decode(payload);
             return handler.onIntercept(view);
         }
     }

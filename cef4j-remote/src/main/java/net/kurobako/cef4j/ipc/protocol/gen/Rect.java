@@ -3,7 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
@@ -11,6 +11,7 @@ import net.kurobako.cef4j.ipc.session.WireDecoder;
  * to facade methods (or factory requests) that take this struct. The dispatcher decodes them on the
  * runtime-server side and fills the matching {@code cef_rect_t} before invoking CEF.
  */
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class Rect {
 
     private final int x;
@@ -41,12 +42,13 @@ public final class Rect {
         return height;
     }
 
+    @SuppressWarnings("SameReturnValue")
     public int encodedSize() {
         return 16;
     }
 
     public void encodeInto(ByteBuffer dst) {
-        ByteOrder originalOrder = dst.order();
+        final ByteOrder originalOrder = dst.order();
         try {
             dst.order(ByteOrder.LITTLE_ENDIAN);
             dst.putInt(x);
@@ -64,14 +66,10 @@ public final class Rect {
       * configured the buffer.
       */
     public static Rect decode(ByteBuffer __buf) {
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "x");
-        int x = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "y");
-        int y = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "width");
-        int width = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "height");
-        int height = __buf.getInt();
+        final int x = WireDecoder.int32(__buf, "x");
+        final int y = WireDecoder.int32(__buf, "y");
+        final int width = WireDecoder.int32(__buf, "width");
+        final int height = WireDecoder.int32(__buf, "height");
         return new Rect(x, y, width, height);
     }
 
@@ -82,28 +80,28 @@ public final class Rect {
     /** Lombok-style builder. */
     public static final class Builder {
 
-        private int x = 0;
-        private int y = 0;
-        private int width = 0;
-        private int height = 0;
+        private int x;
+        private int y;
+        private int width;
+        private int height;
 
-        public Builder x(int x) {
-            this.x = x;
+        public Builder x(int value) {
+            this.x = value;
             return this;
         }
 
-        public Builder y(int y) {
-            this.y = y;
+        public Builder y(int value) {
+            this.y = value;
             return this;
         }
 
-        public Builder width(int width) {
-            this.width = width;
+        public Builder width(int value) {
+            this.width = value;
             return this;
         }
 
-        public Builder height(int height) {
-            this.height = height;
+        public Builder height(int value) {
+            this.height = value;
             return this;
         }
 

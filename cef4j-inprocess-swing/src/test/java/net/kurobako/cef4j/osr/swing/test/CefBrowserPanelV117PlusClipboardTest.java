@@ -11,7 +11,6 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.time.Duration;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -243,7 +242,7 @@ class CefBrowserPanelV117PlusClipboardTest extends SwingBrowserPanelTestBase {
     }
 
     private static void invokeFrameClipboardAction(CefBrowserPanel panel, ClipboardAction action) throws Exception {
-        CefBrowser browser = Objects.requireNonNull(panel.browser(), "browser");
+        CefBrowser browser = panel.browser().orElseThrow(() -> new NullPointerException("browser"));
         CefFrame frame =
                 browser.getFocusedFrame().orElseGet(() -> browser.getMainFrame().orElse(null));
         assertThat(frame).isNotNull();

@@ -10,6 +10,7 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -66,7 +67,7 @@ public final class SharedFileFrameTransport implements FrameTransport {
     private final AtomicInteger repaintGeneration = new AtomicInteger();
 
     private final ExecutorService deliveryExecutor = Executors.newSingleThreadExecutor(task -> {
-        Thread thread = new Thread(task, "cef4j-frame-" + INSTANCE.incrementAndGet());
+        final Thread thread = new Thread(task, "cef4j-frame-" + INSTANCE.incrementAndGet());
         thread.setDaemon(true);
         return thread;
     });
@@ -99,7 +100,7 @@ public final class SharedFileFrameTransport implements FrameTransport {
      * owns it and unsubscribes on {@link #close()}.
      */
     public static SharedFileFrameTransport bind(CefSession session, RemoteHandle browser) {
-        SharedFileFrameTransport t = new SharedFileFrameTransport(browser);
+        final SharedFileFrameTransport t = new SharedFileFrameTransport(browser);
         t.subscribe(session);
         return t;
     }
@@ -111,7 +112,7 @@ public final class SharedFileFrameTransport implements FrameTransport {
      * multi-browser sessions wrap this in your own dispatch.
      */
     public static SharedFileFrameTransport bindAll(CefSession session) {
-        SharedFileFrameTransport t = new SharedFileFrameTransport(null);
+        final SharedFileFrameTransport t = new SharedFileFrameTransport(null);
         t.subscribe(session);
         return t;
     }
@@ -153,7 +154,7 @@ public final class SharedFileFrameTransport implements FrameTransport {
         if (closed || consumer == null || !deliveryScheduled.compareAndSet(false, true)) return;
         try {
             deliveryExecutor.execute(this::drainPendingPaint);
-        } catch (RejectedExecutionException closedExecutor) {
+        } catch (RejectedExecutionException ignored) {
             deliveryScheduled.set(false);
         }
     }
@@ -161,9 +162,9 @@ public final class SharedFileFrameTransport implements FrameTransport {
     private void drainPendingPaint() {
         try {
             while (!closed) {
-                FrameConsumer c = consumer;
+                final FrameConsumer c = consumer;
                 if (c == null) return;
-                OsrPaintEvent ev = pendingPaint.getAndSet(null);
+                final OsrPaintEvent ev = pendingPaint.getAndSet(null);
                 if (ev == null) return;
                 deliver(ev, c);
             }
@@ -176,16 +177,16 @@ public final class SharedFileFrameTransport implements FrameTransport {
     private void deliver(OsrPaintEvent ev, FrameConsumer c) {
         synchronized (deliveryLock) {
             if (closed) return;
-            ByteBuffer pixels;
+            final ByteBuffer pixels;
             synchronized (mappingLock) {
-                ByteBuffer view = ensureMappingLocked(ev);
-                if (view == null) return;
                 // XXX: Explicit unmap can race Unsafe.copyMemory and crash the JVM; remove when mapping lifetime is
                 // reference-counted independently of close().
-                pixels = copyStableFrame(ev, view);
+                pixels = ensureMappingLocked(ev)
+                        .flatMap(view -> copyStableFrame(ev, view))
+                        .orElse(null);
             }
             if (pixels == null) return;
-            FrameMetadata meta = new FrameMetadata(
+            final FrameMetadata meta = new FrameMetadata(
                     sequence.incrementAndGet(),
                     ev.frameSequence(),
                     System.nanoTime(),
@@ -206,66 +207,65 @@ public final class SharedFileFrameTransport implements FrameTransport {
      * writing and the event's even sequence after publishing. A mismatch before or after the copy means this event's
      * slot wrapped while the JVM was behind; dropping that stale frame is preferable to delivering torn pixels.
      */
-    @Nullable
-    private ByteBuffer copyStableFrame(OsrPaintEvent ev, ByteBuffer mapping) {
-        long before = (long) SHM_SEQUENCE.getAcquire(mapping, 0);
+    private Optional<ByteBuffer> copyStableFrame(OsrPaintEvent ev, ByteBuffer mapping) {
+        final long before = (long) SHM_SEQUENCE.getAcquire(mapping, 0);
         if (before != ev.frameSequence() || (before & 1L) != 0L) {
             snapshotRejects.incrementAndGet();
             lastReject.set("unstable-before-copy");
-            return null;
+            return Optional.empty();
         }
 
-        ByteBuffer src = mapping.duplicate();
+        final ByteBuffer src = mapping.duplicate();
         src.position(SHM_HEADER_BYTES);
         src.limit(SHM_HEADER_BYTES + ev.byteCount());
-        ByteBuffer snapshot = ByteBuffer.allocateDirect(ev.byteCount());
+        final ByteBuffer snapshot = ByteBuffer.allocateDirect(ev.byteCount());
         snapshot.put(src).flip();
 
-        long after = (long) SHM_SEQUENCE.getAcquire(mapping, 0);
+        final long after = (long) SHM_SEQUENCE.getAcquire(mapping, 0);
         if (after != before) {
             snapshotRejects.incrementAndGet();
             lastReject.set("unstable-after-copy");
-            return null;
+            return Optional.empty();
         }
-        return snapshot.asReadOnlyBuffer();
+        return Optional.of(snapshot.asReadOnlyBuffer());
     }
 
     /**
      * Ensures the shared file named in the event is mapped and returns a buffer view. Re-maps when alternating slots or
-     * resize-driven generations change the path. Returns {@code null} if the file could not be opened.
+     * resize-driven generations change the path. Returns empty if the file could not be opened.
      */
-    @Nullable
-    private ByteBuffer ensureMappingLocked(OsrPaintEvent ev) {
-        String name = ev.shmName();
+    private Optional<ByteBuffer> ensureMappingLocked(OsrPaintEvent ev) {
+        final String name = ev.shmName();
         if (!name.equals(mappedShmName)) {
             mappingAttempts.incrementAndGet();
             disposeMappingLocked();
-            Path sharedPath = Paths.get(name).toAbsolutePath().normalize();
-            Path leaf = sharedPath.getFileName();
+            final Path sharedPath = Paths.get(name).toAbsolutePath().normalize();
+            final Path leaf = sharedPath.getFileName();
             if (leaf == null || !leaf.toString().matches("cef4j-paint-[0-9]+-[0-9]+-[0-9]+-[01]\\.frame")) {
                 rejectMapping("invalid-name");
                 LOG.warn("rejecting invalid shared-frame path={} for browser={}", name, browserIdForLog());
-                return null;
+                return Optional.empty();
             }
             try {
-                Path tempRoot = Paths.get(System.getProperty("java.io.tmpdir")).toRealPath();
-                Path realPath = sharedPath.toRealPath();
+                final Path tempRoot =
+                        Paths.get(System.getProperty("java.io.tmpdir")).toRealPath();
+                final Path realPath = sharedPath.toRealPath();
                 if (!tempRoot.equals(realPath.getParent())) {
                     rejectMapping("outside-temp-root");
                     LOG.warn("rejecting shared-frame path outside java.io.tmpdir: {}", realPath);
-                    return null;
+                    return Optional.empty();
                 }
-                RandomAccessFile raf = new RandomAccessFile(realPath.toFile(), "r");
+                final RandomAccessFile raf = new RandomAccessFile(realPath.toFile(), "r");
                 boolean opened = false;
                 try {
-                    FileChannel ch = raf.getChannel();
-                    long size = ch.size();
+                    final FileChannel ch = raf.getChannel();
+                    final long size = ch.size();
                     if (size <= 0) {
                         rejectMapping("empty-file");
                         LOG.warn("shared-frame file {} is empty for browser={}", realPath, browserIdForLog());
-                        return null;
+                        return Optional.empty();
                     }
-                    MappedBufferCleaner.Mapping mapping = MappedBufferCleaner.map(ch, size);
+                    final MappedBufferCleaner.Mapping mapping = MappedBufferCleaner.map(ch, size);
                     this.mappedFile = raf;
                     this.mappedChannel = ch;
                     this.mappedMapping = mapping;
@@ -285,10 +285,10 @@ public final class SharedFileFrameTransport implements FrameTransport {
             } catch (IOException | RuntimeException e) {
                 rejectMapping("open-failed");
                 LOG.warn("failed to open shared-frame file {} for browser={}", sharedPath, browserIdForLog(), e);
-                return null;
+                return Optional.empty();
             }
         }
-        long expectedBytes = (long) ev.width() * ev.height() * 4L;
+        final long expectedBytes = (long) ev.width() * ev.height() * 4L;
         if (ev.width() <= 0
                 || ev.height() <= 0
                 || ev.byteCount() <= 0
@@ -302,13 +302,13 @@ public final class SharedFileFrameTransport implements FrameTransport {
                     ev.byteCount(),
                     mappedSize,
                     browserIdForLog());
-            return null;
+            return Optional.empty();
         }
         if (mappedMapping == null) {
             rejectMapping("mapping-unavailable");
-            return null;
+            return Optional.empty();
         }
-        return mappedMapping.buffer();
+        return Optional.of(mappedMapping.buffer());
     }
 
     private void rejectMapping(String reason) {
@@ -321,9 +321,9 @@ public final class SharedFileFrameTransport implements FrameTransport {
         synchronized (mappingLock) {
             mapped = mappedShmName != null;
         }
-        long dimensions = lastDimensions.get();
-        long frameSequence = lastFrameSequence.get();
-        String event =
+        final long dimensions = lastDimensions.get();
+        final long frameSequence = lastFrameSequence.get();
+        final String event =
                 frameSequence < 0 ? "none" : (int) (dimensions >> 32) + "x" + (int) dimensions + "#" + frameSequence;
         return "shared-file{browser=" + browserIdForLog() + ", events=" + paintEvents.get()
                 + ", mappingAttempts=" + mappingAttempts.get() + ", mappingsOpened=" + mappingsOpened.get()
@@ -333,9 +333,9 @@ public final class SharedFileFrameTransport implements FrameTransport {
     }
 
     private void disposeMappingLocked() {
-        MappedBufferCleaner.Mapping mapping = mappedMapping;
-        FileChannel ch = mappedChannel;
-        RandomAccessFile raf = mappedFile;
+        final MappedBufferCleaner.Mapping mapping = mappedMapping;
+        final FileChannel ch = mappedChannel;
+        final RandomAccessFile raf = mappedFile;
         mappedMapping = null;
         mappedChannel = null;
         mappedFile = null;
@@ -371,10 +371,10 @@ public final class SharedFileFrameTransport implements FrameTransport {
     }
 
     private void requestScopedRepaint() {
-        CefSession current = session;
-        RemoteHandle scopedBrowser = browser;
+        final CefSession current = session;
+        final RemoteHandle scopedBrowser = browser;
         if (closed || current == null || scopedBrowser == null || !repaintRequested.compareAndSet(false, true)) return;
-        int generation = repaintGeneration.incrementAndGet();
+        final int generation = repaintGeneration.incrementAndGet();
         CompletableFuture<Void> repaint;
         try {
             repaint = CefFutures.flatMap(new Browser(current, scopedBrowser).getHost(), host -> host.invalidate(0));
@@ -398,7 +398,7 @@ public final class SharedFileFrameTransport implements FrameTransport {
 
     private void cancelRepaint() {
         repaintGeneration.incrementAndGet();
-        CompletableFuture<Void> repaint = repaintRequest.getAndSet(null);
+        final CompletableFuture<Void> repaint = repaintRequest.getAndSet(null);
         if (repaint != null) repaint.cancel(true);
     }
 

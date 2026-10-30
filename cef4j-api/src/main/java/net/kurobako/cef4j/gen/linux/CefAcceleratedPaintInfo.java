@@ -26,7 +26,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types__linux_8h.html">internal/cef_types_linux.h:176</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefAcceleratedPaintInfo implements net.kurobako.cef4j.gen.CefAcceleratedPaintInfo {
 
@@ -58,7 +57,7 @@ public final class CefAcceleratedPaintInfo implements net.kurobako.cef4j.gen.Cef
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefAcceleratedPaintInfo)) return false;
-        CefAcceleratedPaintInfo other = (CefAcceleratedPaintInfo) obj;
+        final CefAcceleratedPaintInfo other = (CefAcceleratedPaintInfo) obj;
         return this.planeCount == other.planeCount
                 && this.modifier == other.modifier
                 && java.util.Objects.equals(this.format, other.format)

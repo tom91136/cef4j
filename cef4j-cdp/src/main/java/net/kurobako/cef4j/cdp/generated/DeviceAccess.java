@@ -3,9 +3,6 @@ package net.kurobako.cef4j.cdp.generated;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
@@ -13,6 +10,7 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Chrome DevTools Protocol DeviceAccess domain.
@@ -21,6 +19,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class DeviceAccess {
     private DeviceAccess() {}
     /**
@@ -29,7 +28,7 @@ public final class DeviceAccess {
     public static final class RequestId implements CdpValue<String> {
         public final String value;
         public RequestId(String value) { this.value = java.util.Objects.requireNonNull(value); }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof RequestId)) return false;
@@ -44,7 +43,7 @@ public final class DeviceAccess {
     public static final class DeviceId implements CdpValue<String> {
         public final String value;
         public DeviceId(String value) { this.value = java.util.Objects.requireNonNull(value); }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof DeviceId)) return false;
@@ -106,11 +105,10 @@ public final class DeviceAccess {
          * @param deviceId protocol value
          */
         public SelectPromptRequest(DeviceAccess.RequestId id, DeviceAccess.DeviceId deviceId) {
-            set("id", id);
-            set("deviceId", deviceId);
+            id(id).deviceId(deviceId);
         }
         public static SelectPromptRequest fromMap(Map<String, Object> values) {
-            SelectPromptRequest instance_ = new SelectPromptRequest();
+            final SelectPromptRequest instance_ = new SelectPromptRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -157,10 +155,10 @@ public final class DeviceAccess {
          * @param id protocol value
          */
         public CancelPromptRequest(DeviceAccess.RequestId id) {
-            set("id", id);
+            id(id);
         }
         public static CancelPromptRequest fromMap(Map<String, Object> values) {
-            CancelPromptRequest instance_ = new CancelPromptRequest();
+            final CancelPromptRequest instance_ = new CancelPromptRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -202,7 +200,7 @@ public final class DeviceAccess {
          * @return the protocol field value
          */
         public java.util.List<DeviceAccess.PromptDevice> devices() {
-            return CdpObject.requireList(require("devices"), element0 -> java.util.Objects.requireNonNull(DeviceAccess.PromptDevice.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("devices"), element0 -> java.util.Objects.requireNonNull(DeviceAccess.PromptDevice.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Sets the id field.
@@ -247,7 +245,7 @@ public final class DeviceAccess {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> selectPrompt(DeviceAccess.RequestId id, DeviceAccess.DeviceId deviceId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("id", CdpObject.json(id));
             params.put("deviceId", CdpObject.json(deviceId));
             return client.call("DeviceAccess.selectPrompt", params);
@@ -266,7 +264,7 @@ public final class DeviceAccess {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> cancelPrompt(DeviceAccess.RequestId id) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("id", CdpObject.json(id));
             return client.call("DeviceAccess.cancelPrompt", params);
         }

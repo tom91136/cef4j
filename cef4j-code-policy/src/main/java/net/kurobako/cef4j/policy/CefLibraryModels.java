@@ -44,7 +44,7 @@ public final class CefLibraryModels implements LibraryModels {
 
     @Override
     public ImmutableSet<MethodRef> nullableReturns() {
-        ImmutableSet.Builder<MethodRef> returns = ImmutableSet.builder();
+        final ImmutableSet.Builder<MethodRef> returns = ImmutableSet.builder();
         for (String queue : QUEUES) {
             for (String method : QUEUE_RETRIEVALS) returns.add(methodRef(queue, method));
         }
@@ -61,7 +61,7 @@ public final class CefLibraryModels implements LibraryModels {
 
     @Override
     public ImmutableSetMultimap<String, Integer> typeVariablesWithNullableUpperBounds() {
-        ImmutableSetMultimap.Builder<String, Integer> bounds = ImmutableSetMultimap.builder();
+        final ImmutableSetMultimap.Builder<String, Integer> bounds = ImmutableSetMultimap.builder();
         for (String type : JAVAFX_OBJECT_VALUES) bounds.put(type, 0);
         return bounds.build();
     }

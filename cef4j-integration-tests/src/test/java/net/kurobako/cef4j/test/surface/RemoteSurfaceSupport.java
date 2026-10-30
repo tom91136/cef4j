@@ -110,7 +110,7 @@ final class RemoteSurfaceSupport {
                 throws InterruptedException, TimeoutException {
             TestDeadline deadline = TestDeadline.after(timeout);
             BrowserSession.PaintInfo last = null;
-            while (!deadline.isExpired()) {
+            while (deadline.hasTimeRemaining()) {
                 BrowserSession.PaintInfo next = paints.poll(deadline.remainingNanos(), TimeUnit.NANOSECONDS);
                 if (next != null) last = next;
                 if (next != null && next.width == width && next.height == height) return next;

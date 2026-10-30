@@ -189,13 +189,11 @@ final class RuntimeServerSupervisorTest {
             CompletableFuture<RuntimeServerSupervisor.Connection> started = supervisor.start();
             installing.awaitEntered(deadline, started, "generation install entry");
             AutoCloseable registration = supervisor.onConnection(connection -> deliveries.incrementAndGet());
-            try {
+            try (registration;
+                    installing) {
                 installing.close();
                 deadline.await(started, "generation install completion");
                 assertThat(deliveries).hasValue(1);
-            } finally {
-                installing.close();
-                registration.close();
             }
         }
     }
@@ -218,15 +216,13 @@ final class RuntimeServerSupervisorTest {
                 .withSessionMiddleware(delegate -> new BlockingOnCloseSession(delegate, installing));
         RuntimeServerSupervisor supervisor = new RuntimeServerSupervisor(configuration);
         TestDeadline deadline = TestDeadline.after(TEST_TIMEOUT);
-        try {
+        try (supervisor;
+                installing) {
             CompletableFuture<RuntimeServerSupervisor.Connection> starting = supervisor.start();
             installing.awaitEntered(deadline, starting, "generation install entry");
             supervisor.close();
             installing.close();
             assertThat(starting).isCompletedExceptionally();
-        } finally {
-            installing.close();
-            supervisor.close();
         }
 
         assertThat(supervisor.state()).isEqualTo(RuntimeServerSupervisor.State.CLOSED);

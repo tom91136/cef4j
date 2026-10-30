@@ -4,7 +4,6 @@ package net.kurobako.cef4j.cdp.generated;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
@@ -13,6 +12,8 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Chrome DevTools Protocol Accessibility domain.
@@ -21,6 +22,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Accessibility {
     private Accessibility() {}
     /**
@@ -29,7 +31,7 @@ public final class Accessibility {
     public static final class AXNodeId implements CdpValue<String> {
         public final String value;
         public AXNodeId(String value) { this.value = java.util.Objects.requireNonNull(value); }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof AXNodeId)) return false;
@@ -61,7 +63,7 @@ public final class Accessibility {
         VALUEUNDEFINED("valueUndefined");
         public final String value;
         AXValueType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static AXValueType of(String value) {
             for (AXValueType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -81,7 +83,7 @@ public final class Accessibility {
         RELATEDELEMENT("relatedElement");
         public final String value;
         AXValueSourceType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static AXValueSourceType of(String value) {
             for (AXValueSourceType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -105,7 +107,7 @@ public final class Accessibility {
         OTHER("other");
         public final String value;
         AXValueNativeSourceType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static AXValueNativeSourceType of(String value) {
             for (AXValueNativeSourceType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -134,64 +136,56 @@ public final class Accessibility {
          * @return the protocol field value, empty when absent
          */
         public Optional<Accessibility.AXValue> value() {
-            Object value = raw("value");
-            return Optional.ofNullable(value == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("value").flatMap(CdpObject::objectMap).map(Accessibility.AXValue::fromMap);
         }
         /**
          * The name of the relevant attribute, if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> attribute() {
-            Object value = raw("attribute");
-            return Optional.ofNullable((String) value);
+            return raw("attribute").map(value -> (String) value);
         }
         /**
          * The value of the relevant attribute, if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<Accessibility.AXValue> attributeValue() {
-            Object value = raw("attributeValue");
-            return Optional.ofNullable(value == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("attributeValue").flatMap(CdpObject::objectMap).map(Accessibility.AXValue::fromMap);
         }
         /**
          * Whether this source is superseded by a higher priority source.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> superseded() {
-            Object value = raw("superseded");
-            return Optional.ofNullable((Boolean) value);
+            return raw("superseded").map(value -> (Boolean) value);
         }
         /**
          * The native markup source for this value, e.g. a {@code &lt;label&gt;} element.
          * @return the protocol field value, empty when absent
          */
         public Optional<Accessibility.AXValueNativeSourceType> nativeSource() {
-            Object value = raw("nativeSource");
-            return Optional.ofNullable(value == null ? null : Accessibility.AXValueNativeSourceType.of((String) value));
+            return raw("nativeSource").map(value -> Accessibility.AXValueNativeSourceType.of((String) value));
         }
         /**
          * The value, such as a node or node list, of the native source.
          * @return the protocol field value, empty when absent
          */
         public Optional<Accessibility.AXValue> nativeSourceValue() {
-            Object value = raw("nativeSourceValue");
-            return Optional.ofNullable(value == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("nativeSourceValue").flatMap(CdpObject::objectMap).map(Accessibility.AXValue::fromMap);
         }
         /**
          * Whether the value for this property is invalid.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> invalid() {
-            Object value = raw("invalid");
-            return Optional.ofNullable((Boolean) value);
+            return raw("invalid").map(value -> (Boolean) value);
         }
         /**
          * Reason for the value being invalid, if it is.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> invalidReason() {
-            Object value = raw("invalidReason");
-            return Optional.ofNullable((String) value);
+            return raw("invalidReason").map(value -> (String) value);
         }
         /**
          * What type of source this is.
@@ -204,16 +198,7 @@ public final class Accessibility {
         }
         /**
          * The value of this property source.
-         * @param value field value; empty omits the value
-         * @return this model
-         */
-        public AXValueSource value(Optional<Accessibility.AXValue> value) {
-            set("value", value.orElse(null));
-            return this;
-        }
-        /**
-         * The value of this property source.
-         * @param value field value; null removes the value
+         * @param value field value
          * @return this model
          */
         public AXValueSource value(Accessibility.AXValue value) {
@@ -222,16 +207,7 @@ public final class Accessibility {
         }
         /**
          * The name of the relevant attribute, if any.
-         * @param attribute field value; empty omits the value
-         * @return this model
-         */
-        public AXValueSource attribute(Optional<String> attribute) {
-            set("attribute", attribute.orElse(null));
-            return this;
-        }
-        /**
-         * The name of the relevant attribute, if any.
-         * @param attribute field value; null removes the value
+         * @param attribute field value
          * @return this model
          */
         public AXValueSource attribute(String attribute) {
@@ -240,16 +216,7 @@ public final class Accessibility {
         }
         /**
          * The value of the relevant attribute, if any.
-         * @param attributeValue field value; empty omits the value
-         * @return this model
-         */
-        public AXValueSource attributeValue(Optional<Accessibility.AXValue> attributeValue) {
-            set("attributeValue", attributeValue.orElse(null));
-            return this;
-        }
-        /**
-         * The value of the relevant attribute, if any.
-         * @param attributeValue field value; null removes the value
+         * @param attributeValue field value
          * @return this model
          */
         public AXValueSource attributeValue(Accessibility.AXValue attributeValue) {
@@ -258,34 +225,16 @@ public final class Accessibility {
         }
         /**
          * Whether this source is superseded by a higher priority source.
-         * @param superseded field value; empty omits the value
+         * @param superseded field value
          * @return this model
          */
-        public AXValueSource superseded(Optional<Boolean> superseded) {
-            set("superseded", superseded.orElse(null));
-            return this;
-        }
-        /**
-         * Whether this source is superseded by a higher priority source.
-         * @param superseded field value; null removes the value
-         * @return this model
-         */
-        public AXValueSource superseded(Boolean superseded) {
+        public AXValueSource superseded(boolean superseded) {
             set("superseded", superseded);
             return this;
         }
         /**
          * The native markup source for this value, e.g. a {@code &lt;label&gt;} element.
-         * @param nativeSource field value; empty omits the value
-         * @return this model
-         */
-        public AXValueSource nativeSource(Optional<Accessibility.AXValueNativeSourceType> nativeSource) {
-            set("nativeSource", nativeSource.orElse(null));
-            return this;
-        }
-        /**
-         * The native markup source for this value, e.g. a {@code &lt;label&gt;} element.
-         * @param nativeSource field value; null removes the value
+         * @param nativeSource field value
          * @return this model
          */
         public AXValueSource nativeSource(Accessibility.AXValueNativeSourceType nativeSource) {
@@ -294,16 +243,7 @@ public final class Accessibility {
         }
         /**
          * The value, such as a node or node list, of the native source.
-         * @param nativeSourceValue field value; empty omits the value
-         * @return this model
-         */
-        public AXValueSource nativeSourceValue(Optional<Accessibility.AXValue> nativeSourceValue) {
-            set("nativeSourceValue", nativeSourceValue.orElse(null));
-            return this;
-        }
-        /**
-         * The value, such as a node or node list, of the native source.
-         * @param nativeSourceValue field value; null removes the value
+         * @param nativeSourceValue field value
          * @return this model
          */
         public AXValueSource nativeSourceValue(Accessibility.AXValue nativeSourceValue) {
@@ -312,34 +252,16 @@ public final class Accessibility {
         }
         /**
          * Whether the value for this property is invalid.
-         * @param invalid field value; empty omits the value
+         * @param invalid field value
          * @return this model
          */
-        public AXValueSource invalid(Optional<Boolean> invalid) {
-            set("invalid", invalid.orElse(null));
-            return this;
-        }
-        /**
-         * Whether the value for this property is invalid.
-         * @param invalid field value; null removes the value
-         * @return this model
-         */
-        public AXValueSource invalid(Boolean invalid) {
+        public AXValueSource invalid(boolean invalid) {
             set("invalid", invalid);
             return this;
         }
         /**
          * Reason for the value being invalid, if it is.
-         * @param invalidReason field value; empty omits the value
-         * @return this model
-         */
-        public AXValueSource invalidReason(Optional<String> invalidReason) {
-            set("invalidReason", invalidReason.orElse(null));
-            return this;
-        }
-        /**
-         * Reason for the value being invalid, if it is.
-         * @param invalidReason field value; null removes the value
+         * @param invalidReason field value
          * @return this model
          */
         public AXValueSource invalidReason(String invalidReason) {
@@ -367,16 +289,14 @@ public final class Accessibility {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> idref() {
-            Object value = raw("idref");
-            return Optional.ofNullable((String) value);
+            return raw("idref").map(value -> (String) value);
         }
         /**
          * The text alternative of this node in the current context.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> text() {
-            Object value = raw("text");
-            return Optional.ofNullable((String) value);
+            return raw("text").map(value -> (String) value);
         }
         /**
          * The BackendNodeId of the related DOM node.
@@ -389,16 +309,7 @@ public final class Accessibility {
         }
         /**
          * The IDRef value provided, if any.
-         * @param idref field value; empty omits the value
-         * @return this model
-         */
-        public AXRelatedNode idref(Optional<String> idref) {
-            set("idref", idref.orElse(null));
-            return this;
-        }
-        /**
-         * The IDRef value provided, if any.
-         * @param idref field value; null removes the value
+         * @param idref field value
          * @return this model
          */
         public AXRelatedNode idref(String idref) {
@@ -407,16 +318,7 @@ public final class Accessibility {
         }
         /**
          * The text alternative of this node in the current context.
-         * @param text field value; empty omits the value
-         * @return this model
-         */
-        public AXRelatedNode text(Optional<String> text) {
-            set("text", text.orElse(null));
-            return this;
-        }
-        /**
-         * The text alternative of this node in the current context.
-         * @param text field value; null removes the value
+         * @param text field value
          * @return this model
          */
         public AXRelatedNode text(String text) {
@@ -444,7 +346,7 @@ public final class Accessibility {
          * @return the protocol field value
          */
         public Accessibility.AXValue value() {
-            return java.util.Objects.requireNonNull(Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("value")))));
+            return java.util.Objects.requireNonNull(Accessibility.AXValue.fromMap(CdpObject.requireObjectMap(require("value"))));
         }
         /**
          * The name of this property.
@@ -486,24 +388,21 @@ public final class Accessibility {
          * @return the protocol field value, empty when absent
          */
         public Optional<Object> value() {
-            Object value = raw("value");
-            return Optional.ofNullable(value);
+            return raw("value");
         }
         /**
          * One or more related nodes, if applicable.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Accessibility.AXRelatedNode>> relatedNodes() {
-            Object value = raw("relatedNodes");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Accessibility.AXRelatedNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("relatedNodes").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Accessibility.AXRelatedNode.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * The sources which contributed to the computation of this property.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Accessibility.AXValueSource>> sources() {
-            Object value = raw("sources");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Accessibility.AXValueSource.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("sources").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Accessibility.AXValueSource.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * The type of this value.
@@ -516,16 +415,7 @@ public final class Accessibility {
         }
         /**
          * The computed value of this property.
-         * @param value field value; empty omits the value
-         * @return this model
-         */
-        public AXValue value(Optional<Object> value) {
-            set("value", value.orElse(null));
-            return this;
-        }
-        /**
-         * The computed value of this property.
-         * @param value field value; null removes the value
+         * @param value field value
          * @return this model
          */
         public AXValue value(Object value) {
@@ -534,16 +424,7 @@ public final class Accessibility {
         }
         /**
          * One or more related nodes, if applicable.
-         * @param relatedNodes field value; empty omits the value
-         * @return this model
-         */
-        public AXValue relatedNodes(Optional<java.util.List<Accessibility.AXRelatedNode>> relatedNodes) {
-            set("relatedNodes", relatedNodes.orElse(null));
-            return this;
-        }
-        /**
-         * One or more related nodes, if applicable.
-         * @param relatedNodes field value; null removes the value
+         * @param relatedNodes field value
          * @return this model
          */
         public AXValue relatedNodes(java.util.List<Accessibility.AXRelatedNode> relatedNodes) {
@@ -552,16 +433,7 @@ public final class Accessibility {
         }
         /**
          * The sources which contributed to the computation of this property.
-         * @param sources field value; empty omits the value
-         * @return this model
-         */
-        public AXValue sources(Optional<java.util.List<Accessibility.AXValueSource>> sources) {
-            set("sources", sources.orElse(null));
-            return this;
-        }
-        /**
-         * The sources which contributed to the computation of this property.
-         * @param sources field value; null removes the value
+         * @param sources field value
          * @return this model
          */
         public AXValue sources(java.util.List<Accessibility.AXValueSource> sources) {
@@ -633,7 +505,7 @@ public final class Accessibility {
         UNINTERESTING("uninteresting");
         public final String value;
         AXPropertyName(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static AXPropertyName of(String value) {
             for (AXPropertyName constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -669,88 +541,77 @@ public final class Accessibility {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Accessibility.AXProperty>> ignoredReasons() {
-            Object value = raw("ignoredReasons");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Accessibility.AXProperty.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("ignoredReasons").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Accessibility.AXProperty.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * This {@code Node}&#x27;s role, whether explicit or implicit.
          * @return the protocol field value, empty when absent
          */
         public Optional<Accessibility.AXValue> role() {
-            Object value = raw("role");
-            return Optional.ofNullable(value == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("role").flatMap(CdpObject::objectMap).map(Accessibility.AXValue::fromMap);
         }
         /**
          * This {@code Node}&#x27;s Chrome raw role.
          * @return the protocol field value, empty when absent
          */
         public Optional<Accessibility.AXValue> chromeRole() {
-            Object value = raw("chromeRole");
-            return Optional.ofNullable(value == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("chromeRole").flatMap(CdpObject::objectMap).map(Accessibility.AXValue::fromMap);
         }
         /**
          * The accessible name for this {@code Node}.
          * @return the protocol field value, empty when absent
          */
         public Optional<Accessibility.AXValue> name() {
-            Object value = raw("name");
-            return Optional.ofNullable(value == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("name").flatMap(CdpObject::objectMap).map(Accessibility.AXValue::fromMap);
         }
         /**
          * The accessible description for this {@code Node}.
          * @return the protocol field value, empty when absent
          */
         public Optional<Accessibility.AXValue> description() {
-            Object value = raw("description");
-            return Optional.ofNullable(value == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("description").flatMap(CdpObject::objectMap).map(Accessibility.AXValue::fromMap);
         }
         /**
          * The value for this {@code Node}.
          * @return the protocol field value, empty when absent
          */
         public Optional<Accessibility.AXValue> value() {
-            Object value = raw("value");
-            return Optional.ofNullable(value == null ? null : Accessibility.AXValue.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("value").flatMap(CdpObject::objectMap).map(Accessibility.AXValue::fromMap);
         }
         /**
          * All other properties
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Accessibility.AXProperty>> properties() {
-            Object value = raw("properties");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Accessibility.AXProperty.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("properties").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Accessibility.AXProperty.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * ID for this node&#x27;s parent.
          * @return the protocol field value, empty when absent
          */
         public Optional<Accessibility.AXNodeId> parentId() {
-            Object value = raw("parentId");
-            return Optional.ofNullable(value == null ? null : new Accessibility.AXNodeId((String) value));
+            return raw("parentId").map(value -> new Accessibility.AXNodeId((String) value));
         }
         /**
          * IDs for each of this node&#x27;s child nodes.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Accessibility.AXNodeId>> childIds() {
-            Object value = raw("childIds");
-            return Optional.ofNullable(list(value, element0 -> new Accessibility.AXNodeId((String) element0)));
+            return raw("childIds").flatMap(value -> list(value, element0 -> new Accessibility.AXNodeId((String) element0)));
         }
         /**
          * The backend ID for the associated DOM node, if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendDOMNodeId() {
-            Object value = raw("backendDOMNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("backendDOMNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * The frame ID for the frame associated with this nodes document.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            Object value = raw("frameId");
-            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
+            return raw("frameId").map(value -> new Page.FrameId((String) value));
         }
         /**
          * Unique identifier for this node.
@@ -772,16 +633,7 @@ public final class Accessibility {
         }
         /**
          * Collection of reasons why this node is hidden.
-         * @param ignoredReasons field value; empty omits the value
-         * @return this model
-         */
-        public AXNode ignoredReasons(Optional<java.util.List<Accessibility.AXProperty>> ignoredReasons) {
-            set("ignoredReasons", ignoredReasons.orElse(null));
-            return this;
-        }
-        /**
-         * Collection of reasons why this node is hidden.
-         * @param ignoredReasons field value; null removes the value
+         * @param ignoredReasons field value
          * @return this model
          */
         public AXNode ignoredReasons(java.util.List<Accessibility.AXProperty> ignoredReasons) {
@@ -790,16 +642,7 @@ public final class Accessibility {
         }
         /**
          * This {@code Node}&#x27;s role, whether explicit or implicit.
-         * @param role field value; empty omits the value
-         * @return this model
-         */
-        public AXNode role(Optional<Accessibility.AXValue> role) {
-            set("role", role.orElse(null));
-            return this;
-        }
-        /**
-         * This {@code Node}&#x27;s role, whether explicit or implicit.
-         * @param role field value; null removes the value
+         * @param role field value
          * @return this model
          */
         public AXNode role(Accessibility.AXValue role) {
@@ -808,16 +651,7 @@ public final class Accessibility {
         }
         /**
          * This {@code Node}&#x27;s Chrome raw role.
-         * @param chromeRole field value; empty omits the value
-         * @return this model
-         */
-        public AXNode chromeRole(Optional<Accessibility.AXValue> chromeRole) {
-            set("chromeRole", chromeRole.orElse(null));
-            return this;
-        }
-        /**
-         * This {@code Node}&#x27;s Chrome raw role.
-         * @param chromeRole field value; null removes the value
+         * @param chromeRole field value
          * @return this model
          */
         public AXNode chromeRole(Accessibility.AXValue chromeRole) {
@@ -826,16 +660,7 @@ public final class Accessibility {
         }
         /**
          * The accessible name for this {@code Node}.
-         * @param name field value; empty omits the value
-         * @return this model
-         */
-        public AXNode name(Optional<Accessibility.AXValue> name) {
-            set("name", name.orElse(null));
-            return this;
-        }
-        /**
-         * The accessible name for this {@code Node}.
-         * @param name field value; null removes the value
+         * @param name field value
          * @return this model
          */
         public AXNode name(Accessibility.AXValue name) {
@@ -844,16 +669,7 @@ public final class Accessibility {
         }
         /**
          * The accessible description for this {@code Node}.
-         * @param description field value; empty omits the value
-         * @return this model
-         */
-        public AXNode description(Optional<Accessibility.AXValue> description) {
-            set("description", description.orElse(null));
-            return this;
-        }
-        /**
-         * The accessible description for this {@code Node}.
-         * @param description field value; null removes the value
+         * @param description field value
          * @return this model
          */
         public AXNode description(Accessibility.AXValue description) {
@@ -862,16 +678,7 @@ public final class Accessibility {
         }
         /**
          * The value for this {@code Node}.
-         * @param value field value; empty omits the value
-         * @return this model
-         */
-        public AXNode value(Optional<Accessibility.AXValue> value) {
-            set("value", value.orElse(null));
-            return this;
-        }
-        /**
-         * The value for this {@code Node}.
-         * @param value field value; null removes the value
+         * @param value field value
          * @return this model
          */
         public AXNode value(Accessibility.AXValue value) {
@@ -880,16 +687,7 @@ public final class Accessibility {
         }
         /**
          * All other properties
-         * @param properties field value; empty omits the value
-         * @return this model
-         */
-        public AXNode properties(Optional<java.util.List<Accessibility.AXProperty>> properties) {
-            set("properties", properties.orElse(null));
-            return this;
-        }
-        /**
-         * All other properties
-         * @param properties field value; null removes the value
+         * @param properties field value
          * @return this model
          */
         public AXNode properties(java.util.List<Accessibility.AXProperty> properties) {
@@ -898,16 +696,7 @@ public final class Accessibility {
         }
         /**
          * ID for this node&#x27;s parent.
-         * @param parentId field value; empty omits the value
-         * @return this model
-         */
-        public AXNode parentId(Optional<Accessibility.AXNodeId> parentId) {
-            set("parentId", parentId.orElse(null));
-            return this;
-        }
-        /**
-         * ID for this node&#x27;s parent.
-         * @param parentId field value; null removes the value
+         * @param parentId field value
          * @return this model
          */
         public AXNode parentId(Accessibility.AXNodeId parentId) {
@@ -916,16 +705,7 @@ public final class Accessibility {
         }
         /**
          * IDs for each of this node&#x27;s child nodes.
-         * @param childIds field value; empty omits the value
-         * @return this model
-         */
-        public AXNode childIds(Optional<java.util.List<Accessibility.AXNodeId>> childIds) {
-            set("childIds", childIds.orElse(null));
-            return this;
-        }
-        /**
-         * IDs for each of this node&#x27;s child nodes.
-         * @param childIds field value; null removes the value
+         * @param childIds field value
          * @return this model
          */
         public AXNode childIds(java.util.List<Accessibility.AXNodeId> childIds) {
@@ -934,16 +714,7 @@ public final class Accessibility {
         }
         /**
          * The backend ID for the associated DOM node, if any.
-         * @param backendDOMNodeId field value; empty omits the value
-         * @return this model
-         */
-        public AXNode backendDOMNodeId(Optional<DOM.BackendNodeId> backendDOMNodeId) {
-            set("backendDOMNodeId", backendDOMNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * The backend ID for the associated DOM node, if any.
-         * @param backendDOMNodeId field value; null removes the value
+         * @param backendDOMNodeId field value
          * @return this model
          */
         public AXNode backendDOMNodeId(DOM.BackendNodeId backendDOMNodeId) {
@@ -952,16 +723,7 @@ public final class Accessibility {
         }
         /**
          * The frame ID for the frame associated with this nodes document.
-         * @param frameId field value; empty omits the value
-         * @return this model
-         */
-        public AXNode frameId(Optional<Page.FrameId> frameId) {
-            set("frameId", frameId.orElse(null));
-            return this;
-        }
-        /**
-         * The frame ID for the frame associated with this nodes document.
-         * @param frameId field value; null removes the value
+         * @param frameId field value
          * @return this model
          */
         public AXNode frameId(Page.FrameId frameId) {
@@ -976,7 +738,7 @@ public final class Accessibility {
     public static final class GetPartialAXTreeRequest extends CdpObject {
         public GetPartialAXTreeRequest() {}
         public static GetPartialAXTreeRequest fromMap(Map<String, Object> values) {
-            GetPartialAXTreeRequest instance_ = new GetPartialAXTreeRequest();
+            final GetPartialAXTreeRequest instance_ = new GetPartialAXTreeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -985,45 +747,32 @@ public final class Accessibility {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            Object value = raw("nodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
+            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node to get the partial accessibility tree for.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            Object value = raw("backendNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node wrapper to get the partial accessibility tree for.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            Object value = raw("objectId");
-            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
+            return raw("objectId").map(value -> new Runtime.RemoteObjectId((String) value));
         }
         /**
          * Whether to fetch this node&#x27;s ancestors, siblings and children. Defaults to true.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> fetchRelatives() {
-            Object value = raw("fetchRelatives");
-            return Optional.ofNullable((Boolean) value);
+            return raw("fetchRelatives").map(value -> (Boolean) value);
         }
         /**
          * Identifier of the node to get the partial accessibility tree for.
-         * @param nodeId field value; empty omits the value
-         * @return this model
-         */
-        public GetPartialAXTreeRequest nodeId(Optional<DOM.NodeId> nodeId) {
-            set("nodeId", nodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the node to get the partial accessibility tree for.
-         * @param nodeId field value; null removes the value
+         * @param nodeId field value
          * @return this model
          */
         public GetPartialAXTreeRequest nodeId(DOM.NodeId nodeId) {
@@ -1032,16 +781,7 @@ public final class Accessibility {
         }
         /**
          * Identifier of the backend node to get the partial accessibility tree for.
-         * @param backendNodeId field value; empty omits the value
-         * @return this model
-         */
-        public GetPartialAXTreeRequest backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
-            set("backendNodeId", backendNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the backend node to get the partial accessibility tree for.
-         * @param backendNodeId field value; null removes the value
+         * @param backendNodeId field value
          * @return this model
          */
         public GetPartialAXTreeRequest backendNodeId(DOM.BackendNodeId backendNodeId) {
@@ -1050,16 +790,7 @@ public final class Accessibility {
         }
         /**
          * JavaScript object id of the node wrapper to get the partial accessibility tree for.
-         * @param objectId field value; empty omits the value
-         * @return this model
-         */
-        public GetPartialAXTreeRequest objectId(Optional<Runtime.RemoteObjectId> objectId) {
-            set("objectId", objectId.orElse(null));
-            return this;
-        }
-        /**
-         * JavaScript object id of the node wrapper to get the partial accessibility tree for.
-         * @param objectId field value; null removes the value
+         * @param objectId field value
          * @return this model
          */
         public GetPartialAXTreeRequest objectId(Runtime.RemoteObjectId objectId) {
@@ -1068,19 +799,10 @@ public final class Accessibility {
         }
         /**
          * Whether to fetch this node&#x27;s ancestors, siblings and children. Defaults to true.
-         * @param fetchRelatives field value; empty omits the value
+         * @param fetchRelatives field value
          * @return this model
          */
-        public GetPartialAXTreeRequest fetchRelatives(Optional<Boolean> fetchRelatives) {
-            set("fetchRelatives", fetchRelatives.orElse(null));
-            return this;
-        }
-        /**
-         * Whether to fetch this node&#x27;s ancestors, siblings and children. Defaults to true.
-         * @param fetchRelatives field value; null removes the value
-         * @return this model
-         */
-        public GetPartialAXTreeRequest fetchRelatives(Boolean fetchRelatives) {
+        public GetPartialAXTreeRequest fetchRelatives(boolean fetchRelatives) {
             set("fetchRelatives", fetchRelatives);
             return this;
         }
@@ -1092,7 +814,7 @@ public final class Accessibility {
     public static final class GetFullAXTreeRequest extends CdpObject {
         public GetFullAXTreeRequest() {}
         public static GetFullAXTreeRequest fromMap(Map<String, Object> values) {
-            GetFullAXTreeRequest instance_ = new GetFullAXTreeRequest();
+            final GetFullAXTreeRequest instance_ = new GetFullAXTreeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1101,47 +823,27 @@ public final class Accessibility {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong depth() {
-            Long value = CdpObject.numberAsLong(raw("depth"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("depth").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * The frame for whose document the AX tree should be retrieved. If omitted, the root frame is used.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            Object value = raw("frameId");
-            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
+            return raw("frameId").map(value -> new Page.FrameId((String) value));
         }
         /**
          * The maximum depth at which descendants of the root node should be retrieved. If omitted, the full tree is returned.
-         * @param depth field value; empty omits the value
+         * @param depth field value
          * @return this model
          */
-        public GetFullAXTreeRequest depth(OptionalLong depth) {
-            set("depth", depth.isPresent() ? depth.getAsLong() : null);
-            return this;
-        }
-        /**
-         * The maximum depth at which descendants of the root node should be retrieved. If omitted, the full tree is returned.
-         * @param depth field value; null removes the value
-         * @return this model
-         */
-        public GetFullAXTreeRequest depth(Long depth) {
+        public GetFullAXTreeRequest depth(long depth) {
             set("depth", depth);
             return this;
         }
         /**
          * The frame for whose document the AX tree should be retrieved. If omitted, the root frame is used.
-         * @param frameId field value; empty omits the value
-         * @return this model
-         */
-        public GetFullAXTreeRequest frameId(Optional<Page.FrameId> frameId) {
-            set("frameId", frameId.orElse(null));
-            return this;
-        }
-        /**
-         * The frame for whose document the AX tree should be retrieved. If omitted, the root frame is used.
-         * @param frameId field value; null removes the value
+         * @param frameId field value
          * @return this model
          */
         public GetFullAXTreeRequest frameId(Page.FrameId frameId) {
@@ -1156,7 +858,7 @@ public final class Accessibility {
     public static final class GetRootAXNodeRequest extends CdpObject {
         public GetRootAXNodeRequest() {}
         public static GetRootAXNodeRequest fromMap(Map<String, Object> values) {
-            GetRootAXNodeRequest instance_ = new GetRootAXNodeRequest();
+            final GetRootAXNodeRequest instance_ = new GetRootAXNodeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1165,21 +867,11 @@ public final class Accessibility {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            Object value = raw("frameId");
-            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
+            return raw("frameId").map(value -> new Page.FrameId((String) value));
         }
         /**
          * The frame in whose document the node resides. If omitted, the root frame is used.
-         * @param frameId field value; empty omits the value
-         * @return this model
-         */
-        public GetRootAXNodeRequest frameId(Optional<Page.FrameId> frameId) {
-            set("frameId", frameId.orElse(null));
-            return this;
-        }
-        /**
-         * The frame in whose document the node resides. If omitted, the root frame is used.
-         * @param frameId field value; null removes the value
+         * @param frameId field value
          * @return this model
          */
         public GetRootAXNodeRequest frameId(Page.FrameId frameId) {
@@ -1194,7 +886,7 @@ public final class Accessibility {
     public static final class GetAXNodeAndAncestorsRequest extends CdpObject {
         public GetAXNodeAndAncestorsRequest() {}
         public static GetAXNodeAndAncestorsRequest fromMap(Map<String, Object> values) {
-            GetAXNodeAndAncestorsRequest instance_ = new GetAXNodeAndAncestorsRequest();
+            final GetAXNodeAndAncestorsRequest instance_ = new GetAXNodeAndAncestorsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1203,37 +895,25 @@ public final class Accessibility {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            Object value = raw("nodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
+            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node to get.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            Object value = raw("backendNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node wrapper to get.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            Object value = raw("objectId");
-            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
+            return raw("objectId").map(value -> new Runtime.RemoteObjectId((String) value));
         }
         /**
          * Identifier of the node to get.
-         * @param nodeId field value; empty omits the value
-         * @return this model
-         */
-        public GetAXNodeAndAncestorsRequest nodeId(Optional<DOM.NodeId> nodeId) {
-            set("nodeId", nodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the node to get.
-         * @param nodeId field value; null removes the value
+         * @param nodeId field value
          * @return this model
          */
         public GetAXNodeAndAncestorsRequest nodeId(DOM.NodeId nodeId) {
@@ -1242,16 +922,7 @@ public final class Accessibility {
         }
         /**
          * Identifier of the backend node to get.
-         * @param backendNodeId field value; empty omits the value
-         * @return this model
-         */
-        public GetAXNodeAndAncestorsRequest backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
-            set("backendNodeId", backendNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the backend node to get.
-         * @param backendNodeId field value; null removes the value
+         * @param backendNodeId field value
          * @return this model
          */
         public GetAXNodeAndAncestorsRequest backendNodeId(DOM.BackendNodeId backendNodeId) {
@@ -1260,16 +931,7 @@ public final class Accessibility {
         }
         /**
          * JavaScript object id of the node wrapper to get.
-         * @param objectId field value; empty omits the value
-         * @return this model
-         */
-        public GetAXNodeAndAncestorsRequest objectId(Optional<Runtime.RemoteObjectId> objectId) {
-            set("objectId", objectId.orElse(null));
-            return this;
-        }
-        /**
-         * JavaScript object id of the node wrapper to get.
-         * @param objectId field value; null removes the value
+         * @param objectId field value
          * @return this model
          */
         public GetAXNodeAndAncestorsRequest objectId(Runtime.RemoteObjectId objectId) {
@@ -1289,10 +951,10 @@ public final class Accessibility {
          * @param id protocol value
          */
         public GetChildAXNodesRequest(Accessibility.AXNodeId id) {
-            set("id", id);
+            id(id);
         }
         public static GetChildAXNodesRequest fromMap(Map<String, Object> values) {
-            GetChildAXNodesRequest instance_ = new GetChildAXNodesRequest();
+            final GetChildAXNodesRequest instance_ = new GetChildAXNodesRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1308,8 +970,7 @@ public final class Accessibility {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            Object value = raw("frameId");
-            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
+            return raw("frameId").map(value -> new Page.FrameId((String) value));
         }
         /**
          * Sets the id field.
@@ -1322,16 +983,7 @@ public final class Accessibility {
         }
         /**
          * The frame in whose document the node resides. If omitted, the root frame is used.
-         * @param frameId field value; empty omits the value
-         * @return this model
-         */
-        public GetChildAXNodesRequest frameId(Optional<Page.FrameId> frameId) {
-            set("frameId", frameId.orElse(null));
-            return this;
-        }
-        /**
-         * The frame in whose document the node resides. If omitted, the root frame is used.
-         * @param frameId field value; null removes the value
+         * @param frameId field value
          * @return this model
          */
         public GetChildAXNodesRequest frameId(Page.FrameId frameId) {
@@ -1346,7 +998,7 @@ public final class Accessibility {
     public static final class QueryAXTreeRequest extends CdpObject {
         public QueryAXTreeRequest() {}
         public static QueryAXTreeRequest fromMap(Map<String, Object> values) {
-            QueryAXTreeRequest instance_ = new QueryAXTreeRequest();
+            final QueryAXTreeRequest instance_ = new QueryAXTreeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1355,53 +1007,39 @@ public final class Accessibility {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            Object value = raw("nodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
+            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node for the root to query.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            Object value = raw("backendNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node wrapper for the root to query.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            Object value = raw("objectId");
-            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
+            return raw("objectId").map(value -> new Runtime.RemoteObjectId((String) value));
         }
         /**
          * Find nodes with this computed name.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> accessibleName() {
-            Object value = raw("accessibleName");
-            return Optional.ofNullable((String) value);
+            return raw("accessibleName").map(value -> (String) value);
         }
         /**
          * Find nodes with this computed role.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> role() {
-            Object value = raw("role");
-            return Optional.ofNullable((String) value);
+            return raw("role").map(value -> (String) value);
         }
         /**
          * Identifier of the node for the root to query.
-         * @param nodeId field value; empty omits the value
-         * @return this model
-         */
-        public QueryAXTreeRequest nodeId(Optional<DOM.NodeId> nodeId) {
-            set("nodeId", nodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the node for the root to query.
-         * @param nodeId field value; null removes the value
+         * @param nodeId field value
          * @return this model
          */
         public QueryAXTreeRequest nodeId(DOM.NodeId nodeId) {
@@ -1410,16 +1048,7 @@ public final class Accessibility {
         }
         /**
          * Identifier of the backend node for the root to query.
-         * @param backendNodeId field value; empty omits the value
-         * @return this model
-         */
-        public QueryAXTreeRequest backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
-            set("backendNodeId", backendNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the backend node for the root to query.
-         * @param backendNodeId field value; null removes the value
+         * @param backendNodeId field value
          * @return this model
          */
         public QueryAXTreeRequest backendNodeId(DOM.BackendNodeId backendNodeId) {
@@ -1428,16 +1057,7 @@ public final class Accessibility {
         }
         /**
          * JavaScript object id of the node wrapper for the root to query.
-         * @param objectId field value; empty omits the value
-         * @return this model
-         */
-        public QueryAXTreeRequest objectId(Optional<Runtime.RemoteObjectId> objectId) {
-            set("objectId", objectId.orElse(null));
-            return this;
-        }
-        /**
-         * JavaScript object id of the node wrapper for the root to query.
-         * @param objectId field value; null removes the value
+         * @param objectId field value
          * @return this model
          */
         public QueryAXTreeRequest objectId(Runtime.RemoteObjectId objectId) {
@@ -1446,16 +1066,7 @@ public final class Accessibility {
         }
         /**
          * Find nodes with this computed name.
-         * @param accessibleName field value; empty omits the value
-         * @return this model
-         */
-        public QueryAXTreeRequest accessibleName(Optional<String> accessibleName) {
-            set("accessibleName", accessibleName.orElse(null));
-            return this;
-        }
-        /**
-         * Find nodes with this computed name.
-         * @param accessibleName field value; null removes the value
+         * @param accessibleName field value
          * @return this model
          */
         public QueryAXTreeRequest accessibleName(String accessibleName) {
@@ -1464,16 +1075,7 @@ public final class Accessibility {
         }
         /**
          * Find nodes with this computed role.
-         * @param role field value; empty omits the value
-         * @return this model
-         */
-        public QueryAXTreeRequest role(Optional<String> role) {
-            set("role", role.orElse(null));
-            return this;
-        }
-        /**
-         * Find nodes with this computed role.
-         * @param role field value; null removes the value
+         * @param role field value
          * @return this model
          */
         public QueryAXTreeRequest role(String role) {
@@ -1496,7 +1098,7 @@ public final class Accessibility {
          * @return the protocol field value
          */
         public Accessibility.AXNode root() {
-            return java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("root")))));
+            return java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(CdpObject.requireObjectMap(require("root"))));
         }
         /**
          * New document root node.
@@ -1523,7 +1125,7 @@ public final class Accessibility {
          * @return the protocol field value
          */
         public java.util.List<Accessibility.AXNode> nodes() {
-            return CdpObject.requireList(require("nodes"), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("nodes"), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Updated node data.
@@ -1561,13 +1163,13 @@ public final class Accessibility {
          * @param fetchRelatives protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<java.util.List<Accessibility.AXNode>> getPartialAXTree(Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<Runtime.RemoteObjectId> objectId, Optional<Boolean> fetchRelatives) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
-            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
-            objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
-            fetchRelatives.ifPresent(value_ -> params.put("fetchRelatives", value_));
-            return client.call("Accessibility.getPartialAXTree", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        public CompletionStage<java.util.List<Accessibility.AXNode>> getPartialAXTree(DOM.@Nullable NodeId nodeId, DOM.@Nullable BackendNodeId backendNodeId, Runtime.@Nullable RemoteObjectId objectId, @Nullable Boolean fetchRelatives) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (nodeId != null) params.put("nodeId", CdpObject.json(nodeId));
+            if (backendNodeId != null) params.put("backendNodeId", CdpObject.json(backendNodeId));
+            if (objectId != null) params.put("objectId", CdpObject.json(objectId));
+            if (fetchRelatives != null) params.put("fetchRelatives", CdpObject.json(fetchRelatives));
+            return client.call("Accessibility.getPartialAXTree", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Fetches the accessibility node and partial accessibility tree for this DOM node, if it exists.
@@ -1575,7 +1177,7 @@ public final class Accessibility {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Accessibility.AXNode>> getPartialAXTree() {
-            return getPartialAXTree(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+            return client.call("Accessibility.getPartialAXTree", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Fetches the accessibility node and partial accessibility tree for this DOM node, if it exists.
@@ -1584,7 +1186,7 @@ public final class Accessibility {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Accessibility.AXNode>> getPartialAXTree(GetPartialAXTreeRequest request) {
-            return client.call("Accessibility.getPartialAXTree", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("Accessibility.getPartialAXTree", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Fetches the entire accessibility tree for the root Document
@@ -1593,11 +1195,11 @@ public final class Accessibility {
          * @param frameId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<java.util.List<Accessibility.AXNode>> getFullAXTree(OptionalLong depth, Optional<Page.FrameId> frameId) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            depth.ifPresent(value_ -> params.put("depth", value_));
-            frameId.ifPresent(value_ -> params.put("frameId", CdpObject.json(value_)));
-            return client.call("Accessibility.getFullAXTree", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        public CompletionStage<java.util.List<Accessibility.AXNode>> getFullAXTree(@Nullable Long depth, Page.@Nullable FrameId frameId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (depth != null) params.put("depth", CdpObject.json(depth));
+            if (frameId != null) params.put("frameId", CdpObject.json(frameId));
+            return client.call("Accessibility.getFullAXTree", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Fetches the entire accessibility tree for the root Document
@@ -1605,7 +1207,7 @@ public final class Accessibility {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Accessibility.AXNode>> getFullAXTree() {
-            return getFullAXTree(OptionalLong.empty(), Optional.empty());
+            return client.call("Accessibility.getFullAXTree", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Fetches the entire accessibility tree for the root Document
@@ -1614,7 +1216,7 @@ public final class Accessibility {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Accessibility.AXNode>> getFullAXTree(GetFullAXTreeRequest request) {
-            return client.call("Accessibility.getFullAXTree", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("Accessibility.getFullAXTree", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Fetches the root node. Requires {@code enable()} to have been called previously.
@@ -1622,10 +1224,10 @@ public final class Accessibility {
          * @param frameId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<Accessibility.AXNode> getRootAXNode(Optional<Page.FrameId> frameId) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            frameId.ifPresent(value_ -> params.put("frameId", CdpObject.json(value_)));
-            return client.call("Accessibility.getRootAXNode", params, result_ -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("node")))))));
+        public CompletionStage<Accessibility.AXNode> getRootAXNode(Page.FrameId frameId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("frameId", CdpObject.json(frameId));
+            return client.call("Accessibility.getRootAXNode", params, result_ -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("node"))))));
         }
         /**
          * Fetches the root node. Requires {@code enable()} to have been called previously.
@@ -1633,7 +1235,7 @@ public final class Accessibility {
          * @return a stage completing with the command result
          */
         public CompletionStage<Accessibility.AXNode> getRootAXNode() {
-            return getRootAXNode(Optional.empty());
+            return client.call("Accessibility.getRootAXNode", null, result_ -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("node"))))));
         }
         /**
          * Fetches the root node. Requires {@code enable()} to have been called previously.
@@ -1642,7 +1244,7 @@ public final class Accessibility {
          * @return a stage completing with the command result
          */
         public CompletionStage<Accessibility.AXNode> getRootAXNode(GetRootAXNodeRequest request) {
-            return client.call("Accessibility.getRootAXNode", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("node")))))));
+            return client.call("Accessibility.getRootAXNode", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("node"))))));
         }
         /**
          * Fetches a node and all ancestors up to and including the root. Requires {@code enable()} to have been called previously.
@@ -1652,12 +1254,12 @@ public final class Accessibility {
          * @param objectId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<java.util.List<Accessibility.AXNode>> getAXNodeAndAncestors(Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<Runtime.RemoteObjectId> objectId) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
-            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
-            objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
-            return client.call("Accessibility.getAXNodeAndAncestors", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        public CompletionStage<java.util.List<Accessibility.AXNode>> getAXNodeAndAncestors(DOM.@Nullable NodeId nodeId, DOM.@Nullable BackendNodeId backendNodeId, Runtime.@Nullable RemoteObjectId objectId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (nodeId != null) params.put("nodeId", CdpObject.json(nodeId));
+            if (backendNodeId != null) params.put("backendNodeId", CdpObject.json(backendNodeId));
+            if (objectId != null) params.put("objectId", CdpObject.json(objectId));
+            return client.call("Accessibility.getAXNodeAndAncestors", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Fetches a node and all ancestors up to and including the root. Requires {@code enable()} to have been called previously.
@@ -1665,7 +1267,7 @@ public final class Accessibility {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Accessibility.AXNode>> getAXNodeAndAncestors() {
-            return getAXNodeAndAncestors(Optional.empty(), Optional.empty(), Optional.empty());
+            return client.call("Accessibility.getAXNodeAndAncestors", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Fetches a node and all ancestors up to and including the root. Requires {@code enable()} to have been called previously.
@@ -1674,7 +1276,7 @@ public final class Accessibility {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Accessibility.AXNode>> getAXNodeAndAncestors(GetAXNodeAndAncestorsRequest request) {
-            return client.call("Accessibility.getAXNodeAndAncestors", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("Accessibility.getAXNodeAndAncestors", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Fetches a particular accessibility node by AXNodeId. Requires {@code enable()} to have been called previously.
@@ -1683,11 +1285,11 @@ public final class Accessibility {
          * @param frameId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<java.util.List<Accessibility.AXNode>> getChildAXNodes(Accessibility.AXNodeId id, Optional<Page.FrameId> frameId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<java.util.List<Accessibility.AXNode>> getChildAXNodes(Accessibility.AXNodeId id, Page.FrameId frameId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("id", CdpObject.json(id));
-            frameId.ifPresent(value_ -> params.put("frameId", CdpObject.json(value_)));
-            return client.call("Accessibility.getChildAXNodes", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            params.put("frameId", CdpObject.json(frameId));
+            return client.call("Accessibility.getChildAXNodes", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Fetches a particular accessibility node by AXNodeId. Requires {@code enable()} to have been called previously.
@@ -1696,7 +1298,9 @@ public final class Accessibility {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Accessibility.AXNode>> getChildAXNodes(Accessibility.AXNodeId id) {
-            return getChildAXNodes(id, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("id", CdpObject.json(id));
+            return client.call("Accessibility.getChildAXNodes", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Fetches a particular accessibility node by AXNodeId. Requires {@code enable()} to have been called previously.
@@ -1705,7 +1309,7 @@ public final class Accessibility {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Accessibility.AXNode>> getChildAXNodes(GetChildAXNodesRequest request) {
-            return client.call("Accessibility.getChildAXNodes", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("Accessibility.getChildAXNodes", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Query a DOM node&#x27;s accessibility subtree for accessible name and role. This command computes the name and role for all nodes in the subtree, including those that are ignored for accessibility, and returns those that match the specified name and role. If no DOM node is specified, or the DOM node does not exist, the command returns an error. If neither {@code accessibleName} or {@code role} is specified, it returns all the accessibility nodes in the subtree.
@@ -1717,14 +1321,14 @@ public final class Accessibility {
          * @param role protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<java.util.List<Accessibility.AXNode>> queryAXTree(Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<Runtime.RemoteObjectId> objectId, Optional<String> accessibleName, Optional<String> role) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
-            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
-            objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
-            accessibleName.ifPresent(value_ -> params.put("accessibleName", CdpObject.json(value_)));
-            role.ifPresent(value_ -> params.put("role", CdpObject.json(value_)));
-            return client.call("Accessibility.queryAXTree", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        public CompletionStage<java.util.List<Accessibility.AXNode>> queryAXTree(DOM.@Nullable NodeId nodeId, DOM.@Nullable BackendNodeId backendNodeId, Runtime.@Nullable RemoteObjectId objectId, @Nullable String accessibleName, @Nullable String role) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (nodeId != null) params.put("nodeId", CdpObject.json(nodeId));
+            if (backendNodeId != null) params.put("backendNodeId", CdpObject.json(backendNodeId));
+            if (objectId != null) params.put("objectId", CdpObject.json(objectId));
+            if (accessibleName != null) params.put("accessibleName", CdpObject.json(accessibleName));
+            if (role != null) params.put("role", CdpObject.json(role));
+            return client.call("Accessibility.queryAXTree", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Query a DOM node&#x27;s accessibility subtree for accessible name and role. This command computes the name and role for all nodes in the subtree, including those that are ignored for accessibility, and returns those that match the specified name and role. If no DOM node is specified, or the DOM node does not exist, the command returns an error. If neither {@code accessibleName} or {@code role} is specified, it returns all the accessibility nodes in the subtree.
@@ -1732,7 +1336,7 @@ public final class Accessibility {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Accessibility.AXNode>> queryAXTree() {
-            return queryAXTree(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+            return client.call("Accessibility.queryAXTree", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Query a DOM node&#x27;s accessibility subtree for accessible name and role. This command computes the name and role for all nodes in the subtree, including those that are ignored for accessibility, and returns those that match the specified name and role. If no DOM node is specified, or the DOM node does not exist, the command returns an error. If neither {@code accessibleName} or {@code role} is specified, it returns all the accessibility nodes in the subtree.
@@ -1741,7 +1345,7 @@ public final class Accessibility {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Accessibility.AXNode>> queryAXTree(QueryAXTreeRequest request) {
-            return client.call("Accessibility.queryAXTree", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("Accessibility.queryAXTree", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(Accessibility.AXNode.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * The loadComplete event mirrors the load complete event sent by the browser to assistive technology when the web page has finished loading.

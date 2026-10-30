@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
@@ -13,6 +12,7 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * This domain allows inspection of Web Audio API. https://webaudio.github.io/web-audio-api/
@@ -21,6 +21,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class WebAudio {
     private WebAudio() {}
     /**
@@ -29,7 +30,7 @@ public final class WebAudio {
     public static final class GraphObjectId implements CdpValue<String> {
         public final String value;
         public GraphObjectId(String value) { this.value = java.util.Objects.requireNonNull(value); }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof GraphObjectId)) return false;
@@ -46,7 +47,7 @@ public final class WebAudio {
         OFFLINE("offline");
         public final String value;
         ContextType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static ContextType of(String value) {
             for (ContextType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -64,7 +65,7 @@ public final class WebAudio {
         INTERRUPTED("interrupted");
         public final String value;
         ContextState(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static ContextState of(String value) {
             for (ContextState constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -78,7 +79,7 @@ public final class WebAudio {
     public static final class NodeType implements CdpValue<String> {
         public final String value;
         public NodeType(String value) { this.value = java.util.Objects.requireNonNull(value); }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof NodeType)) return false;
@@ -96,7 +97,7 @@ public final class WebAudio {
         MAX("max");
         public final String value;
         ChannelCountMode(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static ChannelCountMode of(String value) {
             for (ChannelCountMode constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -112,7 +113,7 @@ public final class WebAudio {
         SPEAKERS("speakers");
         public final String value;
         ChannelInterpretation(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static ChannelInterpretation of(String value) {
             for (ChannelInterpretation constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -126,7 +127,7 @@ public final class WebAudio {
     public static final class ParamType implements CdpValue<String> {
         public final String value;
         public ParamType(String value) { this.value = java.util.Objects.requireNonNull(value); }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof ParamType)) return false;
@@ -143,7 +144,7 @@ public final class WebAudio {
         K_RATE("k-rate");
         public final String value;
         AutomationRate(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static AutomationRate of(String value) {
             for (AutomationRate constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -260,8 +261,7 @@ public final class WebAudio {
          * @return the protocol field value, empty when absent
          */
         public Optional<WebAudio.ContextRealtimeData> realtimeData() {
-            Object value = raw("realtimeData");
-            return Optional.ofNullable(value == null ? null : WebAudio.ContextRealtimeData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("realtimeData").flatMap(CdpObject::objectMap).map(WebAudio.ContextRealtimeData::fromMap);
         }
         /**
          * Platform-dependent callback buffer size.
@@ -313,16 +313,7 @@ public final class WebAudio {
         }
         /**
          * Sets the realtimeData field.
-         * @param realtimeData field value; empty omits the value
-         * @return this model
-         */
-        public BaseAudioContext realtimeData(Optional<WebAudio.ContextRealtimeData> realtimeData) {
-            set("realtimeData", realtimeData.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the realtimeData field.
-         * @param realtimeData field value; null removes the value
+         * @param realtimeData field value
          * @return this model
          */
         public BaseAudioContext realtimeData(WebAudio.ContextRealtimeData realtimeData) {
@@ -685,10 +676,10 @@ public final class WebAudio {
          * @param contextId protocol value
          */
         public GetRealtimeDataRequest(WebAudio.GraphObjectId contextId) {
-            set("contextId", contextId);
+            contextId(contextId);
         }
         public static GetRealtimeDataRequest fromMap(Map<String, Object> values) {
-            GetRealtimeDataRequest instance_ = new GetRealtimeDataRequest();
+            final GetRealtimeDataRequest instance_ = new GetRealtimeDataRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -723,7 +714,7 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.BaseAudioContext context() {
-            return java.util.Objects.requireNonNull(WebAudio.BaseAudioContext.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("context")))));
+            return java.util.Objects.requireNonNull(WebAudio.BaseAudioContext.fromMap(CdpObject.requireObjectMap(require("context"))));
         }
         /**
          * Sets the context field.
@@ -775,7 +766,7 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.BaseAudioContext context() {
-            return java.util.Objects.requireNonNull(WebAudio.BaseAudioContext.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("context")))));
+            return java.util.Objects.requireNonNull(WebAudio.BaseAudioContext.fromMap(CdpObject.requireObjectMap(require("context"))));
         }
         /**
          * Sets the context field.
@@ -801,7 +792,7 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.AudioListener listener() {
-            return java.util.Objects.requireNonNull(WebAudio.AudioListener.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("listener")))));
+            return java.util.Objects.requireNonNull(WebAudio.AudioListener.fromMap(CdpObject.requireObjectMap(require("listener"))));
         }
         /**
          * Sets the listener field.
@@ -869,7 +860,7 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.AudioNode node() {
-            return java.util.Objects.requireNonNull(WebAudio.AudioNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("node")))));
+            return java.util.Objects.requireNonNull(WebAudio.AudioNode.fromMap(CdpObject.requireObjectMap(require("node"))));
         }
         /**
          * Sets the node field.
@@ -937,7 +928,7 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.AudioParam param() {
-            return java.util.Objects.requireNonNull(WebAudio.AudioParam.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("param")))));
+            return java.util.Objects.requireNonNull(WebAudio.AudioParam.fromMap(CdpObject.requireObjectMap(require("param"))));
         }
         /**
          * Sets the param field.
@@ -1042,16 +1033,14 @@ public final class WebAudio {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble sourceOutputIndex() {
-            Double value = CdpObject.numberAsDouble(raw("sourceOutputIndex"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("sourceOutputIndex").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Returns the destinationInputIndex field.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble destinationInputIndex() {
-            Double value = CdpObject.numberAsDouble(raw("destinationInputIndex"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("destinationInputIndex").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Sets the contextId field.
@@ -1082,37 +1071,19 @@ public final class WebAudio {
         }
         /**
          * Sets the sourceOutputIndex field.
-         * @param sourceOutputIndex field value; empty omits the value
+         * @param sourceOutputIndex field value
          * @return this model
          */
-        public NodesConnectedEvent sourceOutputIndex(OptionalDouble sourceOutputIndex) {
-            set("sourceOutputIndex", sourceOutputIndex.isPresent() ? sourceOutputIndex.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Sets the sourceOutputIndex field.
-         * @param sourceOutputIndex field value; null removes the value
-         * @return this model
-         */
-        public NodesConnectedEvent sourceOutputIndex(Double sourceOutputIndex) {
+        public NodesConnectedEvent sourceOutputIndex(double sourceOutputIndex) {
             set("sourceOutputIndex", sourceOutputIndex);
             return this;
         }
         /**
          * Sets the destinationInputIndex field.
-         * @param destinationInputIndex field value; empty omits the value
+         * @param destinationInputIndex field value
          * @return this model
          */
-        public NodesConnectedEvent destinationInputIndex(OptionalDouble destinationInputIndex) {
-            set("destinationInputIndex", destinationInputIndex.isPresent() ? destinationInputIndex.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Sets the destinationInputIndex field.
-         * @param destinationInputIndex field value; null removes the value
-         * @return this model
-         */
-        public NodesConnectedEvent destinationInputIndex(Double destinationInputIndex) {
+        public NodesConnectedEvent destinationInputIndex(double destinationInputIndex) {
             set("destinationInputIndex", destinationInputIndex);
             return this;
         }
@@ -1152,16 +1123,14 @@ public final class WebAudio {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble sourceOutputIndex() {
-            Double value = CdpObject.numberAsDouble(raw("sourceOutputIndex"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("sourceOutputIndex").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Returns the destinationInputIndex field.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble destinationInputIndex() {
-            Double value = CdpObject.numberAsDouble(raw("destinationInputIndex"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("destinationInputIndex").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Sets the contextId field.
@@ -1192,37 +1161,19 @@ public final class WebAudio {
         }
         /**
          * Sets the sourceOutputIndex field.
-         * @param sourceOutputIndex field value; empty omits the value
+         * @param sourceOutputIndex field value
          * @return this model
          */
-        public NodesDisconnectedEvent sourceOutputIndex(OptionalDouble sourceOutputIndex) {
-            set("sourceOutputIndex", sourceOutputIndex.isPresent() ? sourceOutputIndex.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Sets the sourceOutputIndex field.
-         * @param sourceOutputIndex field value; null removes the value
-         * @return this model
-         */
-        public NodesDisconnectedEvent sourceOutputIndex(Double sourceOutputIndex) {
+        public NodesDisconnectedEvent sourceOutputIndex(double sourceOutputIndex) {
             set("sourceOutputIndex", sourceOutputIndex);
             return this;
         }
         /**
          * Sets the destinationInputIndex field.
-         * @param destinationInputIndex field value; empty omits the value
+         * @param destinationInputIndex field value
          * @return this model
          */
-        public NodesDisconnectedEvent destinationInputIndex(OptionalDouble destinationInputIndex) {
-            set("destinationInputIndex", destinationInputIndex.isPresent() ? destinationInputIndex.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Sets the destinationInputIndex field.
-         * @param destinationInputIndex field value; null removes the value
-         * @return this model
-         */
-        public NodesDisconnectedEvent destinationInputIndex(Double destinationInputIndex) {
+        public NodesDisconnectedEvent destinationInputIndex(double destinationInputIndex) {
             set("destinationInputIndex", destinationInputIndex);
             return this;
         }
@@ -1262,8 +1213,7 @@ public final class WebAudio {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble sourceOutputIndex() {
-            Double value = CdpObject.numberAsDouble(raw("sourceOutputIndex"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("sourceOutputIndex").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Sets the contextId field.
@@ -1294,19 +1244,10 @@ public final class WebAudio {
         }
         /**
          * Sets the sourceOutputIndex field.
-         * @param sourceOutputIndex field value; empty omits the value
+         * @param sourceOutputIndex field value
          * @return this model
          */
-        public NodeParamConnectedEvent sourceOutputIndex(OptionalDouble sourceOutputIndex) {
-            set("sourceOutputIndex", sourceOutputIndex.isPresent() ? sourceOutputIndex.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Sets the sourceOutputIndex field.
-         * @param sourceOutputIndex field value; null removes the value
-         * @return this model
-         */
-        public NodeParamConnectedEvent sourceOutputIndex(Double sourceOutputIndex) {
+        public NodeParamConnectedEvent sourceOutputIndex(double sourceOutputIndex) {
             set("sourceOutputIndex", sourceOutputIndex);
             return this;
         }
@@ -1346,8 +1287,7 @@ public final class WebAudio {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble sourceOutputIndex() {
-            Double value = CdpObject.numberAsDouble(raw("sourceOutputIndex"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("sourceOutputIndex").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Sets the contextId field.
@@ -1378,19 +1318,10 @@ public final class WebAudio {
         }
         /**
          * Sets the sourceOutputIndex field.
-         * @param sourceOutputIndex field value; empty omits the value
+         * @param sourceOutputIndex field value
          * @return this model
          */
-        public NodeParamDisconnectedEvent sourceOutputIndex(OptionalDouble sourceOutputIndex) {
-            set("sourceOutputIndex", sourceOutputIndex.isPresent() ? sourceOutputIndex.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Sets the sourceOutputIndex field.
-         * @param sourceOutputIndex field value; null removes the value
-         * @return this model
-         */
-        public NodeParamDisconnectedEvent sourceOutputIndex(Double sourceOutputIndex) {
+        public NodeParamDisconnectedEvent sourceOutputIndex(double sourceOutputIndex) {
             set("sourceOutputIndex", sourceOutputIndex);
             return this;
         }
@@ -1418,9 +1349,9 @@ public final class WebAudio {
          * @return a stage completing with the command result
          */
         public CompletionStage<WebAudio.ContextRealtimeData> getRealtimeData(WebAudio.GraphObjectId contextId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("contextId", CdpObject.json(contextId));
-            return client.call("WebAudio.getRealtimeData", params, result_ -> java.util.Objects.requireNonNull(WebAudio.ContextRealtimeData.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("realtimeData")))))));
+            return client.call("WebAudio.getRealtimeData", params, result_ -> java.util.Objects.requireNonNull(WebAudio.ContextRealtimeData.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("realtimeData"))))));
         }
         /**
          * Fetch the realtime data from the registered contexts.
@@ -1428,7 +1359,7 @@ public final class WebAudio {
          * @return a stage completing with the command result
          */
         public CompletionStage<WebAudio.ContextRealtimeData> getRealtimeData(GetRealtimeDataRequest request) {
-            return client.call("WebAudio.getRealtimeData", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(WebAudio.ContextRealtimeData.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("realtimeData")))))));
+            return client.call("WebAudio.getRealtimeData", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(WebAudio.ContextRealtimeData.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("realtimeData"))))));
         }
         /**
          * Notifies that a new BaseAudioContext has been created.

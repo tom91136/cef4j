@@ -1,8 +1,8 @@
 package net.kurobako.cef4j.codegen.cdp
 
 /** AST for Chromium's Protocol Definition Language, shared by the PDL parser and the emitter. */
-private[cdp] object PDL {
-  final case class Flags(experimental: Boolean = false, deprecated: Boolean = false)
+object PDL {
+  case class Flags(experimental: Boolean = false, deprecated: Boolean = false)
 
   enum TypeExpr {
     case Str
@@ -22,31 +22,34 @@ private[cdp] object PDL {
     case Object(properties: List[SubItem])
   }
 
-  enum Decl {
+  // The analysis reads the parameters every case of a sum shares as fields to hoist into a parent; here the parent is
+  // the enum itself, and the cases still name the parameters because a case can only pass them to the parent. Taking
+  // the data out of the sum would make every reader match the form of a declaration before it reads its name.
+  @SuppressWarnings(Array("baumkuchen:common-factor"))
+  enum Decl(val name: String, val description: Option[String], val flags: Flags) {
     case Type(
-        name: String,
+        override val name: String,
         alias: TypeExpr,
         body: Option[TypeBody],
-        description: Option[String],
-        flags: Flags
-    )
+        override val description: Option[String],
+        override val flags: Flags
+    ) extends Decl(name, description, flags)
     case Command(
-        name: String,
-        redirect: Option[String],
+        override val name: String,
         params: List[SubItem],
         returns: List[SubItem],
-        description: Option[String],
-        flags: Flags
-    )
+        override val description: Option[String],
+        override val flags: Flags
+    ) extends Decl(name, description, flags)
     case Event(
-        name: String,
+        override val name: String,
         params: List[SubItem],
-        description: Option[String],
-        flags: Flags
-    )
+        override val description: Option[String],
+        override val flags: Flags
+    ) extends Decl(name, description, flags)
   }
 
-  final case class SubItem(
+  case class SubItem(
       name: String,
       typeExpr: TypeExpr,
       optional: Boolean = false,
@@ -54,11 +57,10 @@ private[cdp] object PDL {
       flags: Flags = Flags()
   )
 
-  final case class Domain(
+  case class Domain(
       name: String,
       description: Option[String] = None,
       flags: Flags = Flags(),
-      dependencies: List[String] = Nil,
       declarations: List[Decl]
   ) {
     def types: List[Decl.Type]       = declarations.collect { case t: Decl.Type => t }
@@ -66,9 +68,7 @@ private[cdp] object PDL {
     def events: List[Decl.Event]     = declarations.collect { case e: Decl.Event => e }
   }
 
-  final case class Version(major: String = "", minor: String = "")
+  case class Version(major: String = "", minor: String = "")
 
-  final case class Protocol(version: Version = Version(), domains: List[Domain] = Nil)
-
-  def refString(ref: TypeExpr.Ref): String = ref.domain.fold(ref.name)(domain => s"$domain.${ref.name}")
+  case class Protocol(version: Version = Version(), domains: List[Domain] = Nil)
 }

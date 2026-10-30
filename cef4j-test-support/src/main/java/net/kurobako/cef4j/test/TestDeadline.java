@@ -14,6 +14,9 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 import org.jspecify.annotations.Nullable;
 
 /** One monotonic timeout budget shared by every asynchronous phase of a test operation. */
+// The action runs on the thread of the scheduler, and a failure in it, of any kind, has to reach the test on the thread
+// that waits for the action; await(...) rethrows it there, so it is not swallowed.
+@SuppressWarnings("baumkuchen:catch-throwable")
 public final class TestDeadline {
     @FunctionalInterface
     public interface CheckedSupplier<T> {
@@ -31,7 +34,7 @@ public final class TestDeadline {
         long durationNanos;
         try {
             durationNanos = budget.toNanos();
-        } catch (ArithmeticException overflow) {
+        } catch (ArithmeticException ignored) {
             durationNanos = Long.MAX_VALUE;
         }
         timeoutNanos = durationNanos;
@@ -42,7 +45,7 @@ public final class TestDeadline {
     }
 
     public long remainingNanos() {
-        long elapsed = System.nanoTime() - startedNanos;
+        final long elapsed = System.nanoTime() - startedNanos;
         if (elapsed <= 0L) return timeoutNanos;
         return elapsed >= timeoutNanos ? 0L : timeoutNanos - elapsed;
     }
@@ -57,14 +60,14 @@ public final class TestDeadline {
         long maximumNanos;
         try {
             maximumNanos = maximum.toNanos();
-        } catch (ArithmeticException overflow) {
+        } catch (ArithmeticException ignored) {
             maximumNanos = Long.MAX_VALUE;
         }
         return Duration.ofNanos(Math.min(remainingNanos(), maximumNanos));
     }
 
-    public boolean isExpired() {
-        return remainingNanos() == 0L;
+    public boolean hasTimeRemaining() {
+        return remainingNanos() > 0L;
     }
 
     @NullableBoundary("futures may complete with null")
@@ -78,12 +81,13 @@ public final class TestDeadline {
             throws InterruptedException, ExecutionException, TimeoutException {
         Objects.requireNonNull(attempt, "attempt");
         Objects.requireNonNull(phase, "phase");
-        long remaining = remainingUpTo(attemptLimit).toNanos();
+        final long remaining = remainingUpTo(attemptLimit).toNanos();
         try {
             return attempt.get(remaining, TimeUnit.NANOSECONDS);
         } catch (TimeoutException timedOut) {
             attempt.cancel(true);
-            TimeoutException failure = remaining < remainingNanos() ? timeout(phase, attemptLimit) : timeout(phase);
+            final TimeoutException failure =
+                    remaining < remainingNanos() ? timeout(phase, attemptLimit) : timeout(phase);
             failure.initCause(timedOut);
             throw failure;
         }
@@ -97,12 +101,12 @@ public final class TestDeadline {
             action.run();
             return;
         }
-        CompletableFuture<Void> completion = new CompletableFuture<>();
+        final CompletableFuture<Boolean> completion = new CompletableFuture<>();
         scheduler.accept(() -> {
             if (completion.isCancelled()) return;
             try {
                 action.run();
-                completion.complete(null);
+                completion.complete(Boolean.TRUE);
             } catch (Throwable failure) {
                 completion.completeExceptionally(failure);
             }
@@ -119,13 +123,11 @@ public final class TestDeadline {
             throws InterruptedException, TimeoutException {
         Objects.requireNonNull(condition, "condition");
         Objects.requireNonNull(progress, "progress");
-        Objects.requireNonNull(pollInterval, "pollInterval");
-        long pollNanos = pollInterval.toNanos();
-        if (pollNanos <= 0L) throw new IllegalArgumentException("poll interval must be positive");
+        final long pollNanos = requirePollNanos(pollInterval);
         while (!condition.getAsBoolean()) {
             progress.run();
             if (condition.getAsBoolean()) return;
-            long remaining = remainingNanos();
+            final long remaining = remainingNanos();
             if (remaining == 0L) throw timeout(phase);
             TimeUnit.NANOSECONDS.sleep(Math.min(remaining, pollNanos));
         }
@@ -135,13 +137,11 @@ public final class TestDeadline {
             throws Exception {
         Objects.requireNonNull(probe, "probe");
         Objects.requireNonNull(complete, "complete");
-        Objects.requireNonNull(pollInterval, "pollInterval");
-        long pollNanos = pollInterval.toNanos();
-        if (pollNanos <= 0L) throw new IllegalArgumentException("poll interval must be positive");
+        final long pollNanos = requirePollNanos(pollInterval);
         while (true) {
-            T value = probe.get();
+            final T value = probe.get();
             if (complete.test(value)) return value;
-            long remaining = remainingNanos();
+            final long remaining = remainingNanos();
             if (remaining == 0L) throw timeout(phase);
             TimeUnit.NANOSECONDS.sleep(Math.min(remaining, pollNanos));
         }
@@ -156,20 +156,27 @@ public final class TestDeadline {
     public void join(Thread thread, String phase) throws InterruptedException, TimeoutException {
         Objects.requireNonNull(thread, "thread");
         Objects.requireNonNull(phase, "phase");
-        long remaining = remainingNanos();
+        final long remaining = remainingNanos();
         if (remaining == 0L) throw timeout(phase);
         thread.join(TimeUnit.NANOSECONDS.toMillis(remaining), (int) (remaining % 1_000_000L));
         if (thread.isAlive()) throw timeout(phase);
     }
 
+    private static long requirePollNanos(Duration pollInterval) {
+        Objects.requireNonNull(pollInterval, "pollInterval");
+        final long pollNanos = pollInterval.toNanos();
+        if (pollNanos <= 0L) throw new IllegalArgumentException("poll interval must be positive");
+        return pollNanos;
+    }
+
     private TimeoutException timeout(String phase) {
-        long elapsedNanos = Math.max(0L, System.nanoTime() - startedNanos);
+        final long elapsedNanos = Math.max(0L, System.nanoTime() - startedNanos);
         return new TimeoutException(
                 phase + " did not complete within " + budget + " (elapsed " + Duration.ofNanos(elapsedNanos) + ")");
     }
 
     private TimeoutException timeout(String phase, Duration attemptLimit) {
-        long elapsedNanos = Math.max(0L, System.nanoTime() - startedNanos);
+        final long elapsedNanos = Math.max(0L, System.nanoTime() - startedNanos);
         return new TimeoutException(phase + " attempt did not complete within " + attemptLimit + " (deadline " + budget
                 + ", elapsed " + Duration.ofNanos(elapsedNanos) + ")");
     }

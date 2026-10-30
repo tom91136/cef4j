@@ -176,7 +176,7 @@ class RuntimeServerIntegrationTest {
             secondPeer.setReceiveTimeOut(1_000);
             secondPeer.connect(server.endpoint());
             ByteBuffer ready = ByteBuffer.allocate(Envelope.HEADER_SIZE).order(ByteOrder.LITTLE_ENDIAN);
-            Envelope.writeHeader(ready, Envelope.Kind.REQUEST, 0, 0, 0, 0);
+            Envelope.writeHeader(ready, new Envelope.Header(0, Envelope.Kind.REQUEST, 0, 0, 0));
             secondPeer.send(ready.array(), 0);
             assertThat(secondPeer.recv(0)).isNull();
 

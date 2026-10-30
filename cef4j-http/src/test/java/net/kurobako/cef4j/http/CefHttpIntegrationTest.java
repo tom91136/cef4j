@@ -40,7 +40,7 @@ class CefHttpIntegrationTest {
     @SuppressWarnings("NullAway.Init")
     private static HttpServer server;
 
-    private static int port;
+    private static int port = 0;
 
     @BeforeAll
     static void setup() throws Exception {

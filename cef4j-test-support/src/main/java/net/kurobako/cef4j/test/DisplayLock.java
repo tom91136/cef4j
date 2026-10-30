@@ -48,12 +48,12 @@ public final class DisplayLock implements BeforeAllCallback, AfterAllCallback, A
     }
 
     void acquire() throws Exception {
-        FileChannel opened = FileChannel.open(path, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+        final FileChannel opened = FileChannel.open(path, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
         try {
-            long deadline = System.nanoTime() + acquireTimeout.toNanos();
+            final long deadline = System.nanoTime() + acquireTimeout.toNanos();
             while (true) {
                 try {
-                    FileLock acquired = opened.tryLock();
+                    final FileLock acquired = opened.tryLock();
                     if (acquired != null) {
                         channel = opened;
                         lock = acquired;

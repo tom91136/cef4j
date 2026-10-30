@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * JavaFX node that displays a CEF browser running in a remote server subprocess. Drop-in shape mirrors the in-process
- * {@code cef4j-inprocess-jfx} {@code CefWebView} (Region with an embedded {@link ImageView}); the difference is that
+ * {@code cef4j-inprocess-jfx} {@code CefWebView} (Parent with an embedded {@link ImageView}); the difference is that
  * all browser state lives in the server, not the JVM, so the JFX side just routes pixel frames + control commands over
  * the configured Remote CEF transports.
  *
@@ -88,28 +88,28 @@ public final class RemoteWebView extends Region implements AutoCloseable {
     }
 
     private void forwardMouseClick(MouseEvent e, boolean mouseUp) {
-        BrowserHost host = binding.host().orElse(null);
+        final BrowserHost host = binding.host().orElse(null);
         if (host == null) return;
-        int button = jfxButtonToCef(e.getButton());
+        final int button = jfxButtonToCef(e.getButton());
         if (button < 0) return; // unsupported (no-button event, etc.)
-        net.kurobako.cef4j.ipc.protocol.gen.MouseEvent ev =
+        final net.kurobako.cef4j.ipc.protocol.gen.MouseEvent ev =
                 new net.kurobako.cef4j.ipc.protocol.gen.MouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e));
         binding.observe(
                 host.sendMouseClickEvent(ev, button, mouseUp ? 1 : 0, e.getClickCount()), "forward mouse click");
     }
 
     private void forwardMouseMove(MouseEvent e, boolean mouseLeave) {
-        BrowserHost host = binding.host().orElse(null);
+        final BrowserHost host = binding.host().orElse(null);
         if (host == null) return;
-        net.kurobako.cef4j.ipc.protocol.gen.MouseEvent ev =
+        final net.kurobako.cef4j.ipc.protocol.gen.MouseEvent ev =
                 new net.kurobako.cef4j.ipc.protocol.gen.MouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e));
         binding.observe(host.sendMouseMoveEvent(ev, mouseLeave ? 1 : 0), "forward mouse move");
     }
 
     private void forwardMouseWheel(ScrollEvent e) {
-        BrowserHost host = binding.host().orElse(null);
+        final BrowserHost host = binding.host().orElse(null);
         if (host == null) return;
-        net.kurobako.cef4j.ipc.protocol.gen.MouseEvent ev =
+        final net.kurobako.cef4j.ipc.protocol.gen.MouseEvent ev =
                 new net.kurobako.cef4j.ipc.protocol.gen.MouseEvent((int) e.getX(), (int) e.getY(), 0);
         binding.observe(host.sendMouseWheelEvent(ev, (int) e.getDeltaX(), (int) e.getDeltaY()), "forward mouse wheel");
     }
@@ -175,9 +175,9 @@ public final class RemoteWebView extends Region implements AutoCloseable {
     }
 
     private void forwardKeyTyped(KeyEvent e) {
-        String text = e.getCharacter();
+        final String text = e.getCharacter();
         if (text == null || text.isEmpty() || KeyEvent.CHAR_UNDEFINED.equals(text)) return;
-        int c = text.charAt(0);
+        final int c = text.charAt(0);
         sendKey(KEYEVENT_CHAR, e, c, c);
     }
 
@@ -186,7 +186,7 @@ public final class RemoteWebView extends Region implements AutoCloseable {
      * don't have OS-specific scancodes from JFX); {@code character} is non-zero only for KEYEVENT_CHAR.
      */
     private void sendKey(int eventType, KeyEvent jfx, int keyCode, int character) {
-        BrowserHost host = binding.host().orElse(null);
+        final BrowserHost host = binding.host().orElse(null);
         if (host == null) return;
         binding.observe(
                 host.sendKeyEvent(net.kurobako.cef4j.ipc.protocol.gen.KeyEvent.builder()
@@ -241,7 +241,7 @@ public final class RemoteWebView extends Region implements AutoCloseable {
      * deliberate: JavaFX never reads a buffer that the IPC thread can concurrently overwrite.
      */
     private void onFrame(int width, int height, ByteBuffer pixels, FrameMetadata meta) {
-        long expectedBytes = (long) width * height * 4L;
+        final long expectedBytes = (long) width * height * 4L;
         if (width <= 0 || height <= 0 || expectedBytes > Integer.MAX_VALUE || pixels.remaining() != expectedBytes) {
             LOG.warn(
                     "dropping malformed frame {}x{} with {} bytes (expected {})",
@@ -251,14 +251,14 @@ public final class RemoteWebView extends Region implements AutoCloseable {
                     expectedBytes);
             return;
         }
-        ByteBuffer snapshot = ByteBuffer.allocateDirect((int) expectedBytes);
+        final ByteBuffer snapshot = ByteBuffer.allocateDirect((int) expectedBytes);
         snapshot.put(pixels.duplicate()).flip();
         frameDispatcher.submit(new FrameSnapshot(width, height, snapshot));
     }
 
     private void presentFrameOnFxThread(FrameSnapshot frame) {
-        if (!binding.isAttached()) return;
-        PixelBuffer<ByteBuffer> buffer =
+        if (binding.isDetached()) return;
+        final PixelBuffer<ByteBuffer> buffer =
                 new PixelBuffer<>(frame.width, frame.height, frame.pixels, PixelFormat.getByteBgraPreInstance());
         imageView.setImage(new WritableImage(buffer));
         imageView.setFitWidth(frame.width);

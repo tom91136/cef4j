@@ -1,6 +1,13 @@
 package net.kurobako.cef4j.codegen
 
+import java.util.regex.Matcher
+import scala.collection.mutable
+
 object DocComments {
+  object Context {
+    given empty: Context = Context("")
+  }
+
   case class Context(
       docsBaseUrl: String,
       enumConstantMap: Map[String, String] = Map.empty,
@@ -9,9 +16,8 @@ object DocComments {
       javaClassFqnMap: Map[String, String] = Map.empty
   )
 
-  object Context {
-    given empty: Context = Context("")
-  }
+  /** A callback and the documentation that describes it. */
+  case class MethodDoc(fn: FnPtr, docs: Map[String, String], cefStructName: String = "")
 
   private val CefMetaPattern = """--cef\(([^)]*)\)--""".r
 
@@ -93,7 +99,7 @@ object DocComments {
           (cls, methodName) -> paramTypes
         }
         .groupBy(_._1)
-        .map { case (key, entries) => key -> entries.map(_._2).distinct }
+        .map { case (key, methods) => key -> methods.map(_._2).distinct }
     )
   }
 
@@ -118,7 +124,7 @@ object DocComments {
       m => {
         val ref       = m.group(1)
         val corrected = paramNames.find(p => p != ref && levenshtein(p, ref) == 1).getOrElse(ref)
-        java.util.regex.Matcher.quoteReplacement(s"|$corrected|")
+        Matcher.quoteReplacement(s"|$corrected|")
       }
     )
 
@@ -150,14 +156,13 @@ object DocComments {
 
   private val CefSrcMarkerRe = """@_cefsrc:([^:]+):(\d+)""".r
 
-  def resolveMethodDoc(
-      fn: FnPtr,
-      docs: Map[String, String],
-      cefStructName: String = ""
-  )(using naming: Naming.Context): Option[String] = {
-    val camelName    = Naming.javaMethodName(fn)
-    val pascalName   = Naming.cppPascalName(fn)
-    val cppClassName = naming.cppClassNames.get(cefStructName)
+  def resolveMethodDoc(method: MethodDoc)(using naming: Naming.Context): Option[String] = {
+    val fn            = method.fn
+    val docs          = method.docs
+    val cefStructName = method.cefStructName
+    val camelName     = Naming.javaMethodName(fn)
+    val pascalName    = Naming.cppPascalName(fn)
+    val cppClassName  = naming.cppClassNames.get(cefStructName)
 
     def qualified(name: String): Option[String] =
       cppClassName.flatMap(cls => docs.get(s"$cls::$name"))
@@ -179,36 +184,39 @@ object DocComments {
     val pascalName  = Naming.toPascalCase(ff.javaMethodName)
     val ownerCpp    = naming.cppClassNames.get(ff.ownerStruct)
     val ownerSuffix = ownerCpp.map(_.stripPrefix("Cef")).filter(_.nonEmpty)
-    val countParams = ff.params.collect {
-      case Param(name, _, _, _) if ff.params.exists(_.name == s"${name}Count") => name
-    }.toSet
+    // promoteCountFunc moves the array and count parameters into the return type
+    val paramNames = ff.ret match {
+      case CType.CountFuncArray(countParamName = count, arrayParamName = array) =>
+        ff.params.map(_.name) :+ array :+ count
+      case _ => ff.params.map(_.name)
+    }
+    val names       = paramNames.toSet
+    val countParams = paramNames.filter(name => names.contains(s"${name}Count")).toSet
 
     def qualified(name: String): Option[String] =
       ownerCpp.flatMap(cls => docs.get(s"$cls::$name"))
 
     def qualifiedByOwnerSuffixNormalization: Option[String] =
       ownerCpp.flatMap { cls =>
-        docs.collectFirst {
-          case (key, text)
-              if key.startsWith(s"$cls::") &&
-                ownerSuffix.exists { suffix =>
-                  val methodName = key.stripPrefix(s"$cls::")
-                  methodName != pascalName && methodName.endsWith(suffix) && methodName.stripSuffix(
-                    suffix
-                  ) == pascalName
-                } =>
-            text
-        }
+        docs.view.filter {
+          case (key, _) =>
+            key.startsWith(s"$cls::") &&
+            ownerSuffix.exists { suffix =>
+              val methodName = key.stripPrefix(s"$cls::")
+              methodName != pascalName && methodName.endsWith(suffix) && methodName.stripSuffix(
+                suffix
+              ) == pascalName
+            }
+        }.minByOption(_._1).map(_._2)
       }
 
     def qualifiedByCountFunc: Option[String] =
       ownerCpp.flatMap { cls =>
-        docs.collectFirst {
-          case (key, text)
-              if key.startsWith(s"$cls::") &&
-                countParams.exists(name => text.contains(s"count_func=$name:")) =>
-            text
-        }
+        docs.view.filter {
+          case (key, text) =>
+            key.startsWith(s"$cls::") &&
+            countParams.exists(name => text.contains(s"count_func=$name:"))
+        }.minByOption(_._1).map(_._2)
       }
 
     qualified(pascalName)
@@ -234,17 +242,20 @@ object DocComments {
   }
 
   private def joinSoftWrappedLines(lines: List[String]): List[String] = {
-    val (joined, current) = lines.foldLeft((List.empty[String], Option.empty[String])) { case ((acc, current), line) =>
-      current match {
-        case Some(buffer) if !isStructuralDocLine(buffer) && !isStructuralDocLine(line) =>
-          (acc, Some(s"$buffer $line"))
-        case Some(buffer) =>
-          (acc :+ buffer, Some(line))
-        case None =>
-          (acc, Some(line))
-      }
+    val (joined, current) = lines.foldLeft((mutable.ListBuffer.empty[String], Option.empty[String])) {
+      case ((acc, current), line) =>
+        current match {
+          case Some(buffer) if !isStructuralDocLine(buffer) && !isStructuralDocLine(line) =>
+            (acc, Some(s"$buffer $line"))
+          case Some(buffer) =>
+            acc += buffer
+            (acc, Some(line))
+          case None =>
+            (acc, Some(line))
+        }
     }
-    current.fold(joined)(joined :+ _)
+    current.foreach(joined += _)
+    joined.toList
   }
 
   def convertCefDoc(
@@ -253,18 +264,20 @@ object DocComments {
       cPrototype: String = "",
       cppSourceOverride: String = ""
   )(using Naming.Context, Context): String = {
-    val (cppSource, cleanLines) = text.linesIterator.toList.foldLeft((cppSourceOverride, List.empty[String])) {
-      case ((source, acc), line) =>
-        CefSrcMarkerRe.findFirstMatchIn(line) match {
-          case Some(m) =>
-            val nextSource = if (source.isEmpty) s"${m.group(1)}:${m.group(2)}" else source
-            (nextSource, acc)
-          case None =>
-            (source, acc :+ line)
-        }
-    }
+    val (cppSource, cleanLines) =
+      text.linesIterator.toList.foldLeft((cppSourceOverride, mutable.ListBuffer.empty[String])) {
+        case ((source, acc), line) =>
+          CefSrcMarkerRe.findFirstMatchIn(line) match {
+            case Some(m) =>
+              val nextSource = if (source.isEmpty) s"${m.group(1)}:${m.group(2)}" else source
+              (nextSource, acc)
+            case None =>
+              acc += line
+              (source, acc)
+          }
+      }
 
-    val joinedLines = cleanLines.foldRight(List.empty[String]) { (line, acc) =>
+    val joinedLines = cleanLines.toList.foldRight(List.empty[String]) { (line, acc) =>
       acc match {
         case next :: rest if line.endsWith("-") && next.nonEmpty && next.head.isLetter =>
           (line + next) :: rest
@@ -274,16 +287,21 @@ object DocComments {
 
     val paragraphLines = joinSoftWrappedLines(joinedLines)
 
-    val (converted, _) = paragraphLines.foldLeft((List.empty[String], false)) { case ((acc, inPre), line) =>
-      if (line.trim == "<pre>" || line.trim.startsWith("<pre>")) {
-        (acc :+ line, true)
-      } else if (line.trim == "</pre>" || line.trim.endsWith("</pre>")) {
-        (acc :+ line, false)
-      } else if (inPre) {
-        (acc :+ escapeHtml(line), true)
-      } else {
-        (acc :+ convertLine(line), false)
-      }
+    val (converted, _) = paragraphLines.foldLeft((mutable.ListBuffer.empty[String], false)) {
+      case ((acc, inPre), line) =>
+        if (line.trim == "<pre>" || line.trim.startsWith("<pre>")) {
+          acc += line
+          (acc, true)
+        } else if (line.trim == "</pre>" || line.trim.endsWith("</pre>")) {
+          acc += line
+          (acc, false)
+        } else if (inPre) {
+          acc += escapeHtml(line)
+          (acc, true)
+        } else {
+          acc += convertLine(line)
+          (acc, false)
+        }
     }
 
     val effectiveCapiSource = if (capiSource.nonEmpty) capiSource
@@ -303,7 +321,7 @@ object DocComments {
     } else ""
     val srcRef = capiRef + cppSee
 
-    val bulletWrapped = wrapBulletLists(converted)
+    val bulletWrapped = wrapBulletLists(converted.toList)
     val collapsed     = collapseEmptyParagraphs(bulletWrapped)
     collapsed.mkString("\n") + srcRef
   }
@@ -314,13 +332,13 @@ object DocComments {
   private def resolveCppRef(cppName: String, member: String)(using Naming.Context, Context): String = {
     val javaClass  = summon[Context].classNameMap.getOrElse(cppName, cppName)
     val javaMethod = Naming.cppMethodName(member)
-    java.util.regex.Matcher.quoteReplacement(resolveMethodLink(javaClass, javaMethod))
+    Matcher.quoteReplacement(resolveMethodLink(javaClass, javaMethod))
   }
 
   private def resolveCapiRef(capiStruct: String, capiMethod: String)(using Naming.Context, Context): String = {
     val javaClass  = Naming.structToJavaName(capiStruct)
     val javaMethod = Naming.toCamelCase(capiMethod)
-    java.util.regex.Matcher.quoteReplacement(resolveMethodLink(javaClass, javaMethod))
+    Matcher.quoteReplacement(resolveMethodLink(javaClass, javaMethod))
   }
 
   private def convertLine(line: String)(using Naming.Context, Context): String =
@@ -370,38 +388,60 @@ object DocComments {
     }
 
   private def collapseEmptyParagraphs(lines: List[String]): List[String] = {
-    val collapsed = lines.foldLeft(List.empty[String]) { (acc, line) =>
+    val collapsed = lines.foldLeft(mutable.ListBuffer.empty[String]) { (acc, line) =>
       if (line.trim == "<p>" && acc.lastOption.exists(_.trim == "<p>")) acc
-      else if (line.trim.startsWith("<pre") && acc.lastOption.exists(_.trim == "<p>")) acc.init :+ line
-      else acc :+ line
+      else if (line.trim.startsWith("<pre") && acc.lastOption.exists(_.trim == "<p>")) {
+        acc.dropRightInPlace(1)
+        acc += line
+        acc
+      } else {
+        acc += line
+        acc
+      }
     }
-    collapsed.reverse.dropWhile(_.trim == "<p>").reverse
+    collapsed.toList.reverse.dropWhile(_.trim == "<p>").reverse
   }
 
   private val SeeMarkerRe = """@_see:(.+)""".r
 
-  def extractSourceTags(text: String): (String, List[String]) = {
-    val (clean, seeTags) = text.linesIterator.foldLeft((List.empty[String], List.empty[String])) {
-      case ((lines, tags), line) =>
-        SeeMarkerRe.findFirstMatchIn(line) match {
-          case Some(matched) => lines           -> (tags :+ matched.group(1))
-          case None          => (lines :+ line) -> tags
-        }
-    }
-    (clean.mkString("\n"), seeTags)
+  case class SourceTags(clean: String, seeTags: List[String])
+
+  def extractSourceTags(text: String): SourceTags = {
+    val (clean, seeTags) =
+      text.linesIterator.foldLeft((mutable.ListBuffer.empty[String], mutable.ListBuffer.empty[String])) {
+        case ((lines, tags), line) =>
+          SeeMarkerRe.findFirstMatchIn(line) match {
+            case Some(matched) =>
+              tags += matched.group(1)
+              (lines, tags)
+            case None =>
+              lines += line
+              (lines, tags)
+          }
+      }
+    SourceTags(clean.mkString("\n"), seeTags.toList)
+  }
+
+  /** The body lines of a Javadoc comment for already-converted documentation. */
+  def javadocLines(converted: String): List[String] = {
+    val SourceTags(docText, sourceRefTags) = extractSourceTags(converted)
+    val contentLines                       = docText.linesIterator.filter(_.nonEmpty).map(l => s"     * $l").toList
+    val seeTags                            = sourceRefTags.map(tag => s"     * @see $tag")
+    val separator                          = if (contentLines.nonEmpty && seeTags.nonEmpty) List("     *") else Nil
+    contentLines ++ separator ++ seeTags
   }
 
   def cPrototypeForMethod(structName: String, fn: FnPtr): String = {
     val ret       = cReturnType(fn.ret)
     val self      = s"struct _$structName* self"
-    val params    = fn.params.map(cParamDecl).mkString(", ")
+    val params    = fn.params.map(cParamDecl(_)).mkString(", ")
     val allParams = if (params.isEmpty) self else s"$self, $params"
     s"$ret (CEF_CALLBACK* ${fn.name})($allParams);"
   }
 
   def cPrototypeForFreeFunction(ff: CefDecl.FreeFunction): String = {
     val ret    = cReturnType(ff.ret)
-    val params = if (ff.params.isEmpty) "void" else ff.params.map(cParamDecl).mkString(", ")
+    val params = if (ff.params.isEmpty) "void" else ff.params.map(cParamDecl(_)).mkString(", ")
     s"CEF_EXPORT $ret ${ff.cName}($params);"
   }
 
@@ -436,19 +476,24 @@ object DocComments {
   }
 
   private def wrapBulletLists(lines: List[String]): List[String] = {
-    val (wrapped, inList) = lines.foldLeft((List.empty[String], false)) { case ((acc, inList), line) =>
-      val trimmed = line.trim
-      if (trimmed.startsWith("- ")) {
-        val openList = if (inList) acc else acc :+ "<ul>"
-        (openList :+ s"<li>${trimmed.stripPrefix("- ")}</li>", true)
-      } else if (trimmed.startsWith("  ") && inList) {
-        (acc :+ trimmed, true)
-      } else {
-        val closedList = if (inList) acc :+ "</ul>" else acc
-        (closedList :+ line, false)
-      }
+    val (wrapped, inList) = lines.foldLeft((mutable.ListBuffer.empty[String], false)) {
+      case ((acc, inList), line) =>
+        val trimmed = line.trim
+        if (trimmed.startsWith("- ")) {
+          if (!inList) acc += "<ul>"
+          acc += s"<li>${trimmed.stripPrefix("- ")}</li>"
+          (acc, true)
+        } else if (trimmed.startsWith("  ") && inList) {
+          acc += trimmed
+          (acc, true)
+        } else {
+          if (inList) acc += "</ul>"
+          acc += line
+          (acc, false)
+        }
     }
-    if (inList) wrapped :+ "</ul>" else wrapped
+    if (inList) wrapped += "</ul>"
+    wrapped.toList
   }
 
   private def isBufferParam(p: Param): Boolean = p.typ match {
@@ -462,17 +507,17 @@ object DocComments {
   }
 
   private def bufferConversionNote(params: List[Param])(using Naming.Context): List[String] = {
-    val bufferParams = params.filter(isBufferParam)
+    val bufferParams = params.filter(isBufferParam(_)).toSet
     if (bufferParams.isEmpty) Nil
     else {
-      val hiddenSizes = params.filter(isBufferSizeParam)
+      val hiddenSizes = params.filter(isBufferSizeParam(_)).toSet
       // Snake-case hidden names avoid Error Prone's parameter typo heuristic.
       val sizeNames       = hiddenSizes.map(p => s"{@code ${p.name}}").mkString(", ")
       val arrayCountNames = params.zip(params.drop(1)).collect {
         case (count, arr)
             if (count.typ == CType.SizeT || count.typ == CType.OutPrimitivePtr(CType.SizeT)) &&
               (arr.typ match {
-                case _: CType.ObjectPtrArray | _: CType.ByValueArray => true
+                case CType.ObjectPtrArray(_) | CType.ByValueArray(_) => true
                 case _                                               => false
               }) &&
               count.name.toLowerCase == s"${arr.name.toLowerCase}count" =>
@@ -495,7 +540,7 @@ object DocComments {
         )
       } else Nil
       List(
-        s"<p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the" +
+        "<p><b>The C API {@code void*} buffer parameter has been converted to {@link java.nio.ByteBuffer}; the" +
           s" hidden $sizeNames parameter is derived from the buffer's capacity.</b>"
       ) ++ freadNote
     }
@@ -509,14 +554,13 @@ object DocComments {
     else None
 
   def forMethod(
-      fn: FnPtr,
-      docs: Map[String, String],
+      method: MethodDoc,
       capiSource: String = "",
       cPrototype: String = "",
-      cefStructName: String = "",
       collectionsAsReturns: Boolean = false
-  )(using naming: Naming.Context, dc: Context): String = {
-    val comment = resolveMethodDoc(fn, docs, cefStructName)
+  )(using Naming.Context, Context): String = {
+    val fn      = method.fn
+    val comment = resolveMethodDoc(method)
 
     comment match {
       case Some(text) =>
@@ -524,10 +568,10 @@ object DocComments {
           parseMetaAttrs(m.group(1))
         }.toList
 
-        val cleanText                = CefMetaPattern.replaceAllIn(text, "").trim
-        val paramCorrectedText       = correctPipeRefTypos(cleanText, fn.params.map(_.name))
-        val convertedText            = convertCefDoc(paramCorrectedText, capiSource, cPrototype)
-        val (docText, sourceRefTags) = extractSourceTags(convertedText)
+        val cleanText                          = CefMetaPattern.replaceAllIn(text, "").trim
+        val paramCorrectedText                 = correctPipeRefTypos(cleanText, fn.params.map(_.name))
+        val convertedText                      = convertCefDoc(paramCorrectedText, capiSource, cPrototype)
+        val SourceTags(docText, sourceRefTags) = extractSourceTags(convertedText)
 
         val metaSentences = metaAttrsToSentences(metaAttrs)
 

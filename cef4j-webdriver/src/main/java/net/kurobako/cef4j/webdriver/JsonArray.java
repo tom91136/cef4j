@@ -46,7 +46,7 @@ public final class JsonArray extends JsonElement implements Iterable<JsonElement
 
     @Override
     public JsonArray deepCopy() {
-        JsonArray copy = new JsonArray();
+        final JsonArray copy = new JsonArray();
         values.forEach(value -> copy.add(value.deepCopy()));
         return copy;
     }

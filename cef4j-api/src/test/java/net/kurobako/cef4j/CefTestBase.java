@@ -172,7 +172,7 @@ abstract class CefTestBase {
             return true;
         } catch (Exception e) {
             // CEF <95 lacks isValid(); fall back to checking if host is still available
-            return !browser.getHost().isEmpty();
+            return browser.getHost().isPresent();
         }
     }
 

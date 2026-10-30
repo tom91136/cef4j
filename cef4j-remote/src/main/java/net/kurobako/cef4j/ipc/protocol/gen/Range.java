@@ -3,7 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
@@ -11,6 +11,7 @@ import net.kurobako.cef4j.ipc.session.WireDecoder;
  * to facade methods (or factory requests) that take this struct. The dispatcher decodes them on the
  * runtime-server side and fills the matching {@code cef_range_t} before invoking CEF.
  */
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class Range {
 
     private final int from;
@@ -29,12 +30,13 @@ public final class Range {
         return to;
     }
 
+    @SuppressWarnings("SameReturnValue")
     public int encodedSize() {
         return 8;
     }
 
     public void encodeInto(ByteBuffer dst) {
-        ByteOrder originalOrder = dst.order();
+        final ByteOrder originalOrder = dst.order();
         try {
             dst.order(ByteOrder.LITTLE_ENDIAN);
             dst.putInt(from);
@@ -50,10 +52,8 @@ public final class Range {
       * configured the buffer.
       */
     public static Range decode(ByteBuffer __buf) {
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "from");
-        int from = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "to");
-        int to = __buf.getInt();
+        final int from = WireDecoder.int32(__buf, "from");
+        final int to = WireDecoder.int32(__buf, "to");
         return new Range(from, to);
     }
 
@@ -64,16 +64,16 @@ public final class Range {
     /** Lombok-style builder. */
     public static final class Builder {
 
-        private int from = 0;
-        private int to = 0;
+        private int from;
+        private int to;
 
-        public Builder from(int from) {
-            this.from = from;
+        public Builder from(int value) {
+            this.from = value;
             return this;
         }
 
-        public Builder to(int to) {
-            this.to = to;
+        public Builder to(int value) {
+            this.to = value;
             return this;
         }
 

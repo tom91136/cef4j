@@ -3,12 +3,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class BrowserViewDelegateGetDelegateForPopupBrowserViewRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 299475359;
@@ -59,7 +61,7 @@ public final class BrowserViewDelegateGetDelegateForPopupBrowserViewRequest impl
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
@@ -73,17 +75,13 @@ public final class BrowserViewDelegateGetDelegateForPopupBrowserViewRequest impl
     }
 
     public static final CefMessageDecoder<BrowserViewDelegateGetDelegateForPopupBrowserViewRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browserView");
-        RemoteHandle browserView = new RemoteHandle(__buf.getInt());
-        BrowserSettings settings = BrowserSettings.decode(__buf);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "client");
-        RemoteHandle client = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "isDevtools");
-        int isDevtools = __buf.getInt();
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final RemoteHandle browserView = WireDecoder.handle(__buf, "browserView");
+        final BrowserSettings settings = BrowserSettings.decode(__buf);
+        final RemoteHandle client = WireDecoder.handle(__buf, "client");
+        final int isDevtools = WireDecoder.int32(__buf, "isDevtools");
         WireDecoder.requireFullyConsumed(__buf, "BrowserViewDelegateGetDelegateForPopupBrowserViewRequest");
         return new BrowserViewDelegateGetDelegateForPopupBrowserViewRequest(self, browserView, settings, client, isDevtools);
     };

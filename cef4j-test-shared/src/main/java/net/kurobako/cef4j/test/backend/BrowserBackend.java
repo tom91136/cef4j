@@ -55,7 +55,7 @@ public interface BrowserBackend {
     }
 
     static java.util.List<BrowserBackend> discover() {
-        java.util.List<BrowserBackend> result = new java.util.ArrayList<>();
+        final java.util.List<BrowserBackend> result = new java.util.ArrayList<>();
         for (BrowserBackend b : java.util.ServiceLoader.load(BrowserBackend.class)) {
             result.add(b);
         }

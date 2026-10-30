@@ -11,6 +11,8 @@ import PDL.TypeExpr
 import net.kurobako.cef4j.codegen.AtomicFiles
 import net.kurobako.cef4j.codegen.Banners
 import net.kurobako.cef4j.codegen.FileSystem
+import net.kurobako.cef4j.codegen.JavaCodeGen
+import net.kurobako.cef4j.codegen.Naming
 import net.kurobako.cef4j.codegen.passes.EmitPackageInfos
 
 /** Generates cef4j's map-backed Java CDP API from pinned Chromium protocol schemas. */
@@ -76,6 +78,13 @@ object Main {
     "yield"
   )
 
+  private val ClientHeader = List(
+    "    public static final class Client {",
+    "        private final CdpClient client;",
+    "        public Client(CdpClient client) { this.client = client; }"
+  )
+  private val DomainTail = List("    }", "}", "")
+
   private case class Config(
       browserSchema: Path = Paths.get("browser_protocol.pdl"),
       javascriptSchema: Path = Paths.get("js_protocol.pdl"),
@@ -90,7 +99,7 @@ object Main {
 
   private case class Resolved(javaType: String, kind: String)
 
-  private final case class Doc(description: Option[String], experimental: Boolean, deprecated: Boolean)
+  private case class Doc(description: Option[String], experimental: Boolean, deprecated: Boolean)
 
   def main(args: Array[String]): Unit = {
     val parsed = parseArgs(args.toList)
@@ -132,6 +141,7 @@ object Main {
     AtomicFiles.writeString(
       resources.resolve("schema.properties"),
       s"""chromium.version=$chromiumVersion
+         |protocol.version=${protocol.version.major}.${protocol.version.minor}
          |v8.revision=$v8Revision
          |browser.source=https://chromium.googlesource.com/chromium/src/+/refs/tags/$chromiumVersion/third_party/blink/public/devtools_protocol/
          |javascript.source=https://chromium.googlesource.com/v8/v8/+/$v8Revision/include/js_protocol.pdl
@@ -157,7 +167,7 @@ object Main {
     println(s"cef4j CDP codegen complete: ${domains.size} domains for Chromium $chromiumVersion")
   }
 
-  private final class Emitter(
+  private class Emitter(
       javaPackage: String,
       chromiumVersion: String,
       v8Revision: String,
@@ -253,6 +263,7 @@ object Main {
         case TypeExpr.InlineEnum(_)         => Resolved("String", "string")
       }
 
+    @annotation.tailrec
     private def decode(
         domain: String,
         expr: TypeExpr,
@@ -267,29 +278,29 @@ object Main {
           types.get(key) match {
             case None                            => source
             case Some(target) if isModel(target) =>
-              s"$source == null ? null : ${resolve(domain, expr).javaType}.fromMap(java.util.Objects.requireNonNull(${ctx}objectMap($source)))"
+              s"$source.flatMap(CdpObject::objectMap).map(${resolve(domain, expr).javaType}::fromMap)"
             case Some(_) if seen(key)           => source
             case Some(target) if isEnum(target) =>
-              s"$source == null ? null : ${resolve(domain, expr).javaType}.of((String) $source)"
+              s"$source.map(value -> ${resolve(domain, expr).javaType}.of((String) value))"
             case Some(target) =>
               taggedAlias(target) match {
                 case Some(TypeExpr.Str) =>
-                  s"$source == null ? null : new ${resolve(domain, expr).javaType}((String) $source)"
+                  s"$source.map(value -> new ${resolve(domain, expr).javaType}((String) value))"
                 case Some(TypeExpr.Integer) =>
-                  s"$source == null ? null : new ${resolve(domain, expr).javaType}(((Number) $source).longValue())"
+                  s"$source.map(value -> new ${resolve(domain, expr).javaType}(((Number) value).longValue()))"
                 case Some(TypeExpr.Number) =>
-                  s"$source == null ? null : new ${resolve(domain, expr).javaType}(((Number) $source).doubleValue())"
+                  s"$source.map(value -> new ${resolve(domain, expr).javaType}(((Number) value).doubleValue()))"
                 case _ => decode(key._1, target.alias, source, ctx, depth, seen + key)
               }
           }
         case TypeExpr.ArrayOf(element) =>
           val variable = s"element$depth"
-          s"${ctx}list($source, $variable -> ${strictExpr(domain, element, variable, depth + 1, seen)})"
-        case TypeExpr.Str | TypeExpr.Binary => s"(String) $source"
-        case TypeExpr.Boolean               => s"(Boolean) $source"
-        case TypeExpr.Integer               => s"CdpObject.numberAsLong($source)"
-        case TypeExpr.Number                => s"CdpObject.numberAsDouble($source)"
-        case TypeExpr.Obj                   => s"${ctx}objectMap($source)"
+          s"$source.flatMap(value -> ${ctx}list(value, $variable -> ${strictExpr(domain, element, variable, depth + 1, seen)}))"
+        case TypeExpr.Str | TypeExpr.Binary => s"$source.map(value -> (String) value)"
+        case TypeExpr.Boolean               => s"$source.map(value -> (Boolean) value)"
+        case TypeExpr.Integer               => s"$source.flatMap(CdpObject::numberAsLong)"
+        case TypeExpr.Number                => s"$source.flatMap(CdpObject::numberAsDouble)"
+        case TypeExpr.Obj                   => s"$source.flatMap(CdpObject::objectMap)"
         case TypeExpr.InlineEnum(_)         => source
         case TypeExpr.AnyType               => source
       }
@@ -308,7 +319,7 @@ object Main {
             case None                            => source
             case Some(_) if seen(key)            => source
             case Some(target) if isModel(target) =>
-              s"java.util.Objects.requireNonNull(${resolve(domain, expr).javaType}.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap($source))))"
+              s"java.util.Objects.requireNonNull(${resolve(domain, expr).javaType}.fromMap(CdpObject.requireObjectMap($source)))"
             case Some(target) if isEnum(target) =>
               s"${resolve(domain, expr).javaType}.of((String) $source)"
             case Some(target) =>
@@ -329,7 +340,7 @@ object Main {
         case TypeExpr.Boolean               => s"(Boolean) $source"
         case TypeExpr.Integer               => s"((Number) $source).longValue()"
         case TypeExpr.Number                => s"((Number) $source).doubleValue()"
-        case TypeExpr.Obj                   => s"java.util.Objects.requireNonNull(CdpObject.objectMap($source))"
+        case TypeExpr.Obj                   => s"CdpObject.requireObjectMap($source)"
         case TypeExpr.AnyType               => source
         case TypeExpr.InlineEnum(_)         => source
       }
@@ -355,7 +366,7 @@ object Main {
         returns: Option[String]
     ): List[String] = {
       val text       = doc.description.filter(_.nonEmpty).getOrElse(fallback).replace("*/", "*&#47;")
-      val paragraphs = text.split("\\n\\s*\\n").iterator.map(_.trim).filter(_.nonEmpty).map(normalizeDoc).toList
+      val paragraphs = text.split("\\n\\s*\\n").view.map(_.trim).filter(_.nonEmpty).map(normalizeDoc(_)).toList
       List(indent + "/**") ++
         paragraphs.zipWithIndex.map { case (paragraph, index) =>
           s"$indent * ${if (index == 0) "" else "<p>"}$paragraph"
@@ -372,7 +383,7 @@ object Main {
     }
 
     private def deprecated(doc: Doc, indent: String): List[String] =
-      if (doc.deprecated) List(s"${indent}@Deprecated") else Nil
+      if (doc.deprecated) List(s"$indent@Deprecated") else Nil
 
     private def enumConstant(value: String, used: Set[String]): String = {
       @tailrec
@@ -390,10 +401,11 @@ object Main {
     }
 
     private def enumType(name: String, values: List[String], doc: Doc, indent: String): List[String] = {
-      val (_, constants) = values.foldLeft(Set.empty[String] -> List.empty[String]) { case ((used, lines), value) =>
+      val (_, reversed) = values.foldLeft(Set.empty[String] -> List.empty[String]) { case ((used, lines), value) =>
         val candidate = enumConstant(value, used)
-        (used + candidate) -> (lines :+ s"$indent    $candidate(${jsonString(value)})")
+        (used + candidate) -> (s"$indent    $candidate(${jsonString(value)})" :: lines)
       }
+      val constants     = reversed.reverse
       val constantLines =
         if (constants.isEmpty) Nil
         else constants.init.map(_ + ",") ++ List(constants.last + ";")
@@ -404,7 +416,7 @@ object Main {
         List(
           s"$indent    public final String value;",
           s"$indent    $name(String value) { this.value = value; }",
-          s"$indent    public String value() { return value; }",
+          s"$indent    @Override public String value() { return value; }",
           s"$indent    public static $name of(String value) {",
           s"$indent        for ($name constant : values()) {",
           s"$indent            if (constant.value.equals(value)) return constant;",
@@ -443,8 +455,8 @@ object Main {
         List(
           s"${indent}public static final class $name implements $generic {",
           s"$indent    public final $typeName value;",
-          s"$indent    public $name(${paramAnno}$typeName value) { this.value = $constructor; }",
-          s"$indent    public $valueType value() { return value; }",
+          s"$indent    public $name($paramAnno$typeName value) { this.value = $constructor; }",
+          s"$indent    @Override public $valueType value() { return value; }",
           s"$indent    @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {",
           s"$indent        if (this == other) return true;",
           s"$indent        if (!(other instanceof $name)) return false;",
@@ -465,50 +477,44 @@ object Main {
     private def decodeField(domain: String, owner: String, prop: PDL.SubItem, source: String, ctx: String): String =
       prop.typeExpr match {
         case TypeExpr.InlineEnum(_) =>
-          s"$source == null ? null : $owner.${cap(prop.name)}Values.of((String) $source)"
+          s"$source.map(value -> $owner.${cap(prop.name)}Values.of((String) value))"
         case other => decode(domain, other, source, ctx)
       }
 
-    private def accessor(domain: String, owner: String, prop: PDL.SubItem): List[String] = {
+    private def accessorBody(
+        domain: String,
+        prop: PDL.SubItem,
+        rawJava: String,
+        strictDecode: String => String,
+        decode: (String, String) => String
+    ): List[String] = {
       val fieldName                = prop.name
       val accessor                 = ident(fieldName)
       val optional                 = prop.optional
       val kind                     = kindOf(domain, prop.typeExpr)
-      val rawJava                  = rawJavaType(domain, owner, prop)
       val source                   = s"raw(${jsonString(fieldName)})"
       val (typeName, body, prefix) =
         if (!optional) {
           val t        = primitiveOf(kind).getOrElse(rawJava)
           val required = s"require(${jsonString(fieldName)})"
-          (t, List(s"return ${strictFieldDecode(domain, owner, prop, required)};"), "")
+          (t, List(s"return ${strictDecode(required)};"), "")
         } else primitiveOf(kind) match {
           case Some("long") =>
             (
               "OptionalLong",
-              List(
-                s"Long value = CdpObject.numberAsLong($source);",
-                "return value == null ? OptionalLong.empty() : OptionalLong.of(value);"
-              ),
+              List(s"return $source.flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();"),
               ""
             )
           case Some("double") =>
             (
               "OptionalDouble",
               List(
-                s"Double value = CdpObject.numberAsDouble($source);",
-                "return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);"
+                s"return $source.flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();"
               ),
               ""
             )
           case _ =>
-            (
-              s"Optional<$rawJava>",
-              List(
-                s"Object value = $source;",
-                s"return Optional.ofNullable(${decodeField(domain, owner, prop, "value", "")});"
-              ),
-              ""
-            )
+            (s"Optional<$rawJava>", List(s"return ${decode(source, "")};"), "")
         }
       javadoc(
         docOf(prop),
@@ -523,60 +529,43 @@ object Main {
         List("        }")
     }
 
-    private def setter(domain: String, owner: String, prop: PDL.SubItem): List[String] = {
-      val fieldName    = prop.name
-      val javaName     = ident(fieldName)
-      val optional     = prop.optional
-      val kind         = kindOf(domain, prop.typeExpr)
-      val rawJava      = rawJavaType(domain, owner, prop)
-      val requiredType = primitiveOf(kind).getOrElse(rawJava)
-      val optionalType = primitiveOf(kind) match {
-        case Some("long")   => "OptionalLong"
-        case Some("double") => "OptionalDouble"
-        case _              => s"Optional<$rawJava>"
-      }
-      val baseParam = if (optional) optionalType else requiredType
-      val baseSet   =
-        if (!optional) s"set(${jsonString(fieldName)}, $javaName);"
-        else primitiveOf(kind) match {
-          case Some("long") =>
-            s"set(${jsonString(fieldName)}, $javaName.isPresent() ? $javaName.getAsLong() : null);"
-          case Some("double") =>
-            s"set(${jsonString(fieldName)}, $javaName.isPresent() ? $javaName.getAsDouble() : null);"
-          case _ => s"set(${jsonString(fieldName)}, $javaName.orElse(null));"
-        }
-      val base = javadoc(
+    private def accessor(domain: String, owner: String, prop: PDL.SubItem): List[String] =
+      accessorBody(
+        domain,
+        prop,
+        rawJavaType(domain, owner, prop),
+        required => strictFieldDecode(domain, owner, prop, required),
+        (source, context) => decodeField(domain, owner, prop, source, context)
+      )
+
+    private def renderSetter(
+        domain: String,
+        owner: String,
+        prop: PDL.SubItem,
+        rawJava: String
+    ): List[String] = {
+      val fieldName = prop.name
+      val javaName  = ident(fieldName)
+      val kind      = kindOf(domain, prop.typeExpr)
+      val paramType = primitiveOf(kind).getOrElse(rawJava)
+      javadoc(
         docOf(prop),
         "        ",
         s"Sets the $fieldName field.",
-        List(javaName -> (if (optional) "field value; empty omits the value" else "field value")),
+        List(javaName -> "field value"),
         Some("this model")
       ) ++
         deprecated(docOf(prop), "        ") ++
         List(
-          s"        public $owner $javaName($baseParam $javaName) {",
-          s"            $baseSet",
+          s"        public $owner $javaName($paramType $javaName) {",
+          s"            set(${jsonString(fieldName)}, $javaName);",
           "            return this;",
           "        }"
         )
-      val convenience = Option.when(optional)(
-        javadoc(
-          docOf(prop),
-          "        ",
-          s"Sets the $fieldName field.",
-          List(javaName -> "field value; null removes the value"),
-          Some("this model")
-        ) ++
-          deprecated(docOf(prop), "        ") ++
-          List(
-            s"        public $owner $javaName($rawJava $javaName) {",
-            s"            set(${jsonString(fieldName)}, $javaName);",
-            "            return this;",
-            "        }"
-          )
-      ).toList.flatten
-      base ++ convenience
     }
+
+    private def setter(domain: String, owner: String, prop: PDL.SubItem): List[String] =
+      renderSetter(domain, owner, prop, rawJavaType(domain, owner, prop))
 
     private def model(
         name: String,
@@ -637,29 +626,21 @@ object Main {
 
     private def paramType(domain: String, commandName: String, param: PDL.SubItem): String =
       if (param.optional) primitiveOf(paramKind(domain, param)) match {
-        case Some("long")   => "OptionalLong"
-        case Some("double") => "OptionalDouble"
-        case _              => s"Optional<${paramRawJava(domain, commandName, param)}>"
+        case Some("long")   => Naming.nullableType("Long")
+        case Some("double") => Naming.nullableType("Double")
+        case _              => Naming.nullableType(paramRawJava(domain, commandName, param))
       }
       else paramRequiredType(domain, commandName, param)
-
-    private def emptyArg(domain: String, param: PDL.SubItem): String =
-      primitiveOf(paramKind(domain, param)) match {
-        case Some("long")   => "OptionalLong.empty()"
-        case Some("double") => "OptionalDouble.empty()"
-        case _              => "Optional.empty()"
-      }
 
     private def returnRawJava(domain: String, ret: PDL.SubItem): String = ret.typeExpr match {
       case TypeExpr.InlineEnum(_) => s"${cap(ret.name)}Values"
       case other                  => resolve(domain, other).javaType
     }
 
-    private def returnKind(domain: String, ret: PDL.SubItem): String = kindOf(domain, ret.typeExpr)
-
     private def returnDecode(domain: String, ret: PDL.SubItem): String = ret.typeExpr match {
       case TypeExpr.InlineEnum(_) => throw IllegalStateException("unexpected inline enum return")
-      case other                  => decode(domain, other, s"result_.get(${jsonString(ret.name)})", "CdpObject.")
+      case other                  =>
+        decode(domain, other, s"Optional.ofNullable(result_.get(${jsonString(ret.name)}))", "CdpObject.")
     }
 
     private def strictReturnDecode(domain: String, ret: PDL.SubItem): String = ret.typeExpr match {
@@ -677,7 +658,7 @@ object Main {
     ): String =
       prop.typeExpr match {
         case TypeExpr.InlineEnum(_) =>
-          s"$source == null ? null : ${cap(commandName)}${cap(prop.name)}Values.of((String) $source)"
+          s"$source.map(value -> ${cap(commandName)}${cap(prop.name)}Values.of((String) value))"
         case other => decode(domain, other, source, ctx)
       }
 
@@ -688,113 +669,46 @@ object Main {
         case other => strictExpr(domain, other, source)
       }
 
-    private def requestAccessor(domain: String, commandName: String, prop: PDL.SubItem): List[String] = {
-      val fieldName                = prop.name
-      val accessor                 = ident(fieldName)
-      val optional                 = prop.optional
-      val kind                     = kindOf(domain, prop.typeExpr)
-      val rawJava                  = paramRawJava(domain, commandName, prop)
-      val source                   = s"raw(${jsonString(fieldName)})"
-      val (typeName, body, prefix) =
-        if (!optional) {
-          val t        = primitiveOf(kind).getOrElse(rawJava)
-          val required = s"require(${jsonString(fieldName)})"
-          (t, List(s"return ${strictParamFieldDecode(domain, commandName, prop, required)};"), "")
-        } else primitiveOf(kind) match {
-          case Some("long") =>
-            (
-              "OptionalLong",
-              List(
-                s"Long value = CdpObject.numberAsLong($source);",
-                "return value == null ? OptionalLong.empty() : OptionalLong.of(value);"
-              ),
-              ""
-            )
-          case Some("double") =>
-            (
-              "OptionalDouble",
-              List(
-                s"Double value = CdpObject.numberAsDouble($source);",
-                "return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);"
-              ),
-              ""
-            )
-          case _ =>
-            (
-              s"Optional<$rawJava>",
-              List(
-                s"Object value = $source;",
-                s"return Optional.ofNullable(${decodeParamField(domain, commandName, prop, "value", "")});"
-              ),
-              ""
-            )
-        }
-      javadoc(
-        docOf(prop),
-        "        ",
-        s"Returns the $fieldName field.",
-        Nil,
-        Some(if (optional) "the protocol field value, empty when absent" else "the protocol field value")
-      ) ++
-        deprecated(docOf(prop), "        ") ++
-        List(s"        ${prefix}public $typeName $accessor() {") ++
-        body.map(line => s"            $line") ++
-        List("        }")
+    private def requestAccessor(domain: String, commandName: String, prop: PDL.SubItem): List[String] =
+      accessorBody(
+        domain,
+        prop,
+        paramRawJava(domain, commandName, prop),
+        required => strictParamFieldDecode(domain, commandName, prop, required),
+        (source, context) => decodeParamField(domain, commandName, prop, source, context)
+      )
+
+    private def requestSetter(
+        domain: String,
+        commandName: String,
+        owner: String,
+        prop: PDL.SubItem
+    ): List[String] =
+      renderSetter(domain, owner, prop, paramRawJava(domain, commandName, prop))
+
+    private enum CommandDoc {
+      case Main, Defaults, Required, Request
     }
 
-    private def requestSetter(domain: String, commandName: String, owner: String, prop: PDL.SubItem): List[String] = {
-      val fieldName    = prop.name
-      val javaName     = ident(fieldName)
-      val optional     = prop.optional
-      val kind         = kindOf(domain, prop.typeExpr)
-      val rawJava      = paramRawJava(domain, commandName, prop)
-      val requiredType = primitiveOf(kind).getOrElse(rawJava)
-      val optionalType = primitiveOf(kind) match {
-        case Some("long")   => "OptionalLong"
-        case Some("double") => "OptionalDouble"
-        case _              => s"Optional<$rawJava>"
+    private def commandJavadoc(
+        command: PDL.Decl.Command,
+        domain: String,
+        name: String,
+        kind: CommandDoc,
+        params: List[PDL.SubItem],
+        required: List[PDL.SubItem],
+        returnsDoc: String
+    ): List[String] = {
+      def values(items: List[PDL.SubItem]): List[(String, String)] =
+        items.map(param => ident(param.name) -> "protocol value")
+      val (suffix, parameters) = kind match {
+        case CommandDoc.Main     => (".", values(params))
+        case CommandDoc.Defaults => (" with default parameters.", Nil)
+        case CommandDoc.Required => (" with the required parameters.", values(required))
+        case CommandDoc.Request  => (" with a request object.", List("request" -> "request parameters"))
       }
-      val baseParam = if (optional) optionalType else requiredType
-      val baseSet   =
-        if (!optional) s"set(${jsonString(fieldName)}, $javaName);"
-        else primitiveOf(kind) match {
-          case Some("long") =>
-            s"set(${jsonString(fieldName)}, $javaName.isPresent() ? $javaName.getAsLong() : null);"
-          case Some("double") =>
-            s"set(${jsonString(fieldName)}, $javaName.isPresent() ? $javaName.getAsDouble() : null);"
-          case _ => s"set(${jsonString(fieldName)}, $javaName.orElse(null));"
-        }
-      val base = javadoc(
-        docOf(prop),
-        "        ",
-        s"Sets the $fieldName field.",
-        List(javaName -> (if (optional) "field value; empty omits the value" else "field value")),
-        Some("this model")
-      ) ++
-        deprecated(docOf(prop), "        ") ++
-        List(
-          s"        public $owner $javaName($baseParam $javaName) {",
-          s"            $baseSet",
-          "            return this;",
-          "        }"
-        )
-      val convenience = Option.when(optional)(
-        javadoc(
-          docOf(prop),
-          "        ",
-          s"Sets the $fieldName field.",
-          List(javaName -> "field value; null removes the value"),
-          Some("this model")
-        ) ++
-          deprecated(docOf(prop), "        ") ++
-          List(
-            s"        public $owner $javaName($rawJava $javaName) {",
-            s"            set(${jsonString(fieldName)}, $javaName);",
-            "            return this;",
-            "        }"
-          )
-      ).toList.flatten
-      base ++ convenience
+      javadoc(docOf(command), "        ", s"Invokes $domain.$name$suffix", parameters, Some(returnsDoc)) ++
+        deprecated(docOf(command), "        ")
     }
 
     private def requestModel(
@@ -808,9 +722,7 @@ object Main {
       val required            = properties.filterNot(_.optional)
       val requiredConstructor = Option.when(required.nonEmpty) {
         val sig  = required.map(p => s"${paramRequiredType(domain, command.name, p)} ${ident(p.name)}")
-        val body = required.map { p =>
-          s"            set(${jsonString(p.name)}, ${ident(p.name)});"
-        }
+        val body = List(s"            ${required.map(p => s"${ident(p.name)}(${ident(p.name)})").mkString(".")};")
         javadoc(
           doc,
           "        ",
@@ -835,9 +747,9 @@ object Main {
         requiredConstructor ++
         List(
           s"        public static $name fromMap(Map<String, Object> values) {",
-          s"            $name instance_ = new $name();",
-          s"            if (values != null) instance_.values.putAll(values);",
-          s"            return instance_;",
+          s"            final $name instance_ = new $name();",
+          "            if (values != null) instance_.values.putAll(values);",
+          "            return instance_;",
           "        }"
         ) ++
         accessors ++ setters ++
@@ -849,47 +761,36 @@ object Main {
       val method      = ident(name)
       val params      = command.params
       val prefix      = cap(name)
-      val optionalAll = params.nonEmpty && params.forall(_.optional)
       val required    = params.filterNot(_.optional)
+      val optional    = params.filter(_.optional)
+      val numOptional = optional.size
       val hasRequired = required.nonEmpty
-      val hasOptional = params.exists(_.optional)
+      val hasOptional = optional.nonEmpty
+      val optionalAll = params.nonEmpty && params.forall(_.optional)
       val returnsDoc  =
         if (command.returns.isEmpty) "a stage completing when the command completes"
         else "a stage completing with the command result"
-      val signature = params.map(param => s"${paramType(domain, name, param)} ${ident(param.name)}")
-      val args      = if (params.isEmpty) "null" else "params"
-      val build     = if (params.isEmpty) Nil
+      val signature = params.map { param =>
+        val t =
+          if (param.optional && numOptional > 1) paramType(domain, name, param)
+          else paramRequiredType(domain, name, param)
+        s"$t ${ident(param.name)}"
+      }
+      val args  = if (params.isEmpty) "null" else "params"
+      val build = if (params.isEmpty) Nil
       else
-        List("            Map<String, Object> params = new LinkedHashMap<>();") ++
+        List("            final Map<String, Object> params = new LinkedHashMap<>();") ++
           params.map { param =>
             val javaName = ident(param.name)
             val key      = jsonString(param.name)
-            if (!param.optional) s"            params.put($key, CdpObject.json($javaName));"
-            else primitiveOf(paramKind(domain, param)) match {
-              case Some(_) => s"            $javaName.ifPresent(value_ -> params.put($key, value_));"
-              case None    => s"            $javaName.ifPresent(value_ -> params.put($key, CdpObject.json(value_)));"
-            }
+            if (!param.optional || numOptional == 1) s"            params.put($key, CdpObject.json($javaName));"
+            else s"            if ($javaName != null) params.put($key, CdpObject.json($javaName));"
           }
       val decoder = command.returns match {
         case Nil                       => ""
-        case List(ret) if ret.optional =>
-          primitiveOf(returnKind(domain, ret)) match {
-            case Some("long") =>
-              val source = s"result_.get(${jsonString(ret.name)})"
-              s"""result_ -> {
-            Long value = CdpObject.numberAsLong($source);
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
-        }"""
-            case Some("double") =>
-              val source = s"result_.get(${jsonString(ret.name)})"
-              s"""result_ -> {
-            Double value = CdpObject.numberAsDouble($source);
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
-        }"""
-            case _ => s"result_ -> Optional.ofNullable(${returnDecode(domain, ret)})"
-          }
-        case List(ret) => s"result_ -> ${strictReturnDecode(domain, ret)}"
-        case _         => s"result_ -> new ${prefix}Result(result_)"
+        case List(ret) if ret.optional => s"result_ -> ${returnDecode(domain, ret)}"
+        case List(ret)                 => s"result_ -> ${strictReturnDecode(domain, ret)}"
+        case _                         => s"result_ -> new ${prefix}Result(result_)"
       }
       val decoderArg = if (decoder.isEmpty) "" else s", $decoder"
       val retType    = command.returns match {
@@ -900,61 +801,43 @@ object Main {
           else s"CompletionStage<$raw>"
         case _ => s"CompletionStage<${prefix}Result>"
       }
-      val main = javadoc(
-        docOf(command),
-        "        ",
-        s"Invokes $domain.$name.",
-        params.map(param => ident(param.name) -> "protocol value"),
-        Some(returnsDoc)
-      ) ++
-        deprecated(docOf(command), "        ") ++
+      val main = commandJavadoc(command, domain, name, CommandDoc.Main, params, required, returnsDoc) ++
         List(s"        public $retType $method(${signature.mkString(", ")}) {") ++
         build ++
         List(s"            return client.call(\"$domain.$name\", $args$decoderArg);", "        }")
+
       val default = Option.when(optionalAll)(
-        javadoc(docOf(command), "        ", s"Invokes $domain.$name with default parameters.", Nil, Some(returnsDoc)) ++
-          deprecated(docOf(command), "        ") ++
+        commandJavadoc(command, domain, name, CommandDoc.Defaults, params, required, returnsDoc) ++
           List(
             s"        public $retType $method() {",
-            s"            return $method(${params.map(emptyArg(domain, _)).mkString(", ")});",
+            s"            return client.call(\"$domain.$name\", null$decoderArg);",
             "        }"
           )
       ).toList.flatten
-      val requiredOnly = Option.when(hasRequired && hasOptional)(
-        javadoc(
-          docOf(command),
-          "        ",
-          s"Invokes $domain.$name with the required parameters.",
-          required.map(param => ident(param.name) -> "protocol value"),
-          Some(returnsDoc)
-        ) ++
-          deprecated(docOf(command), "        ") ++
-          List(
-            s"        public $retType $method(${required.map(param =>
-                s"${paramRequiredType(domain, name, param)} ${ident(param.name)}"
-              ).mkString(", ")}) {",
-            s"            return $method(${params.map(param =>
-                if (param.optional) emptyArg(domain, param) else ident(param.name)
-              ).mkString(", ")});",
-            "        }"
-          )
-      ).toList.flatten
+
+      val requiredOnly = Option.when(hasRequired && hasOptional) {
+        val reqSig   = required.map(param => s"${paramRequiredType(domain, name, param)} ${ident(param.name)}")
+        val reqBuild =
+          List("            final Map<String, Object> params = new LinkedHashMap<>();") ++
+            required.map { param =>
+              s"            params.put(${jsonString(param.name)}, CdpObject.json(${ident(param.name)}));"
+            }
+        commandJavadoc(command, domain, name, CommandDoc.Required, params, required, returnsDoc) ++
+          List(s"        public $retType $method(${reqSig.mkString(", ")}) {") ++
+          reqBuild ++
+          List(s"            return client.call(\"$domain.$name\", params$decoderArg);", "        }")
+      }.toList.flatten
+
       val requestOverload = Option.when(params.nonEmpty) {
         val reqType = s"${prefix}Request"
-        javadoc(
-          docOf(command),
-          "        ",
-          s"Invokes $domain.$name with a request object.",
-          List("request" -> "request parameters"),
-          Some(returnsDoc)
-        ) ++
-          deprecated(docOf(command), "        ") ++
+        commandJavadoc(command, domain, name, CommandDoc.Request, params, required, returnsDoc) ++
           List(
             s"        public $retType $method($reqType request) {",
             s"            return client.call(\"$domain.$name\", request == null ? null : request.toMap()$decoderArg);",
             "        }"
           )
       }.toList.flatten
+
       main ++ default ++ requiredOnly ++ requestOverload
     }
 
@@ -978,6 +861,8 @@ object Main {
         "import net.kurobako.cef4j.cdp.CdpObject;",
         "import net.kurobako.cef4j.cdp.CdpSubscription;",
         "import net.kurobako.cef4j.cdp.CdpValue;",
+        "import net.kurobako.cef4j.policy.NullableBoundary;",
+        "import org.jspecify.annotations.Nullable;",
         ""
       )
       val domainDoc = Doc(domainNode.description, domainNode.flags.experimental, domainNode.flags.deprecated)
@@ -994,6 +879,7 @@ object Main {
           "Unchecked",
           "UnusedMethod"
         ),
+        "@NullableBoundary(\"CDP wire objects use null for absent optional fields\")",
         s"public final class $domain {",
         s"    private $domain() {}"
       )
@@ -1060,11 +946,6 @@ object Main {
           ).toList.flatten
         }
       }
-      val clientHeader = List(
-        "    public static final class Client {",
-        "        private final CdpClient client;",
-        "        public Client(CdpClient client) { this.client = client; }"
-      )
       val commandMethods = commands.flatMap(command => commandMethod(domain, command))
       val eventMethods   = events.flatMap { event =>
         val name      = event.name
@@ -1083,13 +964,13 @@ object Main {
             "        }"
           )
       }
-      (
-        header ++ docs ++ deprecated(
+      JavaCodeGen.withoutUnusedImports(
+        (header ++ docs ++ deprecated(
           domainDoc,
           ""
         ) ++ classHeader ++ types ++ requestModels ++ resultModels ++ eventModels ++
-          paramEnums ++ clientHeader ++ commandMethods ++ eventMethods ++ List("    }", "}", "")
-      ).mkString("\n")
+          paramEnums ++ ClientHeader ++ commandMethods ++ eventMethods ++ DomainTail).mkString("\n")
+      )
     }
 
     def emitDomains(domains: List[PDL.Domain]): String = {

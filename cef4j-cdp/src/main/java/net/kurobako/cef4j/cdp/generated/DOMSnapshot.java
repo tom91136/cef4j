@@ -7,12 +7,12 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
-import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This domain facilitates obtaining document snapshots with DOM, layout, and style information.
@@ -21,6 +21,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class DOMSnapshot {
     private DOMSnapshot() {}
     /**
@@ -58,32 +59,28 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> textValue() {
-            Object value = raw("textValue");
-            return Optional.ofNullable((String) value);
+            return raw("textValue").map(value -> (String) value);
         }
         /**
          * Only set for input elements, contains the input&#x27;s associated text value.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> inputValue() {
-            Object value = raw("inputValue");
-            return Optional.ofNullable((String) value);
+            return raw("inputValue").map(value -> (String) value);
         }
         /**
          * Only set for radio and checkbox input elements, indicates if the element has been checked
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> inputChecked() {
-            Object value = raw("inputChecked");
-            return Optional.ofNullable((Boolean) value);
+            return raw("inputChecked").map(value -> (Boolean) value);
         }
         /**
          * Only set for option elements, indicates if the element has been selected
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> optionSelected() {
-            Object value = raw("optionSelected");
-            return Optional.ofNullable((Boolean) value);
+            return raw("optionSelected").map(value -> (Boolean) value);
         }
         /**
          * {@code Node}&#x27;s id, corresponds to DOM.Node.backendNodeId.
@@ -97,160 +94,140 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Long>> childNodeIndexes() {
-            Object value = raw("childNodeIndexes");
-            return Optional.ofNullable(list(value, element0 -> ((Number) element0).longValue()));
+            return raw("childNodeIndexes").flatMap(value -> list(value, element0 -> ((Number) element0).longValue()));
         }
         /**
          * Attributes of an {@code Element} node.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOMSnapshot.NameValue>> attributes() {
-            Object value = raw("attributes");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(DOMSnapshot.NameValue.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("attributes").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(DOMSnapshot.NameValue.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Indexes of pseudo elements associated with this node in the {@code domNodes} array returned by {@code getSnapshot}, if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Long>> pseudoElementIndexes() {
-            Object value = raw("pseudoElementIndexes");
-            return Optional.ofNullable(list(value, element0 -> ((Number) element0).longValue()));
+            return raw("pseudoElementIndexes").flatMap(value -> list(value, element0 -> ((Number) element0).longValue()));
         }
         /**
          * The index of the node&#x27;s related layout tree node in the {@code layoutTreeNodes} array returned by {@code getSnapshot}, if any.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong layoutNodeIndex() {
-            Long value = CdpObject.numberAsLong(raw("layoutNodeIndex"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("layoutNodeIndex").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Document URL that {@code Document} or {@code FrameOwner} node points to.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> documentURL() {
-            Object value = raw("documentURL");
-            return Optional.ofNullable((String) value);
+            return raw("documentURL").map(value -> (String) value);
         }
         /**
          * Base URL that {@code Document} or {@code FrameOwner} node uses for URL completion.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> baseURL() {
-            Object value = raw("baseURL");
-            return Optional.ofNullable((String) value);
+            return raw("baseURL").map(value -> (String) value);
         }
         /**
          * Only set for documents, contains the document&#x27;s content language.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> contentLanguage() {
-            Object value = raw("contentLanguage");
-            return Optional.ofNullable((String) value);
+            return raw("contentLanguage").map(value -> (String) value);
         }
         /**
          * Only set for documents, contains the document&#x27;s character set encoding.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> documentEncoding() {
-            Object value = raw("documentEncoding");
-            return Optional.ofNullable((String) value);
+            return raw("documentEncoding").map(value -> (String) value);
         }
         /**
          * {@code DocumentType} node&#x27;s publicId.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> publicId() {
-            Object value = raw("publicId");
-            return Optional.ofNullable((String) value);
+            return raw("publicId").map(value -> (String) value);
         }
         /**
          * {@code DocumentType} node&#x27;s systemId.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> systemId() {
-            Object value = raw("systemId");
-            return Optional.ofNullable((String) value);
+            return raw("systemId").map(value -> (String) value);
         }
         /**
          * Frame ID for frame owner elements and also for the document node.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            Object value = raw("frameId");
-            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
+            return raw("frameId").map(value -> new Page.FrameId((String) value));
         }
         /**
          * The index of a frame owner element&#x27;s content document in the {@code domNodes} array returned by {@code getSnapshot}, if any.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong contentDocumentIndex() {
-            Long value = CdpObject.numberAsLong(raw("contentDocumentIndex"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("contentDocumentIndex").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Type of a pseudo element node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.PseudoType> pseudoType() {
-            Object value = raw("pseudoType");
-            return Optional.ofNullable(value == null ? null : DOM.PseudoType.of((String) value));
+            return raw("pseudoType").map(value -> DOM.PseudoType.of((String) value));
         }
         /**
          * Shadow root type.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.ShadowRootType> shadowRootType() {
-            Object value = raw("shadowRootType");
-            return Optional.ofNullable(value == null ? null : DOM.ShadowRootType.of((String) value));
+            return raw("shadowRootType").map(value -> DOM.ShadowRootType.of((String) value));
         }
         /**
          * Whether this DOM node responds to mouse clicks. This includes nodes that have had click event listeners attached via JavaScript as well as anchor tags that naturally navigate when clicked.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isClickable() {
-            Object value = raw("isClickable");
-            return Optional.ofNullable((Boolean) value);
+            return raw("isClickable").map(value -> (Boolean) value);
         }
         /**
          * Details of the node&#x27;s event listeners, if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOMDebugger.EventListener>> eventListeners() {
-            Object value = raw("eventListeners");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(DOMDebugger.EventListener.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("eventListeners").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(DOMDebugger.EventListener.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * The selected url for nodes with a srcset attribute.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> currentSourceURL() {
-            Object value = raw("currentSourceURL");
-            return Optional.ofNullable((String) value);
+            return raw("currentSourceURL").map(value -> (String) value);
         }
         /**
          * The url of the script (if any) that generates this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> originURL() {
-            Object value = raw("originURL");
-            return Optional.ofNullable((String) value);
+            return raw("originURL").map(value -> (String) value);
         }
         /**
          * Scroll offsets, set when this node is a Document.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble scrollOffsetX() {
-            Double value = CdpObject.numberAsDouble(raw("scrollOffsetX"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("scrollOffsetX").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Returns the scrollOffsetY field.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble scrollOffsetY() {
-            Double value = CdpObject.numberAsDouble(raw("scrollOffsetY"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("scrollOffsetY").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * {@code Node}&#x27;s nodeType.
@@ -281,16 +258,7 @@ public final class DOMSnapshot {
         }
         /**
          * Only set for textarea elements, contains the text value.
-         * @param textValue field value; empty omits the value
-         * @return this model
-         */
-        public DOMNode textValue(Optional<String> textValue) {
-            set("textValue", textValue.orElse(null));
-            return this;
-        }
-        /**
-         * Only set for textarea elements, contains the text value.
-         * @param textValue field value; null removes the value
+         * @param textValue field value
          * @return this model
          */
         public DOMNode textValue(String textValue) {
@@ -299,16 +267,7 @@ public final class DOMSnapshot {
         }
         /**
          * Only set for input elements, contains the input&#x27;s associated text value.
-         * @param inputValue field value; empty omits the value
-         * @return this model
-         */
-        public DOMNode inputValue(Optional<String> inputValue) {
-            set("inputValue", inputValue.orElse(null));
-            return this;
-        }
-        /**
-         * Only set for input elements, contains the input&#x27;s associated text value.
-         * @param inputValue field value; null removes the value
+         * @param inputValue field value
          * @return this model
          */
         public DOMNode inputValue(String inputValue) {
@@ -317,37 +276,19 @@ public final class DOMSnapshot {
         }
         /**
          * Only set for radio and checkbox input elements, indicates if the element has been checked
-         * @param inputChecked field value; empty omits the value
+         * @param inputChecked field value
          * @return this model
          */
-        public DOMNode inputChecked(Optional<Boolean> inputChecked) {
-            set("inputChecked", inputChecked.orElse(null));
-            return this;
-        }
-        /**
-         * Only set for radio and checkbox input elements, indicates if the element has been checked
-         * @param inputChecked field value; null removes the value
-         * @return this model
-         */
-        public DOMNode inputChecked(Boolean inputChecked) {
+        public DOMNode inputChecked(boolean inputChecked) {
             set("inputChecked", inputChecked);
             return this;
         }
         /**
          * Only set for option elements, indicates if the element has been selected
-         * @param optionSelected field value; empty omits the value
+         * @param optionSelected field value
          * @return this model
          */
-        public DOMNode optionSelected(Optional<Boolean> optionSelected) {
-            set("optionSelected", optionSelected.orElse(null));
-            return this;
-        }
-        /**
-         * Only set for option elements, indicates if the element has been selected
-         * @param optionSelected field value; null removes the value
-         * @return this model
-         */
-        public DOMNode optionSelected(Boolean optionSelected) {
+        public DOMNode optionSelected(boolean optionSelected) {
             set("optionSelected", optionSelected);
             return this;
         }
@@ -362,16 +303,7 @@ public final class DOMSnapshot {
         }
         /**
          * The indexes of the node&#x27;s child nodes in the {@code domNodes} array returned by {@code getSnapshot}, if any.
-         * @param childNodeIndexes field value; empty omits the value
-         * @return this model
-         */
-        public DOMNode childNodeIndexes(Optional<java.util.List<Long>> childNodeIndexes) {
-            set("childNodeIndexes", childNodeIndexes.orElse(null));
-            return this;
-        }
-        /**
-         * The indexes of the node&#x27;s child nodes in the {@code domNodes} array returned by {@code getSnapshot}, if any.
-         * @param childNodeIndexes field value; null removes the value
+         * @param childNodeIndexes field value
          * @return this model
          */
         public DOMNode childNodeIndexes(java.util.List<Long> childNodeIndexes) {
@@ -380,16 +312,7 @@ public final class DOMSnapshot {
         }
         /**
          * Attributes of an {@code Element} node.
-         * @param attributes field value; empty omits the value
-         * @return this model
-         */
-        public DOMNode attributes(Optional<java.util.List<DOMSnapshot.NameValue>> attributes) {
-            set("attributes", attributes.orElse(null));
-            return this;
-        }
-        /**
-         * Attributes of an {@code Element} node.
-         * @param attributes field value; null removes the value
+         * @param attributes field value
          * @return this model
          */
         public DOMNode attributes(java.util.List<DOMSnapshot.NameValue> attributes) {
@@ -398,16 +321,7 @@ public final class DOMSnapshot {
         }
         /**
          * Indexes of pseudo elements associated with this node in the {@code domNodes} array returned by {@code getSnapshot}, if any.
-         * @param pseudoElementIndexes field value; empty omits the value
-         * @return this model
-         */
-        public DOMNode pseudoElementIndexes(Optional<java.util.List<Long>> pseudoElementIndexes) {
-            set("pseudoElementIndexes", pseudoElementIndexes.orElse(null));
-            return this;
-        }
-        /**
-         * Indexes of pseudo elements associated with this node in the {@code domNodes} array returned by {@code getSnapshot}, if any.
-         * @param pseudoElementIndexes field value; null removes the value
+         * @param pseudoElementIndexes field value
          * @return this model
          */
         public DOMNode pseudoElementIndexes(java.util.List<Long> pseudoElementIndexes) {
@@ -416,34 +330,16 @@ public final class DOMSnapshot {
         }
         /**
          * The index of the node&#x27;s related layout tree node in the {@code layoutTreeNodes} array returned by {@code getSnapshot}, if any.
-         * @param layoutNodeIndex field value; empty omits the value
+         * @param layoutNodeIndex field value
          * @return this model
          */
-        public DOMNode layoutNodeIndex(OptionalLong layoutNodeIndex) {
-            set("layoutNodeIndex", layoutNodeIndex.isPresent() ? layoutNodeIndex.getAsLong() : null);
-            return this;
-        }
-        /**
-         * The index of the node&#x27;s related layout tree node in the {@code layoutTreeNodes} array returned by {@code getSnapshot}, if any.
-         * @param layoutNodeIndex field value; null removes the value
-         * @return this model
-         */
-        public DOMNode layoutNodeIndex(Long layoutNodeIndex) {
+        public DOMNode layoutNodeIndex(long layoutNodeIndex) {
             set("layoutNodeIndex", layoutNodeIndex);
             return this;
         }
         /**
          * Document URL that {@code Document} or {@code FrameOwner} node points to.
-         * @param documentURL field value; empty omits the value
-         * @return this model
-         */
-        public DOMNode documentURL(Optional<String> documentURL) {
-            set("documentURL", documentURL.orElse(null));
-            return this;
-        }
-        /**
-         * Document URL that {@code Document} or {@code FrameOwner} node points to.
-         * @param documentURL field value; null removes the value
+         * @param documentURL field value
          * @return this model
          */
         public DOMNode documentURL(String documentURL) {
@@ -452,16 +348,7 @@ public final class DOMSnapshot {
         }
         /**
          * Base URL that {@code Document} or {@code FrameOwner} node uses for URL completion.
-         * @param baseURL field value; empty omits the value
-         * @return this model
-         */
-        public DOMNode baseURL(Optional<String> baseURL) {
-            set("baseURL", baseURL.orElse(null));
-            return this;
-        }
-        /**
-         * Base URL that {@code Document} or {@code FrameOwner} node uses for URL completion.
-         * @param baseURL field value; null removes the value
+         * @param baseURL field value
          * @return this model
          */
         public DOMNode baseURL(String baseURL) {
@@ -470,16 +357,7 @@ public final class DOMSnapshot {
         }
         /**
          * Only set for documents, contains the document&#x27;s content language.
-         * @param contentLanguage field value; empty omits the value
-         * @return this model
-         */
-        public DOMNode contentLanguage(Optional<String> contentLanguage) {
-            set("contentLanguage", contentLanguage.orElse(null));
-            return this;
-        }
-        /**
-         * Only set for documents, contains the document&#x27;s content language.
-         * @param contentLanguage field value; null removes the value
+         * @param contentLanguage field value
          * @return this model
          */
         public DOMNode contentLanguage(String contentLanguage) {
@@ -488,16 +366,7 @@ public final class DOMSnapshot {
         }
         /**
          * Only set for documents, contains the document&#x27;s character set encoding.
-         * @param documentEncoding field value; empty omits the value
-         * @return this model
-         */
-        public DOMNode documentEncoding(Optional<String> documentEncoding) {
-            set("documentEncoding", documentEncoding.orElse(null));
-            return this;
-        }
-        /**
-         * Only set for documents, contains the document&#x27;s character set encoding.
-         * @param documentEncoding field value; null removes the value
+         * @param documentEncoding field value
          * @return this model
          */
         public DOMNode documentEncoding(String documentEncoding) {
@@ -506,16 +375,7 @@ public final class DOMSnapshot {
         }
         /**
          * {@code DocumentType} node&#x27;s publicId.
-         * @param publicId field value; empty omits the value
-         * @return this model
-         */
-        public DOMNode publicId(Optional<String> publicId) {
-            set("publicId", publicId.orElse(null));
-            return this;
-        }
-        /**
-         * {@code DocumentType} node&#x27;s publicId.
-         * @param publicId field value; null removes the value
+         * @param publicId field value
          * @return this model
          */
         public DOMNode publicId(String publicId) {
@@ -524,16 +384,7 @@ public final class DOMSnapshot {
         }
         /**
          * {@code DocumentType} node&#x27;s systemId.
-         * @param systemId field value; empty omits the value
-         * @return this model
-         */
-        public DOMNode systemId(Optional<String> systemId) {
-            set("systemId", systemId.orElse(null));
-            return this;
-        }
-        /**
-         * {@code DocumentType} node&#x27;s systemId.
-         * @param systemId field value; null removes the value
+         * @param systemId field value
          * @return this model
          */
         public DOMNode systemId(String systemId) {
@@ -542,16 +393,7 @@ public final class DOMSnapshot {
         }
         /**
          * Frame ID for frame owner elements and also for the document node.
-         * @param frameId field value; empty omits the value
-         * @return this model
-         */
-        public DOMNode frameId(Optional<Page.FrameId> frameId) {
-            set("frameId", frameId.orElse(null));
-            return this;
-        }
-        /**
-         * Frame ID for frame owner elements and also for the document node.
-         * @param frameId field value; null removes the value
+         * @param frameId field value
          * @return this model
          */
         public DOMNode frameId(Page.FrameId frameId) {
@@ -560,34 +402,16 @@ public final class DOMSnapshot {
         }
         /**
          * The index of a frame owner element&#x27;s content document in the {@code domNodes} array returned by {@code getSnapshot}, if any.
-         * @param contentDocumentIndex field value; empty omits the value
+         * @param contentDocumentIndex field value
          * @return this model
          */
-        public DOMNode contentDocumentIndex(OptionalLong contentDocumentIndex) {
-            set("contentDocumentIndex", contentDocumentIndex.isPresent() ? contentDocumentIndex.getAsLong() : null);
-            return this;
-        }
-        /**
-         * The index of a frame owner element&#x27;s content document in the {@code domNodes} array returned by {@code getSnapshot}, if any.
-         * @param contentDocumentIndex field value; null removes the value
-         * @return this model
-         */
-        public DOMNode contentDocumentIndex(Long contentDocumentIndex) {
+        public DOMNode contentDocumentIndex(long contentDocumentIndex) {
             set("contentDocumentIndex", contentDocumentIndex);
             return this;
         }
         /**
          * Type of a pseudo element node.
-         * @param pseudoType field value; empty omits the value
-         * @return this model
-         */
-        public DOMNode pseudoType(Optional<DOM.PseudoType> pseudoType) {
-            set("pseudoType", pseudoType.orElse(null));
-            return this;
-        }
-        /**
-         * Type of a pseudo element node.
-         * @param pseudoType field value; null removes the value
+         * @param pseudoType field value
          * @return this model
          */
         public DOMNode pseudoType(DOM.PseudoType pseudoType) {
@@ -596,16 +420,7 @@ public final class DOMSnapshot {
         }
         /**
          * Shadow root type.
-         * @param shadowRootType field value; empty omits the value
-         * @return this model
-         */
-        public DOMNode shadowRootType(Optional<DOM.ShadowRootType> shadowRootType) {
-            set("shadowRootType", shadowRootType.orElse(null));
-            return this;
-        }
-        /**
-         * Shadow root type.
-         * @param shadowRootType field value; null removes the value
+         * @param shadowRootType field value
          * @return this model
          */
         public DOMNode shadowRootType(DOM.ShadowRootType shadowRootType) {
@@ -614,34 +429,16 @@ public final class DOMSnapshot {
         }
         /**
          * Whether this DOM node responds to mouse clicks. This includes nodes that have had click event listeners attached via JavaScript as well as anchor tags that naturally navigate when clicked.
-         * @param isClickable field value; empty omits the value
+         * @param isClickable field value
          * @return this model
          */
-        public DOMNode isClickable(Optional<Boolean> isClickable) {
-            set("isClickable", isClickable.orElse(null));
-            return this;
-        }
-        /**
-         * Whether this DOM node responds to mouse clicks. This includes nodes that have had click event listeners attached via JavaScript as well as anchor tags that naturally navigate when clicked.
-         * @param isClickable field value; null removes the value
-         * @return this model
-         */
-        public DOMNode isClickable(Boolean isClickable) {
+        public DOMNode isClickable(boolean isClickable) {
             set("isClickable", isClickable);
             return this;
         }
         /**
          * Details of the node&#x27;s event listeners, if any.
-         * @param eventListeners field value; empty omits the value
-         * @return this model
-         */
-        public DOMNode eventListeners(Optional<java.util.List<DOMDebugger.EventListener>> eventListeners) {
-            set("eventListeners", eventListeners.orElse(null));
-            return this;
-        }
-        /**
-         * Details of the node&#x27;s event listeners, if any.
-         * @param eventListeners field value; null removes the value
+         * @param eventListeners field value
          * @return this model
          */
         public DOMNode eventListeners(java.util.List<DOMDebugger.EventListener> eventListeners) {
@@ -650,16 +447,7 @@ public final class DOMSnapshot {
         }
         /**
          * The selected url for nodes with a srcset attribute.
-         * @param currentSourceURL field value; empty omits the value
-         * @return this model
-         */
-        public DOMNode currentSourceURL(Optional<String> currentSourceURL) {
-            set("currentSourceURL", currentSourceURL.orElse(null));
-            return this;
-        }
-        /**
-         * The selected url for nodes with a srcset attribute.
-         * @param currentSourceURL field value; null removes the value
+         * @param currentSourceURL field value
          * @return this model
          */
         public DOMNode currentSourceURL(String currentSourceURL) {
@@ -668,16 +456,7 @@ public final class DOMSnapshot {
         }
         /**
          * The url of the script (if any) that generates this node.
-         * @param originURL field value; empty omits the value
-         * @return this model
-         */
-        public DOMNode originURL(Optional<String> originURL) {
-            set("originURL", originURL.orElse(null));
-            return this;
-        }
-        /**
-         * The url of the script (if any) that generates this node.
-         * @param originURL field value; null removes the value
+         * @param originURL field value
          * @return this model
          */
         public DOMNode originURL(String originURL) {
@@ -686,37 +465,19 @@ public final class DOMSnapshot {
         }
         /**
          * Scroll offsets, set when this node is a Document.
-         * @param scrollOffsetX field value; empty omits the value
+         * @param scrollOffsetX field value
          * @return this model
          */
-        public DOMNode scrollOffsetX(OptionalDouble scrollOffsetX) {
-            set("scrollOffsetX", scrollOffsetX.isPresent() ? scrollOffsetX.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Scroll offsets, set when this node is a Document.
-         * @param scrollOffsetX field value; null removes the value
-         * @return this model
-         */
-        public DOMNode scrollOffsetX(Double scrollOffsetX) {
+        public DOMNode scrollOffsetX(double scrollOffsetX) {
             set("scrollOffsetX", scrollOffsetX);
             return this;
         }
         /**
          * Sets the scrollOffsetY field.
-         * @param scrollOffsetY field value; empty omits the value
+         * @param scrollOffsetY field value
          * @return this model
          */
-        public DOMNode scrollOffsetY(OptionalDouble scrollOffsetY) {
-            set("scrollOffsetY", scrollOffsetY.isPresent() ? scrollOffsetY.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Sets the scrollOffsetY field.
-         * @param scrollOffsetY field value; null removes the value
-         * @return this model
-         */
-        public DOMNode scrollOffsetY(Double scrollOffsetY) {
+        public DOMNode scrollOffsetY(double scrollOffsetY) {
             set("scrollOffsetY", scrollOffsetY);
             return this;
         }
@@ -735,7 +496,7 @@ public final class DOMSnapshot {
          * @return the protocol field value
          */
         public DOM.Rect boundingBox() {
-            return java.util.Objects.requireNonNull(DOM.Rect.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("boundingBox")))));
+            return java.util.Objects.requireNonNull(DOM.Rect.fromMap(CdpObject.requireObjectMap(require("boundingBox"))));
         }
         /**
          * The starting index in characters, for this post layout textbox substring. Characters that would be represented as a surrogate pair in UTF-16 have length 2.
@@ -800,47 +561,42 @@ public final class DOMSnapshot {
          * @return the protocol field value
          */
         public DOM.Rect boundingBox() {
-            return java.util.Objects.requireNonNull(DOM.Rect.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("boundingBox")))));
+            return java.util.Objects.requireNonNull(DOM.Rect.fromMap(CdpObject.requireObjectMap(require("boundingBox"))));
         }
         /**
          * Contents of the LayoutText, if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> layoutText() {
-            Object value = raw("layoutText");
-            return Optional.ofNullable((String) value);
+            return raw("layoutText").map(value -> (String) value);
         }
         /**
          * The post-layout inline text nodes, if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOMSnapshot.InlineTextBox>> inlineTextNodes() {
-            Object value = raw("inlineTextNodes");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(DOMSnapshot.InlineTextBox.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("inlineTextNodes").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(DOMSnapshot.InlineTextBox.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Index into the {@code computedStyles} array returned by {@code getSnapshot}.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong styleIndex() {
-            Long value = CdpObject.numberAsLong(raw("styleIndex"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("styleIndex").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Global paint order index, which is determined by the stacking order of the nodes. Nodes that are painted together will have the same index. Only provided if includePaintOrder in getSnapshot was true.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong paintOrder() {
-            Long value = CdpObject.numberAsLong(raw("paintOrder"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("paintOrder").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Set to true to indicate the element begins a new stacking context.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isStackingContext() {
-            Object value = raw("isStackingContext");
-            return Optional.ofNullable((Boolean) value);
+            return raw("isStackingContext").map(value -> (Boolean) value);
         }
         /**
          * The index of the related DOM node in the {@code domNodes} array returned by {@code getSnapshot}.
@@ -862,16 +618,7 @@ public final class DOMSnapshot {
         }
         /**
          * Contents of the LayoutText, if any.
-         * @param layoutText field value; empty omits the value
-         * @return this model
-         */
-        public LayoutTreeNode layoutText(Optional<String> layoutText) {
-            set("layoutText", layoutText.orElse(null));
-            return this;
-        }
-        /**
-         * Contents of the LayoutText, if any.
-         * @param layoutText field value; null removes the value
+         * @param layoutText field value
          * @return this model
          */
         public LayoutTreeNode layoutText(String layoutText) {
@@ -880,16 +627,7 @@ public final class DOMSnapshot {
         }
         /**
          * The post-layout inline text nodes, if any.
-         * @param inlineTextNodes field value; empty omits the value
-         * @return this model
-         */
-        public LayoutTreeNode inlineTextNodes(Optional<java.util.List<DOMSnapshot.InlineTextBox>> inlineTextNodes) {
-            set("inlineTextNodes", inlineTextNodes.orElse(null));
-            return this;
-        }
-        /**
-         * The post-layout inline text nodes, if any.
-         * @param inlineTextNodes field value; null removes the value
+         * @param inlineTextNodes field value
          * @return this model
          */
         public LayoutTreeNode inlineTextNodes(java.util.List<DOMSnapshot.InlineTextBox> inlineTextNodes) {
@@ -898,55 +636,28 @@ public final class DOMSnapshot {
         }
         /**
          * Index into the {@code computedStyles} array returned by {@code getSnapshot}.
-         * @param styleIndex field value; empty omits the value
+         * @param styleIndex field value
          * @return this model
          */
-        public LayoutTreeNode styleIndex(OptionalLong styleIndex) {
-            set("styleIndex", styleIndex.isPresent() ? styleIndex.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Index into the {@code computedStyles} array returned by {@code getSnapshot}.
-         * @param styleIndex field value; null removes the value
-         * @return this model
-         */
-        public LayoutTreeNode styleIndex(Long styleIndex) {
+        public LayoutTreeNode styleIndex(long styleIndex) {
             set("styleIndex", styleIndex);
             return this;
         }
         /**
          * Global paint order index, which is determined by the stacking order of the nodes. Nodes that are painted together will have the same index. Only provided if includePaintOrder in getSnapshot was true.
-         * @param paintOrder field value; empty omits the value
+         * @param paintOrder field value
          * @return this model
          */
-        public LayoutTreeNode paintOrder(OptionalLong paintOrder) {
-            set("paintOrder", paintOrder.isPresent() ? paintOrder.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Global paint order index, which is determined by the stacking order of the nodes. Nodes that are painted together will have the same index. Only provided if includePaintOrder in getSnapshot was true.
-         * @param paintOrder field value; null removes the value
-         * @return this model
-         */
-        public LayoutTreeNode paintOrder(Long paintOrder) {
+        public LayoutTreeNode paintOrder(long paintOrder) {
             set("paintOrder", paintOrder);
             return this;
         }
         /**
          * Set to true to indicate the element begins a new stacking context.
-         * @param isStackingContext field value; empty omits the value
+         * @param isStackingContext field value
          * @return this model
          */
-        public LayoutTreeNode isStackingContext(Optional<Boolean> isStackingContext) {
-            set("isStackingContext", isStackingContext.orElse(null));
-            return this;
-        }
-        /**
-         * Set to true to indicate the element begins a new stacking context.
-         * @param isStackingContext field value; null removes the value
-         * @return this model
-         */
-        public LayoutTreeNode isStackingContext(Boolean isStackingContext) {
+        public LayoutTreeNode isStackingContext(boolean isStackingContext) {
             set("isStackingContext", isStackingContext);
             return this;
         }
@@ -965,7 +676,7 @@ public final class DOMSnapshot {
          * @return the protocol field value
          */
         public java.util.List<DOMSnapshot.NameValue> properties() {
-            return CdpObject.requireList(require("properties"), element0 -> java.util.Objects.requireNonNull(DOMSnapshot.NameValue.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("properties"), element0 -> java.util.Objects.requireNonNull(DOMSnapshot.NameValue.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Name/value pairs of computed style properties.
@@ -1025,7 +736,7 @@ public final class DOMSnapshot {
     public static final class StringIndex implements CdpValue<Long> {
         public final long value;
         public StringIndex(long value) { this.value = value; }
-        public Long value() { return value; }
+        @Override public Long value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof StringIndex)) return false;
@@ -1212,53 +923,49 @@ public final class DOMSnapshot {
          * @return the protocol field value
          */
         public DOMSnapshot.NodeTreeSnapshot nodes() {
-            return java.util.Objects.requireNonNull(DOMSnapshot.NodeTreeSnapshot.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("nodes")))));
+            return java.util.Objects.requireNonNull(DOMSnapshot.NodeTreeSnapshot.fromMap(CdpObject.requireObjectMap(require("nodes"))));
         }
         /**
          * The nodes in the layout tree.
          * @return the protocol field value
          */
         public DOMSnapshot.LayoutTreeSnapshot layout() {
-            return java.util.Objects.requireNonNull(DOMSnapshot.LayoutTreeSnapshot.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("layout")))));
+            return java.util.Objects.requireNonNull(DOMSnapshot.LayoutTreeSnapshot.fromMap(CdpObject.requireObjectMap(require("layout"))));
         }
         /**
          * The post-layout inline text nodes.
          * @return the protocol field value
          */
         public DOMSnapshot.TextBoxSnapshot textBoxes() {
-            return java.util.Objects.requireNonNull(DOMSnapshot.TextBoxSnapshot.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("textBoxes")))));
+            return java.util.Objects.requireNonNull(DOMSnapshot.TextBoxSnapshot.fromMap(CdpObject.requireObjectMap(require("textBoxes"))));
         }
         /**
          * Horizontal scroll offset.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble scrollOffsetX() {
-            Double value = CdpObject.numberAsDouble(raw("scrollOffsetX"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("scrollOffsetX").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Vertical scroll offset.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble scrollOffsetY() {
-            Double value = CdpObject.numberAsDouble(raw("scrollOffsetY"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("scrollOffsetY").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Document content width.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble contentWidth() {
-            Double value = CdpObject.numberAsDouble(raw("contentWidth"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("contentWidth").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Document content height.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble contentHeight() {
-            Double value = CdpObject.numberAsDouble(raw("contentHeight"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("contentHeight").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Document URL that {@code Document} or {@code FrameOwner} node points to.
@@ -1361,73 +1068,37 @@ public final class DOMSnapshot {
         }
         /**
          * Horizontal scroll offset.
-         * @param scrollOffsetX field value; empty omits the value
+         * @param scrollOffsetX field value
          * @return this model
          */
-        public DocumentSnapshot scrollOffsetX(OptionalDouble scrollOffsetX) {
-            set("scrollOffsetX", scrollOffsetX.isPresent() ? scrollOffsetX.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Horizontal scroll offset.
-         * @param scrollOffsetX field value; null removes the value
-         * @return this model
-         */
-        public DocumentSnapshot scrollOffsetX(Double scrollOffsetX) {
+        public DocumentSnapshot scrollOffsetX(double scrollOffsetX) {
             set("scrollOffsetX", scrollOffsetX);
             return this;
         }
         /**
          * Vertical scroll offset.
-         * @param scrollOffsetY field value; empty omits the value
+         * @param scrollOffsetY field value
          * @return this model
          */
-        public DocumentSnapshot scrollOffsetY(OptionalDouble scrollOffsetY) {
-            set("scrollOffsetY", scrollOffsetY.isPresent() ? scrollOffsetY.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Vertical scroll offset.
-         * @param scrollOffsetY field value; null removes the value
-         * @return this model
-         */
-        public DocumentSnapshot scrollOffsetY(Double scrollOffsetY) {
+        public DocumentSnapshot scrollOffsetY(double scrollOffsetY) {
             set("scrollOffsetY", scrollOffsetY);
             return this;
         }
         /**
          * Document content width.
-         * @param contentWidth field value; empty omits the value
+         * @param contentWidth field value
          * @return this model
          */
-        public DocumentSnapshot contentWidth(OptionalDouble contentWidth) {
-            set("contentWidth", contentWidth.isPresent() ? contentWidth.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Document content width.
-         * @param contentWidth field value; null removes the value
-         * @return this model
-         */
-        public DocumentSnapshot contentWidth(Double contentWidth) {
+        public DocumentSnapshot contentWidth(double contentWidth) {
             set("contentWidth", contentWidth);
             return this;
         }
         /**
          * Document content height.
-         * @param contentHeight field value; empty omits the value
+         * @param contentHeight field value
          * @return this model
          */
-        public DocumentSnapshot contentHeight(OptionalDouble contentHeight) {
-            set("contentHeight", contentHeight.isPresent() ? contentHeight.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Document content height.
-         * @param contentHeight field value; null removes the value
-         * @return this model
-         */
-        public DocumentSnapshot contentHeight(Double contentHeight) {
+        public DocumentSnapshot contentHeight(double contentHeight) {
             set("contentHeight", contentHeight);
             return this;
         }
@@ -1446,149 +1117,123 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Long>> parentIndex() {
-            Object value = raw("parentIndex");
-            return Optional.ofNullable(list(value, element0 -> ((Number) element0).longValue()));
+            return raw("parentIndex").flatMap(value -> list(value, element0 -> ((Number) element0).longValue()));
         }
         /**
          * {@code Node}&#x27;s nodeType.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Long>> nodeType() {
-            Object value = raw("nodeType");
-            return Optional.ofNullable(list(value, element0 -> ((Number) element0).longValue()));
+            return raw("nodeType").flatMap(value -> list(value, element0 -> ((Number) element0).longValue()));
         }
         /**
          * Type of the shadow root the {@code Node} is in. String values are equal to the {@code ShadowRootType} enum.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareStringData> shadowRootType() {
-            Object value = raw("shadowRootType");
-            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("shadowRootType").flatMap(CdpObject::objectMap).map(DOMSnapshot.RareStringData::fromMap);
         }
         /**
          * {@code Node}&#x27;s nodeName.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOMSnapshot.StringIndex>> nodeName() {
-            Object value = raw("nodeName");
-            return Optional.ofNullable(list(value, element0 -> new DOMSnapshot.StringIndex(((Number) element0).longValue())));
+            return raw("nodeName").flatMap(value -> list(value, element0 -> new DOMSnapshot.StringIndex(((Number) element0).longValue())));
         }
         /**
          * {@code Node}&#x27;s nodeValue.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOMSnapshot.StringIndex>> nodeValue() {
-            Object value = raw("nodeValue");
-            return Optional.ofNullable(list(value, element0 -> new DOMSnapshot.StringIndex(((Number) element0).longValue())));
+            return raw("nodeValue").flatMap(value -> list(value, element0 -> new DOMSnapshot.StringIndex(((Number) element0).longValue())));
         }
         /**
          * {@code Node}&#x27;s id, corresponds to DOM.Node.backendNodeId.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOM.BackendNodeId>> backendNodeId() {
-            Object value = raw("backendNodeId");
-            return Optional.ofNullable(list(value, element0 -> new DOM.BackendNodeId(((Number) element0).longValue())));
+            return raw("backendNodeId").flatMap(value -> list(value, element0 -> new DOM.BackendNodeId(((Number) element0).longValue())));
         }
         /**
          * Attributes of an {@code Element} node. Flatten name, value pairs.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<java.util.List<DOMSnapshot.StringIndex>>> attributes() {
-            Object value = raw("attributes");
-            return Optional.ofNullable(list(value, element0 -> CdpObject.requireList(element0, element1 -> new DOMSnapshot.StringIndex(((Number) element1).longValue()))));
+            return raw("attributes").flatMap(value -> list(value, element0 -> CdpObject.requireList(element0, element1 -> new DOMSnapshot.StringIndex(((Number) element1).longValue()))));
         }
         /**
          * Only set for textarea elements, contains the text value.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareStringData> textValue() {
-            Object value = raw("textValue");
-            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("textValue").flatMap(CdpObject::objectMap).map(DOMSnapshot.RareStringData::fromMap);
         }
         /**
          * Only set for input elements, contains the input&#x27;s associated text value.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareStringData> inputValue() {
-            Object value = raw("inputValue");
-            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("inputValue").flatMap(CdpObject::objectMap).map(DOMSnapshot.RareStringData::fromMap);
         }
         /**
          * Only set for radio and checkbox input elements, indicates if the element has been checked
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareBooleanData> inputChecked() {
-            Object value = raw("inputChecked");
-            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareBooleanData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("inputChecked").flatMap(CdpObject::objectMap).map(DOMSnapshot.RareBooleanData::fromMap);
         }
         /**
          * Only set for option elements, indicates if the element has been selected
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareBooleanData> optionSelected() {
-            Object value = raw("optionSelected");
-            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareBooleanData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("optionSelected").flatMap(CdpObject::objectMap).map(DOMSnapshot.RareBooleanData::fromMap);
         }
         /**
          * The index of the document in the list of the snapshot documents.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareIntegerData> contentDocumentIndex() {
-            Object value = raw("contentDocumentIndex");
-            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareIntegerData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("contentDocumentIndex").flatMap(CdpObject::objectMap).map(DOMSnapshot.RareIntegerData::fromMap);
         }
         /**
          * Type of a pseudo element node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareStringData> pseudoType() {
-            Object value = raw("pseudoType");
-            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("pseudoType").flatMap(CdpObject::objectMap).map(DOMSnapshot.RareStringData::fromMap);
         }
         /**
          * Pseudo element identifier for this node. Only present if there is a valid pseudoType.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareStringData> pseudoIdentifier() {
-            Object value = raw("pseudoIdentifier");
-            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("pseudoIdentifier").flatMap(CdpObject::objectMap).map(DOMSnapshot.RareStringData::fromMap);
         }
         /**
          * Whether this DOM node responds to mouse clicks. This includes nodes that have had click event listeners attached via JavaScript as well as anchor tags that naturally navigate when clicked.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareBooleanData> isClickable() {
-            Object value = raw("isClickable");
-            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareBooleanData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("isClickable").flatMap(CdpObject::objectMap).map(DOMSnapshot.RareBooleanData::fromMap);
         }
         /**
          * The selected url for nodes with a srcset attribute.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareStringData> currentSourceURL() {
-            Object value = raw("currentSourceURL");
-            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("currentSourceURL").flatMap(CdpObject::objectMap).map(DOMSnapshot.RareStringData::fromMap);
         }
         /**
          * The url of the script (if any) that generates this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMSnapshot.RareStringData> originURL() {
-            Object value = raw("originURL");
-            return Optional.ofNullable(value == null ? null : DOMSnapshot.RareStringData.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("originURL").flatMap(CdpObject::objectMap).map(DOMSnapshot.RareStringData::fromMap);
         }
         /**
          * Parent node index.
-         * @param parentIndex field value; empty omits the value
-         * @return this model
-         */
-        public NodeTreeSnapshot parentIndex(Optional<java.util.List<Long>> parentIndex) {
-            set("parentIndex", parentIndex.orElse(null));
-            return this;
-        }
-        /**
-         * Parent node index.
-         * @param parentIndex field value; null removes the value
+         * @param parentIndex field value
          * @return this model
          */
         public NodeTreeSnapshot parentIndex(java.util.List<Long> parentIndex) {
@@ -1597,16 +1242,7 @@ public final class DOMSnapshot {
         }
         /**
          * {@code Node}&#x27;s nodeType.
-         * @param nodeType field value; empty omits the value
-         * @return this model
-         */
-        public NodeTreeSnapshot nodeType(Optional<java.util.List<Long>> nodeType) {
-            set("nodeType", nodeType.orElse(null));
-            return this;
-        }
-        /**
-         * {@code Node}&#x27;s nodeType.
-         * @param nodeType field value; null removes the value
+         * @param nodeType field value
          * @return this model
          */
         public NodeTreeSnapshot nodeType(java.util.List<Long> nodeType) {
@@ -1615,16 +1251,7 @@ public final class DOMSnapshot {
         }
         /**
          * Type of the shadow root the {@code Node} is in. String values are equal to the {@code ShadowRootType} enum.
-         * @param shadowRootType field value; empty omits the value
-         * @return this model
-         */
-        public NodeTreeSnapshot shadowRootType(Optional<DOMSnapshot.RareStringData> shadowRootType) {
-            set("shadowRootType", shadowRootType.orElse(null));
-            return this;
-        }
-        /**
-         * Type of the shadow root the {@code Node} is in. String values are equal to the {@code ShadowRootType} enum.
-         * @param shadowRootType field value; null removes the value
+         * @param shadowRootType field value
          * @return this model
          */
         public NodeTreeSnapshot shadowRootType(DOMSnapshot.RareStringData shadowRootType) {
@@ -1633,16 +1260,7 @@ public final class DOMSnapshot {
         }
         /**
          * {@code Node}&#x27;s nodeName.
-         * @param nodeName field value; empty omits the value
-         * @return this model
-         */
-        public NodeTreeSnapshot nodeName(Optional<java.util.List<DOMSnapshot.StringIndex>> nodeName) {
-            set("nodeName", nodeName.orElse(null));
-            return this;
-        }
-        /**
-         * {@code Node}&#x27;s nodeName.
-         * @param nodeName field value; null removes the value
+         * @param nodeName field value
          * @return this model
          */
         public NodeTreeSnapshot nodeName(java.util.List<DOMSnapshot.StringIndex> nodeName) {
@@ -1651,16 +1269,7 @@ public final class DOMSnapshot {
         }
         /**
          * {@code Node}&#x27;s nodeValue.
-         * @param nodeValue field value; empty omits the value
-         * @return this model
-         */
-        public NodeTreeSnapshot nodeValue(Optional<java.util.List<DOMSnapshot.StringIndex>> nodeValue) {
-            set("nodeValue", nodeValue.orElse(null));
-            return this;
-        }
-        /**
-         * {@code Node}&#x27;s nodeValue.
-         * @param nodeValue field value; null removes the value
+         * @param nodeValue field value
          * @return this model
          */
         public NodeTreeSnapshot nodeValue(java.util.List<DOMSnapshot.StringIndex> nodeValue) {
@@ -1669,16 +1278,7 @@ public final class DOMSnapshot {
         }
         /**
          * {@code Node}&#x27;s id, corresponds to DOM.Node.backendNodeId.
-         * @param backendNodeId field value; empty omits the value
-         * @return this model
-         */
-        public NodeTreeSnapshot backendNodeId(Optional<java.util.List<DOM.BackendNodeId>> backendNodeId) {
-            set("backendNodeId", backendNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * {@code Node}&#x27;s id, corresponds to DOM.Node.backendNodeId.
-         * @param backendNodeId field value; null removes the value
+         * @param backendNodeId field value
          * @return this model
          */
         public NodeTreeSnapshot backendNodeId(java.util.List<DOM.BackendNodeId> backendNodeId) {
@@ -1687,16 +1287,7 @@ public final class DOMSnapshot {
         }
         /**
          * Attributes of an {@code Element} node. Flatten name, value pairs.
-         * @param attributes field value; empty omits the value
-         * @return this model
-         */
-        public NodeTreeSnapshot attributes(Optional<java.util.List<java.util.List<DOMSnapshot.StringIndex>>> attributes) {
-            set("attributes", attributes.orElse(null));
-            return this;
-        }
-        /**
-         * Attributes of an {@code Element} node. Flatten name, value pairs.
-         * @param attributes field value; null removes the value
+         * @param attributes field value
          * @return this model
          */
         public NodeTreeSnapshot attributes(java.util.List<java.util.List<DOMSnapshot.StringIndex>> attributes) {
@@ -1705,16 +1296,7 @@ public final class DOMSnapshot {
         }
         /**
          * Only set for textarea elements, contains the text value.
-         * @param textValue field value; empty omits the value
-         * @return this model
-         */
-        public NodeTreeSnapshot textValue(Optional<DOMSnapshot.RareStringData> textValue) {
-            set("textValue", textValue.orElse(null));
-            return this;
-        }
-        /**
-         * Only set for textarea elements, contains the text value.
-         * @param textValue field value; null removes the value
+         * @param textValue field value
          * @return this model
          */
         public NodeTreeSnapshot textValue(DOMSnapshot.RareStringData textValue) {
@@ -1723,16 +1305,7 @@ public final class DOMSnapshot {
         }
         /**
          * Only set for input elements, contains the input&#x27;s associated text value.
-         * @param inputValue field value; empty omits the value
-         * @return this model
-         */
-        public NodeTreeSnapshot inputValue(Optional<DOMSnapshot.RareStringData> inputValue) {
-            set("inputValue", inputValue.orElse(null));
-            return this;
-        }
-        /**
-         * Only set for input elements, contains the input&#x27;s associated text value.
-         * @param inputValue field value; null removes the value
+         * @param inputValue field value
          * @return this model
          */
         public NodeTreeSnapshot inputValue(DOMSnapshot.RareStringData inputValue) {
@@ -1741,16 +1314,7 @@ public final class DOMSnapshot {
         }
         /**
          * Only set for radio and checkbox input elements, indicates if the element has been checked
-         * @param inputChecked field value; empty omits the value
-         * @return this model
-         */
-        public NodeTreeSnapshot inputChecked(Optional<DOMSnapshot.RareBooleanData> inputChecked) {
-            set("inputChecked", inputChecked.orElse(null));
-            return this;
-        }
-        /**
-         * Only set for radio and checkbox input elements, indicates if the element has been checked
-         * @param inputChecked field value; null removes the value
+         * @param inputChecked field value
          * @return this model
          */
         public NodeTreeSnapshot inputChecked(DOMSnapshot.RareBooleanData inputChecked) {
@@ -1759,16 +1323,7 @@ public final class DOMSnapshot {
         }
         /**
          * Only set for option elements, indicates if the element has been selected
-         * @param optionSelected field value; empty omits the value
-         * @return this model
-         */
-        public NodeTreeSnapshot optionSelected(Optional<DOMSnapshot.RareBooleanData> optionSelected) {
-            set("optionSelected", optionSelected.orElse(null));
-            return this;
-        }
-        /**
-         * Only set for option elements, indicates if the element has been selected
-         * @param optionSelected field value; null removes the value
+         * @param optionSelected field value
          * @return this model
          */
         public NodeTreeSnapshot optionSelected(DOMSnapshot.RareBooleanData optionSelected) {
@@ -1777,16 +1332,7 @@ public final class DOMSnapshot {
         }
         /**
          * The index of the document in the list of the snapshot documents.
-         * @param contentDocumentIndex field value; empty omits the value
-         * @return this model
-         */
-        public NodeTreeSnapshot contentDocumentIndex(Optional<DOMSnapshot.RareIntegerData> contentDocumentIndex) {
-            set("contentDocumentIndex", contentDocumentIndex.orElse(null));
-            return this;
-        }
-        /**
-         * The index of the document in the list of the snapshot documents.
-         * @param contentDocumentIndex field value; null removes the value
+         * @param contentDocumentIndex field value
          * @return this model
          */
         public NodeTreeSnapshot contentDocumentIndex(DOMSnapshot.RareIntegerData contentDocumentIndex) {
@@ -1795,16 +1341,7 @@ public final class DOMSnapshot {
         }
         /**
          * Type of a pseudo element node.
-         * @param pseudoType field value; empty omits the value
-         * @return this model
-         */
-        public NodeTreeSnapshot pseudoType(Optional<DOMSnapshot.RareStringData> pseudoType) {
-            set("pseudoType", pseudoType.orElse(null));
-            return this;
-        }
-        /**
-         * Type of a pseudo element node.
-         * @param pseudoType field value; null removes the value
+         * @param pseudoType field value
          * @return this model
          */
         public NodeTreeSnapshot pseudoType(DOMSnapshot.RareStringData pseudoType) {
@@ -1813,16 +1350,7 @@ public final class DOMSnapshot {
         }
         /**
          * Pseudo element identifier for this node. Only present if there is a valid pseudoType.
-         * @param pseudoIdentifier field value; empty omits the value
-         * @return this model
-         */
-        public NodeTreeSnapshot pseudoIdentifier(Optional<DOMSnapshot.RareStringData> pseudoIdentifier) {
-            set("pseudoIdentifier", pseudoIdentifier.orElse(null));
-            return this;
-        }
-        /**
-         * Pseudo element identifier for this node. Only present if there is a valid pseudoType.
-         * @param pseudoIdentifier field value; null removes the value
+         * @param pseudoIdentifier field value
          * @return this model
          */
         public NodeTreeSnapshot pseudoIdentifier(DOMSnapshot.RareStringData pseudoIdentifier) {
@@ -1831,16 +1359,7 @@ public final class DOMSnapshot {
         }
         /**
          * Whether this DOM node responds to mouse clicks. This includes nodes that have had click event listeners attached via JavaScript as well as anchor tags that naturally navigate when clicked.
-         * @param isClickable field value; empty omits the value
-         * @return this model
-         */
-        public NodeTreeSnapshot isClickable(Optional<DOMSnapshot.RareBooleanData> isClickable) {
-            set("isClickable", isClickable.orElse(null));
-            return this;
-        }
-        /**
-         * Whether this DOM node responds to mouse clicks. This includes nodes that have had click event listeners attached via JavaScript as well as anchor tags that naturally navigate when clicked.
-         * @param isClickable field value; null removes the value
+         * @param isClickable field value
          * @return this model
          */
         public NodeTreeSnapshot isClickable(DOMSnapshot.RareBooleanData isClickable) {
@@ -1849,16 +1368,7 @@ public final class DOMSnapshot {
         }
         /**
          * The selected url for nodes with a srcset attribute.
-         * @param currentSourceURL field value; empty omits the value
-         * @return this model
-         */
-        public NodeTreeSnapshot currentSourceURL(Optional<DOMSnapshot.RareStringData> currentSourceURL) {
-            set("currentSourceURL", currentSourceURL.orElse(null));
-            return this;
-        }
-        /**
-         * The selected url for nodes with a srcset attribute.
-         * @param currentSourceURL field value; null removes the value
+         * @param currentSourceURL field value
          * @return this model
          */
         public NodeTreeSnapshot currentSourceURL(DOMSnapshot.RareStringData currentSourceURL) {
@@ -1867,16 +1377,7 @@ public final class DOMSnapshot {
         }
         /**
          * The url of the script (if any) that generates this node.
-         * @param originURL field value; empty omits the value
-         * @return this model
-         */
-        public NodeTreeSnapshot originURL(Optional<DOMSnapshot.RareStringData> originURL) {
-            set("originURL", originURL.orElse(null));
-            return this;
-        }
-        /**
-         * The url of the script (if any) that generates this node.
-         * @param originURL field value; null removes the value
+         * @param originURL field value
          * @return this model
          */
         public NodeTreeSnapshot originURL(DOMSnapshot.RareStringData originURL) {
@@ -1926,39 +1427,35 @@ public final class DOMSnapshot {
          * @return the protocol field value
          */
         public DOMSnapshot.RareBooleanData stackingContexts() {
-            return java.util.Objects.requireNonNull(DOMSnapshot.RareBooleanData.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("stackingContexts")))));
+            return java.util.Objects.requireNonNull(DOMSnapshot.RareBooleanData.fromMap(CdpObject.requireObjectMap(require("stackingContexts"))));
         }
         /**
          * Global paint order index, which is determined by the stacking order of the nodes. Nodes that are painted together will have the same index. Only provided if includePaintOrder in captureSnapshot was true.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Long>> paintOrders() {
-            Object value = raw("paintOrders");
-            return Optional.ofNullable(list(value, element0 -> ((Number) element0).longValue()));
+            return raw("paintOrders").flatMap(value -> list(value, element0 -> ((Number) element0).longValue()));
         }
         /**
          * The offset rect of nodes. Only available when includeDOMRects is set to true
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<java.util.List<Double>>> offsetRects() {
-            Object value = raw("offsetRects");
-            return Optional.ofNullable(list(value, element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
+            return raw("offsetRects").flatMap(value -> list(value, element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
         }
         /**
          * The scroll rect of nodes. Only available when includeDOMRects is set to true
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<java.util.List<Double>>> scrollRects() {
-            Object value = raw("scrollRects");
-            return Optional.ofNullable(list(value, element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
+            return raw("scrollRects").flatMap(value -> list(value, element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
         }
         /**
          * The client rect of nodes. Only available when includeDOMRects is set to true
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<java.util.List<Double>>> clientRects() {
-            Object value = raw("clientRects");
-            return Optional.ofNullable(list(value, element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
+            return raw("clientRects").flatMap(value -> list(value, element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
         }
         /**
          * The list of background colors that are blended with colors of overlapping elements.
@@ -1966,8 +1463,7 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOMSnapshot.StringIndex>> blendedBackgroundColors() {
-            Object value = raw("blendedBackgroundColors");
-            return Optional.ofNullable(list(value, element0 -> new DOMSnapshot.StringIndex(((Number) element0).longValue())));
+            return raw("blendedBackgroundColors").flatMap(value -> list(value, element0 -> new DOMSnapshot.StringIndex(((Number) element0).longValue())));
         }
         /**
          * The list of computed text opacities.
@@ -1975,8 +1471,7 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Double>> textColorOpacities() {
-            Object value = raw("textColorOpacities");
-            return Optional.ofNullable(list(value, element0 -> ((Number) element0).doubleValue()));
+            return raw("textColorOpacities").flatMap(value -> list(value, element0 -> ((Number) element0).doubleValue()));
         }
         /**
          * Index of the corresponding node in the {@code NodeTreeSnapshot} array returned by {@code captureSnapshot}.
@@ -2025,16 +1520,7 @@ public final class DOMSnapshot {
         }
         /**
          * Global paint order index, which is determined by the stacking order of the nodes. Nodes that are painted together will have the same index. Only provided if includePaintOrder in captureSnapshot was true.
-         * @param paintOrders field value; empty omits the value
-         * @return this model
-         */
-        public LayoutTreeSnapshot paintOrders(Optional<java.util.List<Long>> paintOrders) {
-            set("paintOrders", paintOrders.orElse(null));
-            return this;
-        }
-        /**
-         * Global paint order index, which is determined by the stacking order of the nodes. Nodes that are painted together will have the same index. Only provided if includePaintOrder in captureSnapshot was true.
-         * @param paintOrders field value; null removes the value
+         * @param paintOrders field value
          * @return this model
          */
         public LayoutTreeSnapshot paintOrders(java.util.List<Long> paintOrders) {
@@ -2043,16 +1529,7 @@ public final class DOMSnapshot {
         }
         /**
          * The offset rect of nodes. Only available when includeDOMRects is set to true
-         * @param offsetRects field value; empty omits the value
-         * @return this model
-         */
-        public LayoutTreeSnapshot offsetRects(Optional<java.util.List<java.util.List<Double>>> offsetRects) {
-            set("offsetRects", offsetRects.orElse(null));
-            return this;
-        }
-        /**
-         * The offset rect of nodes. Only available when includeDOMRects is set to true
-         * @param offsetRects field value; null removes the value
+         * @param offsetRects field value
          * @return this model
          */
         public LayoutTreeSnapshot offsetRects(java.util.List<java.util.List<Double>> offsetRects) {
@@ -2061,16 +1538,7 @@ public final class DOMSnapshot {
         }
         /**
          * The scroll rect of nodes. Only available when includeDOMRects is set to true
-         * @param scrollRects field value; empty omits the value
-         * @return this model
-         */
-        public LayoutTreeSnapshot scrollRects(Optional<java.util.List<java.util.List<Double>>> scrollRects) {
-            set("scrollRects", scrollRects.orElse(null));
-            return this;
-        }
-        /**
-         * The scroll rect of nodes. Only available when includeDOMRects is set to true
-         * @param scrollRects field value; null removes the value
+         * @param scrollRects field value
          * @return this model
          */
         public LayoutTreeSnapshot scrollRects(java.util.List<java.util.List<Double>> scrollRects) {
@@ -2079,16 +1547,7 @@ public final class DOMSnapshot {
         }
         /**
          * The client rect of nodes. Only available when includeDOMRects is set to true
-         * @param clientRects field value; empty omits the value
-         * @return this model
-         */
-        public LayoutTreeSnapshot clientRects(Optional<java.util.List<java.util.List<Double>>> clientRects) {
-            set("clientRects", clientRects.orElse(null));
-            return this;
-        }
-        /**
-         * The client rect of nodes. Only available when includeDOMRects is set to true
-         * @param clientRects field value; null removes the value
+         * @param clientRects field value
          * @return this model
          */
         public LayoutTreeSnapshot clientRects(java.util.List<java.util.List<Double>> clientRects) {
@@ -2098,17 +1557,7 @@ public final class DOMSnapshot {
         /**
          * The list of background colors that are blended with colors of overlapping elements.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param blendedBackgroundColors field value; empty omits the value
-         * @return this model
-         */
-        public LayoutTreeSnapshot blendedBackgroundColors(Optional<java.util.List<DOMSnapshot.StringIndex>> blendedBackgroundColors) {
-            set("blendedBackgroundColors", blendedBackgroundColors.orElse(null));
-            return this;
-        }
-        /**
-         * The list of background colors that are blended with colors of overlapping elements.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param blendedBackgroundColors field value; null removes the value
+         * @param blendedBackgroundColors field value
          * @return this model
          */
         public LayoutTreeSnapshot blendedBackgroundColors(java.util.List<DOMSnapshot.StringIndex> blendedBackgroundColors) {
@@ -2118,17 +1567,7 @@ public final class DOMSnapshot {
         /**
          * The list of computed text opacities.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param textColorOpacities field value; empty omits the value
-         * @return this model
-         */
-        public LayoutTreeSnapshot textColorOpacities(Optional<java.util.List<Double>> textColorOpacities) {
-            set("textColorOpacities", textColorOpacities.orElse(null));
-            return this;
-        }
-        /**
-         * The list of computed text opacities.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param textColorOpacities field value; null removes the value
+         * @param textColorOpacities field value
          * @return this model
          */
         public LayoutTreeSnapshot textColorOpacities(java.util.List<Double> textColorOpacities) {
@@ -2224,10 +1663,10 @@ public final class DOMSnapshot {
          */
         @Deprecated
         public GetSnapshotRequest(java.util.List<String> computedStyleWhitelist) {
-            set("computedStyleWhitelist", computedStyleWhitelist);
+            computedStyleWhitelist(computedStyleWhitelist);
         }
         public static GetSnapshotRequest fromMap(Map<String, Object> values) {
-            GetSnapshotRequest instance_ = new GetSnapshotRequest();
+            final GetSnapshotRequest instance_ = new GetSnapshotRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2243,24 +1682,21 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeEventListeners() {
-            Object value = raw("includeEventListeners");
-            return Optional.ofNullable((Boolean) value);
+            return raw("includeEventListeners").map(value -> (Boolean) value);
         }
         /**
          * Whether to determine and include the paint order index of LayoutTreeNodes (default false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includePaintOrder() {
-            Object value = raw("includePaintOrder");
-            return Optional.ofNullable((Boolean) value);
+            return raw("includePaintOrder").map(value -> (Boolean) value);
         }
         /**
          * Whether to include UA shadow tree in the snapshot (default false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeUserAgentShadowTree() {
-            Object value = raw("includeUserAgentShadowTree");
-            return Optional.ofNullable((Boolean) value);
+            return raw("includeUserAgentShadowTree").map(value -> (Boolean) value);
         }
         /**
          * Whitelist of computed styles to return.
@@ -2273,55 +1709,28 @@ public final class DOMSnapshot {
         }
         /**
          * Whether or not to retrieve details of DOM listeners (default false).
-         * @param includeEventListeners field value; empty omits the value
+         * @param includeEventListeners field value
          * @return this model
          */
-        public GetSnapshotRequest includeEventListeners(Optional<Boolean> includeEventListeners) {
-            set("includeEventListeners", includeEventListeners.orElse(null));
-            return this;
-        }
-        /**
-         * Whether or not to retrieve details of DOM listeners (default false).
-         * @param includeEventListeners field value; null removes the value
-         * @return this model
-         */
-        public GetSnapshotRequest includeEventListeners(Boolean includeEventListeners) {
+        public GetSnapshotRequest includeEventListeners(boolean includeEventListeners) {
             set("includeEventListeners", includeEventListeners);
             return this;
         }
         /**
          * Whether to determine and include the paint order index of LayoutTreeNodes (default false).
-         * @param includePaintOrder field value; empty omits the value
+         * @param includePaintOrder field value
          * @return this model
          */
-        public GetSnapshotRequest includePaintOrder(Optional<Boolean> includePaintOrder) {
-            set("includePaintOrder", includePaintOrder.orElse(null));
-            return this;
-        }
-        /**
-         * Whether to determine and include the paint order index of LayoutTreeNodes (default false).
-         * @param includePaintOrder field value; null removes the value
-         * @return this model
-         */
-        public GetSnapshotRequest includePaintOrder(Boolean includePaintOrder) {
+        public GetSnapshotRequest includePaintOrder(boolean includePaintOrder) {
             set("includePaintOrder", includePaintOrder);
             return this;
         }
         /**
          * Whether to include UA shadow tree in the snapshot (default false).
-         * @param includeUserAgentShadowTree field value; empty omits the value
+         * @param includeUserAgentShadowTree field value
          * @return this model
          */
-        public GetSnapshotRequest includeUserAgentShadowTree(Optional<Boolean> includeUserAgentShadowTree) {
-            set("includeUserAgentShadowTree", includeUserAgentShadowTree.orElse(null));
-            return this;
-        }
-        /**
-         * Whether to include UA shadow tree in the snapshot (default false).
-         * @param includeUserAgentShadowTree field value; null removes the value
-         * @return this model
-         */
-        public GetSnapshotRequest includeUserAgentShadowTree(Boolean includeUserAgentShadowTree) {
+        public GetSnapshotRequest includeUserAgentShadowTree(boolean includeUserAgentShadowTree) {
             set("includeUserAgentShadowTree", includeUserAgentShadowTree);
             return this;
         }
@@ -2336,10 +1745,10 @@ public final class DOMSnapshot {
          * @param computedStyles protocol value
          */
         public CaptureSnapshotRequest(java.util.List<String> computedStyles) {
-            set("computedStyles", computedStyles);
+            computedStyles(computedStyles);
         }
         public static CaptureSnapshotRequest fromMap(Map<String, Object> values) {
-            CaptureSnapshotRequest instance_ = new CaptureSnapshotRequest();
+            final CaptureSnapshotRequest instance_ = new CaptureSnapshotRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2355,16 +1764,14 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includePaintOrder() {
-            Object value = raw("includePaintOrder");
-            return Optional.ofNullable((Boolean) value);
+            return raw("includePaintOrder").map(value -> (Boolean) value);
         }
         /**
          * Whether to include DOM rectangles (offsetRects, clientRects, scrollRects) into the snapshot
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeDOMRects() {
-            Object value = raw("includeDOMRects");
-            return Optional.ofNullable((Boolean) value);
+            return raw("includeDOMRects").map(value -> (Boolean) value);
         }
         /**
          * Whether to include blended background colors in the snapshot (default: false). Blended background color is achieved by blending background colors of all elements that overlap with the current element.
@@ -2372,8 +1779,7 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeBlendedBackgroundColors() {
-            Object value = raw("includeBlendedBackgroundColors");
-            return Optional.ofNullable((Boolean) value);
+            return raw("includeBlendedBackgroundColors").map(value -> (Boolean) value);
         }
         /**
          * Whether to include text color opacity in the snapshot (default: false). An element might have the opacity property set that affects the text color of the element. The final text color opacity is computed based on the opacity of all overlapping elements.
@@ -2381,8 +1787,7 @@ public final class DOMSnapshot {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeTextColorOpacities() {
-            Object value = raw("includeTextColorOpacities");
-            return Optional.ofNullable((Boolean) value);
+            return raw("includeTextColorOpacities").map(value -> (Boolean) value);
         }
         /**
          * Whitelist of computed styles to return.
@@ -2395,77 +1800,39 @@ public final class DOMSnapshot {
         }
         /**
          * Whether to include layout object paint orders into the snapshot.
-         * @param includePaintOrder field value; empty omits the value
+         * @param includePaintOrder field value
          * @return this model
          */
-        public CaptureSnapshotRequest includePaintOrder(Optional<Boolean> includePaintOrder) {
-            set("includePaintOrder", includePaintOrder.orElse(null));
-            return this;
-        }
-        /**
-         * Whether to include layout object paint orders into the snapshot.
-         * @param includePaintOrder field value; null removes the value
-         * @return this model
-         */
-        public CaptureSnapshotRequest includePaintOrder(Boolean includePaintOrder) {
+        public CaptureSnapshotRequest includePaintOrder(boolean includePaintOrder) {
             set("includePaintOrder", includePaintOrder);
             return this;
         }
         /**
          * Whether to include DOM rectangles (offsetRects, clientRects, scrollRects) into the snapshot
-         * @param includeDOMRects field value; empty omits the value
+         * @param includeDOMRects field value
          * @return this model
          */
-        public CaptureSnapshotRequest includeDOMRects(Optional<Boolean> includeDOMRects) {
-            set("includeDOMRects", includeDOMRects.orElse(null));
-            return this;
-        }
-        /**
-         * Whether to include DOM rectangles (offsetRects, clientRects, scrollRects) into the snapshot
-         * @param includeDOMRects field value; null removes the value
-         * @return this model
-         */
-        public CaptureSnapshotRequest includeDOMRects(Boolean includeDOMRects) {
+        public CaptureSnapshotRequest includeDOMRects(boolean includeDOMRects) {
             set("includeDOMRects", includeDOMRects);
             return this;
         }
         /**
          * Whether to include blended background colors in the snapshot (default: false). Blended background color is achieved by blending background colors of all elements that overlap with the current element.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param includeBlendedBackgroundColors field value; empty omits the value
+         * @param includeBlendedBackgroundColors field value
          * @return this model
          */
-        public CaptureSnapshotRequest includeBlendedBackgroundColors(Optional<Boolean> includeBlendedBackgroundColors) {
-            set("includeBlendedBackgroundColors", includeBlendedBackgroundColors.orElse(null));
-            return this;
-        }
-        /**
-         * Whether to include blended background colors in the snapshot (default: false). Blended background color is achieved by blending background colors of all elements that overlap with the current element.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param includeBlendedBackgroundColors field value; null removes the value
-         * @return this model
-         */
-        public CaptureSnapshotRequest includeBlendedBackgroundColors(Boolean includeBlendedBackgroundColors) {
+        public CaptureSnapshotRequest includeBlendedBackgroundColors(boolean includeBlendedBackgroundColors) {
             set("includeBlendedBackgroundColors", includeBlendedBackgroundColors);
             return this;
         }
         /**
          * Whether to include text color opacity in the snapshot (default: false). An element might have the opacity property set that affects the text color of the element. The final text color opacity is computed based on the opacity of all overlapping elements.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param includeTextColorOpacities field value; empty omits the value
+         * @param includeTextColorOpacities field value
          * @return this model
          */
-        public CaptureSnapshotRequest includeTextColorOpacities(Optional<Boolean> includeTextColorOpacities) {
-            set("includeTextColorOpacities", includeTextColorOpacities.orElse(null));
-            return this;
-        }
-        /**
-         * Whether to include text color opacity in the snapshot (default: false). An element might have the opacity property set that affects the text color of the element. The final text color opacity is computed based on the opacity of all overlapping elements.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param includeTextColorOpacities field value; null removes the value
-         * @return this model
-         */
-        public CaptureSnapshotRequest includeTextColorOpacities(Boolean includeTextColorOpacities) {
+        public CaptureSnapshotRequest includeTextColorOpacities(boolean includeTextColorOpacities) {
             set("includeTextColorOpacities", includeTextColorOpacities);
             return this;
         }
@@ -2486,21 +1853,21 @@ public final class DOMSnapshot {
          * @return the protocol field value
          */
         public java.util.List<DOMSnapshot.DOMNode> domNodes() {
-            return CdpObject.requireList(require("domNodes"), element0 -> java.util.Objects.requireNonNull(DOMSnapshot.DOMNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("domNodes"), element0 -> java.util.Objects.requireNonNull(DOMSnapshot.DOMNode.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * The nodes in the layout tree.
          * @return the protocol field value
          */
         public java.util.List<DOMSnapshot.LayoutTreeNode> layoutTreeNodes() {
-            return CdpObject.requireList(require("layoutTreeNodes"), element0 -> java.util.Objects.requireNonNull(DOMSnapshot.LayoutTreeNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("layoutTreeNodes"), element0 -> java.util.Objects.requireNonNull(DOMSnapshot.LayoutTreeNode.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Whitelisted ComputedStyle properties for each node in the layout tree.
          * @return the protocol field value
          */
         public java.util.List<DOMSnapshot.ComputedStyle> computedStyles() {
-            return CdpObject.requireList(require("computedStyles"), element0 -> java.util.Objects.requireNonNull(DOMSnapshot.ComputedStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("computedStyles"), element0 -> java.util.Objects.requireNonNull(DOMSnapshot.ComputedStyle.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * The nodes in the DOM tree. The DOMNode at index 0 corresponds to the root document.
@@ -2544,7 +1911,7 @@ public final class DOMSnapshot {
          * @return the protocol field value
          */
         public java.util.List<DOMSnapshot.DocumentSnapshot> documents() {
-            return CdpObject.requireList(require("documents"), element0 -> java.util.Objects.requireNonNull(DOMSnapshot.DocumentSnapshot.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("documents"), element0 -> java.util.Objects.requireNonNull(DOMSnapshot.DocumentSnapshot.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Shared string table that all string properties refer to with indexes.
@@ -2599,12 +1966,12 @@ public final class DOMSnapshot {
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
         @Deprecated
-        public CompletionStage<GetSnapshotResult> getSnapshot(java.util.List<String> computedStyleWhitelist, Optional<Boolean> includeEventListeners, Optional<Boolean> includePaintOrder, Optional<Boolean> includeUserAgentShadowTree) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<GetSnapshotResult> getSnapshot(java.util.List<String> computedStyleWhitelist, @Nullable Boolean includeEventListeners, @Nullable Boolean includePaintOrder, @Nullable Boolean includeUserAgentShadowTree) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("computedStyleWhitelist", CdpObject.json(computedStyleWhitelist));
-            includeEventListeners.ifPresent(value_ -> params.put("includeEventListeners", value_));
-            includePaintOrder.ifPresent(value_ -> params.put("includePaintOrder", value_));
-            includeUserAgentShadowTree.ifPresent(value_ -> params.put("includeUserAgentShadowTree", value_));
+            if (includeEventListeners != null) params.put("includeEventListeners", CdpObject.json(includeEventListeners));
+            if (includePaintOrder != null) params.put("includePaintOrder", CdpObject.json(includePaintOrder));
+            if (includeUserAgentShadowTree != null) params.put("includeUserAgentShadowTree", CdpObject.json(includeUserAgentShadowTree));
             return client.call("DOMSnapshot.getSnapshot", params, result_ -> new GetSnapshotResult(result_));
         }
         /**
@@ -2615,7 +1982,9 @@ public final class DOMSnapshot {
          */
         @Deprecated
         public CompletionStage<GetSnapshotResult> getSnapshot(java.util.List<String> computedStyleWhitelist) {
-            return getSnapshot(computedStyleWhitelist, Optional.empty(), Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("computedStyleWhitelist", CdpObject.json(computedStyleWhitelist));
+            return client.call("DOMSnapshot.getSnapshot", params, result_ -> new GetSnapshotResult(result_));
         }
         /**
          * Returns a document snapshot, including the full DOM tree of the root node (including iframes, template contents, and imported documents) in a flattened array, as well as layout and white-listed computed style information for the nodes. Shadow DOM in the returned DOM tree is flattened.
@@ -2636,13 +2005,13 @@ public final class DOMSnapshot {
          * @param includeTextColorOpacities protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<CaptureSnapshotResult> captureSnapshot(java.util.List<String> computedStyles, Optional<Boolean> includePaintOrder, Optional<Boolean> includeDOMRects, Optional<Boolean> includeBlendedBackgroundColors, Optional<Boolean> includeTextColorOpacities) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<CaptureSnapshotResult> captureSnapshot(java.util.List<String> computedStyles, @Nullable Boolean includePaintOrder, @Nullable Boolean includeDOMRects, @Nullable Boolean includeBlendedBackgroundColors, @Nullable Boolean includeTextColorOpacities) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("computedStyles", CdpObject.json(computedStyles));
-            includePaintOrder.ifPresent(value_ -> params.put("includePaintOrder", value_));
-            includeDOMRects.ifPresent(value_ -> params.put("includeDOMRects", value_));
-            includeBlendedBackgroundColors.ifPresent(value_ -> params.put("includeBlendedBackgroundColors", value_));
-            includeTextColorOpacities.ifPresent(value_ -> params.put("includeTextColorOpacities", value_));
+            if (includePaintOrder != null) params.put("includePaintOrder", CdpObject.json(includePaintOrder));
+            if (includeDOMRects != null) params.put("includeDOMRects", CdpObject.json(includeDOMRects));
+            if (includeBlendedBackgroundColors != null) params.put("includeBlendedBackgroundColors", CdpObject.json(includeBlendedBackgroundColors));
+            if (includeTextColorOpacities != null) params.put("includeTextColorOpacities", CdpObject.json(includeTextColorOpacities));
             return client.call("DOMSnapshot.captureSnapshot", params, result_ -> new CaptureSnapshotResult(result_));
         }
         /**
@@ -2651,7 +2020,9 @@ public final class DOMSnapshot {
          * @return a stage completing with the command result
          */
         public CompletionStage<CaptureSnapshotResult> captureSnapshot(java.util.List<String> computedStyles) {
-            return captureSnapshot(computedStyles, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("computedStyles", CdpObject.json(computedStyles));
+            return client.call("DOMSnapshot.captureSnapshot", params, result_ -> new CaptureSnapshotResult(result_));
         }
         /**
          * Returns a document snapshot, including the full DOM tree of the root node (including iframes, template contents, and imported documents) in a flattened array, as well as layout and white-listed computed style information for the nodes. Shadow DOM in the returned DOM tree is flattened.

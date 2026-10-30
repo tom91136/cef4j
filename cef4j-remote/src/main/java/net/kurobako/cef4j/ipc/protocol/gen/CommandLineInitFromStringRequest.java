@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class CommandLineInitFromStringRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 546247849;
@@ -44,7 +46,7 @@ public final class CommandLineInitFromStringRequest implements CefMessageView, C
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
@@ -56,14 +58,10 @@ public final class CommandLineInitFromStringRequest implements CefMessageView, C
     }
 
     public static final CefMessageDecoder<CommandLineInitFromStringRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int commandLineLen = WireDecoder.length(__buf, "commandLine");
-        byte[] commandLineBuf = new byte[commandLineLen];
-        __buf.get(commandLineBuf);
-        String commandLine = new String(commandLineBuf, StandardCharsets.UTF_8);
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final String commandLine = WireDecoder.utf8(__buf, "commandLine");
         WireDecoder.requireFullyConsumed(__buf, "CommandLineInitFromStringRequest");
         return new CommandLineInitFromStringRequest(self, commandLine);
     };

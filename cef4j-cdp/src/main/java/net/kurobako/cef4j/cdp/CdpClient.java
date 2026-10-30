@@ -11,7 +11,13 @@ import net.kurobako.cef4j.cdp.generated.CdpDomains;
 import net.kurobako.cef4j.policy.NullableBoundary;
 import org.jspecify.annotations.Nullable;
 
-/** Typed CDP facade over any in-process or remote transport. */
+/**
+ * Typed CDP facade over any in-process or remote transport.
+ *
+ * <p>A decoder that fails must be reported to the caller of the command, so every failure of the decoder is caught and
+ * delivered through the returned future rather than being lost in the completion stage.
+ */
+@SuppressWarnings("baumkuchen:catch-throwable")
 public final class CdpClient implements AutoCloseable {
     private final CdpTransport transport;
     private final CdpCodec codec;
@@ -35,13 +41,14 @@ public final class CdpClient implements AutoCloseable {
     @NullableBoundary("CDP commands omit the JSON params member with null")
     public <T> CompletionStage<T> call(
             String method, @Nullable Map<String, Object> params, Function<Map<String, Object>, T> decoder) {
-        byte[] bytes = params == null ? null : codec.encode(params);
-        CompletableFuture<byte[]> source = transport.execute(method, bytes).toCompletableFuture();
-        CompletableFuture<T> result = new CompletableFuture<>();
+        final byte[] bytes = params == null ? null : codec.encode(params);
+        final CompletableFuture<byte[]> source =
+                transport.execute(method, bytes).toCompletableFuture();
+        final CompletableFuture<T> result = new CompletableFuture<>();
         source.whenComplete((value, failure) -> {
             try {
                 if (failure != null) result.completeExceptionally(failure);
-                else result.complete(decoder.apply(asObject(codec.decode(value))));
+                else result.complete(decoder.apply(decodeObject(value)));
             } catch (Throwable decodeFailure) {
                 result.completeExceptionally(decodeFailure);
             }
@@ -56,9 +63,9 @@ public final class CdpClient implements AutoCloseable {
     @SuppressWarnings("FutureReturnValueIgnored")
     @NullableBoundary("CDP commands omit the JSON params member with null")
     public CompletionStage<Void> call(String method, @Nullable Map<String, Object> params) {
-        CompletableFuture<Map<String, Object>> source =
+        final CompletableFuture<Map<String, Object>> source =
                 call(method, params, result -> result).toCompletableFuture();
-        CompletableFuture<Void> result = source.thenAccept(ignored -> {});
+        final CompletableFuture<Void> result = source.thenAccept(ignored -> {});
         result.whenComplete((ignored, failure) -> {
             if (result.isCancelled()) source.cancel(false);
         });
@@ -70,7 +77,7 @@ public final class CdpClient implements AutoCloseable {
     }
 
     public <T> CdpSubscription on(String method, Function<Map<String, Object>, T> decoder, Consumer<T> handler) {
-        return transport.subscribe(method, bytes -> handler.accept(decoder.apply(asObject(codec.decode(bytes)))));
+        return transport.subscribe(method, bytes -> handler.accept(decoder.apply(decodeObject(bytes))));
     }
 
     @Override
@@ -79,7 +86,7 @@ public final class CdpClient implements AutoCloseable {
     }
 
     @SuppressWarnings("unchecked")
-    private static Map<String, Object> asObject(@Nullable Object value) {
-        return value == null ? Collections.emptyMap() : (Map<String, Object>) value;
+    private Map<String, Object> decodeObject(byte[] json) {
+        return codec.decode(json).map(object -> (Map<String, Object>) object).orElse(Collections.emptyMap());
     }
 }

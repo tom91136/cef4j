@@ -27,7 +27,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:4180</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefTaskInfo {
 
@@ -85,22 +84,14 @@ public final class CefTaskInfo {
     /** Create a mutable copy of this instance. */
     public Mutable toMutable() {
         return new Mutable(
-                this.id,
-                this.type,
-                this.isKillable,
-                this.title,
-                this.cpuUsage,
-                this.numberOfProcessors,
-                this.memory,
-                this.gpuMemory,
-                this.isGpuMemoryInflated);
+                id, type, isKillable, title, cpuUsage, numberOfProcessors, memory, gpuMemory, isGpuMemoryInflated);
     }
 
     @Override
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefTaskInfo)) return false;
-        CefTaskInfo other = (CefTaskInfo) obj;
+        final CefTaskInfo other = (CefTaskInfo) obj;
         return this.id == other.id
                 && java.util.Objects.equals(this.type, other.type)
                 && this.isKillable == other.isKillable
@@ -191,22 +182,14 @@ public final class CefTaskInfo {
         /** Create an immutable snapshot of this instance. */
         public CefTaskInfo toImmutable() {
             return new CefTaskInfo(
-                    this.id,
-                    this.type,
-                    this.isKillable,
-                    this.title,
-                    this.cpuUsage,
-                    this.numberOfProcessors,
-                    this.memory,
-                    this.gpuMemory,
-                    this.isGpuMemoryInflated);
+                    id, type, isKillable, title, cpuUsage, numberOfProcessors, memory, gpuMemory, isGpuMemoryInflated);
         }
 
         @Override
         public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
-            Mutable other = (Mutable) obj;
+            final Mutable other = (Mutable) obj;
             return this.id == other.id
                     && java.util.Objects.equals(this.type, other.type)
                     && this.isKillable == other.isKillable

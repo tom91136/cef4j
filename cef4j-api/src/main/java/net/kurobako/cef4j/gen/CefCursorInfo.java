@@ -22,7 +22,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:2739</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefCursorInfo {
 
@@ -46,7 +45,7 @@ public final class CefCursorInfo {
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefCursorInfo)) return false;
-        CefCursorInfo other = (CefCursorInfo) obj;
+        final CefCursorInfo other = (CefCursorInfo) obj;
         return java.util.Objects.equals(this.hotspot, other.hotspot)
                 && this.imageScaleFactor == other.imageScaleFactor
                 && java.util.Objects.equals(this.buffer, other.buffer)

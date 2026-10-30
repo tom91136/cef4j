@@ -2,6 +2,7 @@ package net.kurobako.cef4j.ipc.devtools;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import net.kurobako.cef4j.cdp.CdpCodec;
@@ -32,7 +33,7 @@ class DevToolsSessionTest {
         @SuppressWarnings("unchecked")
         public <R extends CefMessageView> CompletableFuture<R> request(
                 CefMessageEncoder request, CefMessageDecoder<R> decoder) {
-            return (CompletableFuture<R>) (CompletableFuture<?>) this.request;
+            return (CompletableFuture<R>) this.request;
         }
 
         @Override
@@ -53,7 +54,7 @@ class DevToolsSessionTest {
 
     private static final class UnusedCodec implements CdpCodec {
         @Override
-        public Object decode(byte[] json) {
+        public Optional<Object> decode(byte[] json) {
             throw new AssertionError("unexpected decode");
         }
 

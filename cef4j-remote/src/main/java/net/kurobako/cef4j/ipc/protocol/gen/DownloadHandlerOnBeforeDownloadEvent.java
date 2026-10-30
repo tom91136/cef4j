@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class DownloadHandlerOnBeforeDownloadEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 1724174286;
@@ -56,7 +58,7 @@ public final class DownloadHandlerOnBeforeDownloadEvent implements CefMessageVie
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(browser.id());
@@ -70,18 +72,12 @@ public final class DownloadHandlerOnBeforeDownloadEvent implements CefMessageVie
     }
 
     public static final CefMessageDecoder<DownloadHandlerOnBeforeDownloadEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
-        RemoteHandle browser = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "downloadItem");
-        RemoteHandle downloadItem = new RemoteHandle(__buf.getInt());
-        int suggestedNameLen = WireDecoder.length(__buf, "suggestedName");
-        byte[] suggestedNameBuf = new byte[suggestedNameLen];
-        __buf.get(suggestedNameBuf);
-        String suggestedName = new String(suggestedNameBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "callback");
-        RemoteHandle callback = new RemoteHandle(__buf.getInt());
+        final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
+        final RemoteHandle downloadItem = WireDecoder.handle(__buf, "downloadItem");
+        final String suggestedName = WireDecoder.utf8(__buf, "suggestedName");
+        final RemoteHandle callback = WireDecoder.handle(__buf, "callback");
         WireDecoder.requireFullyConsumed(__buf, "DownloadHandlerOnBeforeDownloadEvent");
         return new DownloadHandlerOnBeforeDownloadEvent(browser, downloadItem, suggestedName, callback);
     };

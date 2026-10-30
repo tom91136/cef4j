@@ -3,12 +3,14 @@ package net.kurobako.cef4j.test.contract;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -37,21 +39,22 @@ public abstract class SessionRecordingReplayContract {
 
     @Test
     void recordsAndReplaysRequestsEventsAndIntercepts(@TempDir Path directory) throws Exception {
-        Path traceFile = directory.resolve("reproducer.cef4japi.jsonl");
-        LoopbackTransport.Pair pair = LoopbackTransport.create();
-        Peer peer = new Peer(pair.b);
-        List<String> liveEvents = new ArrayList<>();
+        final Path traceFile = directory.resolve("reproducer.cef4japi.jsonl");
+        final LoopbackTransport.Pair pair = LoopbackTransport.create();
+        final Peer peer = new Peer(pair.b);
+        final List<String> liveEvents = new ArrayList<>();
 
         try (RecordingCefSession live = RecordingCefSession.toFile(new CefSessionImpl(pair.a), traceFile)) {
-            CefSession.HandlerRegistration events = live.on(EVENT, decoder(EVENT), value -> liveEvents.add(value.text));
-            CefSession.HandlerRegistration intercept =
-                    live.intercept(INTERCEPT, decoder(INTERCEPT), value -> encoder(INTERCEPT, "reply:" + value.text));
+            final CefSession.HandlerRegistration events =
+                    live.on(EVENT, decoder(EVENT), value -> liveEvents.add(value.text));
+            final CefSession.HandlerRegistration intercept = live.intercept(
+                    INTERCEPT, decoder(INTERCEPT), value -> Optional.of(encoder(INTERCEPT, "reply:" + value.text)));
 
-            CompletableFuture<TextView> answer = live.request(encoder(REQUEST, "question"), decoder(REQUEST));
-            Peer.Frame request = peer.take();
+            final CompletableFuture<TextView> answer = live.request(encoder(REQUEST, "question"), decoder(REQUEST));
+            final Peer.Frame request = peer.take();
             peer.event(EVENT, "paint");
             peer.intercept(77, INTERCEPT, "permission");
-            Peer.Frame interceptReply = peer.take();
+            final Peer.Frame interceptReply = peer.take();
             peer.response(request.correlationId, REQUEST, "answer");
 
             assertThat(answer.get(5, TimeUnit.SECONDS).text).isEqualTo("answer");
@@ -64,7 +67,7 @@ public abstract class SessionRecordingReplayContract {
             peer.close();
         }
 
-        SessionTrace.Recording recording = SessionTrace.read(traceFile);
+        final SessionTrace.Recording recording = SessionTrace.read(traceFile);
         assertThat(recording.metadata()).containsEntry("format", "cef4j-session-api");
         assertThat(recording.entries())
                 .extracting(entry -> entry.kind)
@@ -80,12 +83,12 @@ public abstract class SessionRecordingReplayContract {
                         SessionTrace.Kind.INTERCEPT_UNREGISTER,
                         SessionTrace.Kind.CLOSE);
 
-        List<String> replayedEvents = new ArrayList<>();
-        ReplayCefSession replay = new ReplayCefSession(recording, ReplayMode.IMMEDIATE);
-        CefSession.HandlerRegistration events =
+        final List<String> replayedEvents = new ArrayList<>();
+        final ReplayCefSession replay = new ReplayCefSession(recording, ReplayMode.IMMEDIATE);
+        final CefSession.HandlerRegistration events =
                 replay.on(EVENT, decoder(EVENT), value -> replayedEvents.add(value.text));
-        CefSession.HandlerRegistration intercept =
-                replay.intercept(INTERCEPT, decoder(INTERCEPT), value -> encoder(INTERCEPT, "reply:" + value.text));
+        final CefSession.HandlerRegistration intercept = replay.intercept(
+                INTERCEPT, decoder(INTERCEPT), value -> Optional.of(encoder(INTERCEPT, "reply:" + value.text)));
         replay.start();
         assertThat(replay.request(encoder(REQUEST, "question"), decoder(REQUEST))
                         .get(5, TimeUnit.SECONDS)
@@ -100,16 +103,11 @@ public abstract class SessionRecordingReplayContract {
 
     @Test
     void strictReplayReportsTheEntryAndFirstDifferentByte(@TempDir Path directory) throws Exception {
-        Path traceFile = directory.resolve("mismatch.cef4japi.jsonl");
-        try (SessionTraceWriter writer = SessionTrace.writer(traceFile)) {
-            writer.append(SessionTrace.Kind.REQUEST, 1, REQUEST, bytes("expected"));
-            writer.append(SessionTrace.Kind.RESPONSE, 1, REQUEST, bytes("answer"));
-            writer.append(SessionTrace.Kind.CLOSE, 0, 0, null);
-        }
+        final Path traceFile = writeTrace(directory, "mismatch.cef4japi.jsonl", "expected", "answer");
 
-        ReplayCefSession replay = ReplayCefSession.fromFile(traceFile, ReplayMode.IMMEDIATE);
+        final ReplayCefSession replay = ReplayCefSession.fromFile(traceFile, ReplayMode.IMMEDIATE);
         replay.start();
-        CompletableFuture<TextView> result = replay.request(encoder(REQUEST, "expXcted"), decoder(REQUEST));
+        final CompletableFuture<TextView> result = replay.request(encoder(REQUEST, "expXcted"), decoder(REQUEST));
         assertThatThrownBy(() -> result.get(5, TimeUnit.SECONDS))
                 .hasRootCauseInstanceOf(ReplayMismatchException.class)
                 .hasRootCauseMessage("API replay mismatch at entry #1 (REQUEST): request payload differs at byte 3 "
@@ -118,16 +116,11 @@ public abstract class SessionRecordingReplayContract {
 
     @Test
     void manualReplayAdvancesOneDeliveryAtATime(@TempDir Path directory) throws Exception {
-        Path traceFile = directory.resolve("manual.cef4japi.jsonl");
-        try (SessionTraceWriter writer = SessionTrace.writer(traceFile)) {
-            writer.append(SessionTrace.Kind.REQUEST, 1, REQUEST, bytes("question"));
-            writer.append(SessionTrace.Kind.RESPONSE, 1, REQUEST, bytes("answer"));
-            writer.append(SessionTrace.Kind.CLOSE, 0, 0, null);
-        }
+        final Path traceFile = writeTrace(directory, "manual.cef4japi.jsonl", "question", "answer");
 
-        ReplayCefSession replay = ReplayCefSession.fromFile(traceFile, ReplayMode.MANUAL);
+        final ReplayCefSession replay = ReplayCefSession.fromFile(traceFile, ReplayMode.MANUAL);
         replay.start();
-        CompletableFuture<TextView> result = replay.request(encoder(REQUEST, "question"), decoder(REQUEST));
+        final CompletableFuture<TextView> result = replay.request(encoder(REQUEST, "question"), decoder(REQUEST));
         assertThat(result).isNotDone();
         assertThat(replay.advance()).isTrue();
         assertThat(result.get(5, TimeUnit.SECONDS).text).isEqualTo("answer");
@@ -138,7 +131,7 @@ public abstract class SessionRecordingReplayContract {
 
     @Test
     void preservesConcurrentRequestCompletionOrder(@TempDir Path directory) throws Exception {
-        Path traceFile = directory.resolve("concurrent.cef4japi.jsonl");
+        final Path traceFile = directory.resolve("concurrent.cef4japi.jsonl");
         try (SessionTraceWriter writer = SessionTrace.writer(traceFile)) {
             writer.append(SessionTrace.Kind.REQUEST, 1, REQUEST, bytes("first"));
             writer.append(SessionTrace.Kind.REQUEST, 2, REQUEST, bytes("second"));
@@ -147,11 +140,11 @@ public abstract class SessionRecordingReplayContract {
             writer.append(SessionTrace.Kind.CLOSE, 0, 0, null);
         }
 
-        ReplayCefSession replay = ReplayCefSession.fromFile(traceFile, ReplayMode.IMMEDIATE);
+        final ReplayCefSession replay = ReplayCefSession.fromFile(traceFile, ReplayMode.IMMEDIATE);
         replay.start();
-        CompletableFuture<TextView> first = replay.request(encoder(REQUEST, "first"), decoder(REQUEST));
+        final CompletableFuture<TextView> first = replay.request(encoder(REQUEST, "first"), decoder(REQUEST));
         assertThat(first).isNotDone();
-        CompletableFuture<TextView> second = replay.request(encoder(REQUEST, "second"), decoder(REQUEST));
+        final CompletableFuture<TextView> second = replay.request(encoder(REQUEST, "second"), decoder(REQUEST));
         assertThat(second.get(5, TimeUnit.SECONDS).text).isEqualTo("second-done");
         assertThat(first.get(5, TimeUnit.SECONDS).text).isEqualTo("first-done");
         replay.close();
@@ -160,7 +153,7 @@ public abstract class SessionRecordingReplayContract {
 
     @Test
     void timedReplayPreservesRecordedDelay() throws Exception {
-        List<SessionTrace.Entry> entries = List.of(
+        final List<SessionTrace.Entry> entries = List.of(
                 new SessionTrace.Entry(1, 0, SessionTrace.Kind.REQUEST, 1, REQUEST, bytes("question"), null, null),
                 new SessionTrace.Entry(
                         2,
@@ -173,11 +166,11 @@ public abstract class SessionRecordingReplayContract {
                         null),
                 new SessionTrace.Entry(
                         3, TimeUnit.MILLISECONDS.toNanos(101), SessionTrace.Kind.CLOSE, 0, 0, null, null, null));
-        ReplayCefSession replay =
+        final ReplayCefSession replay =
                 new ReplayCefSession(new SessionTrace.Recording(Collections.emptyMap(), entries), ReplayMode.TIMED);
-        long startedAt = System.nanoTime();
+        final long startedAt = System.nanoTime();
         replay.start();
-        CompletableFuture<TextView> result = replay.request(encoder(REQUEST, "question"), decoder(REQUEST));
+        final CompletableFuture<TextView> result = replay.request(encoder(REQUEST, "question"), decoder(REQUEST));
         assertThat(result.get(5, TimeUnit.SECONDS).text).isEqualTo("answer");
         assertThat(System.nanoTime() - startedAt).isGreaterThanOrEqualTo(TimeUnit.MILLISECONDS.toNanos(100));
         replay.close();
@@ -186,7 +179,7 @@ public abstract class SessionRecordingReplayContract {
 
     @Test
     void replaysRecordedRequestFailure(@TempDir Path directory) throws Exception {
-        Path traceFile = directory.resolve("failure.cef4japi.jsonl");
+        final Path traceFile = directory.resolve("failure.cef4japi.jsonl");
         try (SessionTraceWriter writer = SessionTrace.writer(traceFile)) {
             writer.append(SessionTrace.Kind.REQUEST, 1, REQUEST, bytes("question"));
             writer.append(
@@ -199,7 +192,7 @@ public abstract class SessionRecordingReplayContract {
             writer.append(SessionTrace.Kind.CLOSE, 0, 0, null);
         }
 
-        ReplayCefSession replay = ReplayCefSession.fromFile(traceFile, ReplayMode.IMMEDIATE);
+        final ReplayCefSession replay = ReplayCefSession.fromFile(traceFile, ReplayMode.IMMEDIATE);
         replay.start();
         assertThatThrownBy(() -> replay.request(encoder(REQUEST, "question"), decoder(REQUEST))
                         .get(5, TimeUnit.SECONDS))
@@ -211,11 +204,11 @@ public abstract class SessionRecordingReplayContract {
 
     @Test
     void replaysRecordedInterceptFailure(@TempDir Path directory) throws Exception {
-        Path traceFile = directory.resolve("intercept-failure.cef4japi.jsonl");
-        LoopbackTransport.Pair pair = LoopbackTransport.create();
-        Peer peer = new Peer(pair.b);
+        final Path traceFile = directory.resolve("intercept-failure.cef4japi.jsonl");
+        final LoopbackTransport.Pair pair = LoopbackTransport.create();
+        final Peer peer = new Peer(pair.b);
         try (RecordingCefSession live = RecordingCefSession.toFile(new CefSessionImpl(pair.a), traceFile)) {
-            CefSession.HandlerRegistration registration = live.intercept(INTERCEPT, decoder(INTERCEPT), value -> {
+            final CefSession.HandlerRegistration registration = live.intercept(INTERCEPT, decoder(INTERCEPT), value -> {
                 throw new IllegalArgumentException("deliberate failure");
             });
             peer.intercept(91, INTERCEPT, "permission");
@@ -225,8 +218,8 @@ public abstract class SessionRecordingReplayContract {
             peer.close();
         }
 
-        ReplayCefSession replay = ReplayCefSession.fromFile(traceFile, ReplayMode.IMMEDIATE);
-        CefSession.HandlerRegistration registration = replay.intercept(INTERCEPT, decoder(INTERCEPT), value -> {
+        final ReplayCefSession replay = ReplayCefSession.fromFile(traceFile, ReplayMode.IMMEDIATE);
+        final CefSession.HandlerRegistration registration = replay.intercept(INTERCEPT, decoder(INTERCEPT), value -> {
             throw new IllegalArgumentException("deliberate failure");
         });
         replay.start();
@@ -241,10 +234,21 @@ public abstract class SessionRecordingReplayContract {
 
     private static CefMessageDecoder<TextView> decoder(int messageId) {
         return payload -> {
-            byte[] bytes = new byte[payload.remaining()];
+            final byte[] bytes = new byte[payload.remaining()];
             payload.get(bytes);
             return new TextView(messageId, new String(bytes, StandardCharsets.UTF_8));
         };
+    }
+
+    /** Writes a trace of one request and its response, and returns the file of it. */
+    private static Path writeTrace(Path directory, String name, String request, String response) throws IOException {
+        final Path traceFile = directory.resolve(name);
+        try (SessionTraceWriter writer = SessionTrace.writer(traceFile)) {
+            writer.append(SessionTrace.Kind.REQUEST, 1, REQUEST, bytes(request));
+            writer.append(SessionTrace.Kind.RESPONSE, 1, REQUEST, bytes(response));
+            writer.append(SessionTrace.Kind.CLOSE, 0, 0, null);
+        }
+        return traceFile;
     }
 
     private static byte[] bytes(String value) {
@@ -299,16 +303,16 @@ public abstract class SessionRecordingReplayContract {
         Peer(net.kurobako.cef4j.ipc.transport.CefTransport transport) {
             this.transport = transport;
             transport.onReceive(payload -> {
-                ByteBuffer frame = payload.duplicate();
-                Envelope.Header header = Envelope.readHeader(frame);
-                byte[] bytes = new byte[frame.remaining()];
+                final ByteBuffer frame = payload.duplicate();
+                final Envelope.Header header = Envelope.readHeader(frame);
+                final byte[] bytes = new byte[frame.remaining()];
                 frame.get(bytes);
                 frames.add(new Frame(header.kind, header.corrId, bytes));
             });
         }
 
         Frame take() throws InterruptedException {
-            Frame frame = frames.poll(5, TimeUnit.SECONDS);
+            final Frame frame = frames.poll(5, TimeUnit.SECONDS);
             if (frame == null) throw new AssertionError("peer did not receive a frame");
             return frame;
         }
@@ -329,10 +333,10 @@ public abstract class SessionRecordingReplayContract {
 
         private void send(Envelope.Kind kind, int correlationId, int messageId, String text)
                 throws net.kurobako.cef4j.ipc.transport.CefTransportException {
-            byte[] bytes = bytes(text);
-            ByteBuffer frame =
+            final byte[] bytes = bytes(text);
+            final ByteBuffer frame =
                     ByteBuffer.allocate(Envelope.HEADER_SIZE + bytes.length).order(java.nio.ByteOrder.LITTLE_ENDIAN);
-            Envelope.writeHeader(frame, kind, 0, correlationId, messageId, bytes.length);
+            Envelope.writeHeader(frame, new Envelope.Header(bytes.length, kind, 0, correlationId, messageId));
             frame.put(bytes).flip();
             transport.send(frame);
         }

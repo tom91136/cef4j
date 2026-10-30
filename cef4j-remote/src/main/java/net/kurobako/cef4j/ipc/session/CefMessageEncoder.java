@@ -9,8 +9,10 @@ public interface CefMessageEncoder {
     int messageId();
 
     /** Number of payload bytes that {@link #encodeInto} will write. */
-    int encodedSize();
+    default int encodedSize() {
+        return 0;
+    }
 
     /** Append exactly {@link #encodedSize} bytes to {@code dst}, advancing its position. */
-    void encodeInto(ByteBuffer dst);
+    default void encodeInto(ByteBuffer dst) {}
 }

@@ -102,7 +102,7 @@ struct JniCefResourceRequestHandler : public cef_resource_request_handler_t {
                                                                   struct _cef_callback_t *callback) {
     auto *h = reinterpret_cast<JniCefResourceRequestHandler *>(self);
     ScopedJNIEnv env(h->jvm);
-    if (env->PushLocalFrame(18) < 0) {
+    if (env->PushLocalFrame(21) < 0) {
       return cef_return_value_t::RV_CONTINUE;
     }
     cef_browser_t *_p_browser = browser;
@@ -140,16 +140,19 @@ struct JniCefResourceRequestHandler : public cef_resource_request_handler_t {
     auto cls = env->GetObjectClass(h->javaHandler);
     auto mid = env->GetMethodID(cls, "onBeforeResourceLoad",
                                 "(Lnet/kurobako/cef4j/gen/CefBrowser;Lnet/kurobako/cef4j/gen/CefFrame;Lnet/kurobako/cef4j/gen/"
-                                "CefRequest;Lnet/kurobako/cef4j/gen/CefCallback;)Lnet/kurobako/cef4j/gen/CefReturnValue;");
+                                "CefRequest;Lnet/kurobako/cef4j/gen/CefCallback;)Ljava/util/Optional;");
     if (!mid) {
       env->PopLocalFrame(nullptr);
       return cef_return_value_t::RV_CONTINUE;
     }
-    auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_browser, j_frame, j_request, j_callback);
+    auto jOptional = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_browser, j_frame, j_request, j_callback);
     if (CheckJNIException(env)) {
       env->PopLocalFrame(nullptr);
       return cef_return_value_t::RV_CONTINUE;
     }
+    auto _optCls = FindClassCached(env, "java/util/Optional");
+    auto _orElseMid = env->GetMethodID(_optCls, "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    auto jResult = jOptional ? (jobject)env->CallObjectMethod(jOptional, _orElseMid, (jobject) nullptr) : nullptr;
     cef_return_value_t nativeResult = static_cast<cef_return_value_t>(
         jResult ? env->GetLongField(jResult, env->GetFieldID(env->GetObjectClass(jResult), "value", "J")) : 0);
     env->PopLocalFrame(nullptr);

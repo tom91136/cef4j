@@ -25,14 +25,14 @@ public final class CefPackager implements Runnable {
     static final class VersionProvider implements CommandLine.IVersionProvider {
         @Override
         public String[] getVersion() {
-            String version = CefPackager.class.getPackage().getImplementationVersion();
+            final String version = CefPackager.class.getPackage().getImplementationVersion();
             return new String[] {"cef4j-runtime-packager " + (version == null ? "development" : version)};
         }
     }
 
     /** Runs the command-line interface. */
     public static void main(String[] args) {
-        int status = new CommandLine(new CefPackager()).execute(args);
+        final int status = new CommandLine(new CefPackager()).execute(args);
         if (status != 0) System.exit(status);
     }
 
@@ -51,7 +51,7 @@ public final class CefPackager implements Runnable {
                 required = true,
                 split = ",",
                 description = "Target platform(s), 'host', or 'all'.")
-        List<String> platforms = new ArrayList<>();
+        final List<String> platforms = new ArrayList<>();
 
         @Option(names = "--output", required = true, description = "Generated resources root.")
         Path output;
@@ -69,10 +69,10 @@ public final class CefPackager implements Runnable {
         Path bridgeDirectory;
 
         @Option(names = "--cache", description = "Download cache directory.")
-        Path cache = defaultCache();
+        final Path cache = defaultCache();
 
         @Option(names = "--locales", split = ",", description = "Keep only these locale families.")
-        List<String> locales = new ArrayList<>();
+        final List<String> locales = new ArrayList<>();
 
         @Option(names = "--without-swiftshader", description = "Remove the optional SwiftShader fallback.")
         boolean withoutSwiftShader;
@@ -96,14 +96,14 @@ public final class CefPackager implements Runnable {
         boolean skipIfCurrent;
 
         @Option(names = "--base-url", hidden = true)
-        URI baseUri = CefArchiveResolver.DEFAULT_BASE_URI;
+        final URI baseUri = CefArchiveResolver.DEFAULT_BASE_URI;
 
         @Option(names = "--index-url", hidden = true)
-        URI indexUri = CefArchiveResolver.DEFAULT_INDEX_URI;
+        final URI indexUri = CefArchiveResolver.DEFAULT_INDEX_URI;
 
         @Override
         public Integer call() throws Exception {
-            List<CefPlatform> targets = parsePlatforms(platforms);
+            final List<CefPlatform> targets = parsePlatforms(platforms);
             CefBuildType selectedBuild;
             try {
                 selectedBuild = CefBuildType.parse(buildType);
@@ -120,7 +120,7 @@ public final class CefPackager implements Runnable {
                 throw new CommandLine.ParameterException(
                         new CommandLine(this), "--bridge-directory requires one platform");
             }
-            if (strip && targets.stream().anyMatch(platform -> !platform.isLinux())) {
+            if (strip && targets.stream().anyMatch(CefPlatform::isNotLinux)) {
                 throw new CommandLine.ParameterException(
                         new CommandLine(this), "--strip is currently supported only for Linux CEF runtimes");
             }
@@ -128,12 +128,12 @@ public final class CefPackager implements Runnable {
                 throw new CommandLine.ParameterException(
                         new CommandLine(this), "--strip cannot be combined with --build-type=debug");
             }
-            CefArchiveResolver resolver = new CefArchiveResolver();
-            CefRuntimePackager packager = new CefRuntimePackager();
+            final CefArchiveResolver resolver = new CefArchiveResolver();
+            final CefRuntimePackager packager = new CefRuntimePackager();
             for (CefPlatform platform : targets) {
-                CefArchiveResolver.ResolvedArchive resolved = resolver.resolve(
+                final CefArchiveResolver.ResolvedArchive resolved = resolver.resolve(
                         cefVersion, platform, selectedBuild, cache, archive, sha256, offline, baseUri, indexUri);
-                CefRuntimePackager.Request request = new CefRuntimePackager.Request(
+                final CefRuntimePackager.Request request = new CefRuntimePackager.Request(
                         cefVersion,
                         platform,
                         resolved.path,
@@ -154,7 +154,7 @@ public final class CefPackager implements Runnable {
                             platform.externalName(),
                             output);
                 } else {
-                    CefRuntimePackager.Result result = packager.packageArchive(request);
+                    final CefRuntimePackager.Result result = packager.packageArchive(request);
                     System.out.printf(
                             "Packaged CEF %s %s for %s: %d files in %s%n",
                             cefVersion,
@@ -169,13 +169,15 @@ public final class CefPackager implements Runnable {
         }
 
         private static void stageBridge(Path sourceDirectory, Path output, CefPlatform platform) throws IOException {
-            String library = platform.isWindows() ? "cef4j.dll" : platform.isMacOS() ? "libcef4j.dylib" : "libcef4j.so";
+            final String library =
+                    platform.isWindows() ? "cef4j.dll" : platform.isMacOS() ? "libcef4j.dylib" : "libcef4j.so";
             if (!Files.isRegularFile(sourceDirectory.resolve(library))) {
                 throw new IOException("cef4j bridge is missing: " + sourceDirectory.resolve(library));
             }
-            Path destination = Files.createDirectories(output.resolve("native").resolve(platform.cefName()));
+            final Path destination =
+                    Files.createDirectories(output.resolve("native").resolve(platform.cefName()));
             for (String name : List.of(library, "cef4j_launcher", "cef4j_launcher.exe")) {
-                Path source = sourceDirectory.resolve(name);
+                final Path source = sourceDirectory.resolve(name);
                 if (Files.isRegularFile(source)) {
                     Files.copy(source, destination.resolve(name), StandardCopyOption.REPLACE_EXISTING);
                 }
@@ -193,7 +195,7 @@ public final class CefPackager implements Runnable {
 
         @Override
         public Integer call() throws Exception {
-            List<String> problems = new CefRuntimeVerifier().verify(root, CefPlatform.parse(platform));
+            final List<String> problems = new CefRuntimeVerifier().verify(root, CefPlatform.parse(platform));
             problems.forEach(problem -> System.err.println("error: " + problem));
             return problems.isEmpty() ? 0 : 1;
         }
@@ -210,7 +212,7 @@ public final class CefPackager implements Runnable {
     }
 
     private static Path defaultCache() {
-        String configured = System.getenv("CEF4J_CEF_CACHE");
+        final String configured = System.getenv("CEF4J_CEF_CACHE");
         return configured == null || configured.isBlank()
                 ? Path.of(System.getProperty("user.home"), ".cache", "cef4j")
                 : Path.of(configured);

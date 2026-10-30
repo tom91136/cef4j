@@ -8,7 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +21,6 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import net.kurobako.cef4j.OS;
-import net.kurobako.cef4j.gen.CefBrowser;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.test.TestDeadline;
 import net.kurobako.cef4j.test.TestExecutor;
@@ -33,7 +31,7 @@ import org.jspecify.annotations.Nullable;
 
 public final class NativeBrowserBackend implements BrowserBackend {
 
-    private static volatile boolean cefInitialised;
+    private static volatile boolean cefInitialised = false;
 
     @Override
     public String name() {
@@ -71,8 +69,7 @@ public final class NativeBrowserBackend implements BrowserBackend {
         net.kurobako.cef4j.test.CefTestLaunch.setRootCachePath(
                 settings, tmp.toAbsolutePath().toString());
         onFxThread(
-                () -> CefWebView.initialise(
-                        settings, net.kurobako.cef4j.test.CefTestLaunch.extraArgs(), Optional.empty()),
+                () -> CefWebView.initialise(settings, net.kurobako.cef4j.test.CefTestLaunch.extraArgs()),
                 CEF_STARTUP_TIMEOUT);
         cefInitialised = true;
     }
@@ -96,12 +93,8 @@ public final class NativeBrowserBackend implements BrowserBackend {
                 CefWebView v = null;
                 Stage s = null;
                 try {
-                    v = new CefWebView() {
-                        @Override
-                        protected void onViewPainted(int width, int height) {
-                            paints.accept(width, height);
-                        }
-                    };
+                    v = new CefWebView();
+                    v.paintObserver = paints::accept;
                     s = new Stage();
                     s.initStyle(StageStyle.UNDECORATED);
                     s.setScene(new Scene(new StackPane(v), w, h));
@@ -141,7 +134,7 @@ public final class NativeBrowserBackend implements BrowserBackend {
                     Worker<Void> worker = webView.getEngine().getLoadWorker();
                     next.worker = worker;
                     next.paintBaseline = webView.framesPainted.sum();
-                    ChangeListener<Worker.State> listener = new ChangeListener<Worker.State>() {
+                    ChangeListener<Worker.State> listener = new ChangeListener<>() {
                         @Override
                         public void changed(
                                 ObservableValue<? extends Worker.State> observable,
@@ -196,12 +189,13 @@ public final class NativeBrowserBackend implements BrowserBackend {
         }
 
         private boolean isNavigationReady(long paintBaseline) {
-            CefBrowser browser = webView.getBrowser();
-            return browser != null
-                    && browser.getHost().isPresent()
-                    && webView.framesPainted.sum() > paintBaseline
-                    && browser.getMainFrame()
-                            .filter(frame -> frame.isValid() && frame.getUrl().isPresent())
+            return webView.framesPainted.sum() > paintBaseline
+                    && webView.getBrowser()
+                            .filter(browser -> browser.getHost().isPresent()
+                                    && browser.getMainFrame()
+                                            .filter(frame -> frame.isValid()
+                                                    && frame.getUrl().isPresent())
+                                            .isPresent())
                             .isPresent();
         }
 
@@ -280,7 +274,7 @@ public final class NativeBrowserBackend implements BrowserBackend {
 
         private static final class PendingNavigation {
             private final CompletableFuture<Void> result = new CompletableFuture<>();
-            private volatile long paintBaseline;
+            private volatile long paintBaseline = 0;
             private volatile @Nullable Worker<Void> worker;
             private volatile @Nullable ChangeListener<Worker.State> listener;
         }

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -24,11 +23,12 @@ import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import net.kurobako.cef4j.gen.CefSettings;
 import net.kurobako.cef4j.osr.jfx.CefWebView;
+import org.jspecify.annotations.Nullable;
 
 public final class JfxBrowserApp {
 
     private static Path createCacheDir() throws IOException {
-        Path cacheDir = Files.createTempDirectory("cef4j-jfx-sample-");
+        final Path cacheDir = Files.createTempDirectory("cef4j-jfx-sample-");
         cacheDir.toFile().deleteOnExit();
         return cacheDir;
     }
@@ -50,27 +50,27 @@ public final class JfxBrowserApp {
 
         @Override
         public void start(Stage stage) throws IOException {
-            CefSettings.Mutable settings = new CefSettings.Mutable();
+            final CefSettings.Mutable settings = new CefSettings.Mutable();
             settings.noSandbox = 1;
             settings.cachePath = createCacheDir().toAbsolutePath().toString();
-            CefWebView.initialise(settings, List.of(), Optional.empty());
+            CefWebView.initialise(settings, List.of());
 
             stage.setTitle("cef4j Browser (JavaFX)");
             stage.setWidth(1280);
             stage.setHeight(800);
 
-            TabPane tabPane = new TabPane();
+            final TabPane tabPane = new TabPane();
 
-            Tab newTabTab = new Tab("+");
+            final Tab newTabTab = new Tab("+");
             newTabTab.setClosable(false);
             tabPane.getTabs().add(newTabTab);
 
-            BorderPane root = new BorderPane();
+            final BorderPane root = new BorderPane();
             root.setCenter(tabPane);
 
             tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
                 if (newTab == newTabTab) {
-                    BrowserTab created = createTab(tabPane, stage, DEFAULT_URL);
+                    final BrowserTab created = createTab(tabPane, stage, DEFAULT_URL);
                     tabPane.getSelectionModel().select(created);
                     return;
                 }
@@ -94,8 +94,8 @@ public final class JfxBrowserApp {
                     Platform.exit();
                     return;
                 }
-                int plusIdx = tabPane.getTabs().indexOf(newTabTab);
-                int lastIdx = tabPane.getTabs().size() - 1;
+                final int plusIdx = tabPane.getTabs().indexOf(newTabTab);
+                final int lastIdx = tabPane.getTabs().size() - 1;
                 if (plusIdx >= 0 && plusIdx != lastIdx) {
                     tabPane.getTabs().remove(newTabTab);
                     tabPane.getTabs().add(newTabTab);
@@ -112,17 +112,17 @@ public final class JfxBrowserApp {
                 }
                 Platform.exit();
             });
-            Scene scene = new Scene(root);
+            final Scene scene = new Scene(root);
             scene.addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, e -> {
                 if (!e.isShortcutDown()) return;
                 switch (e.getCode()) {
                     case T:
-                        BrowserTab created = createTab(tabPane, stage, DEFAULT_URL);
+                        final BrowserTab created = createTab(tabPane, stage, DEFAULT_URL);
                         tabPane.getSelectionModel().select(created);
                         e.consume();
                         break;
                     case W:
-                        Tab current = tabPane.getSelectionModel().getSelectedItem();
+                        final Tab current = tabPane.getSelectionModel().getSelectedItem();
                         if (current instanceof BrowserTab) {
                             tabPane.getTabs().remove(current);
                         }
@@ -140,8 +140,8 @@ public final class JfxBrowserApp {
         public void stop() {}
 
         private BrowserTab createTab(TabPane tabPane, Stage stage, String initialUrl) {
-            BrowserTab tab = new BrowserTab(tabPane, stage, initialUrl);
-            int insertAt = Math.max(0, tabPane.getTabs().size() - 1);
+            final BrowserTab tab = new BrowserTab(tabPane, stage, initialUrl);
+            final int insertAt = Math.max(0, tabPane.getTabs().size() - 1);
             tabPane.getTabs().add(insertAt, tab);
             return tab;
         }
@@ -161,33 +161,33 @@ public final class JfxBrowserApp {
 
         private BrowserTab(TabPane owner, Stage stage, String initialUrl) {
             this.stage = stage;
-            this.view = new CefWebView();
-            this.view.setZoom(1.0);
+            view = new CefWebView();
+            view.setZoom(1.0);
 
             setText("New Tab");
             setClosable(true);
             setContent(createContent());
             setOnClosed(e -> release());
 
-            Button backBtn = new Button("\u25C0");
-            Button fwdBtn = new Button("\u25B6");
-            Button reloadBtn = new Button("\u21BB");
-            Button zoomOutBtn = new Button("-");
-            Button zoomResetBtn = new Button("100%");
-            Button zoomInBtn = new Button("+");
-            Button devToolsBtn = new Button("\u2699");
+            final Button backBtn = new Button("\u25C0");
+            final Button fwdBtn = new Button("\u25B6");
+            final Button reloadBtn = new Button("\u21BB");
+            final Button zoomOutBtn = new Button("-");
+            final Button zoomResetBtn = new Button("100%");
+            final Button zoomInBtn = new Button("+");
+            final Button devToolsBtn = new Button("\u2699");
 
-            HBox navBar =
+            final HBox navBar =
                     new HBox(4, backBtn, fwdBtn, reloadBtn, urlBar, zoomOutBtn, zoomResetBtn, zoomInBtn, devToolsBtn);
             HBox.setHgrow(urlBar, Priority.ALWAYS);
             navBar.setStyle("-fx-padding: 4;");
 
-            BorderPane statusBar = new BorderPane();
+            final BorderPane statusBar = new BorderPane();
             statusBar.setLeft(statusLabel);
             statusBar.setRight(progressBar);
             statusBar.setStyle("-fx-padding: 2 6;");
 
-            BorderPane root = (BorderPane) getContent();
+            final BorderPane root = (BorderPane) getContent();
             root.setTop(navBar);
             root.setBottom(statusBar);
 
@@ -201,8 +201,8 @@ public final class JfxBrowserApp {
                 }
             });
             fwdBtn.setOnAction(e -> {
-                int current = view.getEngine().getHistory().getCurrentIndex();
-                int last = view.getEngine().getHistory().getEntries().size() - 1;
+                final int current = view.getEngine().getHistory().getCurrentIndex();
+                final int last = view.getEngine().getHistory().getEntries().size() - 1;
                 if (current >= 0 && current < last) {
                     view.getEngine().getHistory().go(1);
                 }
@@ -227,7 +227,7 @@ public final class JfxBrowserApp {
                 }
             });
             view.addEventFilter(javafx.scene.input.KeyEvent.KEY_PRESSED, e -> {
-                boolean shortcut = e.isShortcutDown();
+                final boolean shortcut = e.isShortcutDown();
                 switch (e.getCode()) {
                     case F12:
                         toggleDevTools();
@@ -273,7 +273,7 @@ public final class JfxBrowserApp {
             });
 
             view.getEngine().setCreatePopupHandler(features -> {
-                BrowserTab popupTab = new BrowserTab(owner, stage, "about:blank");
+                final BrowserTab popupTab = new BrowserTab(owner, stage, "about:blank");
                 owner.getTabs().add(popupTab);
                 Platform.runLater(() -> owner.getSelectionModel().select(popupTab));
                 return popupTab.view.getEngine();
@@ -301,9 +301,9 @@ public final class JfxBrowserApp {
                 }
             });
 
-            ChangeListener<Object> historyStateListener = (obs, oldValue, newValue) -> {
-                int current = view.getEngine().getHistory().getCurrentIndex();
-                int size = view.getEngine().getHistory().getEntries().size();
+            final ChangeListener<Object> historyStateListener = (obs, oldValue, newValue) -> {
+                final int current = view.getEngine().getHistory().getCurrentIndex();
+                final int size = view.getEngine().getHistory().getEntries().size();
                 backBtn.setDisable(current <= 0);
                 fwdBtn.setDisable(current < 0 || current >= size - 1);
             };
@@ -313,7 +313,7 @@ public final class JfxBrowserApp {
             historyStateListener.changed(null, null, null);
 
             view.getEngine().getLoadWorker().progressProperty().addListener((obs, oldProgress, newProgress) -> {
-                double progress = newProgress != null ? newProgress.doubleValue() : -1;
+                final double progress = newProgress != null ? newProgress.doubleValue() : -1;
                 if (progress >= 0 && progress < 1.0) {
                     progressBar.setVisible(true);
                     progressBar.setProgress(progress);
@@ -324,7 +324,7 @@ public final class JfxBrowserApp {
             });
             view.getEngine().getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
                 if (newState == Worker.State.FAILED) {
-                    Throwable error = view.getEngine().getLoadWorker().getException();
+                    final Throwable error = view.getEngine().getLoadWorker().getException();
                     statusLabel.setText(
                             error != null && error.getMessage() != null ? error.getMessage() : "Load failed");
                 } else if (newState == Worker.State.SUCCEEDED || newState == Worker.State.READY) {
@@ -332,7 +332,7 @@ public final class JfxBrowserApp {
                 }
             });
             view.getEngine().setOnStatusChanged(event -> {
-                String value = event.getData();
+                final String value = event.getData();
                 statusLabel.setText(value != null && !value.isEmpty() ? value : " ");
             });
 
@@ -340,30 +340,30 @@ public final class JfxBrowserApp {
         }
 
         private BorderPane createContent() {
-            BorderPane root = new BorderPane();
+            final BorderPane root = new BorderPane();
             root.setCenter(view);
             return root;
         }
 
         private void updateStageTitle() {
-            String title = view.getEngine().getTitle();
-            String location = view.getEngine().getLocation();
+            final String title = view.getEngine().getTitle();
+            final String location = view.getEngine().getLocation();
             stage.setTitle(((title == null || title.isEmpty()) ? location : title) + " - cef4j (JavaFX)");
         }
 
-        private void updateTabTitle(String value) {
+        private void updateTabTitle(@Nullable String value) {
             if (value == null || value.isEmpty()) return;
             setText(value.length() > 24 ? value.substring(0, 24) + "\u2026" : value);
         }
 
         private void toggleDevTools() {
-            net.kurobako.cef4j.gen.CefBrowserHost host = view.getBrowserHost();
-            if (host == null) return;
-            if (host.hasDevTools()) {
-                host.closeDevTools();
-            } else {
-                host.showDevTools(null, null, null, new net.kurobako.cef4j.gen.CefPoint(0, 0));
-            }
+            view.getBrowserHost().ifPresent(host -> {
+                if (host.hasDevTools()) {
+                    host.closeDevTools();
+                } else {
+                    host.showDevTools(null, null, null, new net.kurobako.cef4j.gen.CefPoint(0, 0));
+                }
+            });
         }
 
         private void release() {

@@ -13,6 +13,8 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Chrome DevTools Protocol Input domain.
@@ -20,6 +22,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Input {
     private Input() {}
     /**
@@ -49,32 +52,28 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble radiusX() {
-            Double value = CdpObject.numberAsDouble(raw("radiusX"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("radiusX").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Y radius of the touch area (default: 1.0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble radiusY() {
-            Double value = CdpObject.numberAsDouble(raw("radiusY"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("radiusY").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Rotation angle (default: 0.0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble rotationAngle() {
-            Double value = CdpObject.numberAsDouble(raw("rotationAngle"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("rotationAngle").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Force (default: 1.0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble force() {
-            Double value = CdpObject.numberAsDouble(raw("force"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("force").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * The normalized tangential pressure, which has a range of [-1,1] (default: 0).
@@ -82,24 +81,21 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble tangentialPressure() {
-            Double value = CdpObject.numberAsDouble(raw("tangentialPressure"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("tangentialPressure").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range [-90,90], a positive tiltX is to the right (default: 0)
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble tiltX() {
-            Double value = CdpObject.numberAsDouble(raw("tiltX"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("tiltX").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range [-90,90], a positive tiltY is towards the user (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble tiltY() {
-            Double value = CdpObject.numberAsDouble(raw("tiltY"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("tiltY").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * The clockwise rotation of a pen stylus around its own major axis, in degrees in the range [0,359] (default: 0).
@@ -107,16 +103,14 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong twist() {
-            Long value = CdpObject.numberAsLong(raw("twist"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("twist").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Identifier used to track touch sources between events, must be unique within an event.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble id() {
-            Double value = CdpObject.numberAsDouble(raw("id"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("id").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * X coordinate of the event relative to the main frame&#x27;s viewport in CSS pixels.
@@ -138,167 +132,84 @@ public final class Input {
         }
         /**
          * X radius of the touch area (default: 1.0).
-         * @param radiusX field value; empty omits the value
+         * @param radiusX field value
          * @return this model
          */
-        public TouchPoint radiusX(OptionalDouble radiusX) {
-            set("radiusX", radiusX.isPresent() ? radiusX.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * X radius of the touch area (default: 1.0).
-         * @param radiusX field value; null removes the value
-         * @return this model
-         */
-        public TouchPoint radiusX(Double radiusX) {
+        public TouchPoint radiusX(double radiusX) {
             set("radiusX", radiusX);
             return this;
         }
         /**
          * Y radius of the touch area (default: 1.0).
-         * @param radiusY field value; empty omits the value
+         * @param radiusY field value
          * @return this model
          */
-        public TouchPoint radiusY(OptionalDouble radiusY) {
-            set("radiusY", radiusY.isPresent() ? radiusY.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Y radius of the touch area (default: 1.0).
-         * @param radiusY field value; null removes the value
-         * @return this model
-         */
-        public TouchPoint radiusY(Double radiusY) {
+        public TouchPoint radiusY(double radiusY) {
             set("radiusY", radiusY);
             return this;
         }
         /**
          * Rotation angle (default: 0.0).
-         * @param rotationAngle field value; empty omits the value
+         * @param rotationAngle field value
          * @return this model
          */
-        public TouchPoint rotationAngle(OptionalDouble rotationAngle) {
-            set("rotationAngle", rotationAngle.isPresent() ? rotationAngle.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Rotation angle (default: 0.0).
-         * @param rotationAngle field value; null removes the value
-         * @return this model
-         */
-        public TouchPoint rotationAngle(Double rotationAngle) {
+        public TouchPoint rotationAngle(double rotationAngle) {
             set("rotationAngle", rotationAngle);
             return this;
         }
         /**
          * Force (default: 1.0).
-         * @param force field value; empty omits the value
+         * @param force field value
          * @return this model
          */
-        public TouchPoint force(OptionalDouble force) {
-            set("force", force.isPresent() ? force.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Force (default: 1.0).
-         * @param force field value; null removes the value
-         * @return this model
-         */
-        public TouchPoint force(Double force) {
+        public TouchPoint force(double force) {
             set("force", force);
             return this;
         }
         /**
          * The normalized tangential pressure, which has a range of [-1,1] (default: 0).
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param tangentialPressure field value; empty omits the value
+         * @param tangentialPressure field value
          * @return this model
          */
-        public TouchPoint tangentialPressure(OptionalDouble tangentialPressure) {
-            set("tangentialPressure", tangentialPressure.isPresent() ? tangentialPressure.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * The normalized tangential pressure, which has a range of [-1,1] (default: 0).
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param tangentialPressure field value; null removes the value
-         * @return this model
-         */
-        public TouchPoint tangentialPressure(Double tangentialPressure) {
+        public TouchPoint tangentialPressure(double tangentialPressure) {
             set("tangentialPressure", tangentialPressure);
             return this;
         }
         /**
          * The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range [-90,90], a positive tiltX is to the right (default: 0)
-         * @param tiltX field value; empty omits the value
+         * @param tiltX field value
          * @return this model
          */
-        public TouchPoint tiltX(OptionalDouble tiltX) {
-            set("tiltX", tiltX.isPresent() ? tiltX.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range [-90,90], a positive tiltX is to the right (default: 0)
-         * @param tiltX field value; null removes the value
-         * @return this model
-         */
-        public TouchPoint tiltX(Double tiltX) {
+        public TouchPoint tiltX(double tiltX) {
             set("tiltX", tiltX);
             return this;
         }
         /**
          * The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range [-90,90], a positive tiltY is towards the user (default: 0).
-         * @param tiltY field value; empty omits the value
+         * @param tiltY field value
          * @return this model
          */
-        public TouchPoint tiltY(OptionalDouble tiltY) {
-            set("tiltY", tiltY.isPresent() ? tiltY.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range [-90,90], a positive tiltY is towards the user (default: 0).
-         * @param tiltY field value; null removes the value
-         * @return this model
-         */
-        public TouchPoint tiltY(Double tiltY) {
+        public TouchPoint tiltY(double tiltY) {
             set("tiltY", tiltY);
             return this;
         }
         /**
          * The clockwise rotation of a pen stylus around its own major axis, in degrees in the range [0,359] (default: 0).
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param twist field value; empty omits the value
+         * @param twist field value
          * @return this model
          */
-        public TouchPoint twist(OptionalLong twist) {
-            set("twist", twist.isPresent() ? twist.getAsLong() : null);
-            return this;
-        }
-        /**
-         * The clockwise rotation of a pen stylus around its own major axis, in degrees in the range [0,359] (default: 0).
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param twist field value; null removes the value
-         * @return this model
-         */
-        public TouchPoint twist(Long twist) {
+        public TouchPoint twist(long twist) {
             set("twist", twist);
             return this;
         }
         /**
          * Identifier used to track touch sources between events, must be unique within an event.
-         * @param id field value; empty omits the value
+         * @param id field value
          * @return this model
          */
-        public TouchPoint id(OptionalDouble id) {
-            set("id", id.isPresent() ? id.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Identifier used to track touch sources between events, must be unique within an event.
-         * @param id field value; null removes the value
-         * @return this model
-         */
-        public TouchPoint id(Double id) {
+        public TouchPoint id(double id) {
             set("id", id);
             return this;
         }
@@ -313,7 +224,7 @@ public final class Input {
         MOUSE("mouse");
         public final String value;
         GestureSourceType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static GestureSourceType of(String value) {
             for (GestureSourceType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -333,7 +244,7 @@ public final class Input {
         FORWARD("forward");
         public final String value;
         MouseButton(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static MouseButton of(String value) {
             for (MouseButton constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -347,7 +258,7 @@ public final class Input {
     public static final class TimeSinceEpoch implements CdpValue<Double> {
         public final double value;
         public TimeSinceEpoch(double value) { this.value = value; }
-        public Double value() { return value; }
+        @Override public Double value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof TimeSinceEpoch)) return false;
@@ -384,16 +295,14 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> title() {
-            Object value = raw("title");
-            return Optional.ofNullable((String) value);
+            return raw("title").map(value -> (String) value);
         }
         /**
          * Stores the base URL for the contained markup. Only valid when {@code mimeType} == &quot;text/html&quot;.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> baseURL() {
-            Object value = raw("baseURL");
-            return Optional.ofNullable((String) value);
+            return raw("baseURL").map(value -> (String) value);
         }
         /**
          * Mime type of the dragged data.
@@ -415,16 +324,7 @@ public final class Input {
         }
         /**
          * Title associated with a link. Only valid when {@code mimeType} == &quot;text/uri-list&quot;.
-         * @param title field value; empty omits the value
-         * @return this model
-         */
-        public DragDataItem title(Optional<String> title) {
-            set("title", title.orElse(null));
-            return this;
-        }
-        /**
-         * Title associated with a link. Only valid when {@code mimeType} == &quot;text/uri-list&quot;.
-         * @param title field value; null removes the value
+         * @param title field value
          * @return this model
          */
         public DragDataItem title(String title) {
@@ -433,16 +333,7 @@ public final class Input {
         }
         /**
          * Stores the base URL for the contained markup. Only valid when {@code mimeType} == &quot;text/html&quot;.
-         * @param baseURL field value; empty omits the value
-         * @return this model
-         */
-        public DragDataItem baseURL(Optional<String> baseURL) {
-            set("baseURL", baseURL.orElse(null));
-            return this;
-        }
-        /**
-         * Stores the base URL for the contained markup. Only valid when {@code mimeType} == &quot;text/html&quot;.
-         * @param baseURL field value; null removes the value
+         * @param baseURL field value
          * @return this model
          */
         public DragDataItem baseURL(String baseURL) {
@@ -464,15 +355,14 @@ public final class Input {
          * @return the protocol field value
          */
         public java.util.List<Input.DragDataItem> items() {
-            return CdpObject.requireList(require("items"), element0 -> java.util.Objects.requireNonNull(Input.DragDataItem.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("items"), element0 -> java.util.Objects.requireNonNull(Input.DragDataItem.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * List of filenames that should be included when dropping
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> files() {
-            Object value = raw("files");
-            return Optional.ofNullable(list(value, element0 -> (String) element0));
+            return raw("files").flatMap(value -> list(value, element0 -> (String) element0));
         }
         /**
          * Bit field representing allowed drag operations. Copy = 1, Link = 2, Move = 16
@@ -492,16 +382,7 @@ public final class Input {
         }
         /**
          * List of filenames that should be included when dropping
-         * @param files field value; empty omits the value
-         * @return this model
-         */
-        public DragData files(Optional<java.util.List<String>> files) {
-            set("files", files.orElse(null));
-            return this;
-        }
-        /**
-         * List of filenames that should be included when dropping
-         * @param files field value; null removes the value
+         * @param files field value
          * @return this model
          */
         public DragData files(java.util.List<String> files) {
@@ -533,13 +414,10 @@ public final class Input {
          * @param data protocol value
          */
         public DispatchDragEventRequest(DispatchDragEventTypeValues type, double x, double y, Input.DragData data) {
-            set("type", type);
-            set("x", x);
-            set("y", y);
-            set("data", data);
+            type(type).x(x).y(y).data(data);
         }
         public static DispatchDragEventRequest fromMap(Map<String, Object> values) {
-            DispatchDragEventRequest instance_ = new DispatchDragEventRequest();
+            final DispatchDragEventRequest instance_ = new DispatchDragEventRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -569,15 +447,14 @@ public final class Input {
          * @return the protocol field value
          */
         public Input.DragData data() {
-            return java.util.Objects.requireNonNull(Input.DragData.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("data")))));
+            return java.util.Objects.requireNonNull(Input.DragData.fromMap(CdpObject.requireObjectMap(require("data"))));
         }
         /**
          * Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong modifiers() {
-            Long value = CdpObject.numberAsLong(raw("modifiers"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("modifiers").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Type of the drag event.
@@ -617,19 +494,10 @@ public final class Input {
         }
         /**
          * Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
-         * @param modifiers field value; empty omits the value
+         * @param modifiers field value
          * @return this model
          */
-        public DispatchDragEventRequest modifiers(OptionalLong modifiers) {
-            set("modifiers", modifiers.isPresent() ? modifiers.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
-         * @param modifiers field value; null removes the value
-         * @return this model
-         */
-        public DispatchDragEventRequest modifiers(Long modifiers) {
+        public DispatchDragEventRequest modifiers(long modifiers) {
             set("modifiers", modifiers);
             return this;
         }
@@ -644,10 +512,10 @@ public final class Input {
          * @param type protocol value
          */
         public DispatchKeyEventRequest(DispatchKeyEventTypeValues type) {
-            set("type", type);
+            type(type);
         }
         public static DispatchKeyEventRequest fromMap(Map<String, Object> values) {
-            DispatchKeyEventRequest instance_ = new DispatchKeyEventRequest();
+            final DispatchKeyEventRequest instance_ = new DispatchKeyEventRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -663,104 +531,91 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong modifiers() {
-            Long value = CdpObject.numberAsLong(raw("modifiers"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("modifiers").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Time at which the event occurred.
          * @return the protocol field value, empty when absent
          */
         public Optional<Input.TimeSinceEpoch> timestamp() {
-            Object value = raw("timestamp");
-            return Optional.ofNullable(value == null ? null : new Input.TimeSinceEpoch(((Number) value).doubleValue()));
+            return raw("timestamp").map(value -> new Input.TimeSinceEpoch(((Number) value).doubleValue()));
         }
         /**
          * Text as generated by processing a virtual key code with a keyboard layout. Not needed for for {@code keyUp} and {@code rawKeyDown} events (default: &quot;&quot;)
          * @return the protocol field value, empty when absent
          */
         public Optional<String> text() {
-            Object value = raw("text");
-            return Optional.ofNullable((String) value);
+            return raw("text").map(value -> (String) value);
         }
         /**
          * Text that would have been generated by the keyboard if no modifiers were pressed (except for shift). Useful for shortcut (accelerator) key handling (default: &quot;&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> unmodifiedText() {
-            Object value = raw("unmodifiedText");
-            return Optional.ofNullable((String) value);
+            return raw("unmodifiedText").map(value -> (String) value);
         }
         /**
          * Unique key identifier (e.g., &#x27;U+0041&#x27;) (default: &quot;&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> keyIdentifier() {
-            Object value = raw("keyIdentifier");
-            return Optional.ofNullable((String) value);
+            return raw("keyIdentifier").map(value -> (String) value);
         }
         /**
          * Unique DOM defined string value for each physical key (e.g., &#x27;KeyA&#x27;) (default: &quot;&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> code() {
-            Object value = raw("code");
-            return Optional.ofNullable((String) value);
+            return raw("code").map(value -> (String) value);
         }
         /**
          * Unique DOM defined string value describing the meaning of the key in the context of active modifiers, keyboard layout, etc (e.g., &#x27;AltGr&#x27;) (default: &quot;&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> key() {
-            Object value = raw("key");
-            return Optional.ofNullable((String) value);
+            return raw("key").map(value -> (String) value);
         }
         /**
          * Windows virtual key code (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong windowsVirtualKeyCode() {
-            Long value = CdpObject.numberAsLong(raw("windowsVirtualKeyCode"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("windowsVirtualKeyCode").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Native virtual key code (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong nativeVirtualKeyCode() {
-            Long value = CdpObject.numberAsLong(raw("nativeVirtualKeyCode"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("nativeVirtualKeyCode").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Whether the event was generated from auto repeat (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> autoRepeat() {
-            Object value = raw("autoRepeat");
-            return Optional.ofNullable((Boolean) value);
+            return raw("autoRepeat").map(value -> (Boolean) value);
         }
         /**
          * Whether the event was generated from the keypad (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isKeypad() {
-            Object value = raw("isKeypad");
-            return Optional.ofNullable((Boolean) value);
+            return raw("isKeypad").map(value -> (Boolean) value);
         }
         /**
          * Whether the event was a system key event (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isSystemKey() {
-            Object value = raw("isSystemKey");
-            return Optional.ofNullable((Boolean) value);
+            return raw("isSystemKey").map(value -> (Boolean) value);
         }
         /**
          * Whether the event was from the left or right side of the keyboard. 1=Left, 2=Right (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong location() {
-            Long value = CdpObject.numberAsLong(raw("location"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("location").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Editing commands to send with the key event (e.g., &#x27;selectAll&#x27;) (default: []). These are related to but not equal the command names used in {@code document.execCommand} and NSStandardKeyBindingResponding. See https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h for valid command names.
@@ -768,8 +623,7 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> commands() {
-            Object value = raw("commands");
-            return Optional.ofNullable(list(value, element0 -> (String) element0));
+            return raw("commands").flatMap(value -> list(value, element0 -> (String) element0));
         }
         /**
          * Type of the key event.
@@ -782,34 +636,16 @@ public final class Input {
         }
         /**
          * Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
-         * @param modifiers field value; empty omits the value
+         * @param modifiers field value
          * @return this model
          */
-        public DispatchKeyEventRequest modifiers(OptionalLong modifiers) {
-            set("modifiers", modifiers.isPresent() ? modifiers.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
-         * @param modifiers field value; null removes the value
-         * @return this model
-         */
-        public DispatchKeyEventRequest modifiers(Long modifiers) {
+        public DispatchKeyEventRequest modifiers(long modifiers) {
             set("modifiers", modifiers);
             return this;
         }
         /**
          * Time at which the event occurred.
-         * @param timestamp field value; empty omits the value
-         * @return this model
-         */
-        public DispatchKeyEventRequest timestamp(Optional<Input.TimeSinceEpoch> timestamp) {
-            set("timestamp", timestamp.orElse(null));
-            return this;
-        }
-        /**
-         * Time at which the event occurred.
-         * @param timestamp field value; null removes the value
+         * @param timestamp field value
          * @return this model
          */
         public DispatchKeyEventRequest timestamp(Input.TimeSinceEpoch timestamp) {
@@ -818,16 +654,7 @@ public final class Input {
         }
         /**
          * Text as generated by processing a virtual key code with a keyboard layout. Not needed for for {@code keyUp} and {@code rawKeyDown} events (default: &quot;&quot;)
-         * @param text field value; empty omits the value
-         * @return this model
-         */
-        public DispatchKeyEventRequest text(Optional<String> text) {
-            set("text", text.orElse(null));
-            return this;
-        }
-        /**
-         * Text as generated by processing a virtual key code with a keyboard layout. Not needed for for {@code keyUp} and {@code rawKeyDown} events (default: &quot;&quot;)
-         * @param text field value; null removes the value
+         * @param text field value
          * @return this model
          */
         public DispatchKeyEventRequest text(String text) {
@@ -836,16 +663,7 @@ public final class Input {
         }
         /**
          * Text that would have been generated by the keyboard if no modifiers were pressed (except for shift). Useful for shortcut (accelerator) key handling (default: &quot;&quot;).
-         * @param unmodifiedText field value; empty omits the value
-         * @return this model
-         */
-        public DispatchKeyEventRequest unmodifiedText(Optional<String> unmodifiedText) {
-            set("unmodifiedText", unmodifiedText.orElse(null));
-            return this;
-        }
-        /**
-         * Text that would have been generated by the keyboard if no modifiers were pressed (except for shift). Useful for shortcut (accelerator) key handling (default: &quot;&quot;).
-         * @param unmodifiedText field value; null removes the value
+         * @param unmodifiedText field value
          * @return this model
          */
         public DispatchKeyEventRequest unmodifiedText(String unmodifiedText) {
@@ -854,16 +672,7 @@ public final class Input {
         }
         /**
          * Unique key identifier (e.g., &#x27;U+0041&#x27;) (default: &quot;&quot;).
-         * @param keyIdentifier field value; empty omits the value
-         * @return this model
-         */
-        public DispatchKeyEventRequest keyIdentifier(Optional<String> keyIdentifier) {
-            set("keyIdentifier", keyIdentifier.orElse(null));
-            return this;
-        }
-        /**
-         * Unique key identifier (e.g., &#x27;U+0041&#x27;) (default: &quot;&quot;).
-         * @param keyIdentifier field value; null removes the value
+         * @param keyIdentifier field value
          * @return this model
          */
         public DispatchKeyEventRequest keyIdentifier(String keyIdentifier) {
@@ -872,16 +681,7 @@ public final class Input {
         }
         /**
          * Unique DOM defined string value for each physical key (e.g., &#x27;KeyA&#x27;) (default: &quot;&quot;).
-         * @param code field value; empty omits the value
-         * @return this model
-         */
-        public DispatchKeyEventRequest code(Optional<String> code) {
-            set("code", code.orElse(null));
-            return this;
-        }
-        /**
-         * Unique DOM defined string value for each physical key (e.g., &#x27;KeyA&#x27;) (default: &quot;&quot;).
-         * @param code field value; null removes the value
+         * @param code field value
          * @return this model
          */
         public DispatchKeyEventRequest code(String code) {
@@ -890,16 +690,7 @@ public final class Input {
         }
         /**
          * Unique DOM defined string value describing the meaning of the key in the context of active modifiers, keyboard layout, etc (e.g., &#x27;AltGr&#x27;) (default: &quot;&quot;).
-         * @param key field value; empty omits the value
-         * @return this model
-         */
-        public DispatchKeyEventRequest key(Optional<String> key) {
-            set("key", key.orElse(null));
-            return this;
-        }
-        /**
-         * Unique DOM defined string value describing the meaning of the key in the context of active modifiers, keyboard layout, etc (e.g., &#x27;AltGr&#x27;) (default: &quot;&quot;).
-         * @param key field value; null removes the value
+         * @param key field value
          * @return this model
          */
         public DispatchKeyEventRequest key(String key) {
@@ -908,126 +699,62 @@ public final class Input {
         }
         /**
          * Windows virtual key code (default: 0).
-         * @param windowsVirtualKeyCode field value; empty omits the value
+         * @param windowsVirtualKeyCode field value
          * @return this model
          */
-        public DispatchKeyEventRequest windowsVirtualKeyCode(OptionalLong windowsVirtualKeyCode) {
-            set("windowsVirtualKeyCode", windowsVirtualKeyCode.isPresent() ? windowsVirtualKeyCode.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Windows virtual key code (default: 0).
-         * @param windowsVirtualKeyCode field value; null removes the value
-         * @return this model
-         */
-        public DispatchKeyEventRequest windowsVirtualKeyCode(Long windowsVirtualKeyCode) {
+        public DispatchKeyEventRequest windowsVirtualKeyCode(long windowsVirtualKeyCode) {
             set("windowsVirtualKeyCode", windowsVirtualKeyCode);
             return this;
         }
         /**
          * Native virtual key code (default: 0).
-         * @param nativeVirtualKeyCode field value; empty omits the value
+         * @param nativeVirtualKeyCode field value
          * @return this model
          */
-        public DispatchKeyEventRequest nativeVirtualKeyCode(OptionalLong nativeVirtualKeyCode) {
-            set("nativeVirtualKeyCode", nativeVirtualKeyCode.isPresent() ? nativeVirtualKeyCode.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Native virtual key code (default: 0).
-         * @param nativeVirtualKeyCode field value; null removes the value
-         * @return this model
-         */
-        public DispatchKeyEventRequest nativeVirtualKeyCode(Long nativeVirtualKeyCode) {
+        public DispatchKeyEventRequest nativeVirtualKeyCode(long nativeVirtualKeyCode) {
             set("nativeVirtualKeyCode", nativeVirtualKeyCode);
             return this;
         }
         /**
          * Whether the event was generated from auto repeat (default: false).
-         * @param autoRepeat field value; empty omits the value
+         * @param autoRepeat field value
          * @return this model
          */
-        public DispatchKeyEventRequest autoRepeat(Optional<Boolean> autoRepeat) {
-            set("autoRepeat", autoRepeat.orElse(null));
-            return this;
-        }
-        /**
-         * Whether the event was generated from auto repeat (default: false).
-         * @param autoRepeat field value; null removes the value
-         * @return this model
-         */
-        public DispatchKeyEventRequest autoRepeat(Boolean autoRepeat) {
+        public DispatchKeyEventRequest autoRepeat(boolean autoRepeat) {
             set("autoRepeat", autoRepeat);
             return this;
         }
         /**
          * Whether the event was generated from the keypad (default: false).
-         * @param isKeypad field value; empty omits the value
+         * @param isKeypad field value
          * @return this model
          */
-        public DispatchKeyEventRequest isKeypad(Optional<Boolean> isKeypad) {
-            set("isKeypad", isKeypad.orElse(null));
-            return this;
-        }
-        /**
-         * Whether the event was generated from the keypad (default: false).
-         * @param isKeypad field value; null removes the value
-         * @return this model
-         */
-        public DispatchKeyEventRequest isKeypad(Boolean isKeypad) {
+        public DispatchKeyEventRequest isKeypad(boolean isKeypad) {
             set("isKeypad", isKeypad);
             return this;
         }
         /**
          * Whether the event was a system key event (default: false).
-         * @param isSystemKey field value; empty omits the value
+         * @param isSystemKey field value
          * @return this model
          */
-        public DispatchKeyEventRequest isSystemKey(Optional<Boolean> isSystemKey) {
-            set("isSystemKey", isSystemKey.orElse(null));
-            return this;
-        }
-        /**
-         * Whether the event was a system key event (default: false).
-         * @param isSystemKey field value; null removes the value
-         * @return this model
-         */
-        public DispatchKeyEventRequest isSystemKey(Boolean isSystemKey) {
+        public DispatchKeyEventRequest isSystemKey(boolean isSystemKey) {
             set("isSystemKey", isSystemKey);
             return this;
         }
         /**
          * Whether the event was from the left or right side of the keyboard. 1=Left, 2=Right (default: 0).
-         * @param location field value; empty omits the value
+         * @param location field value
          * @return this model
          */
-        public DispatchKeyEventRequest location(OptionalLong location) {
-            set("location", location.isPresent() ? location.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Whether the event was from the left or right side of the keyboard. 1=Left, 2=Right (default: 0).
-         * @param location field value; null removes the value
-         * @return this model
-         */
-        public DispatchKeyEventRequest location(Long location) {
+        public DispatchKeyEventRequest location(long location) {
             set("location", location);
             return this;
         }
         /**
          * Editing commands to send with the key event (e.g., &#x27;selectAll&#x27;) (default: []). These are related to but not equal the command names used in {@code document.execCommand} and NSStandardKeyBindingResponding. See https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h for valid command names.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param commands field value; empty omits the value
-         * @return this model
-         */
-        public DispatchKeyEventRequest commands(Optional<java.util.List<String>> commands) {
-            set("commands", commands.orElse(null));
-            return this;
-        }
-        /**
-         * Editing commands to send with the key event (e.g., &#x27;selectAll&#x27;) (default: []). These are related to but not equal the command names used in {@code document.execCommand} and NSStandardKeyBindingResponding. See https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h for valid command names.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param commands field value; null removes the value
+         * @param commands field value
          * @return this model
          */
         public DispatchKeyEventRequest commands(java.util.List<String> commands) {
@@ -1047,10 +774,10 @@ public final class Input {
          * @param text protocol value
          */
         public InsertTextRequest(String text) {
-            set("text", text);
+            text(text);
         }
         public static InsertTextRequest fromMap(Map<String, Object> values) {
-            InsertTextRequest instance_ = new InsertTextRequest();
+            final InsertTextRequest instance_ = new InsertTextRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1085,12 +812,10 @@ public final class Input {
          * @param selectionEnd protocol value
          */
         public ImeSetCompositionRequest(String text, long selectionStart, long selectionEnd) {
-            set("text", text);
-            set("selectionStart", selectionStart);
-            set("selectionEnd", selectionEnd);
+            text(text).selectionStart(selectionStart).selectionEnd(selectionEnd);
         }
         public static ImeSetCompositionRequest fromMap(Map<String, Object> values) {
-            ImeSetCompositionRequest instance_ = new ImeSetCompositionRequest();
+            final ImeSetCompositionRequest instance_ = new ImeSetCompositionRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1120,16 +845,14 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong replacementStart() {
-            Long value = CdpObject.numberAsLong(raw("replacementStart"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("replacementStart").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * replacement end
          * @return the protocol field value, empty when absent
          */
         public OptionalLong replacementEnd() {
-            Long value = CdpObject.numberAsLong(raw("replacementEnd"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("replacementEnd").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * The text to insert
@@ -1160,37 +883,19 @@ public final class Input {
         }
         /**
          * replacement start
-         * @param replacementStart field value; empty omits the value
+         * @param replacementStart field value
          * @return this model
          */
-        public ImeSetCompositionRequest replacementStart(OptionalLong replacementStart) {
-            set("replacementStart", replacementStart.isPresent() ? replacementStart.getAsLong() : null);
-            return this;
-        }
-        /**
-         * replacement start
-         * @param replacementStart field value; null removes the value
-         * @return this model
-         */
-        public ImeSetCompositionRequest replacementStart(Long replacementStart) {
+        public ImeSetCompositionRequest replacementStart(long replacementStart) {
             set("replacementStart", replacementStart);
             return this;
         }
         /**
          * replacement end
-         * @param replacementEnd field value; empty omits the value
+         * @param replacementEnd field value
          * @return this model
          */
-        public ImeSetCompositionRequest replacementEnd(OptionalLong replacementEnd) {
-            set("replacementEnd", replacementEnd.isPresent() ? replacementEnd.getAsLong() : null);
-            return this;
-        }
-        /**
-         * replacement end
-         * @param replacementEnd field value; null removes the value
-         * @return this model
-         */
-        public ImeSetCompositionRequest replacementEnd(Long replacementEnd) {
+        public ImeSetCompositionRequest replacementEnd(long replacementEnd) {
             set("replacementEnd", replacementEnd);
             return this;
         }
@@ -1207,12 +912,10 @@ public final class Input {
          * @param y protocol value
          */
         public DispatchMouseEventRequest(DispatchMouseEventTypeValues type, double x, double y) {
-            set("type", type);
-            set("x", x);
-            set("y", y);
+            type(type).x(x).y(y);
         }
         public static DispatchMouseEventRequest fromMap(Map<String, Object> values) {
-            DispatchMouseEventRequest instance_ = new DispatchMouseEventRequest();
+            final DispatchMouseEventRequest instance_ = new DispatchMouseEventRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1242,40 +945,35 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong modifiers() {
-            Long value = CdpObject.numberAsLong(raw("modifiers"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("modifiers").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Time at which the event occurred.
          * @return the protocol field value, empty when absent
          */
         public Optional<Input.TimeSinceEpoch> timestamp() {
-            Object value = raw("timestamp");
-            return Optional.ofNullable(value == null ? null : new Input.TimeSinceEpoch(((Number) value).doubleValue()));
+            return raw("timestamp").map(value -> new Input.TimeSinceEpoch(((Number) value).doubleValue()));
         }
         /**
          * Mouse button (default: &quot;none&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<Input.MouseButton> button() {
-            Object value = raw("button");
-            return Optional.ofNullable(value == null ? null : Input.MouseButton.of((String) value));
+            return raw("button").map(value -> Input.MouseButton.of((String) value));
         }
         /**
          * A number indicating which buttons are pressed on the mouse when a mouse event is triggered. Left=1, Right=2, Middle=4, Back=8, Forward=16, None=0.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong buttons() {
-            Long value = CdpObject.numberAsLong(raw("buttons"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("buttons").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Number of times the mouse button was clicked (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong clickCount() {
-            Long value = CdpObject.numberAsLong(raw("clickCount"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("clickCount").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * The normalized pressure, which has a range of [0,1] (default: 0).
@@ -1283,8 +981,7 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble force() {
-            Double value = CdpObject.numberAsDouble(raw("force"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("force").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * The normalized tangential pressure, which has a range of [-1,1] (default: 0).
@@ -1292,24 +989,21 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble tangentialPressure() {
-            Double value = CdpObject.numberAsDouble(raw("tangentialPressure"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("tangentialPressure").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range [-90,90], a positive tiltX is to the right (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble tiltX() {
-            Double value = CdpObject.numberAsDouble(raw("tiltX"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("tiltX").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range [-90,90], a positive tiltY is towards the user (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble tiltY() {
-            Double value = CdpObject.numberAsDouble(raw("tiltY"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("tiltY").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * The clockwise rotation of a pen stylus around its own major axis, in degrees in the range [0,359] (default: 0).
@@ -1317,32 +1011,28 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong twist() {
-            Long value = CdpObject.numberAsLong(raw("twist"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("twist").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * X delta in CSS pixels for mouse wheel event (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble deltaX() {
-            Double value = CdpObject.numberAsDouble(raw("deltaX"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("deltaX").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Y delta in CSS pixels for mouse wheel event (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble deltaY() {
-            Double value = CdpObject.numberAsDouble(raw("deltaY"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("deltaY").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Pointer type (default: &quot;mouse&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<DispatchMouseEventPointerTypeValues> pointerType() {
-            Object value = raw("pointerType");
-            return Optional.ofNullable(value == null ? null : DispatchMouseEventPointerTypeValues.of((String) value));
+            return raw("pointerType").map(value -> DispatchMouseEventPointerTypeValues.of((String) value));
         }
         /**
          * Type of the mouse event.
@@ -1373,34 +1063,16 @@ public final class Input {
         }
         /**
          * Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
-         * @param modifiers field value; empty omits the value
+         * @param modifiers field value
          * @return this model
          */
-        public DispatchMouseEventRequest modifiers(OptionalLong modifiers) {
-            set("modifiers", modifiers.isPresent() ? modifiers.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
-         * @param modifiers field value; null removes the value
-         * @return this model
-         */
-        public DispatchMouseEventRequest modifiers(Long modifiers) {
+        public DispatchMouseEventRequest modifiers(long modifiers) {
             set("modifiers", modifiers);
             return this;
         }
         /**
          * Time at which the event occurred.
-         * @param timestamp field value; empty omits the value
-         * @return this model
-         */
-        public DispatchMouseEventRequest timestamp(Optional<Input.TimeSinceEpoch> timestamp) {
-            set("timestamp", timestamp.orElse(null));
-            return this;
-        }
-        /**
-         * Time at which the event occurred.
-         * @param timestamp field value; null removes the value
+         * @param timestamp field value
          * @return this model
          */
         public DispatchMouseEventRequest timestamp(Input.TimeSinceEpoch timestamp) {
@@ -1409,16 +1081,7 @@ public final class Input {
         }
         /**
          * Mouse button (default: &quot;none&quot;).
-         * @param button field value; empty omits the value
-         * @return this model
-         */
-        public DispatchMouseEventRequest button(Optional<Input.MouseButton> button) {
-            set("button", button.orElse(null));
-            return this;
-        }
-        /**
-         * Mouse button (default: &quot;none&quot;).
-         * @param button field value; null removes the value
+         * @param button field value
          * @return this model
          */
         public DispatchMouseEventRequest button(Input.MouseButton button) {
@@ -1427,184 +1090,91 @@ public final class Input {
         }
         /**
          * A number indicating which buttons are pressed on the mouse when a mouse event is triggered. Left=1, Right=2, Middle=4, Back=8, Forward=16, None=0.
-         * @param buttons field value; empty omits the value
+         * @param buttons field value
          * @return this model
          */
-        public DispatchMouseEventRequest buttons(OptionalLong buttons) {
-            set("buttons", buttons.isPresent() ? buttons.getAsLong() : null);
-            return this;
-        }
-        /**
-         * A number indicating which buttons are pressed on the mouse when a mouse event is triggered. Left=1, Right=2, Middle=4, Back=8, Forward=16, None=0.
-         * @param buttons field value; null removes the value
-         * @return this model
-         */
-        public DispatchMouseEventRequest buttons(Long buttons) {
+        public DispatchMouseEventRequest buttons(long buttons) {
             set("buttons", buttons);
             return this;
         }
         /**
          * Number of times the mouse button was clicked (default: 0).
-         * @param clickCount field value; empty omits the value
+         * @param clickCount field value
          * @return this model
          */
-        public DispatchMouseEventRequest clickCount(OptionalLong clickCount) {
-            set("clickCount", clickCount.isPresent() ? clickCount.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Number of times the mouse button was clicked (default: 0).
-         * @param clickCount field value; null removes the value
-         * @return this model
-         */
-        public DispatchMouseEventRequest clickCount(Long clickCount) {
+        public DispatchMouseEventRequest clickCount(long clickCount) {
             set("clickCount", clickCount);
             return this;
         }
         /**
          * The normalized pressure, which has a range of [0,1] (default: 0).
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param force field value; empty omits the value
+         * @param force field value
          * @return this model
          */
-        public DispatchMouseEventRequest force(OptionalDouble force) {
-            set("force", force.isPresent() ? force.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * The normalized pressure, which has a range of [0,1] (default: 0).
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param force field value; null removes the value
-         * @return this model
-         */
-        public DispatchMouseEventRequest force(Double force) {
+        public DispatchMouseEventRequest force(double force) {
             set("force", force);
             return this;
         }
         /**
          * The normalized tangential pressure, which has a range of [-1,1] (default: 0).
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param tangentialPressure field value; empty omits the value
+         * @param tangentialPressure field value
          * @return this model
          */
-        public DispatchMouseEventRequest tangentialPressure(OptionalDouble tangentialPressure) {
-            set("tangentialPressure", tangentialPressure.isPresent() ? tangentialPressure.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * The normalized tangential pressure, which has a range of [-1,1] (default: 0).
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param tangentialPressure field value; null removes the value
-         * @return this model
-         */
-        public DispatchMouseEventRequest tangentialPressure(Double tangentialPressure) {
+        public DispatchMouseEventRequest tangentialPressure(double tangentialPressure) {
             set("tangentialPressure", tangentialPressure);
             return this;
         }
         /**
          * The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range [-90,90], a positive tiltX is to the right (default: 0).
-         * @param tiltX field value; empty omits the value
+         * @param tiltX field value
          * @return this model
          */
-        public DispatchMouseEventRequest tiltX(OptionalDouble tiltX) {
-            set("tiltX", tiltX.isPresent() ? tiltX.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range [-90,90], a positive tiltX is to the right (default: 0).
-         * @param tiltX field value; null removes the value
-         * @return this model
-         */
-        public DispatchMouseEventRequest tiltX(Double tiltX) {
+        public DispatchMouseEventRequest tiltX(double tiltX) {
             set("tiltX", tiltX);
             return this;
         }
         /**
          * The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range [-90,90], a positive tiltY is towards the user (default: 0).
-         * @param tiltY field value; empty omits the value
+         * @param tiltY field value
          * @return this model
          */
-        public DispatchMouseEventRequest tiltY(OptionalDouble tiltY) {
-            set("tiltY", tiltY.isPresent() ? tiltY.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range [-90,90], a positive tiltY is towards the user (default: 0).
-         * @param tiltY field value; null removes the value
-         * @return this model
-         */
-        public DispatchMouseEventRequest tiltY(Double tiltY) {
+        public DispatchMouseEventRequest tiltY(double tiltY) {
             set("tiltY", tiltY);
             return this;
         }
         /**
          * The clockwise rotation of a pen stylus around its own major axis, in degrees in the range [0,359] (default: 0).
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param twist field value; empty omits the value
+         * @param twist field value
          * @return this model
          */
-        public DispatchMouseEventRequest twist(OptionalLong twist) {
-            set("twist", twist.isPresent() ? twist.getAsLong() : null);
-            return this;
-        }
-        /**
-         * The clockwise rotation of a pen stylus around its own major axis, in degrees in the range [0,359] (default: 0).
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param twist field value; null removes the value
-         * @return this model
-         */
-        public DispatchMouseEventRequest twist(Long twist) {
+        public DispatchMouseEventRequest twist(long twist) {
             set("twist", twist);
             return this;
         }
         /**
          * X delta in CSS pixels for mouse wheel event (default: 0).
-         * @param deltaX field value; empty omits the value
+         * @param deltaX field value
          * @return this model
          */
-        public DispatchMouseEventRequest deltaX(OptionalDouble deltaX) {
-            set("deltaX", deltaX.isPresent() ? deltaX.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * X delta in CSS pixels for mouse wheel event (default: 0).
-         * @param deltaX field value; null removes the value
-         * @return this model
-         */
-        public DispatchMouseEventRequest deltaX(Double deltaX) {
+        public DispatchMouseEventRequest deltaX(double deltaX) {
             set("deltaX", deltaX);
             return this;
         }
         /**
          * Y delta in CSS pixels for mouse wheel event (default: 0).
-         * @param deltaY field value; empty omits the value
+         * @param deltaY field value
          * @return this model
          */
-        public DispatchMouseEventRequest deltaY(OptionalDouble deltaY) {
-            set("deltaY", deltaY.isPresent() ? deltaY.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Y delta in CSS pixels for mouse wheel event (default: 0).
-         * @param deltaY field value; null removes the value
-         * @return this model
-         */
-        public DispatchMouseEventRequest deltaY(Double deltaY) {
+        public DispatchMouseEventRequest deltaY(double deltaY) {
             set("deltaY", deltaY);
             return this;
         }
         /**
          * Pointer type (default: &quot;mouse&quot;).
-         * @param pointerType field value; empty omits the value
-         * @return this model
-         */
-        public DispatchMouseEventRequest pointerType(Optional<DispatchMouseEventPointerTypeValues> pointerType) {
-            set("pointerType", pointerType.orElse(null));
-            return this;
-        }
-        /**
-         * Pointer type (default: &quot;mouse&quot;).
-         * @param pointerType field value; null removes the value
+         * @param pointerType field value
          * @return this model
          */
         public DispatchMouseEventRequest pointerType(DispatchMouseEventPointerTypeValues pointerType) {
@@ -1623,11 +1193,10 @@ public final class Input {
          * @param touchPoints protocol value
          */
         public DispatchTouchEventRequest(DispatchTouchEventTypeValues type, java.util.List<Input.TouchPoint> touchPoints) {
-            set("type", type);
-            set("touchPoints", touchPoints);
+            type(type).touchPoints(touchPoints);
         }
         public static DispatchTouchEventRequest fromMap(Map<String, Object> values) {
-            DispatchTouchEventRequest instance_ = new DispatchTouchEventRequest();
+            final DispatchTouchEventRequest instance_ = new DispatchTouchEventRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1643,23 +1212,21 @@ public final class Input {
          * @return the protocol field value
          */
         public java.util.List<Input.TouchPoint> touchPoints() {
-            return CdpObject.requireList(require("touchPoints"), element0 -> java.util.Objects.requireNonNull(Input.TouchPoint.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("touchPoints"), element0 -> java.util.Objects.requireNonNull(Input.TouchPoint.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong modifiers() {
-            Long value = CdpObject.numberAsLong(raw("modifiers"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("modifiers").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Time at which the event occurred.
          * @return the protocol field value, empty when absent
          */
         public Optional<Input.TimeSinceEpoch> timestamp() {
-            Object value = raw("timestamp");
-            return Optional.ofNullable(value == null ? null : new Input.TimeSinceEpoch(((Number) value).doubleValue()));
+            return raw("timestamp").map(value -> new Input.TimeSinceEpoch(((Number) value).doubleValue()));
         }
         /**
          * Type of the touch event. TouchEnd and TouchCancel must not contain any touch points, while TouchStart and TouchMove must contains at least one.
@@ -1681,34 +1248,16 @@ public final class Input {
         }
         /**
          * Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
-         * @param modifiers field value; empty omits the value
+         * @param modifiers field value
          * @return this model
          */
-        public DispatchTouchEventRequest modifiers(OptionalLong modifiers) {
-            set("modifiers", modifiers.isPresent() ? modifiers.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
-         * @param modifiers field value; null removes the value
-         * @return this model
-         */
-        public DispatchTouchEventRequest modifiers(Long modifiers) {
+        public DispatchTouchEventRequest modifiers(long modifiers) {
             set("modifiers", modifiers);
             return this;
         }
         /**
          * Time at which the event occurred.
-         * @param timestamp field value; empty omits the value
-         * @return this model
-         */
-        public DispatchTouchEventRequest timestamp(Optional<Input.TimeSinceEpoch> timestamp) {
-            set("timestamp", timestamp.orElse(null));
-            return this;
-        }
-        /**
-         * Time at which the event occurred.
-         * @param timestamp field value; null removes the value
+         * @param timestamp field value
          * @return this model
          */
         public DispatchTouchEventRequest timestamp(Input.TimeSinceEpoch timestamp) {
@@ -1731,13 +1280,10 @@ public final class Input {
          * @param button protocol value
          */
         public EmulateTouchFromMouseEventRequest(EmulateTouchFromMouseEventTypeValues type, long x, long y, Input.MouseButton button) {
-            set("type", type);
-            set("x", x);
-            set("y", y);
-            set("button", button);
+            type(type).x(x).y(y).button(button);
         }
         public static EmulateTouchFromMouseEventRequest fromMap(Map<String, Object> values) {
-            EmulateTouchFromMouseEventRequest instance_ = new EmulateTouchFromMouseEventRequest();
+            final EmulateTouchFromMouseEventRequest instance_ = new EmulateTouchFromMouseEventRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1774,40 +1320,35 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public Optional<Input.TimeSinceEpoch> timestamp() {
-            Object value = raw("timestamp");
-            return Optional.ofNullable(value == null ? null : new Input.TimeSinceEpoch(((Number) value).doubleValue()));
+            return raw("timestamp").map(value -> new Input.TimeSinceEpoch(((Number) value).doubleValue()));
         }
         /**
          * X delta in DIP for mouse wheel event (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble deltaX() {
-            Double value = CdpObject.numberAsDouble(raw("deltaX"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("deltaX").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Y delta in DIP for mouse wheel event (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble deltaY() {
-            Double value = CdpObject.numberAsDouble(raw("deltaY"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("deltaY").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong modifiers() {
-            Long value = CdpObject.numberAsLong(raw("modifiers"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("modifiers").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Number of times the mouse button was clicked (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong clickCount() {
-            Long value = CdpObject.numberAsLong(raw("clickCount"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("clickCount").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Type of the mouse event.
@@ -1847,16 +1388,7 @@ public final class Input {
         }
         /**
          * Time at which the event occurred (default: current time).
-         * @param timestamp field value; empty omits the value
-         * @return this model
-         */
-        public EmulateTouchFromMouseEventRequest timestamp(Optional<Input.TimeSinceEpoch> timestamp) {
-            set("timestamp", timestamp.orElse(null));
-            return this;
-        }
-        /**
-         * Time at which the event occurred (default: current time).
-         * @param timestamp field value; null removes the value
+         * @param timestamp field value
          * @return this model
          */
         public EmulateTouchFromMouseEventRequest timestamp(Input.TimeSinceEpoch timestamp) {
@@ -1865,73 +1397,37 @@ public final class Input {
         }
         /**
          * X delta in DIP for mouse wheel event (default: 0).
-         * @param deltaX field value; empty omits the value
+         * @param deltaX field value
          * @return this model
          */
-        public EmulateTouchFromMouseEventRequest deltaX(OptionalDouble deltaX) {
-            set("deltaX", deltaX.isPresent() ? deltaX.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * X delta in DIP for mouse wheel event (default: 0).
-         * @param deltaX field value; null removes the value
-         * @return this model
-         */
-        public EmulateTouchFromMouseEventRequest deltaX(Double deltaX) {
+        public EmulateTouchFromMouseEventRequest deltaX(double deltaX) {
             set("deltaX", deltaX);
             return this;
         }
         /**
          * Y delta in DIP for mouse wheel event (default: 0).
-         * @param deltaY field value; empty omits the value
+         * @param deltaY field value
          * @return this model
          */
-        public EmulateTouchFromMouseEventRequest deltaY(OptionalDouble deltaY) {
-            set("deltaY", deltaY.isPresent() ? deltaY.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Y delta in DIP for mouse wheel event (default: 0).
-         * @param deltaY field value; null removes the value
-         * @return this model
-         */
-        public EmulateTouchFromMouseEventRequest deltaY(Double deltaY) {
+        public EmulateTouchFromMouseEventRequest deltaY(double deltaY) {
             set("deltaY", deltaY);
             return this;
         }
         /**
          * Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
-         * @param modifiers field value; empty omits the value
+         * @param modifiers field value
          * @return this model
          */
-        public EmulateTouchFromMouseEventRequest modifiers(OptionalLong modifiers) {
-            set("modifiers", modifiers.isPresent() ? modifiers.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
-         * @param modifiers field value; null removes the value
-         * @return this model
-         */
-        public EmulateTouchFromMouseEventRequest modifiers(Long modifiers) {
+        public EmulateTouchFromMouseEventRequest modifiers(long modifiers) {
             set("modifiers", modifiers);
             return this;
         }
         /**
          * Number of times the mouse button was clicked (default: 0).
-         * @param clickCount field value; empty omits the value
+         * @param clickCount field value
          * @return this model
          */
-        public EmulateTouchFromMouseEventRequest clickCount(OptionalLong clickCount) {
-            set("clickCount", clickCount.isPresent() ? clickCount.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Number of times the mouse button was clicked (default: 0).
-         * @param clickCount field value; null removes the value
-         * @return this model
-         */
-        public EmulateTouchFromMouseEventRequest clickCount(Long clickCount) {
+        public EmulateTouchFromMouseEventRequest clickCount(long clickCount) {
             set("clickCount", clickCount);
             return this;
         }
@@ -1946,10 +1442,10 @@ public final class Input {
          * @param ignore protocol value
          */
         public SetIgnoreInputEventsRequest(boolean ignore) {
-            set("ignore", ignore);
+            ignore(ignore);
         }
         public static SetIgnoreInputEventsRequest fromMap(Map<String, Object> values) {
-            SetIgnoreInputEventsRequest instance_ = new SetIgnoreInputEventsRequest();
+            final SetIgnoreInputEventsRequest instance_ = new SetIgnoreInputEventsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1982,10 +1478,10 @@ public final class Input {
          * @param enabled protocol value
          */
         public SetInterceptDragsRequest(boolean enabled) {
-            set("enabled", enabled);
+            enabled(enabled);
         }
         public static SetInterceptDragsRequest fromMap(Map<String, Object> values) {
-            SetInterceptDragsRequest instance_ = new SetInterceptDragsRequest();
+            final SetInterceptDragsRequest instance_ = new SetInterceptDragsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2020,12 +1516,10 @@ public final class Input {
          * @param scaleFactor protocol value
          */
         public SynthesizePinchGestureRequest(double x, double y, double scaleFactor) {
-            set("x", x);
-            set("y", y);
-            set("scaleFactor", scaleFactor);
+            x(x).y(y).scaleFactor(scaleFactor);
         }
         public static SynthesizePinchGestureRequest fromMap(Map<String, Object> values) {
-            SynthesizePinchGestureRequest instance_ = new SynthesizePinchGestureRequest();
+            final SynthesizePinchGestureRequest instance_ = new SynthesizePinchGestureRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2055,16 +1549,14 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong relativeSpeed() {
-            Long value = CdpObject.numberAsLong(raw("relativeSpeed"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("relativeSpeed").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Which type of input events to be generated (default: &#x27;default&#x27;, which queries the platform for the preferred input type).
          * @return the protocol field value, empty when absent
          */
         public Optional<Input.GestureSourceType> gestureSourceType() {
-            Object value = raw("gestureSourceType");
-            return Optional.ofNullable(value == null ? null : Input.GestureSourceType.of((String) value));
+            return raw("gestureSourceType").map(value -> Input.GestureSourceType.of((String) value));
         }
         /**
          * X coordinate of the start of the gesture in CSS pixels.
@@ -2095,34 +1587,16 @@ public final class Input {
         }
         /**
          * Relative pointer speed in pixels per second (default: 800).
-         * @param relativeSpeed field value; empty omits the value
+         * @param relativeSpeed field value
          * @return this model
          */
-        public SynthesizePinchGestureRequest relativeSpeed(OptionalLong relativeSpeed) {
-            set("relativeSpeed", relativeSpeed.isPresent() ? relativeSpeed.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Relative pointer speed in pixels per second (default: 800).
-         * @param relativeSpeed field value; null removes the value
-         * @return this model
-         */
-        public SynthesizePinchGestureRequest relativeSpeed(Long relativeSpeed) {
+        public SynthesizePinchGestureRequest relativeSpeed(long relativeSpeed) {
             set("relativeSpeed", relativeSpeed);
             return this;
         }
         /**
          * Which type of input events to be generated (default: &#x27;default&#x27;, which queries the platform for the preferred input type).
-         * @param gestureSourceType field value; empty omits the value
-         * @return this model
-         */
-        public SynthesizePinchGestureRequest gestureSourceType(Optional<Input.GestureSourceType> gestureSourceType) {
-            set("gestureSourceType", gestureSourceType.orElse(null));
-            return this;
-        }
-        /**
-         * Which type of input events to be generated (default: &#x27;default&#x27;, which queries the platform for the preferred input type).
-         * @param gestureSourceType field value; null removes the value
+         * @param gestureSourceType field value
          * @return this model
          */
         public SynthesizePinchGestureRequest gestureSourceType(Input.GestureSourceType gestureSourceType) {
@@ -2143,11 +1617,10 @@ public final class Input {
          * @param y protocol value
          */
         public SynthesizeScrollGestureRequest(double x, double y) {
-            set("x", x);
-            set("y", y);
+            x(x).y(y);
         }
         public static SynthesizeScrollGestureRequest fromMap(Map<String, Object> values) {
-            SynthesizeScrollGestureRequest instance_ = new SynthesizeScrollGestureRequest();
+            final SynthesizeScrollGestureRequest instance_ = new SynthesizeScrollGestureRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2170,80 +1643,70 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble xDistance() {
-            Double value = CdpObject.numberAsDouble(raw("xDistance"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("xDistance").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * The distance to scroll along the Y axis (positive to scroll up).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble yDistance() {
-            Double value = CdpObject.numberAsDouble(raw("yDistance"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("yDistance").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * The number of additional pixels to scroll back along the X axis, in addition to the given distance.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble xOverscroll() {
-            Double value = CdpObject.numberAsDouble(raw("xOverscroll"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("xOverscroll").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * The number of additional pixels to scroll back along the Y axis, in addition to the given distance.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble yOverscroll() {
-            Double value = CdpObject.numberAsDouble(raw("yOverscroll"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("yOverscroll").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Prevent fling (default: true).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> preventFling() {
-            Object value = raw("preventFling");
-            return Optional.ofNullable((Boolean) value);
+            return raw("preventFling").map(value -> (Boolean) value);
         }
         /**
          * Swipe speed in pixels per second (default: 800).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong speed() {
-            Long value = CdpObject.numberAsLong(raw("speed"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("speed").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Which type of input events to be generated (default: &#x27;default&#x27;, which queries the platform for the preferred input type).
          * @return the protocol field value, empty when absent
          */
         public Optional<Input.GestureSourceType> gestureSourceType() {
-            Object value = raw("gestureSourceType");
-            return Optional.ofNullable(value == null ? null : Input.GestureSourceType.of((String) value));
+            return raw("gestureSourceType").map(value -> Input.GestureSourceType.of((String) value));
         }
         /**
          * The number of times to repeat the gesture (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong repeatCount() {
-            Long value = CdpObject.numberAsLong(raw("repeatCount"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("repeatCount").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * The number of milliseconds delay between each repeat. (default: 250).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong repeatDelayMs() {
-            Long value = CdpObject.numberAsLong(raw("repeatDelayMs"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("repeatDelayMs").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * The name of the interaction markers to generate, if not empty (default: &quot;&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> interactionMarkerName() {
-            Object value = raw("interactionMarkerName");
-            return Optional.ofNullable((String) value);
+            return raw("interactionMarkerName").map(value -> (String) value);
         }
         /**
          * X coordinate of the start of the gesture in CSS pixels.
@@ -2265,124 +1728,61 @@ public final class Input {
         }
         /**
          * The distance to scroll along the X axis (positive to scroll left).
-         * @param xDistance field value; empty omits the value
+         * @param xDistance field value
          * @return this model
          */
-        public SynthesizeScrollGestureRequest xDistance(OptionalDouble xDistance) {
-            set("xDistance", xDistance.isPresent() ? xDistance.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * The distance to scroll along the X axis (positive to scroll left).
-         * @param xDistance field value; null removes the value
-         * @return this model
-         */
-        public SynthesizeScrollGestureRequest xDistance(Double xDistance) {
+        public SynthesizeScrollGestureRequest xDistance(double xDistance) {
             set("xDistance", xDistance);
             return this;
         }
         /**
          * The distance to scroll along the Y axis (positive to scroll up).
-         * @param yDistance field value; empty omits the value
+         * @param yDistance field value
          * @return this model
          */
-        public SynthesizeScrollGestureRequest yDistance(OptionalDouble yDistance) {
-            set("yDistance", yDistance.isPresent() ? yDistance.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * The distance to scroll along the Y axis (positive to scroll up).
-         * @param yDistance field value; null removes the value
-         * @return this model
-         */
-        public SynthesizeScrollGestureRequest yDistance(Double yDistance) {
+        public SynthesizeScrollGestureRequest yDistance(double yDistance) {
             set("yDistance", yDistance);
             return this;
         }
         /**
          * The number of additional pixels to scroll back along the X axis, in addition to the given distance.
-         * @param xOverscroll field value; empty omits the value
+         * @param xOverscroll field value
          * @return this model
          */
-        public SynthesizeScrollGestureRequest xOverscroll(OptionalDouble xOverscroll) {
-            set("xOverscroll", xOverscroll.isPresent() ? xOverscroll.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * The number of additional pixels to scroll back along the X axis, in addition to the given distance.
-         * @param xOverscroll field value; null removes the value
-         * @return this model
-         */
-        public SynthesizeScrollGestureRequest xOverscroll(Double xOverscroll) {
+        public SynthesizeScrollGestureRequest xOverscroll(double xOverscroll) {
             set("xOverscroll", xOverscroll);
             return this;
         }
         /**
          * The number of additional pixels to scroll back along the Y axis, in addition to the given distance.
-         * @param yOverscroll field value; empty omits the value
+         * @param yOverscroll field value
          * @return this model
          */
-        public SynthesizeScrollGestureRequest yOverscroll(OptionalDouble yOverscroll) {
-            set("yOverscroll", yOverscroll.isPresent() ? yOverscroll.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * The number of additional pixels to scroll back along the Y axis, in addition to the given distance.
-         * @param yOverscroll field value; null removes the value
-         * @return this model
-         */
-        public SynthesizeScrollGestureRequest yOverscroll(Double yOverscroll) {
+        public SynthesizeScrollGestureRequest yOverscroll(double yOverscroll) {
             set("yOverscroll", yOverscroll);
             return this;
         }
         /**
          * Prevent fling (default: true).
-         * @param preventFling field value; empty omits the value
+         * @param preventFling field value
          * @return this model
          */
-        public SynthesizeScrollGestureRequest preventFling(Optional<Boolean> preventFling) {
-            set("preventFling", preventFling.orElse(null));
-            return this;
-        }
-        /**
-         * Prevent fling (default: true).
-         * @param preventFling field value; null removes the value
-         * @return this model
-         */
-        public SynthesizeScrollGestureRequest preventFling(Boolean preventFling) {
+        public SynthesizeScrollGestureRequest preventFling(boolean preventFling) {
             set("preventFling", preventFling);
             return this;
         }
         /**
          * Swipe speed in pixels per second (default: 800).
-         * @param speed field value; empty omits the value
+         * @param speed field value
          * @return this model
          */
-        public SynthesizeScrollGestureRequest speed(OptionalLong speed) {
-            set("speed", speed.isPresent() ? speed.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Swipe speed in pixels per second (default: 800).
-         * @param speed field value; null removes the value
-         * @return this model
-         */
-        public SynthesizeScrollGestureRequest speed(Long speed) {
+        public SynthesizeScrollGestureRequest speed(long speed) {
             set("speed", speed);
             return this;
         }
         /**
          * Which type of input events to be generated (default: &#x27;default&#x27;, which queries the platform for the preferred input type).
-         * @param gestureSourceType field value; empty omits the value
-         * @return this model
-         */
-        public SynthesizeScrollGestureRequest gestureSourceType(Optional<Input.GestureSourceType> gestureSourceType) {
-            set("gestureSourceType", gestureSourceType.orElse(null));
-            return this;
-        }
-        /**
-         * Which type of input events to be generated (default: &#x27;default&#x27;, which queries the platform for the preferred input type).
-         * @param gestureSourceType field value; null removes the value
+         * @param gestureSourceType field value
          * @return this model
          */
         public SynthesizeScrollGestureRequest gestureSourceType(Input.GestureSourceType gestureSourceType) {
@@ -2391,52 +1791,25 @@ public final class Input {
         }
         /**
          * The number of times to repeat the gesture (default: 0).
-         * @param repeatCount field value; empty omits the value
+         * @param repeatCount field value
          * @return this model
          */
-        public SynthesizeScrollGestureRequest repeatCount(OptionalLong repeatCount) {
-            set("repeatCount", repeatCount.isPresent() ? repeatCount.getAsLong() : null);
-            return this;
-        }
-        /**
-         * The number of times to repeat the gesture (default: 0).
-         * @param repeatCount field value; null removes the value
-         * @return this model
-         */
-        public SynthesizeScrollGestureRequest repeatCount(Long repeatCount) {
+        public SynthesizeScrollGestureRequest repeatCount(long repeatCount) {
             set("repeatCount", repeatCount);
             return this;
         }
         /**
          * The number of milliseconds delay between each repeat. (default: 250).
-         * @param repeatDelayMs field value; empty omits the value
+         * @param repeatDelayMs field value
          * @return this model
          */
-        public SynthesizeScrollGestureRequest repeatDelayMs(OptionalLong repeatDelayMs) {
-            set("repeatDelayMs", repeatDelayMs.isPresent() ? repeatDelayMs.getAsLong() : null);
-            return this;
-        }
-        /**
-         * The number of milliseconds delay between each repeat. (default: 250).
-         * @param repeatDelayMs field value; null removes the value
-         * @return this model
-         */
-        public SynthesizeScrollGestureRequest repeatDelayMs(Long repeatDelayMs) {
+        public SynthesizeScrollGestureRequest repeatDelayMs(long repeatDelayMs) {
             set("repeatDelayMs", repeatDelayMs);
             return this;
         }
         /**
          * The name of the interaction markers to generate, if not empty (default: &quot;&quot;).
-         * @param interactionMarkerName field value; empty omits the value
-         * @return this model
-         */
-        public SynthesizeScrollGestureRequest interactionMarkerName(Optional<String> interactionMarkerName) {
-            set("interactionMarkerName", interactionMarkerName.orElse(null));
-            return this;
-        }
-        /**
-         * The name of the interaction markers to generate, if not empty (default: &quot;&quot;).
-         * @param interactionMarkerName field value; null removes the value
+         * @param interactionMarkerName field value
          * @return this model
          */
         public SynthesizeScrollGestureRequest interactionMarkerName(String interactionMarkerName) {
@@ -2457,11 +1830,10 @@ public final class Input {
          * @param y protocol value
          */
         public SynthesizeTapGestureRequest(double x, double y) {
-            set("x", x);
-            set("y", y);
+            x(x).y(y);
         }
         public static SynthesizeTapGestureRequest fromMap(Map<String, Object> values) {
-            SynthesizeTapGestureRequest instance_ = new SynthesizeTapGestureRequest();
+            final SynthesizeTapGestureRequest instance_ = new SynthesizeTapGestureRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2484,24 +1856,21 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong duration() {
-            Long value = CdpObject.numberAsLong(raw("duration"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("duration").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Number of times to perform the tap (e.g. 2 for double tap, default: 1).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong tapCount() {
-            Long value = CdpObject.numberAsLong(raw("tapCount"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("tapCount").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Which type of input events to be generated (default: &#x27;default&#x27;, which queries the platform for the preferred input type).
          * @return the protocol field value, empty when absent
          */
         public Optional<Input.GestureSourceType> gestureSourceType() {
-            Object value = raw("gestureSourceType");
-            return Optional.ofNullable(value == null ? null : Input.GestureSourceType.of((String) value));
+            return raw("gestureSourceType").map(value -> Input.GestureSourceType.of((String) value));
         }
         /**
          * X coordinate of the start of the gesture in CSS pixels.
@@ -2523,52 +1892,25 @@ public final class Input {
         }
         /**
          * Duration between touchdown and touchup events in ms (default: 50).
-         * @param duration field value; empty omits the value
+         * @param duration field value
          * @return this model
          */
-        public SynthesizeTapGestureRequest duration(OptionalLong duration) {
-            set("duration", duration.isPresent() ? duration.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Duration between touchdown and touchup events in ms (default: 50).
-         * @param duration field value; null removes the value
-         * @return this model
-         */
-        public SynthesizeTapGestureRequest duration(Long duration) {
+        public SynthesizeTapGestureRequest duration(long duration) {
             set("duration", duration);
             return this;
         }
         /**
          * Number of times to perform the tap (e.g. 2 for double tap, default: 1).
-         * @param tapCount field value; empty omits the value
+         * @param tapCount field value
          * @return this model
          */
-        public SynthesizeTapGestureRequest tapCount(OptionalLong tapCount) {
-            set("tapCount", tapCount.isPresent() ? tapCount.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Number of times to perform the tap (e.g. 2 for double tap, default: 1).
-         * @param tapCount field value; null removes the value
-         * @return this model
-         */
-        public SynthesizeTapGestureRequest tapCount(Long tapCount) {
+        public SynthesizeTapGestureRequest tapCount(long tapCount) {
             set("tapCount", tapCount);
             return this;
         }
         /**
          * Which type of input events to be generated (default: &#x27;default&#x27;, which queries the platform for the preferred input type).
-         * @param gestureSourceType field value; empty omits the value
-         * @return this model
-         */
-        public SynthesizeTapGestureRequest gestureSourceType(Optional<Input.GestureSourceType> gestureSourceType) {
-            set("gestureSourceType", gestureSourceType.orElse(null));
-            return this;
-        }
-        /**
-         * Which type of input events to be generated (default: &#x27;default&#x27;, which queries the platform for the preferred input type).
-         * @param gestureSourceType field value; null removes the value
+         * @param gestureSourceType field value
          * @return this model
          */
         public SynthesizeTapGestureRequest gestureSourceType(Input.GestureSourceType gestureSourceType) {
@@ -2591,7 +1933,7 @@ public final class Input {
          * @return the protocol field value
          */
         public Input.DragData data() {
-            return java.util.Objects.requireNonNull(Input.DragData.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("data")))));
+            return java.util.Objects.requireNonNull(Input.DragData.fromMap(CdpObject.requireObjectMap(require("data"))));
         }
         /**
          * Sets the data field.
@@ -2613,7 +1955,7 @@ public final class Input {
         DRAGCANCEL("dragCancel");
         public final String value;
         DispatchDragEventTypeValues(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static DispatchDragEventTypeValues of(String value) {
             for (DispatchDragEventTypeValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -2631,7 +1973,7 @@ public final class Input {
         CHAR("char");
         public final String value;
         DispatchKeyEventTypeValues(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static DispatchKeyEventTypeValues of(String value) {
             for (DispatchKeyEventTypeValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -2649,7 +1991,7 @@ public final class Input {
         MOUSEWHEEL("mouseWheel");
         public final String value;
         DispatchMouseEventTypeValues(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static DispatchMouseEventTypeValues of(String value) {
             for (DispatchMouseEventTypeValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -2665,7 +2007,7 @@ public final class Input {
         PEN("pen");
         public final String value;
         DispatchMouseEventPointerTypeValues(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static DispatchMouseEventPointerTypeValues of(String value) {
             for (DispatchMouseEventPointerTypeValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -2683,7 +2025,7 @@ public final class Input {
         TOUCHCANCEL("touchCancel");
         public final String value;
         DispatchTouchEventTypeValues(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static DispatchTouchEventTypeValues of(String value) {
             for (DispatchTouchEventTypeValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -2701,7 +2043,7 @@ public final class Input {
         MOUSEWHEEL("mouseWheel");
         public final String value;
         EmulateTouchFromMouseEventTypeValues(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static EmulateTouchFromMouseEventTypeValues of(String value) {
             for (EmulateTouchFromMouseEventTypeValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -2722,13 +2064,13 @@ public final class Input {
          * @param modifiers protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> dispatchDragEvent(DispatchDragEventTypeValues type, double x, double y, Input.DragData data, OptionalLong modifiers) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> dispatchDragEvent(DispatchDragEventTypeValues type, double x, double y, Input.DragData data, long modifiers) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("type", CdpObject.json(type));
             params.put("x", CdpObject.json(x));
             params.put("y", CdpObject.json(y));
             params.put("data", CdpObject.json(data));
-            modifiers.ifPresent(value_ -> params.put("modifiers", value_));
+            params.put("modifiers", CdpObject.json(modifiers));
             return client.call("Input.dispatchDragEvent", params);
         }
         /**
@@ -2741,7 +2083,12 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchDragEvent(DispatchDragEventTypeValues type, double x, double y, Input.DragData data) {
-            return dispatchDragEvent(type, x, y, data, OptionalLong.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("type", CdpObject.json(type));
+            params.put("x", CdpObject.json(x));
+            params.put("y", CdpObject.json(y));
+            params.put("data", CdpObject.json(data));
+            return client.call("Input.dispatchDragEvent", params);
         }
         /**
          * Dispatches a drag event into the page.
@@ -2771,23 +2118,23 @@ public final class Input {
          * @param commands protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> dispatchKeyEvent(DispatchKeyEventTypeValues type, OptionalLong modifiers, Optional<Input.TimeSinceEpoch> timestamp, Optional<String> text, Optional<String> unmodifiedText, Optional<String> keyIdentifier, Optional<String> code, Optional<String> key, OptionalLong windowsVirtualKeyCode, OptionalLong nativeVirtualKeyCode, Optional<Boolean> autoRepeat, Optional<Boolean> isKeypad, Optional<Boolean> isSystemKey, OptionalLong location, Optional<java.util.List<String>> commands) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> dispatchKeyEvent(DispatchKeyEventTypeValues type, @Nullable Long modifiers, Input.@Nullable TimeSinceEpoch timestamp, @Nullable String text, @Nullable String unmodifiedText, @Nullable String keyIdentifier, @Nullable String code, @Nullable String key, @Nullable Long windowsVirtualKeyCode, @Nullable Long nativeVirtualKeyCode, @Nullable Boolean autoRepeat, @Nullable Boolean isKeypad, @Nullable Boolean isSystemKey, @Nullable Long location, java.util.@Nullable List<String> commands) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("type", CdpObject.json(type));
-            modifiers.ifPresent(value_ -> params.put("modifiers", value_));
-            timestamp.ifPresent(value_ -> params.put("timestamp", CdpObject.json(value_)));
-            text.ifPresent(value_ -> params.put("text", CdpObject.json(value_)));
-            unmodifiedText.ifPresent(value_ -> params.put("unmodifiedText", CdpObject.json(value_)));
-            keyIdentifier.ifPresent(value_ -> params.put("keyIdentifier", CdpObject.json(value_)));
-            code.ifPresent(value_ -> params.put("code", CdpObject.json(value_)));
-            key.ifPresent(value_ -> params.put("key", CdpObject.json(value_)));
-            windowsVirtualKeyCode.ifPresent(value_ -> params.put("windowsVirtualKeyCode", value_));
-            nativeVirtualKeyCode.ifPresent(value_ -> params.put("nativeVirtualKeyCode", value_));
-            autoRepeat.ifPresent(value_ -> params.put("autoRepeat", value_));
-            isKeypad.ifPresent(value_ -> params.put("isKeypad", value_));
-            isSystemKey.ifPresent(value_ -> params.put("isSystemKey", value_));
-            location.ifPresent(value_ -> params.put("location", value_));
-            commands.ifPresent(value_ -> params.put("commands", CdpObject.json(value_)));
+            if (modifiers != null) params.put("modifiers", CdpObject.json(modifiers));
+            if (timestamp != null) params.put("timestamp", CdpObject.json(timestamp));
+            if (text != null) params.put("text", CdpObject.json(text));
+            if (unmodifiedText != null) params.put("unmodifiedText", CdpObject.json(unmodifiedText));
+            if (keyIdentifier != null) params.put("keyIdentifier", CdpObject.json(keyIdentifier));
+            if (code != null) params.put("code", CdpObject.json(code));
+            if (key != null) params.put("key", CdpObject.json(key));
+            if (windowsVirtualKeyCode != null) params.put("windowsVirtualKeyCode", CdpObject.json(windowsVirtualKeyCode));
+            if (nativeVirtualKeyCode != null) params.put("nativeVirtualKeyCode", CdpObject.json(nativeVirtualKeyCode));
+            if (autoRepeat != null) params.put("autoRepeat", CdpObject.json(autoRepeat));
+            if (isKeypad != null) params.put("isKeypad", CdpObject.json(isKeypad));
+            if (isSystemKey != null) params.put("isSystemKey", CdpObject.json(isSystemKey));
+            if (location != null) params.put("location", CdpObject.json(location));
+            if (commands != null) params.put("commands", CdpObject.json(commands));
             return client.call("Input.dispatchKeyEvent", params);
         }
         /**
@@ -2796,7 +2143,9 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchKeyEvent(DispatchKeyEventTypeValues type) {
-            return dispatchKeyEvent(type, OptionalLong.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), OptionalLong.empty(), OptionalLong.empty(), Optional.empty(), Optional.empty(), Optional.empty(), OptionalLong.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("type", CdpObject.json(type));
+            return client.call("Input.dispatchKeyEvent", params);
         }
         /**
          * Dispatches a key event to the page.
@@ -2813,7 +2162,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> insertText(String text) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("text", CdpObject.json(text));
             return client.call("Input.insertText", params);
         }
@@ -2836,13 +2185,13 @@ public final class Input {
          * @param replacementEnd protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> imeSetComposition(String text, long selectionStart, long selectionEnd, OptionalLong replacementStart, OptionalLong replacementEnd) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> imeSetComposition(String text, long selectionStart, long selectionEnd, @Nullable Long replacementStart, @Nullable Long replacementEnd) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("text", CdpObject.json(text));
             params.put("selectionStart", CdpObject.json(selectionStart));
             params.put("selectionEnd", CdpObject.json(selectionEnd));
-            replacementStart.ifPresent(value_ -> params.put("replacementStart", value_));
-            replacementEnd.ifPresent(value_ -> params.put("replacementEnd", value_));
+            if (replacementStart != null) params.put("replacementStart", CdpObject.json(replacementStart));
+            if (replacementEnd != null) params.put("replacementEnd", CdpObject.json(replacementEnd));
             return client.call("Input.imeSetComposition", params);
         }
         /**
@@ -2854,7 +2203,11 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> imeSetComposition(String text, long selectionStart, long selectionEnd) {
-            return imeSetComposition(text, selectionStart, selectionEnd, OptionalLong.empty(), OptionalLong.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("text", CdpObject.json(text));
+            params.put("selectionStart", CdpObject.json(selectionStart));
+            params.put("selectionEnd", CdpObject.json(selectionEnd));
+            return client.call("Input.imeSetComposition", params);
         }
         /**
          * This method sets the current candidate text for IME. Use imeCommitComposition to commit the final text. Use imeSetComposition with empty string as text to cancel composition.
@@ -2885,24 +2238,24 @@ public final class Input {
          * @param pointerType protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> dispatchMouseEvent(DispatchMouseEventTypeValues type, double x, double y, OptionalLong modifiers, Optional<Input.TimeSinceEpoch> timestamp, Optional<Input.MouseButton> button, OptionalLong buttons, OptionalLong clickCount, OptionalDouble force, OptionalDouble tangentialPressure, OptionalDouble tiltX, OptionalDouble tiltY, OptionalLong twist, OptionalDouble deltaX, OptionalDouble deltaY, Optional<DispatchMouseEventPointerTypeValues> pointerType) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> dispatchMouseEvent(DispatchMouseEventTypeValues type, double x, double y, @Nullable Long modifiers, Input.@Nullable TimeSinceEpoch timestamp, Input.@Nullable MouseButton button, @Nullable Long buttons, @Nullable Long clickCount, @Nullable Double force, @Nullable Double tangentialPressure, @Nullable Double tiltX, @Nullable Double tiltY, @Nullable Long twist, @Nullable Double deltaX, @Nullable Double deltaY, @Nullable DispatchMouseEventPointerTypeValues pointerType) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("type", CdpObject.json(type));
             params.put("x", CdpObject.json(x));
             params.put("y", CdpObject.json(y));
-            modifiers.ifPresent(value_ -> params.put("modifiers", value_));
-            timestamp.ifPresent(value_ -> params.put("timestamp", CdpObject.json(value_)));
-            button.ifPresent(value_ -> params.put("button", CdpObject.json(value_)));
-            buttons.ifPresent(value_ -> params.put("buttons", value_));
-            clickCount.ifPresent(value_ -> params.put("clickCount", value_));
-            force.ifPresent(value_ -> params.put("force", value_));
-            tangentialPressure.ifPresent(value_ -> params.put("tangentialPressure", value_));
-            tiltX.ifPresent(value_ -> params.put("tiltX", value_));
-            tiltY.ifPresent(value_ -> params.put("tiltY", value_));
-            twist.ifPresent(value_ -> params.put("twist", value_));
-            deltaX.ifPresent(value_ -> params.put("deltaX", value_));
-            deltaY.ifPresent(value_ -> params.put("deltaY", value_));
-            pointerType.ifPresent(value_ -> params.put("pointerType", CdpObject.json(value_)));
+            if (modifiers != null) params.put("modifiers", CdpObject.json(modifiers));
+            if (timestamp != null) params.put("timestamp", CdpObject.json(timestamp));
+            if (button != null) params.put("button", CdpObject.json(button));
+            if (buttons != null) params.put("buttons", CdpObject.json(buttons));
+            if (clickCount != null) params.put("clickCount", CdpObject.json(clickCount));
+            if (force != null) params.put("force", CdpObject.json(force));
+            if (tangentialPressure != null) params.put("tangentialPressure", CdpObject.json(tangentialPressure));
+            if (tiltX != null) params.put("tiltX", CdpObject.json(tiltX));
+            if (tiltY != null) params.put("tiltY", CdpObject.json(tiltY));
+            if (twist != null) params.put("twist", CdpObject.json(twist));
+            if (deltaX != null) params.put("deltaX", CdpObject.json(deltaX));
+            if (deltaY != null) params.put("deltaY", CdpObject.json(deltaY));
+            if (pointerType != null) params.put("pointerType", CdpObject.json(pointerType));
             return client.call("Input.dispatchMouseEvent", params);
         }
         /**
@@ -2913,7 +2266,11 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchMouseEvent(DispatchMouseEventTypeValues type, double x, double y) {
-            return dispatchMouseEvent(type, x, y, OptionalLong.empty(), Optional.empty(), Optional.empty(), OptionalLong.empty(), OptionalLong.empty(), OptionalDouble.empty(), OptionalDouble.empty(), OptionalDouble.empty(), OptionalDouble.empty(), OptionalLong.empty(), OptionalDouble.empty(), OptionalDouble.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("type", CdpObject.json(type));
+            params.put("x", CdpObject.json(x));
+            params.put("y", CdpObject.json(y));
+            return client.call("Input.dispatchMouseEvent", params);
         }
         /**
          * Dispatches a mouse event to the page.
@@ -2931,12 +2288,12 @@ public final class Input {
          * @param timestamp protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> dispatchTouchEvent(DispatchTouchEventTypeValues type, java.util.List<Input.TouchPoint> touchPoints, OptionalLong modifiers, Optional<Input.TimeSinceEpoch> timestamp) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> dispatchTouchEvent(DispatchTouchEventTypeValues type, java.util.List<Input.TouchPoint> touchPoints, @Nullable Long modifiers, Input.@Nullable TimeSinceEpoch timestamp) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("type", CdpObject.json(type));
             params.put("touchPoints", CdpObject.json(touchPoints));
-            modifiers.ifPresent(value_ -> params.put("modifiers", value_));
-            timestamp.ifPresent(value_ -> params.put("timestamp", CdpObject.json(value_)));
+            if (modifiers != null) params.put("modifiers", CdpObject.json(modifiers));
+            if (timestamp != null) params.put("timestamp", CdpObject.json(timestamp));
             return client.call("Input.dispatchTouchEvent", params);
         }
         /**
@@ -2946,7 +2303,10 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchTouchEvent(DispatchTouchEventTypeValues type, java.util.List<Input.TouchPoint> touchPoints) {
-            return dispatchTouchEvent(type, touchPoints, OptionalLong.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("type", CdpObject.json(type));
+            params.put("touchPoints", CdpObject.json(touchPoints));
+            return client.call("Input.dispatchTouchEvent", params);
         }
         /**
          * Dispatches a touch event to the page.
@@ -2977,17 +2337,17 @@ public final class Input {
          * @param clickCount protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> emulateTouchFromMouseEvent(EmulateTouchFromMouseEventTypeValues type, long x, long y, Input.MouseButton button, Optional<Input.TimeSinceEpoch> timestamp, OptionalDouble deltaX, OptionalDouble deltaY, OptionalLong modifiers, OptionalLong clickCount) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> emulateTouchFromMouseEvent(EmulateTouchFromMouseEventTypeValues type, long x, long y, Input.MouseButton button, Input.@Nullable TimeSinceEpoch timestamp, @Nullable Double deltaX, @Nullable Double deltaY, @Nullable Long modifiers, @Nullable Long clickCount) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("type", CdpObject.json(type));
             params.put("x", CdpObject.json(x));
             params.put("y", CdpObject.json(y));
             params.put("button", CdpObject.json(button));
-            timestamp.ifPresent(value_ -> params.put("timestamp", CdpObject.json(value_)));
-            deltaX.ifPresent(value_ -> params.put("deltaX", value_));
-            deltaY.ifPresent(value_ -> params.put("deltaY", value_));
-            modifiers.ifPresent(value_ -> params.put("modifiers", value_));
-            clickCount.ifPresent(value_ -> params.put("clickCount", value_));
+            if (timestamp != null) params.put("timestamp", CdpObject.json(timestamp));
+            if (deltaX != null) params.put("deltaX", CdpObject.json(deltaX));
+            if (deltaY != null) params.put("deltaY", CdpObject.json(deltaY));
+            if (modifiers != null) params.put("modifiers", CdpObject.json(modifiers));
+            if (clickCount != null) params.put("clickCount", CdpObject.json(clickCount));
             return client.call("Input.emulateTouchFromMouseEvent", params);
         }
         /**
@@ -3000,7 +2360,12 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> emulateTouchFromMouseEvent(EmulateTouchFromMouseEventTypeValues type, long x, long y, Input.MouseButton button) {
-            return emulateTouchFromMouseEvent(type, x, y, button, Optional.empty(), OptionalDouble.empty(), OptionalDouble.empty(), OptionalLong.empty(), OptionalLong.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("type", CdpObject.json(type));
+            params.put("x", CdpObject.json(x));
+            params.put("y", CdpObject.json(y));
+            params.put("button", CdpObject.json(button));
+            return client.call("Input.emulateTouchFromMouseEvent", params);
         }
         /**
          * Emulates touch event from the mouse event parameters.
@@ -3017,7 +2382,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setIgnoreInputEvents(boolean ignore) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("ignore", CdpObject.json(ignore));
             return client.call("Input.setIgnoreInputEvents", params);
         }
@@ -3036,7 +2401,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setInterceptDrags(boolean enabled) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("enabled", CdpObject.json(enabled));
             return client.call("Input.setInterceptDrags", params);
         }
@@ -3059,13 +2424,13 @@ public final class Input {
          * @param gestureSourceType protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> synthesizePinchGesture(double x, double y, double scaleFactor, OptionalLong relativeSpeed, Optional<Input.GestureSourceType> gestureSourceType) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> synthesizePinchGesture(double x, double y, double scaleFactor, @Nullable Long relativeSpeed, Input.@Nullable GestureSourceType gestureSourceType) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("x", CdpObject.json(x));
             params.put("y", CdpObject.json(y));
             params.put("scaleFactor", CdpObject.json(scaleFactor));
-            relativeSpeed.ifPresent(value_ -> params.put("relativeSpeed", value_));
-            gestureSourceType.ifPresent(value_ -> params.put("gestureSourceType", CdpObject.json(value_)));
+            if (relativeSpeed != null) params.put("relativeSpeed", CdpObject.json(relativeSpeed));
+            if (gestureSourceType != null) params.put("gestureSourceType", CdpObject.json(gestureSourceType));
             return client.call("Input.synthesizePinchGesture", params);
         }
         /**
@@ -3077,7 +2442,11 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> synthesizePinchGesture(double x, double y, double scaleFactor) {
-            return synthesizePinchGesture(x, y, scaleFactor, OptionalLong.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("x", CdpObject.json(x));
+            params.put("y", CdpObject.json(y));
+            params.put("scaleFactor", CdpObject.json(scaleFactor));
+            return client.call("Input.synthesizePinchGesture", params);
         }
         /**
          * Synthesizes a pinch gesture over a time period by issuing appropriate touch events.
@@ -3105,20 +2474,20 @@ public final class Input {
          * @param interactionMarkerName protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> synthesizeScrollGesture(double x, double y, OptionalDouble xDistance, OptionalDouble yDistance, OptionalDouble xOverscroll, OptionalDouble yOverscroll, Optional<Boolean> preventFling, OptionalLong speed, Optional<Input.GestureSourceType> gestureSourceType, OptionalLong repeatCount, OptionalLong repeatDelayMs, Optional<String> interactionMarkerName) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> synthesizeScrollGesture(double x, double y, @Nullable Double xDistance, @Nullable Double yDistance, @Nullable Double xOverscroll, @Nullable Double yOverscroll, @Nullable Boolean preventFling, @Nullable Long speed, Input.@Nullable GestureSourceType gestureSourceType, @Nullable Long repeatCount, @Nullable Long repeatDelayMs, @Nullable String interactionMarkerName) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("x", CdpObject.json(x));
             params.put("y", CdpObject.json(y));
-            xDistance.ifPresent(value_ -> params.put("xDistance", value_));
-            yDistance.ifPresent(value_ -> params.put("yDistance", value_));
-            xOverscroll.ifPresent(value_ -> params.put("xOverscroll", value_));
-            yOverscroll.ifPresent(value_ -> params.put("yOverscroll", value_));
-            preventFling.ifPresent(value_ -> params.put("preventFling", value_));
-            speed.ifPresent(value_ -> params.put("speed", value_));
-            gestureSourceType.ifPresent(value_ -> params.put("gestureSourceType", CdpObject.json(value_)));
-            repeatCount.ifPresent(value_ -> params.put("repeatCount", value_));
-            repeatDelayMs.ifPresent(value_ -> params.put("repeatDelayMs", value_));
-            interactionMarkerName.ifPresent(value_ -> params.put("interactionMarkerName", CdpObject.json(value_)));
+            if (xDistance != null) params.put("xDistance", CdpObject.json(xDistance));
+            if (yDistance != null) params.put("yDistance", CdpObject.json(yDistance));
+            if (xOverscroll != null) params.put("xOverscroll", CdpObject.json(xOverscroll));
+            if (yOverscroll != null) params.put("yOverscroll", CdpObject.json(yOverscroll));
+            if (preventFling != null) params.put("preventFling", CdpObject.json(preventFling));
+            if (speed != null) params.put("speed", CdpObject.json(speed));
+            if (gestureSourceType != null) params.put("gestureSourceType", CdpObject.json(gestureSourceType));
+            if (repeatCount != null) params.put("repeatCount", CdpObject.json(repeatCount));
+            if (repeatDelayMs != null) params.put("repeatDelayMs", CdpObject.json(repeatDelayMs));
+            if (interactionMarkerName != null) params.put("interactionMarkerName", CdpObject.json(interactionMarkerName));
             return client.call("Input.synthesizeScrollGesture", params);
         }
         /**
@@ -3129,7 +2498,10 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> synthesizeScrollGesture(double x, double y) {
-            return synthesizeScrollGesture(x, y, OptionalDouble.empty(), OptionalDouble.empty(), OptionalDouble.empty(), OptionalDouble.empty(), Optional.empty(), OptionalLong.empty(), Optional.empty(), OptionalLong.empty(), OptionalLong.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("x", CdpObject.json(x));
+            params.put("y", CdpObject.json(y));
+            return client.call("Input.synthesizeScrollGesture", params);
         }
         /**
          * Synthesizes a scroll gesture over a time period by issuing appropriate touch events.
@@ -3150,13 +2522,13 @@ public final class Input {
          * @param gestureSourceType protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> synthesizeTapGesture(double x, double y, OptionalLong duration, OptionalLong tapCount, Optional<Input.GestureSourceType> gestureSourceType) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> synthesizeTapGesture(double x, double y, @Nullable Long duration, @Nullable Long tapCount, Input.@Nullable GestureSourceType gestureSourceType) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("x", CdpObject.json(x));
             params.put("y", CdpObject.json(y));
-            duration.ifPresent(value_ -> params.put("duration", value_));
-            tapCount.ifPresent(value_ -> params.put("tapCount", value_));
-            gestureSourceType.ifPresent(value_ -> params.put("gestureSourceType", CdpObject.json(value_)));
+            if (duration != null) params.put("duration", CdpObject.json(duration));
+            if (tapCount != null) params.put("tapCount", CdpObject.json(tapCount));
+            if (gestureSourceType != null) params.put("gestureSourceType", CdpObject.json(gestureSourceType));
             return client.call("Input.synthesizeTapGesture", params);
         }
         /**
@@ -3167,7 +2539,10 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> synthesizeTapGesture(double x, double y) {
-            return synthesizeTapGesture(x, y, OptionalLong.empty(), OptionalLong.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("x", CdpObject.json(x));
+            params.put("y", CdpObject.json(y));
+            return client.call("Input.synthesizeTapGesture", params);
         }
         /**
          * Synthesizes a tap gesture over a time period by issuing appropriate touch events.

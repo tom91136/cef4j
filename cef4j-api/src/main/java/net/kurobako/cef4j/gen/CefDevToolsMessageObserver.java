@@ -23,7 +23,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:45</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefDevToolsMessageObserver extends CefClientHandler {
 
@@ -148,8 +147,8 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefDevToolsMessageObserver {
         private final java.util.List<CefDevToolsMessageObserver> delegates;
@@ -160,7 +159,7 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
 
         @Override
         public boolean onDevToolsMessage(@Nullable CefBrowser browser, ByteBuffer message) {
-            for (CefDevToolsMessageObserver d : delegates) {
+            for (final CefDevToolsMessageObserver d : delegates) {
                 if (d.onDevToolsMessage(browser, message)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -170,24 +169,24 @@ public interface CefDevToolsMessageObserver extends CefClientHandler {
         @Override
         public void onDevToolsMethodResult(
                 @Nullable CefBrowser browser, int messageId, boolean success, @Nullable ByteBuffer result) {
-            for (CefDevToolsMessageObserver d : delegates)
+            for (final CefDevToolsMessageObserver d : delegates)
                 d.onDevToolsMethodResult(browser, messageId, success, result);
         }
 
         @Override
         public void onDevToolsEvent(
                 @Nullable CefBrowser browser, @Nullable String method, @Nullable ByteBuffer params) {
-            for (CefDevToolsMessageObserver d : delegates) d.onDevToolsEvent(browser, method, params);
+            for (final CefDevToolsMessageObserver d : delegates) d.onDevToolsEvent(browser, method, params);
         }
 
         @Override
         public void onDevToolsAgentAttached(@Nullable CefBrowser browser) {
-            for (CefDevToolsMessageObserver d : delegates) d.onDevToolsAgentAttached(browser);
+            for (final CefDevToolsMessageObserver d : delegates) d.onDevToolsAgentAttached(browser);
         }
 
         @Override
         public void onDevToolsAgentDetached(@Nullable CefBrowser browser) {
-            for (CefDevToolsMessageObserver d : delegates) d.onDevToolsAgentDetached(browser);
+            for (final CefDevToolsMessageObserver d : delegates) d.onDevToolsAgentDetached(browser);
         }
     }
 }

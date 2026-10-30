@@ -4,7 +4,6 @@ package net.kurobako.cef4j.cdp.generated;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
@@ -13,6 +12,7 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Chrome DevTools Protocol SmartCardEmulation domain.
@@ -21,6 +21,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class SmartCardEmulation {
     private SmartCardEmulation() {}
     /**
@@ -62,7 +63,7 @@ public final class SmartCardEmulation {
         UNKNOWN("unknown");
         public final String value;
         ResultCode(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static ResultCode of(String value) {
             for (ResultCode constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -79,7 +80,7 @@ public final class SmartCardEmulation {
         DIRECT("direct");
         public final String value;
         ShareMode(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static ShareMode of(String value) {
             for (ShareMode constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -97,7 +98,7 @@ public final class SmartCardEmulation {
         EJECT_CARD("eject-card");
         public final String value;
         Disposition(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static Disposition of(String value) {
             for (Disposition constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -117,7 +118,7 @@ public final class SmartCardEmulation {
         SPECIFIC("specific");
         public final String value;
         ConnectionState(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static ConnectionState of(String value) {
             for (ConnectionState constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -139,284 +140,174 @@ public final class SmartCardEmulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> unaware() {
-            Object value = raw("unaware");
-            return Optional.ofNullable((Boolean) value);
+            return raw("unaware").map(value -> (Boolean) value);
         }
         /**
          * Returns the ignore field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> ignore() {
-            Object value = raw("ignore");
-            return Optional.ofNullable((Boolean) value);
+            return raw("ignore").map(value -> (Boolean) value);
         }
         /**
          * Returns the changed field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> changed() {
-            Object value = raw("changed");
-            return Optional.ofNullable((Boolean) value);
+            return raw("changed").map(value -> (Boolean) value);
         }
         /**
          * Returns the unknown field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> unknown() {
-            Object value = raw("unknown");
-            return Optional.ofNullable((Boolean) value);
+            return raw("unknown").map(value -> (Boolean) value);
         }
         /**
          * Returns the unavailable field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> unavailable() {
-            Object value = raw("unavailable");
-            return Optional.ofNullable((Boolean) value);
+            return raw("unavailable").map(value -> (Boolean) value);
         }
         /**
          * Returns the empty field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> empty() {
-            Object value = raw("empty");
-            return Optional.ofNullable((Boolean) value);
+            return raw("empty").map(value -> (Boolean) value);
         }
         /**
          * Returns the present field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> present() {
-            Object value = raw("present");
-            return Optional.ofNullable((Boolean) value);
+            return raw("present").map(value -> (Boolean) value);
         }
         /**
          * Returns the exclusive field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> exclusive() {
-            Object value = raw("exclusive");
-            return Optional.ofNullable((Boolean) value);
+            return raw("exclusive").map(value -> (Boolean) value);
         }
         /**
          * Returns the inuse field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> inuse() {
-            Object value = raw("inuse");
-            return Optional.ofNullable((Boolean) value);
+            return raw("inuse").map(value -> (Boolean) value);
         }
         /**
          * Returns the mute field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> mute() {
-            Object value = raw("mute");
-            return Optional.ofNullable((Boolean) value);
+            return raw("mute").map(value -> (Boolean) value);
         }
         /**
          * Returns the unpowered field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> unpowered() {
-            Object value = raw("unpowered");
-            return Optional.ofNullable((Boolean) value);
+            return raw("unpowered").map(value -> (Boolean) value);
         }
         /**
          * Sets the unaware field.
-         * @param unaware field value; empty omits the value
+         * @param unaware field value
          * @return this model
          */
-        public ReaderStateFlags unaware(Optional<Boolean> unaware) {
-            set("unaware", unaware.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the unaware field.
-         * @param unaware field value; null removes the value
-         * @return this model
-         */
-        public ReaderStateFlags unaware(Boolean unaware) {
+        public ReaderStateFlags unaware(boolean unaware) {
             set("unaware", unaware);
             return this;
         }
         /**
          * Sets the ignore field.
-         * @param ignore field value; empty omits the value
+         * @param ignore field value
          * @return this model
          */
-        public ReaderStateFlags ignore(Optional<Boolean> ignore) {
-            set("ignore", ignore.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the ignore field.
-         * @param ignore field value; null removes the value
-         * @return this model
-         */
-        public ReaderStateFlags ignore(Boolean ignore) {
+        public ReaderStateFlags ignore(boolean ignore) {
             set("ignore", ignore);
             return this;
         }
         /**
          * Sets the changed field.
-         * @param changed field value; empty omits the value
+         * @param changed field value
          * @return this model
          */
-        public ReaderStateFlags changed(Optional<Boolean> changed) {
-            set("changed", changed.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the changed field.
-         * @param changed field value; null removes the value
-         * @return this model
-         */
-        public ReaderStateFlags changed(Boolean changed) {
+        public ReaderStateFlags changed(boolean changed) {
             set("changed", changed);
             return this;
         }
         /**
          * Sets the unknown field.
-         * @param unknown field value; empty omits the value
+         * @param unknown field value
          * @return this model
          */
-        public ReaderStateFlags unknown(Optional<Boolean> unknown) {
-            set("unknown", unknown.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the unknown field.
-         * @param unknown field value; null removes the value
-         * @return this model
-         */
-        public ReaderStateFlags unknown(Boolean unknown) {
+        public ReaderStateFlags unknown(boolean unknown) {
             set("unknown", unknown);
             return this;
         }
         /**
          * Sets the unavailable field.
-         * @param unavailable field value; empty omits the value
+         * @param unavailable field value
          * @return this model
          */
-        public ReaderStateFlags unavailable(Optional<Boolean> unavailable) {
-            set("unavailable", unavailable.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the unavailable field.
-         * @param unavailable field value; null removes the value
-         * @return this model
-         */
-        public ReaderStateFlags unavailable(Boolean unavailable) {
+        public ReaderStateFlags unavailable(boolean unavailable) {
             set("unavailable", unavailable);
             return this;
         }
         /**
          * Sets the empty field.
-         * @param empty field value; empty omits the value
+         * @param empty field value
          * @return this model
          */
-        public ReaderStateFlags empty(Optional<Boolean> empty) {
-            set("empty", empty.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the empty field.
-         * @param empty field value; null removes the value
-         * @return this model
-         */
-        public ReaderStateFlags empty(Boolean empty) {
+        public ReaderStateFlags empty(boolean empty) {
             set("empty", empty);
             return this;
         }
         /**
          * Sets the present field.
-         * @param present field value; empty omits the value
+         * @param present field value
          * @return this model
          */
-        public ReaderStateFlags present(Optional<Boolean> present) {
-            set("present", present.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the present field.
-         * @param present field value; null removes the value
-         * @return this model
-         */
-        public ReaderStateFlags present(Boolean present) {
+        public ReaderStateFlags present(boolean present) {
             set("present", present);
             return this;
         }
         /**
          * Sets the exclusive field.
-         * @param exclusive field value; empty omits the value
+         * @param exclusive field value
          * @return this model
          */
-        public ReaderStateFlags exclusive(Optional<Boolean> exclusive) {
-            set("exclusive", exclusive.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the exclusive field.
-         * @param exclusive field value; null removes the value
-         * @return this model
-         */
-        public ReaderStateFlags exclusive(Boolean exclusive) {
+        public ReaderStateFlags exclusive(boolean exclusive) {
             set("exclusive", exclusive);
             return this;
         }
         /**
          * Sets the inuse field.
-         * @param inuse field value; empty omits the value
+         * @param inuse field value
          * @return this model
          */
-        public ReaderStateFlags inuse(Optional<Boolean> inuse) {
-            set("inuse", inuse.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the inuse field.
-         * @param inuse field value; null removes the value
-         * @return this model
-         */
-        public ReaderStateFlags inuse(Boolean inuse) {
+        public ReaderStateFlags inuse(boolean inuse) {
             set("inuse", inuse);
             return this;
         }
         /**
          * Sets the mute field.
-         * @param mute field value; empty omits the value
+         * @param mute field value
          * @return this model
          */
-        public ReaderStateFlags mute(Optional<Boolean> mute) {
-            set("mute", mute.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the mute field.
-         * @param mute field value; null removes the value
-         * @return this model
-         */
-        public ReaderStateFlags mute(Boolean mute) {
+        public ReaderStateFlags mute(boolean mute) {
             set("mute", mute);
             return this;
         }
         /**
          * Sets the unpowered field.
-         * @param unpowered field value; empty omits the value
+         * @param unpowered field value
          * @return this model
          */
-        public ReaderStateFlags unpowered(Optional<Boolean> unpowered) {
-            set("unpowered", unpowered.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the unpowered field.
-         * @param unpowered field value; null removes the value
-         * @return this model
-         */
-        public ReaderStateFlags unpowered(Boolean unpowered) {
+        public ReaderStateFlags unpowered(boolean unpowered) {
             set("unpowered", unpowered);
             return this;
         }
@@ -435,76 +326,46 @@ public final class SmartCardEmulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> t0() {
-            Object value = raw("t0");
-            return Optional.ofNullable((Boolean) value);
+            return raw("t0").map(value -> (Boolean) value);
         }
         /**
          * Returns the t1 field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> t1() {
-            Object value = raw("t1");
-            return Optional.ofNullable((Boolean) value);
+            return raw("t1").map(value -> (Boolean) value);
         }
         /**
          * Returns the raw field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> raw() {
-            Object value = raw("raw");
-            return Optional.ofNullable((Boolean) value);
+            return raw("raw").map(value -> (Boolean) value);
         }
         /**
          * Sets the t0 field.
-         * @param t0 field value; empty omits the value
+         * @param t0 field value
          * @return this model
          */
-        public ProtocolSet t0(Optional<Boolean> t0) {
-            set("t0", t0.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the t0 field.
-         * @param t0 field value; null removes the value
-         * @return this model
-         */
-        public ProtocolSet t0(Boolean t0) {
+        public ProtocolSet t0(boolean t0) {
             set("t0", t0);
             return this;
         }
         /**
          * Sets the t1 field.
-         * @param t1 field value; empty omits the value
+         * @param t1 field value
          * @return this model
          */
-        public ProtocolSet t1(Optional<Boolean> t1) {
-            set("t1", t1.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the t1 field.
-         * @param t1 field value; null removes the value
-         * @return this model
-         */
-        public ProtocolSet t1(Boolean t1) {
+        public ProtocolSet t1(boolean t1) {
             set("t1", t1);
             return this;
         }
         /**
          * Sets the raw field.
-         * @param raw field value; empty omits the value
+         * @param raw field value
          * @return this model
          */
-        public ProtocolSet raw(Optional<Boolean> raw) {
-            set("raw", raw.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the raw field.
-         * @param raw field value; null removes the value
-         * @return this model
-         */
-        public ProtocolSet raw(Boolean raw) {
+        public ProtocolSet raw(boolean raw) {
             set("raw", raw);
             return this;
         }
@@ -518,7 +379,7 @@ public final class SmartCardEmulation {
         RAW("raw");
         public final String value;
         Protocol(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static Protocol of(String value) {
             for (Protocol constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -546,7 +407,7 @@ public final class SmartCardEmulation {
          * @return the protocol field value
          */
         public SmartCardEmulation.ReaderStateFlags currentState() {
-            return java.util.Objects.requireNonNull(SmartCardEmulation.ReaderStateFlags.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("currentState")))));
+            return java.util.Objects.requireNonNull(SmartCardEmulation.ReaderStateFlags.fromMap(CdpObject.requireObjectMap(require("currentState"))));
         }
         /**
          * Returns the currentInsertionCount field.
@@ -603,7 +464,7 @@ public final class SmartCardEmulation {
          * @return the protocol field value
          */
         public SmartCardEmulation.ReaderStateFlags eventState() {
-            return java.util.Objects.requireNonNull(SmartCardEmulation.ReaderStateFlags.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("eventState")))));
+            return java.util.Objects.requireNonNull(SmartCardEmulation.ReaderStateFlags.fromMap(CdpObject.requireObjectMap(require("eventState"))));
         }
         /**
          * Returns the eventCount field.
@@ -669,11 +530,10 @@ public final class SmartCardEmulation {
          * @param contextId protocol value
          */
         public ReportEstablishContextResultRequest(String requestId, long contextId) {
-            set("requestId", requestId);
-            set("contextId", contextId);
+            requestId(requestId).contextId(contextId);
         }
         public static ReportEstablishContextResultRequest fromMap(Map<String, Object> values) {
-            ReportEstablishContextResultRequest instance_ = new ReportEstablishContextResultRequest();
+            final ReportEstablishContextResultRequest instance_ = new ReportEstablishContextResultRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -722,10 +582,10 @@ public final class SmartCardEmulation {
          * @param requestId protocol value
          */
         public ReportReleaseContextResultRequest(String requestId) {
-            set("requestId", requestId);
+            requestId(requestId);
         }
         public static ReportReleaseContextResultRequest fromMap(Map<String, Object> values) {
-            ReportReleaseContextResultRequest instance_ = new ReportReleaseContextResultRequest();
+            final ReportReleaseContextResultRequest instance_ = new ReportReleaseContextResultRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -759,11 +619,10 @@ public final class SmartCardEmulation {
          * @param readers protocol value
          */
         public ReportListReadersResultRequest(String requestId, java.util.List<String> readers) {
-            set("requestId", requestId);
-            set("readers", readers);
+            requestId(requestId).readers(readers);
         }
         public static ReportListReadersResultRequest fromMap(Map<String, Object> values) {
-            ReportListReadersResultRequest instance_ = new ReportListReadersResultRequest();
+            final ReportListReadersResultRequest instance_ = new ReportListReadersResultRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -813,11 +672,10 @@ public final class SmartCardEmulation {
          * @param readerStates protocol value
          */
         public ReportGetStatusChangeResultRequest(String requestId, java.util.List<SmartCardEmulation.ReaderStateOut> readerStates) {
-            set("requestId", requestId);
-            set("readerStates", readerStates);
+            requestId(requestId).readerStates(readerStates);
         }
         public static ReportGetStatusChangeResultRequest fromMap(Map<String, Object> values) {
-            ReportGetStatusChangeResultRequest instance_ = new ReportGetStatusChangeResultRequest();
+            final ReportGetStatusChangeResultRequest instance_ = new ReportGetStatusChangeResultRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -833,7 +691,7 @@ public final class SmartCardEmulation {
          * @return the protocol field value
          */
         public java.util.List<SmartCardEmulation.ReaderStateOut> readerStates() {
-            return CdpObject.requireList(require("readerStates"), element0 -> java.util.Objects.requireNonNull(SmartCardEmulation.ReaderStateOut.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("readerStates"), element0 -> java.util.Objects.requireNonNull(SmartCardEmulation.ReaderStateOut.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Sets the requestId field.
@@ -867,11 +725,10 @@ public final class SmartCardEmulation {
          * @param handle protocol value
          */
         public ReportBeginTransactionResultRequest(String requestId, long handle) {
-            set("requestId", requestId);
-            set("handle", handle);
+            requestId(requestId).handle(handle);
         }
         public static ReportBeginTransactionResultRequest fromMap(Map<String, Object> values) {
-            ReportBeginTransactionResultRequest instance_ = new ReportBeginTransactionResultRequest();
+            final ReportBeginTransactionResultRequest instance_ = new ReportBeginTransactionResultRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -926,10 +783,10 @@ public final class SmartCardEmulation {
          * @param requestId protocol value
          */
         public ReportPlainResultRequest(String requestId) {
-            set("requestId", requestId);
+            requestId(requestId);
         }
         public static ReportPlainResultRequest fromMap(Map<String, Object> values) {
-            ReportPlainResultRequest instance_ = new ReportPlainResultRequest();
+            final ReportPlainResultRequest instance_ = new ReportPlainResultRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -963,11 +820,10 @@ public final class SmartCardEmulation {
          * @param handle protocol value
          */
         public ReportConnectResultRequest(String requestId, long handle) {
-            set("requestId", requestId);
-            set("handle", handle);
+            requestId(requestId).handle(handle);
         }
         public static ReportConnectResultRequest fromMap(Map<String, Object> values) {
-            ReportConnectResultRequest instance_ = new ReportConnectResultRequest();
+            final ReportConnectResultRequest instance_ = new ReportConnectResultRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -990,8 +846,7 @@ public final class SmartCardEmulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<SmartCardEmulation.Protocol> activeProtocol() {
-            Object value = raw("activeProtocol");
-            return Optional.ofNullable(value == null ? null : SmartCardEmulation.Protocol.of((String) value));
+            return raw("activeProtocol").map(value -> SmartCardEmulation.Protocol.of((String) value));
         }
         /**
          * Sets the requestId field.
@@ -1013,16 +868,7 @@ public final class SmartCardEmulation {
         }
         /**
          * Sets the activeProtocol field.
-         * @param activeProtocol field value; empty omits the value
-         * @return this model
-         */
-        public ReportConnectResultRequest activeProtocol(Optional<SmartCardEmulation.Protocol> activeProtocol) {
-            set("activeProtocol", activeProtocol.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the activeProtocol field.
-         * @param activeProtocol field value; null removes the value
+         * @param activeProtocol field value
          * @return this model
          */
         public ReportConnectResultRequest activeProtocol(SmartCardEmulation.Protocol activeProtocol) {
@@ -1047,11 +893,10 @@ public final class SmartCardEmulation {
          * @param data protocol value
          */
         public ReportDataResultRequest(String requestId, String data) {
-            set("requestId", requestId);
-            set("data", data);
+            requestId(requestId).data(data);
         }
         public static ReportDataResultRequest fromMap(Map<String, Object> values) {
-            ReportDataResultRequest instance_ = new ReportDataResultRequest();
+            final ReportDataResultRequest instance_ = new ReportDataResultRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1103,13 +948,10 @@ public final class SmartCardEmulation {
          * @param atr protocol value
          */
         public ReportStatusResultRequest(String requestId, String readerName, SmartCardEmulation.ConnectionState state, String atr) {
-            set("requestId", requestId);
-            set("readerName", readerName);
-            set("state", state);
-            set("atr", atr);
+            requestId(requestId).readerName(readerName).state(state).atr(atr);
         }
         public static ReportStatusResultRequest fromMap(Map<String, Object> values) {
-            ReportStatusResultRequest instance_ = new ReportStatusResultRequest();
+            final ReportStatusResultRequest instance_ = new ReportStatusResultRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1146,8 +988,7 @@ public final class SmartCardEmulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<SmartCardEmulation.Protocol> protocol() {
-            Object value = raw("protocol");
-            return Optional.ofNullable(value == null ? null : SmartCardEmulation.Protocol.of((String) value));
+            return raw("protocol").map(value -> SmartCardEmulation.Protocol.of((String) value));
         }
         /**
          * Sets the requestId field.
@@ -1187,16 +1028,7 @@ public final class SmartCardEmulation {
         }
         /**
          * Sets the protocol field.
-         * @param protocol field value; empty omits the value
-         * @return this model
-         */
-        public ReportStatusResultRequest protocol(Optional<SmartCardEmulation.Protocol> protocol) {
-            set("protocol", protocol.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the protocol field.
-         * @param protocol field value; null removes the value
+         * @param protocol field value
          * @return this model
          */
         public ReportStatusResultRequest protocol(SmartCardEmulation.Protocol protocol) {
@@ -1215,11 +1047,10 @@ public final class SmartCardEmulation {
          * @param resultCode protocol value
          */
         public ReportErrorRequest(String requestId, SmartCardEmulation.ResultCode resultCode) {
-            set("requestId", requestId);
-            set("resultCode", resultCode);
+            requestId(requestId).resultCode(resultCode);
         }
         public static ReportErrorRequest fromMap(Map<String, Object> values) {
-            ReportErrorRequest instance_ = new ReportErrorRequest();
+            final ReportErrorRequest instance_ = new ReportErrorRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1398,15 +1229,14 @@ public final class SmartCardEmulation {
          * @return the protocol field value
          */
         public java.util.List<SmartCardEmulation.ReaderStateIn> readerStates() {
-            return CdpObject.requireList(require("readerStates"), element0 -> java.util.Objects.requireNonNull(SmartCardEmulation.ReaderStateIn.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("readerStates"), element0 -> java.util.Objects.requireNonNull(SmartCardEmulation.ReaderStateIn.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * in milliseconds, if absent, it means &quot;infinite&quot;
          * @return the protocol field value, empty when absent
          */
         public OptionalLong timeout() {
-            Long value = CdpObject.numberAsLong(raw("timeout"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("timeout").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Sets the requestId field.
@@ -1437,19 +1267,10 @@ public final class SmartCardEmulation {
         }
         /**
          * in milliseconds, if absent, it means &quot;infinite&quot;
-         * @param timeout field value; empty omits the value
+         * @param timeout field value
          * @return this model
          */
-        public GetStatusChangeRequestedEvent timeout(OptionalLong timeout) {
-            set("timeout", timeout.isPresent() ? timeout.getAsLong() : null);
-            return this;
-        }
-        /**
-         * in milliseconds, if absent, it means &quot;infinite&quot;
-         * @param timeout field value; null removes the value
-         * @return this model
-         */
-        public GetStatusChangeRequestedEvent timeout(Long timeout) {
+        public GetStatusChangeRequestedEvent timeout(long timeout) {
             set("timeout", timeout);
             return this;
         }
@@ -1540,7 +1361,7 @@ public final class SmartCardEmulation {
          * @return the protocol field value
          */
         public SmartCardEmulation.ProtocolSet preferredProtocols() {
-            return java.util.Objects.requireNonNull(SmartCardEmulation.ProtocolSet.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("preferredProtocols")))));
+            return java.util.Objects.requireNonNull(SmartCardEmulation.ProtocolSet.fromMap(CdpObject.requireObjectMap(require("preferredProtocols"))));
         }
         /**
          * Sets the requestId field.
@@ -1683,8 +1504,7 @@ public final class SmartCardEmulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<SmartCardEmulation.Protocol> protocol() {
-            Object value = raw("protocol");
-            return Optional.ofNullable(value == null ? null : SmartCardEmulation.Protocol.of((String) value));
+            return raw("protocol").map(value -> SmartCardEmulation.Protocol.of((String) value));
         }
         /**
          * Sets the requestId field.
@@ -1715,16 +1535,7 @@ public final class SmartCardEmulation {
         }
         /**
          * Sets the protocol field.
-         * @param protocol field value; empty omits the value
-         * @return this model
-         */
-        public TransmitRequestedEvent protocol(Optional<SmartCardEmulation.Protocol> protocol) {
-            set("protocol", protocol.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the protocol field.
-         * @param protocol field value; null removes the value
+         * @param protocol field value
          * @return this model
          */
         public TransmitRequestedEvent protocol(SmartCardEmulation.Protocol protocol) {
@@ -2111,7 +1922,7 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reportEstablishContextResult(String requestId, long contextId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             params.put("contextId", CdpObject.json(contextId));
             return client.call("SmartCardEmulation.reportEstablishContextResult", params);
@@ -2132,7 +1943,7 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reportReleaseContextResult(String requestId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             return client.call("SmartCardEmulation.reportReleaseContextResult", params);
         }
@@ -2153,7 +1964,7 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reportListReadersResult(String requestId, java.util.List<String> readers) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             params.put("readers", CdpObject.json(readers));
             return client.call("SmartCardEmulation.reportListReadersResult", params);
@@ -2175,7 +1986,7 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reportGetStatusChangeResult(String requestId, java.util.List<SmartCardEmulation.ReaderStateOut> readerStates) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             params.put("readerStates", CdpObject.json(readerStates));
             return client.call("SmartCardEmulation.reportGetStatusChangeResult", params);
@@ -2197,7 +2008,7 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reportBeginTransactionResult(String requestId, long handle) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             params.put("handle", CdpObject.json(handle));
             return client.call("SmartCardEmulation.reportBeginTransactionResult", params);
@@ -2221,7 +2032,7 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reportPlainResult(String requestId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             return client.call("SmartCardEmulation.reportPlainResult", params);
         }
@@ -2245,11 +2056,11 @@ public final class SmartCardEmulation {
          * @param activeProtocol protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> reportConnectResult(String requestId, long handle, Optional<SmartCardEmulation.Protocol> activeProtocol) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> reportConnectResult(String requestId, long handle, SmartCardEmulation.Protocol activeProtocol) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             params.put("handle", CdpObject.json(handle));
-            activeProtocol.ifPresent(value_ -> params.put("activeProtocol", CdpObject.json(value_)));
+            params.put("activeProtocol", CdpObject.json(activeProtocol));
             return client.call("SmartCardEmulation.reportConnectResult", params);
         }
         /**
@@ -2260,7 +2071,10 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reportConnectResult(String requestId, long handle) {
-            return reportConnectResult(requestId, handle, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("requestId", CdpObject.json(requestId));
+            params.put("handle", CdpObject.json(handle));
+            return client.call("SmartCardEmulation.reportConnectResult", params);
         }
         /**
          * Reports the successful result of a |SCardConnect| call.
@@ -2281,7 +2095,7 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reportDataResult(String requestId, String data) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             params.put("data", CdpObject.json(data));
             return client.call("SmartCardEmulation.reportDataResult", params);
@@ -2307,13 +2121,13 @@ public final class SmartCardEmulation {
          * @param protocol protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> reportStatusResult(String requestId, String readerName, SmartCardEmulation.ConnectionState state, String atr, Optional<SmartCardEmulation.Protocol> protocol) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> reportStatusResult(String requestId, String readerName, SmartCardEmulation.ConnectionState state, String atr, SmartCardEmulation.Protocol protocol) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             params.put("readerName", CdpObject.json(readerName));
             params.put("state", CdpObject.json(state));
             params.put("atr", CdpObject.json(atr));
-            protocol.ifPresent(value_ -> params.put("protocol", CdpObject.json(value_)));
+            params.put("protocol", CdpObject.json(protocol));
             return client.call("SmartCardEmulation.reportStatusResult", params);
         }
         /**
@@ -2326,7 +2140,12 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reportStatusResult(String requestId, String readerName, SmartCardEmulation.ConnectionState state, String atr) {
-            return reportStatusResult(requestId, readerName, state, atr, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("requestId", CdpObject.json(requestId));
+            params.put("readerName", CdpObject.json(readerName));
+            params.put("state", CdpObject.json(state));
+            params.put("atr", CdpObject.json(atr));
+            return client.call("SmartCardEmulation.reportStatusResult", params);
         }
         /**
          * Reports the successful result of a |SCardStatus| call.
@@ -2344,7 +2163,7 @@ public final class SmartCardEmulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reportError(String requestId, SmartCardEmulation.ResultCode resultCode) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             params.put("resultCode", CdpObject.json(resultCode));
             return client.call("SmartCardEmulation.reportError", params);

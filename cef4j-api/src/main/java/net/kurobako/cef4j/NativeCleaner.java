@@ -20,13 +20,13 @@ public enum NativeCleaner {
 
     public Cleaner.Cleanable register(Object obj, Runnable action) {
         if (log.isTraceEnabled()) {
-            Class<?> enclosing = obj.getClass().getEnclosingClass();
+            final Class<?> enclosing = obj.getClass().getEnclosingClass();
             long result;
             try {
-                var f = obj.getClass().getDeclaredField("nativePtr");
+                final var f = obj.getClass().getDeclaredField("nativePtr");
                 f.setAccessible(true);
                 result = f.getLong(obj);
-            } catch (ReflectiveOperationException e) {
+            } catch (ReflectiveOperationException ignored) {
                 result = 0;
             }
             log.trace(
@@ -44,8 +44,8 @@ public enum NativeCleaner {
             }
             // Register the prune-and-release as the clean action so the active set is pruned both when the peer is
             // collected by GC and when releaseAll() cleans it explicitly.
-            Cleaner.Cleanable[] holder = new Cleaner.Cleanable[1];
-            Cleaner.Cleanable c = cleaner.register(obj, () -> {
+            final Cleaner.Cleanable[] holder = new Cleaner.Cleanable[1];
+            final Cleaner.Cleanable c = cleaner.register(obj, () -> {
                 active.remove(holder[0]);
                 action.run();
             });
@@ -58,22 +58,27 @@ public enum NativeCleaner {
     /** Force-release all outstanding NativePeers. Call before cef_shutdown. Returns the total ref counts released. */
     public int releaseAll() {
         int released = 0;
-        while (true) {
-            Set<Cleaner.Cleanable> snapshot;
-            synchronized (lifecycleLock) {
-                snapshot = Set.copyOf(active);
-                if (snapshot.isEmpty()) {
-                    shutdown = true;
-                    return released;
-                }
-            }
+        Cleaner.Cleanable[] snapshot = snapshotOfActive();
+        while (snapshot.length > 0) {
             if (log.isTraceEnabled()) {
-                log.trace("releaseAll: {} outstanding peers", snapshot.size());
+                log.trace("releaseAll: {} outstanding peers", snapshot.length);
             }
             for (Cleaner.Cleanable c : snapshot) {
                 c.clean();
                 released++;
             }
+            snapshot = snapshotOfActive();
+        }
+        return released;
+    }
+
+    /** The cleanables that are registered, which are empty when there is nothing left to release. */
+    private Cleaner.Cleanable[] snapshotOfActive() {
+        synchronized (lifecycleLock) {
+            final Cleaner.Cleanable[] snapshot = active.toArray(new Cleaner.Cleanable[0]);
+            // CEF has shut down once there is nothing left to release, so a late registration is refused.
+            if (snapshot.length == 0) shutdown = true;
+            return snapshot;
         }
     }
 }

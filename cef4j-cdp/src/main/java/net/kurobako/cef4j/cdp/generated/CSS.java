@@ -13,6 +13,8 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This domain exposes CSS read/write operations. All CSS objects (stylesheets, rules, and styles) have an associated {@code id} used in subsequent operations on the related object. Each object type has a specific {@code id} structure, and those are not interchangeable between objects of different kinds. CSS objects can be loaded using the {@code get*ForNode()} calls (which accept a DOM node id). A client can also keep track of stylesheets via the {@code styleSheetAdded}/{@code styleSheetRemoved} events and subsequently load the required stylesheet contents using the {@code getStyleSheet[Text]()} methods.
@@ -21,6 +23,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class CSS {
     private CSS() {}
     /**
@@ -33,7 +36,7 @@ public final class CSS {
         REGULAR("regular");
         public final String value;
         StyleSheetOrigin(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static StyleSheetOrigin of(String value) {
             for (StyleSheetOrigin constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -62,15 +65,14 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> pseudoIdentifier() {
-            Object value = raw("pseudoIdentifier");
-            return Optional.ofNullable((String) value);
+            return raw("pseudoIdentifier").map(value -> (String) value);
         }
         /**
          * Matches of CSS rules applicable to the pseudo style.
          * @return the protocol field value
          */
         public java.util.List<CSS.RuleMatch> matches() {
-            return CdpObject.requireList(require("matches"), element0 -> java.util.Objects.requireNonNull(CSS.RuleMatch.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("matches"), element0 -> java.util.Objects.requireNonNull(CSS.RuleMatch.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Pseudo element type.
@@ -83,16 +85,7 @@ public final class CSS {
         }
         /**
          * Pseudo element custom ident.
-         * @param pseudoIdentifier field value; empty omits the value
-         * @return this model
-         */
-        public PseudoElementMatches pseudoIdentifier(Optional<String> pseudoIdentifier) {
-            set("pseudoIdentifier", pseudoIdentifier.orElse(null));
-            return this;
-        }
-        /**
-         * Pseudo element custom ident.
-         * @param pseudoIdentifier field value; null removes the value
+         * @param pseudoIdentifier field value
          * @return this model
          */
         public PseudoElementMatches pseudoIdentifier(String pseudoIdentifier) {
@@ -123,28 +116,18 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            Object value = raw("name");
-            return Optional.ofNullable((String) value);
+            return raw("name").map(value -> (String) value);
         }
         /**
          * The style coming from the animation.
          * @return the protocol field value
          */
         public CSS.CSSStyle style() {
-            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("style")))));
+            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(require("style"))));
         }
         /**
          * The name of the animation.
-         * @param name field value; empty omits the value
-         * @return this model
-         */
-        public CSSAnimationStyle name(Optional<String> name) {
-            set("name", name.orElse(null));
-            return this;
-        }
-        /**
-         * The name of the animation.
-         * @param name field value; null removes the value
+         * @param name field value
          * @return this model
          */
         public CSSAnimationStyle name(String name) {
@@ -175,28 +158,18 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> inlineStyle() {
-            Object value = raw("inlineStyle");
-            return Optional.ofNullable(value == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("inlineStyle").flatMap(CdpObject::objectMap).map(CSS.CSSStyle::fromMap);
         }
         /**
          * Matches of CSS rules matching the ancestor node in the style inheritance chain.
          * @return the protocol field value
          */
         public java.util.List<CSS.RuleMatch> matchedCSSRules() {
-            return CdpObject.requireList(require("matchedCSSRules"), element0 -> java.util.Objects.requireNonNull(CSS.RuleMatch.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("matchedCSSRules"), element0 -> java.util.Objects.requireNonNull(CSS.RuleMatch.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * The ancestor node&#x27;s inline style, if any, in the style inheritance chain.
-         * @param inlineStyle field value; empty omits the value
-         * @return this model
-         */
-        public InheritedStyleEntry inlineStyle(Optional<CSS.CSSStyle> inlineStyle) {
-            set("inlineStyle", inlineStyle.orElse(null));
-            return this;
-        }
-        /**
-         * The ancestor node&#x27;s inline style, if any, in the style inheritance chain.
-         * @param inlineStyle field value; null removes the value
+         * @param inlineStyle field value
          * @return this model
          */
         public InheritedStyleEntry inlineStyle(CSS.CSSStyle inlineStyle) {
@@ -227,29 +200,18 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSAnimationStyle>> animationStyles() {
-            Object value = raw("animationStyles");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSAnimationStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("animationStyles").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSAnimationStyle.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * The style coming from the transitions of the ancestor, if any, in the style inheritance chain.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> transitionsStyle() {
-            Object value = raw("transitionsStyle");
-            return Optional.ofNullable(value == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("transitionsStyle").flatMap(CdpObject::objectMap).map(CSS.CSSStyle::fromMap);
         }
         /**
          * Styles coming from the animations of the ancestor, if any, in the style inheritance chain.
-         * @param animationStyles field value; empty omits the value
-         * @return this model
-         */
-        public InheritedAnimatedStyleEntry animationStyles(Optional<java.util.List<CSS.CSSAnimationStyle>> animationStyles) {
-            set("animationStyles", animationStyles.orElse(null));
-            return this;
-        }
-        /**
-         * Styles coming from the animations of the ancestor, if any, in the style inheritance chain.
-         * @param animationStyles field value; null removes the value
+         * @param animationStyles field value
          * @return this model
          */
         public InheritedAnimatedStyleEntry animationStyles(java.util.List<CSS.CSSAnimationStyle> animationStyles) {
@@ -258,16 +220,7 @@ public final class CSS {
         }
         /**
          * The style coming from the transitions of the ancestor, if any, in the style inheritance chain.
-         * @param transitionsStyle field value; empty omits the value
-         * @return this model
-         */
-        public InheritedAnimatedStyleEntry transitionsStyle(Optional<CSS.CSSStyle> transitionsStyle) {
-            set("transitionsStyle", transitionsStyle.orElse(null));
-            return this;
-        }
-        /**
-         * The style coming from the transitions of the ancestor, if any, in the style inheritance chain.
-         * @param transitionsStyle field value; null removes the value
+         * @param transitionsStyle field value
          * @return this model
          */
         public InheritedAnimatedStyleEntry transitionsStyle(CSS.CSSStyle transitionsStyle) {
@@ -289,7 +242,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public java.util.List<CSS.PseudoElementMatches> pseudoElements() {
-            return CdpObject.requireList(require("pseudoElements"), element0 -> java.util.Objects.requireNonNull(CSS.PseudoElementMatches.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("pseudoElements"), element0 -> java.util.Objects.requireNonNull(CSS.PseudoElementMatches.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Matches of pseudo styles from the pseudos of an ancestor node.
@@ -315,7 +268,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.CSSRule rule() {
-            return java.util.Objects.requireNonNull(CSS.CSSRule.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("rule")))));
+            return java.util.Objects.requireNonNull(CSS.CSSRule.fromMap(CdpObject.requireObjectMap(require("rule"))));
         }
         /**
          * Matching selector indices in the rule&#x27;s selectorList selectors (0-based).
@@ -364,8 +317,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            Object value = raw("range");
-            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("range").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
         }
         /**
          * Specificity of the selector.
@@ -373,8 +325,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.Specificity> specificity() {
-            Object value = raw("specificity");
-            return Optional.ofNullable(value == null ? null : CSS.Specificity.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("specificity").flatMap(CdpObject::objectMap).map(CSS.Specificity::fromMap);
         }
         /**
          * Value text.
@@ -387,16 +338,7 @@ public final class CSS {
         }
         /**
          * Value range in the underlying resource (if available).
-         * @param range field value; empty omits the value
-         * @return this model
-         */
-        public Value range(Optional<CSS.SourceRange> range) {
-            set("range", range.orElse(null));
-            return this;
-        }
-        /**
-         * Value range in the underlying resource (if available).
-         * @param range field value; null removes the value
+         * @param range field value
          * @return this model
          */
         public Value range(CSS.SourceRange range) {
@@ -406,17 +348,7 @@ public final class CSS {
         /**
          * Specificity of the selector.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param specificity field value; empty omits the value
-         * @return this model
-         */
-        public Value specificity(Optional<CSS.Specificity> specificity) {
-            set("specificity", specificity.orElse(null));
-            return this;
-        }
-        /**
-         * Specificity of the selector.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param specificity field value; null removes the value
+         * @param specificity field value
          * @return this model
          */
         public Value specificity(CSS.Specificity specificity) {
@@ -497,7 +429,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public java.util.List<CSS.Value> selectors() {
-            return CdpObject.requireList(require("selectors"), element0 -> java.util.Objects.requireNonNull(CSS.Value.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("selectors"), element0 -> java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Rule selector text.
@@ -560,8 +492,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> sourceMapURL() {
-            Object value = raw("sourceMapURL");
-            return Optional.ofNullable((String) value);
+            return raw("sourceMapURL").map(value -> (String) value);
         }
         /**
          * Stylesheet origin.
@@ -582,8 +513,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> ownerNode() {
-            Object value = raw("ownerNode");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("ownerNode").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Denotes whether the stylesheet is disabled.
@@ -597,8 +527,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> hasSourceURL() {
-            Object value = raw("hasSourceURL");
-            return Optional.ofNullable((Boolean) value);
+            return raw("hasSourceURL").map(value -> (Boolean) value);
         }
         /**
          * Whether this stylesheet is created for STYLE tag by parser. This flag is not set for document.written STYLE tags.
@@ -662,8 +591,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> loadingFailed() {
-            Object value = raw("loadingFailed");
-            return Optional.ofNullable((Boolean) value);
+            return raw("loadingFailed").map(value -> (Boolean) value);
         }
         /**
          * The stylesheet identifier.
@@ -694,16 +622,7 @@ public final class CSS {
         }
         /**
          * URL of source map associated with the stylesheet (if any).
-         * @param sourceMapURL field value; empty omits the value
-         * @return this model
-         */
-        public CSSStyleSheetHeader sourceMapURL(Optional<String> sourceMapURL) {
-            set("sourceMapURL", sourceMapURL.orElse(null));
-            return this;
-        }
-        /**
-         * URL of source map associated with the stylesheet (if any).
-         * @param sourceMapURL field value; null removes the value
+         * @param sourceMapURL field value
          * @return this model
          */
         public CSSStyleSheetHeader sourceMapURL(String sourceMapURL) {
@@ -730,16 +649,7 @@ public final class CSS {
         }
         /**
          * The backend id for the owner node of the stylesheet.
-         * @param ownerNode field value; empty omits the value
-         * @return this model
-         */
-        public CSSStyleSheetHeader ownerNode(Optional<DOM.BackendNodeId> ownerNode) {
-            set("ownerNode", ownerNode.orElse(null));
-            return this;
-        }
-        /**
-         * The backend id for the owner node of the stylesheet.
-         * @param ownerNode field value; null removes the value
+         * @param ownerNode field value
          * @return this model
          */
         public CSSStyleSheetHeader ownerNode(DOM.BackendNodeId ownerNode) {
@@ -757,19 +667,10 @@ public final class CSS {
         }
         /**
          * Whether the sourceURL field value comes from the sourceURL comment.
-         * @param hasSourceURL field value; empty omits the value
+         * @param hasSourceURL field value
          * @return this model
          */
-        public CSSStyleSheetHeader hasSourceURL(Optional<Boolean> hasSourceURL) {
-            set("hasSourceURL", hasSourceURL.orElse(null));
-            return this;
-        }
-        /**
-         * Whether the sourceURL field value comes from the sourceURL comment.
-         * @param hasSourceURL field value; null removes the value
-         * @return this model
-         */
-        public CSSStyleSheetHeader hasSourceURL(Boolean hasSourceURL) {
+        public CSSStyleSheetHeader hasSourceURL(boolean hasSourceURL) {
             set("hasSourceURL", hasSourceURL);
             return this;
         }
@@ -848,20 +749,10 @@ public final class CSS {
         /**
          * If the style sheet was loaded from a network resource, this indicates when the resource failed to load
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param loadingFailed field value; empty omits the value
+         * @param loadingFailed field value
          * @return this model
          */
-        public CSSStyleSheetHeader loadingFailed(Optional<Boolean> loadingFailed) {
-            set("loadingFailed", loadingFailed.orElse(null));
-            return this;
-        }
-        /**
-         * If the style sheet was loaded from a network resource, this indicates when the resource failed to load
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param loadingFailed field value; null removes the value
-         * @return this model
-         */
-        public CSSStyleSheetHeader loadingFailed(Boolean loadingFailed) {
+        public CSSStyleSheetHeader loadingFailed(boolean loadingFailed) {
             set("loadingFailed", loadingFailed);
             return this;
         }
@@ -880,15 +771,14 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            Object value = raw("styleSheetId");
-            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
+            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
         }
         /**
          * Rule selector data.
          * @return the protocol field value
          */
         public CSS.SelectorList selectorList() {
-            return java.util.Objects.requireNonNull(CSS.SelectorList.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("selectorList")))));
+            return java.util.Objects.requireNonNull(CSS.SelectorList.fromMap(CdpObject.requireObjectMap(require("selectorList"))));
         }
         /**
          * Array of selectors from ancestor style rules, sorted by distance from the current rule.
@@ -896,8 +786,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> nestingSelectors() {
-            Object value = raw("nestingSelectors");
-            return Optional.ofNullable(list(value, element0 -> (String) element0));
+            return raw("nestingSelectors").flatMap(value -> list(value, element0 -> (String) element0));
         }
         /**
          * Parent stylesheet&#x27;s origin.
@@ -911,7 +800,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.CSSStyle style() {
-            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("style")))));
+            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(require("style"))));
         }
         /**
          * The BackendNodeId of the DOM node that constitutes the origin tree scope of this rule.
@@ -919,16 +808,14 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> originTreeScopeNodeId() {
-            Object value = raw("originTreeScopeNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("originTreeScopeNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Media list array (for rules involving media queries). The array enumerates media queries starting with the innermost one, going outwards.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSMedia>> media() {
-            Object value = raw("media");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSMedia.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("media").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSMedia.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Container query list array (for rules involving container queries). The array enumerates container queries starting with the innermost one, going outwards.
@@ -936,8 +823,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSContainerQuery>> containerQueries() {
-            Object value = raw("containerQueries");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("containerQueries").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * &#64;supports CSS at-rule array. The array enumerates &#64;supports at-rules starting with the innermost one, going outwards.
@@ -945,8 +831,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSSupports>> supports() {
-            Object value = raw("supports");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSSupports.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("supports").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSSupports.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Cascade layer array. Contains the layer hierarchy that this rule belongs to starting with the innermost layer and going outwards.
@@ -954,8 +839,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSLayer>> layers() {
-            Object value = raw("layers");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSLayer.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("layers").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSLayer.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * &#64;scope CSS at-rule array. The array enumerates &#64;scope at-rules starting with the innermost one, going outwards.
@@ -963,8 +847,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSScope>> scopes() {
-            Object value = raw("scopes");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSScope.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("scopes").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSScope.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * The array keeps the types of ancestor CSSRules from the innermost going outwards.
@@ -972,8 +855,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSRuleType>> ruleTypes() {
-            Object value = raw("ruleTypes");
-            return Optional.ofNullable(list(value, element0 -> CSS.CSSRuleType.of((String) element0)));
+            return raw("ruleTypes").flatMap(value -> list(value, element0 -> CSS.CSSRuleType.of((String) element0)));
         }
         /**
          * &#64;starting-style CSS at-rule array. The array enumerates &#64;starting-style at-rules starting with the innermost one, going outwards.
@@ -981,8 +863,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSStartingStyle>> startingStyles() {
-            Object value = raw("startingStyles");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSStartingStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("startingStyles").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSStartingStyle.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * &#64;navigation CSS at-rule array. The array enumerates &#64;navigation at-rules starting with the innermost one, going outwards.
@@ -990,21 +871,11 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSNavigation>> navigations() {
-            Object value = raw("navigations");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSNavigation.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("navigations").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSNavigation.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
-         * @param styleSheetId field value; empty omits the value
-         * @return this model
-         */
-        public CSSRule styleSheetId(Optional<DOM.StyleSheetId> styleSheetId) {
-            set("styleSheetId", styleSheetId.orElse(null));
-            return this;
-        }
-        /**
-         * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
-         * @param styleSheetId field value; null removes the value
+         * @param styleSheetId field value
          * @return this model
          */
         public CSSRule styleSheetId(DOM.StyleSheetId styleSheetId) {
@@ -1023,17 +894,7 @@ public final class CSS {
         /**
          * Array of selectors from ancestor style rules, sorted by distance from the current rule.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param nestingSelectors field value; empty omits the value
-         * @return this model
-         */
-        public CSSRule nestingSelectors(Optional<java.util.List<String>> nestingSelectors) {
-            set("nestingSelectors", nestingSelectors.orElse(null));
-            return this;
-        }
-        /**
-         * Array of selectors from ancestor style rules, sorted by distance from the current rule.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param nestingSelectors field value; null removes the value
+         * @param nestingSelectors field value
          * @return this model
          */
         public CSSRule nestingSelectors(java.util.List<String> nestingSelectors) {
@@ -1061,17 +922,7 @@ public final class CSS {
         /**
          * The BackendNodeId of the DOM node that constitutes the origin tree scope of this rule.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param originTreeScopeNodeId field value; empty omits the value
-         * @return this model
-         */
-        public CSSRule originTreeScopeNodeId(Optional<DOM.BackendNodeId> originTreeScopeNodeId) {
-            set("originTreeScopeNodeId", originTreeScopeNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * The BackendNodeId of the DOM node that constitutes the origin tree scope of this rule.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param originTreeScopeNodeId field value; null removes the value
+         * @param originTreeScopeNodeId field value
          * @return this model
          */
         public CSSRule originTreeScopeNodeId(DOM.BackendNodeId originTreeScopeNodeId) {
@@ -1080,16 +931,7 @@ public final class CSS {
         }
         /**
          * Media list array (for rules involving media queries). The array enumerates media queries starting with the innermost one, going outwards.
-         * @param media field value; empty omits the value
-         * @return this model
-         */
-        public CSSRule media(Optional<java.util.List<CSS.CSSMedia>> media) {
-            set("media", media.orElse(null));
-            return this;
-        }
-        /**
-         * Media list array (for rules involving media queries). The array enumerates media queries starting with the innermost one, going outwards.
-         * @param media field value; null removes the value
+         * @param media field value
          * @return this model
          */
         public CSSRule media(java.util.List<CSS.CSSMedia> media) {
@@ -1099,17 +941,7 @@ public final class CSS {
         /**
          * Container query list array (for rules involving container queries). The array enumerates container queries starting with the innermost one, going outwards.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param containerQueries field value; empty omits the value
-         * @return this model
-         */
-        public CSSRule containerQueries(Optional<java.util.List<CSS.CSSContainerQuery>> containerQueries) {
-            set("containerQueries", containerQueries.orElse(null));
-            return this;
-        }
-        /**
-         * Container query list array (for rules involving container queries). The array enumerates container queries starting with the innermost one, going outwards.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param containerQueries field value; null removes the value
+         * @param containerQueries field value
          * @return this model
          */
         public CSSRule containerQueries(java.util.List<CSS.CSSContainerQuery> containerQueries) {
@@ -1119,17 +951,7 @@ public final class CSS {
         /**
          * &#64;supports CSS at-rule array. The array enumerates &#64;supports at-rules starting with the innermost one, going outwards.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param supports field value; empty omits the value
-         * @return this model
-         */
-        public CSSRule supports(Optional<java.util.List<CSS.CSSSupports>> supports) {
-            set("supports", supports.orElse(null));
-            return this;
-        }
-        /**
-         * &#64;supports CSS at-rule array. The array enumerates &#64;supports at-rules starting with the innermost one, going outwards.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param supports field value; null removes the value
+         * @param supports field value
          * @return this model
          */
         public CSSRule supports(java.util.List<CSS.CSSSupports> supports) {
@@ -1139,17 +961,7 @@ public final class CSS {
         /**
          * Cascade layer array. Contains the layer hierarchy that this rule belongs to starting with the innermost layer and going outwards.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param layers field value; empty omits the value
-         * @return this model
-         */
-        public CSSRule layers(Optional<java.util.List<CSS.CSSLayer>> layers) {
-            set("layers", layers.orElse(null));
-            return this;
-        }
-        /**
-         * Cascade layer array. Contains the layer hierarchy that this rule belongs to starting with the innermost layer and going outwards.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param layers field value; null removes the value
+         * @param layers field value
          * @return this model
          */
         public CSSRule layers(java.util.List<CSS.CSSLayer> layers) {
@@ -1159,17 +971,7 @@ public final class CSS {
         /**
          * &#64;scope CSS at-rule array. The array enumerates &#64;scope at-rules starting with the innermost one, going outwards.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param scopes field value; empty omits the value
-         * @return this model
-         */
-        public CSSRule scopes(Optional<java.util.List<CSS.CSSScope>> scopes) {
-            set("scopes", scopes.orElse(null));
-            return this;
-        }
-        /**
-         * &#64;scope CSS at-rule array. The array enumerates &#64;scope at-rules starting with the innermost one, going outwards.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param scopes field value; null removes the value
+         * @param scopes field value
          * @return this model
          */
         public CSSRule scopes(java.util.List<CSS.CSSScope> scopes) {
@@ -1179,17 +981,7 @@ public final class CSS {
         /**
          * The array keeps the types of ancestor CSSRules from the innermost going outwards.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param ruleTypes field value; empty omits the value
-         * @return this model
-         */
-        public CSSRule ruleTypes(Optional<java.util.List<CSS.CSSRuleType>> ruleTypes) {
-            set("ruleTypes", ruleTypes.orElse(null));
-            return this;
-        }
-        /**
-         * The array keeps the types of ancestor CSSRules from the innermost going outwards.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param ruleTypes field value; null removes the value
+         * @param ruleTypes field value
          * @return this model
          */
         public CSSRule ruleTypes(java.util.List<CSS.CSSRuleType> ruleTypes) {
@@ -1199,17 +991,7 @@ public final class CSS {
         /**
          * &#64;starting-style CSS at-rule array. The array enumerates &#64;starting-style at-rules starting with the innermost one, going outwards.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param startingStyles field value; empty omits the value
-         * @return this model
-         */
-        public CSSRule startingStyles(Optional<java.util.List<CSS.CSSStartingStyle>> startingStyles) {
-            set("startingStyles", startingStyles.orElse(null));
-            return this;
-        }
-        /**
-         * &#64;starting-style CSS at-rule array. The array enumerates &#64;starting-style at-rules starting with the innermost one, going outwards.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param startingStyles field value; null removes the value
+         * @param startingStyles field value
          * @return this model
          */
         public CSSRule startingStyles(java.util.List<CSS.CSSStartingStyle> startingStyles) {
@@ -1219,17 +1001,7 @@ public final class CSS {
         /**
          * &#64;navigation CSS at-rule array. The array enumerates &#64;navigation at-rules starting with the innermost one, going outwards.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param navigations field value; empty omits the value
-         * @return this model
-         */
-        public CSSRule navigations(Optional<java.util.List<CSS.CSSNavigation>> navigations) {
-            set("navigations", navigations.orElse(null));
-            return this;
-        }
-        /**
-         * &#64;navigation CSS at-rule array. The array enumerates &#64;navigation at-rules starting with the innermost one, going outwards.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param navigations field value; null removes the value
+         * @param navigations field value
          * @return this model
          */
         public CSSRule navigations(java.util.List<CSS.CSSNavigation> navigations) {
@@ -1252,7 +1024,7 @@ public final class CSS {
         NAVIGATIONRULE("NavigationRule");
         public final String value;
         CSSRuleType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static CSSRuleType of(String value) {
             for (CSSRuleType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -1435,8 +1207,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> important() {
-            Object value = raw("important");
-            return Optional.ofNullable((Boolean) value);
+            return raw("important").map(value -> (Boolean) value);
         }
         /**
          * Shorthand name.
@@ -1458,19 +1229,10 @@ public final class CSS {
         }
         /**
          * Whether the property has &quot;!important&quot; annotation (implies {@code false} if absent).
-         * @param important field value; empty omits the value
+         * @param important field value
          * @return this model
          */
-        public ShorthandEntry important(Optional<Boolean> important) {
-            set("important", important.orElse(null));
-            return this;
-        }
-        /**
-         * Whether the property has &quot;!important&quot; annotation (implies {@code false} if absent).
-         * @param important field value; null removes the value
-         * @return this model
-         */
-        public ShorthandEntry important(Boolean important) {
+        public ShorthandEntry important(boolean important) {
             set("important", important);
             return this;
         }
@@ -1556,51 +1318,39 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            Object value = raw("styleSheetId");
-            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
+            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
         }
         /**
          * CSS properties in the style.
          * @return the protocol field value
          */
         public java.util.List<CSS.CSSProperty> cssProperties() {
-            return CdpObject.requireList(require("cssProperties"), element0 -> java.util.Objects.requireNonNull(CSS.CSSProperty.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("cssProperties"), element0 -> java.util.Objects.requireNonNull(CSS.CSSProperty.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Computed values for all shorthands found in the style.
          * @return the protocol field value
          */
         public java.util.List<CSS.ShorthandEntry> shorthandEntries() {
-            return CdpObject.requireList(require("shorthandEntries"), element0 -> java.util.Objects.requireNonNull(CSS.ShorthandEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("shorthandEntries"), element0 -> java.util.Objects.requireNonNull(CSS.ShorthandEntry.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Style declaration text (if available).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> cssText() {
-            Object value = raw("cssText");
-            return Optional.ofNullable((String) value);
+            return raw("cssText").map(value -> (String) value);
         }
         /**
          * Style declaration range in the enclosing stylesheet (if available).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            Object value = raw("range");
-            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("range").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
-         * @param styleSheetId field value; empty omits the value
-         * @return this model
-         */
-        public CSSStyle styleSheetId(Optional<DOM.StyleSheetId> styleSheetId) {
-            set("styleSheetId", styleSheetId.orElse(null));
-            return this;
-        }
-        /**
-         * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
-         * @param styleSheetId field value; null removes the value
+         * @param styleSheetId field value
          * @return this model
          */
         public CSSStyle styleSheetId(DOM.StyleSheetId styleSheetId) {
@@ -1627,16 +1377,7 @@ public final class CSS {
         }
         /**
          * Style declaration text (if available).
-         * @param cssText field value; empty omits the value
-         * @return this model
-         */
-        public CSSStyle cssText(Optional<String> cssText) {
-            set("cssText", cssText.orElse(null));
-            return this;
-        }
-        /**
-         * Style declaration text (if available).
-         * @param cssText field value; null removes the value
+         * @param cssText field value
          * @return this model
          */
         public CSSStyle cssText(String cssText) {
@@ -1645,16 +1386,7 @@ public final class CSS {
         }
         /**
          * Style declaration range in the enclosing stylesheet (if available).
-         * @param range field value; empty omits the value
-         * @return this model
-         */
-        public CSSStyle range(Optional<CSS.SourceRange> range) {
-            set("range", range.orElse(null));
-            return this;
-        }
-        /**
-         * Style declaration range in the enclosing stylesheet (if available).
-         * @param range field value; null removes the value
+         * @param range field value
          * @return this model
          */
         public CSSStyle range(CSS.SourceRange range) {
@@ -1690,48 +1422,42 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> important() {
-            Object value = raw("important");
-            return Optional.ofNullable((Boolean) value);
+            return raw("important").map(value -> (Boolean) value);
         }
         /**
          * Whether the property is implicit (implies {@code false} if absent).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> implicit() {
-            Object value = raw("implicit");
-            return Optional.ofNullable((Boolean) value);
+            return raw("implicit").map(value -> (Boolean) value);
         }
         /**
          * The full property text as specified in the style.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> text() {
-            Object value = raw("text");
-            return Optional.ofNullable((String) value);
+            return raw("text").map(value -> (String) value);
         }
         /**
          * Whether the property is understood by the browser (implies {@code true} if absent).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> parsedOk() {
-            Object value = raw("parsedOk");
-            return Optional.ofNullable((Boolean) value);
+            return raw("parsedOk").map(value -> (Boolean) value);
         }
         /**
          * Whether the property is disabled by the user (present for source-based properties only).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> disabled() {
-            Object value = raw("disabled");
-            return Optional.ofNullable((Boolean) value);
+            return raw("disabled").map(value -> (Boolean) value);
         }
         /**
          * The entire property range in the enclosing style declaration (if available).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            Object value = raw("range");
-            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("range").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
         }
         /**
          * Parsed longhand components of this property if it is a shorthand. This field will be empty if the given property is not a shorthand.
@@ -1739,8 +1465,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSProperty>> longhandProperties() {
-            Object value = raw("longhandProperties");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSProperty.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("longhandProperties").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSProperty.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * The property name.
@@ -1762,52 +1487,25 @@ public final class CSS {
         }
         /**
          * Whether the property has &quot;!important&quot; annotation (implies {@code false} if absent).
-         * @param important field value; empty omits the value
+         * @param important field value
          * @return this model
          */
-        public CSSProperty important(Optional<Boolean> important) {
-            set("important", important.orElse(null));
-            return this;
-        }
-        /**
-         * Whether the property has &quot;!important&quot; annotation (implies {@code false} if absent).
-         * @param important field value; null removes the value
-         * @return this model
-         */
-        public CSSProperty important(Boolean important) {
+        public CSSProperty important(boolean important) {
             set("important", important);
             return this;
         }
         /**
          * Whether the property is implicit (implies {@code false} if absent).
-         * @param implicit field value; empty omits the value
+         * @param implicit field value
          * @return this model
          */
-        public CSSProperty implicit(Optional<Boolean> implicit) {
-            set("implicit", implicit.orElse(null));
-            return this;
-        }
-        /**
-         * Whether the property is implicit (implies {@code false} if absent).
-         * @param implicit field value; null removes the value
-         * @return this model
-         */
-        public CSSProperty implicit(Boolean implicit) {
+        public CSSProperty implicit(boolean implicit) {
             set("implicit", implicit);
             return this;
         }
         /**
          * The full property text as specified in the style.
-         * @param text field value; empty omits the value
-         * @return this model
-         */
-        public CSSProperty text(Optional<String> text) {
-            set("text", text.orElse(null));
-            return this;
-        }
-        /**
-         * The full property text as specified in the style.
-         * @param text field value; null removes the value
+         * @param text field value
          * @return this model
          */
         public CSSProperty text(String text) {
@@ -1816,52 +1514,25 @@ public final class CSS {
         }
         /**
          * Whether the property is understood by the browser (implies {@code true} if absent).
-         * @param parsedOk field value; empty omits the value
+         * @param parsedOk field value
          * @return this model
          */
-        public CSSProperty parsedOk(Optional<Boolean> parsedOk) {
-            set("parsedOk", parsedOk.orElse(null));
-            return this;
-        }
-        /**
-         * Whether the property is understood by the browser (implies {@code true} if absent).
-         * @param parsedOk field value; null removes the value
-         * @return this model
-         */
-        public CSSProperty parsedOk(Boolean parsedOk) {
+        public CSSProperty parsedOk(boolean parsedOk) {
             set("parsedOk", parsedOk);
             return this;
         }
         /**
          * Whether the property is disabled by the user (present for source-based properties only).
-         * @param disabled field value; empty omits the value
+         * @param disabled field value
          * @return this model
          */
-        public CSSProperty disabled(Optional<Boolean> disabled) {
-            set("disabled", disabled.orElse(null));
-            return this;
-        }
-        /**
-         * Whether the property is disabled by the user (present for source-based properties only).
-         * @param disabled field value; null removes the value
-         * @return this model
-         */
-        public CSSProperty disabled(Boolean disabled) {
+        public CSSProperty disabled(boolean disabled) {
             set("disabled", disabled);
             return this;
         }
         /**
          * The entire property range in the enclosing style declaration (if available).
-         * @param range field value; empty omits the value
-         * @return this model
-         */
-        public CSSProperty range(Optional<CSS.SourceRange> range) {
-            set("range", range.orElse(null));
-            return this;
-        }
-        /**
-         * The entire property range in the enclosing style declaration (if available).
-         * @param range field value; null removes the value
+         * @param range field value
          * @return this model
          */
         public CSSProperty range(CSS.SourceRange range) {
@@ -1871,17 +1542,7 @@ public final class CSS {
         /**
          * Parsed longhand components of this property if it is a shorthand. This field will be empty if the given property is not a shorthand.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param longhandProperties field value; empty omits the value
-         * @return this model
-         */
-        public CSSProperty longhandProperties(Optional<java.util.List<CSS.CSSProperty>> longhandProperties) {
-            set("longhandProperties", longhandProperties.orElse(null));
-            return this;
-        }
-        /**
-         * Parsed longhand components of this property if it is a shorthand. This field will be empty if the given property is not a shorthand.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param longhandProperties field value; null removes the value
+         * @param longhandProperties field value
          * @return this model
          */
         public CSSProperty longhandProperties(java.util.List<CSS.CSSProperty> longhandProperties) {
@@ -1908,7 +1569,7 @@ public final class CSS {
             INLINESHEET("inlineSheet");
             public final String value;
             SourceValues(String value) { this.value = value; }
-            public String value() { return value; }
+            @Override public String value() { return value; }
             public static SourceValues of(String value) {
                 for (SourceValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
@@ -1935,32 +1596,28 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> sourceURL() {
-            Object value = raw("sourceURL");
-            return Optional.ofNullable((String) value);
+            return raw("sourceURL").map(value -> (String) value);
         }
         /**
          * The associated rule (&#64;media or &#64;import) header range in the enclosing stylesheet (if available).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            Object value = raw("range");
-            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("range").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            Object value = raw("styleSheetId");
-            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
+            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
         }
         /**
          * Array of media queries.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.MediaQuery>> mediaList() {
-            Object value = raw("mediaList");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.MediaQuery.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("mediaList").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.MediaQuery.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Media query text.
@@ -1982,16 +1639,7 @@ public final class CSS {
         }
         /**
          * URL of the document containing the media query description.
-         * @param sourceURL field value; empty omits the value
-         * @return this model
-         */
-        public CSSMedia sourceURL(Optional<String> sourceURL) {
-            set("sourceURL", sourceURL.orElse(null));
-            return this;
-        }
-        /**
-         * URL of the document containing the media query description.
-         * @param sourceURL field value; null removes the value
+         * @param sourceURL field value
          * @return this model
          */
         public CSSMedia sourceURL(String sourceURL) {
@@ -2000,16 +1648,7 @@ public final class CSS {
         }
         /**
          * The associated rule (&#64;media or &#64;import) header range in the enclosing stylesheet (if available).
-         * @param range field value; empty omits the value
-         * @return this model
-         */
-        public CSSMedia range(Optional<CSS.SourceRange> range) {
-            set("range", range.orElse(null));
-            return this;
-        }
-        /**
-         * The associated rule (&#64;media or &#64;import) header range in the enclosing stylesheet (if available).
-         * @param range field value; null removes the value
+         * @param range field value
          * @return this model
          */
         public CSSMedia range(CSS.SourceRange range) {
@@ -2018,16 +1657,7 @@ public final class CSS {
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
-         * @param styleSheetId field value; empty omits the value
-         * @return this model
-         */
-        public CSSMedia styleSheetId(Optional<DOM.StyleSheetId> styleSheetId) {
-            set("styleSheetId", styleSheetId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the stylesheet containing this object (if exists).
-         * @param styleSheetId field value; null removes the value
+         * @param styleSheetId field value
          * @return this model
          */
         public CSSMedia styleSheetId(DOM.StyleSheetId styleSheetId) {
@@ -2036,16 +1666,7 @@ public final class CSS {
         }
         /**
          * Array of media queries.
-         * @param mediaList field value; empty omits the value
-         * @return this model
-         */
-        public CSSMedia mediaList(Optional<java.util.List<CSS.MediaQuery>> mediaList) {
-            set("mediaList", mediaList.orElse(null));
-            return this;
-        }
-        /**
-         * Array of media queries.
-         * @param mediaList field value; null removes the value
+         * @param mediaList field value
          * @return this model
          */
         public CSSMedia mediaList(java.util.List<CSS.MediaQuery> mediaList) {
@@ -2067,7 +1688,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public java.util.List<CSS.MediaQueryExpression> expressions() {
-            return CdpObject.requireList(require("expressions"), element0 -> java.util.Objects.requireNonNull(CSS.MediaQueryExpression.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("expressions"), element0 -> java.util.Objects.requireNonNull(CSS.MediaQueryExpression.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Whether the media query condition is satisfied.
@@ -2130,16 +1751,14 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> valueRange() {
-            Object value = raw("valueRange");
-            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("valueRange").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
         }
         /**
          * Computed length of media query expression (if applicable).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble computedLength() {
-            Double value = CdpObject.numberAsDouble(raw("computedLength"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("computedLength").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Media query expression value.
@@ -2170,16 +1789,7 @@ public final class CSS {
         }
         /**
          * The associated range of the value text in the enclosing stylesheet (if available).
-         * @param valueRange field value; empty omits the value
-         * @return this model
-         */
-        public MediaQueryExpression valueRange(Optional<CSS.SourceRange> valueRange) {
-            set("valueRange", valueRange.orElse(null));
-            return this;
-        }
-        /**
-         * The associated range of the value text in the enclosing stylesheet (if available).
-         * @param valueRange field value; null removes the value
+         * @param valueRange field value
          * @return this model
          */
         public MediaQueryExpression valueRange(CSS.SourceRange valueRange) {
@@ -2188,19 +1798,10 @@ public final class CSS {
         }
         /**
          * Computed length of media query expression (if applicable).
-         * @param computedLength field value; empty omits the value
+         * @param computedLength field value
          * @return this model
          */
-        public MediaQueryExpression computedLength(OptionalDouble computedLength) {
-            set("computedLength", computedLength.isPresent() ? computedLength.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Computed length of media query expression (if applicable).
-         * @param computedLength field value; null removes the value
-         * @return this model
-         */
-        public MediaQueryExpression computedLength(Double computedLength) {
+        public MediaQueryExpression computedLength(double computedLength) {
             set("computedLength", computedLength);
             return this;
         }
@@ -2229,56 +1830,49 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            Object value = raw("range");
-            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("range").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            Object value = raw("styleSheetId");
-            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
+            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
         }
         /**
          * Optional name for the container.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            Object value = raw("name");
-            return Optional.ofNullable((String) value);
+            return raw("name").map(value -> (String) value);
         }
         /**
          * Optional physical axes queried for the container.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.PhysicalAxes> physicalAxes() {
-            Object value = raw("physicalAxes");
-            return Optional.ofNullable(value == null ? null : DOM.PhysicalAxes.of((String) value));
+            return raw("physicalAxes").map(value -> DOM.PhysicalAxes.of((String) value));
         }
         /**
          * Optional logical axes queried for the container.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.LogicalAxes> logicalAxes() {
-            Object value = raw("logicalAxes");
-            return Optional.ofNullable(value == null ? null : DOM.LogicalAxes.of((String) value));
+            return raw("logicalAxes").map(value -> DOM.LogicalAxes.of((String) value));
         }
         /**
          * true if the query contains scroll-state() queries.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> queriesScrollState() {
-            Object value = raw("queriesScrollState");
-            return Optional.ofNullable((Boolean) value);
+            return raw("queriesScrollState").map(value -> (Boolean) value);
         }
         /**
          * true if the query contains anchored() queries.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> queriesAnchored() {
-            Object value = raw("queriesAnchored");
-            return Optional.ofNullable((Boolean) value);
+            return raw("queriesAnchored").map(value -> (Boolean) value);
         }
         /**
          * CSSContainerRule.conditionText
@@ -2300,16 +1894,7 @@ public final class CSS {
         }
         /**
          * The associated rule header range in the enclosing stylesheet (if available).
-         * @param range field value; empty omits the value
-         * @return this model
-         */
-        public CSSContainerQuery range(Optional<CSS.SourceRange> range) {
-            set("range", range.orElse(null));
-            return this;
-        }
-        /**
-         * The associated rule header range in the enclosing stylesheet (if available).
-         * @param range field value; null removes the value
+         * @param range field value
          * @return this model
          */
         public CSSContainerQuery range(CSS.SourceRange range) {
@@ -2318,16 +1903,7 @@ public final class CSS {
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
-         * @param styleSheetId field value; empty omits the value
-         * @return this model
-         */
-        public CSSContainerQuery styleSheetId(Optional<DOM.StyleSheetId> styleSheetId) {
-            set("styleSheetId", styleSheetId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the stylesheet containing this object (if exists).
-         * @param styleSheetId field value; null removes the value
+         * @param styleSheetId field value
          * @return this model
          */
         public CSSContainerQuery styleSheetId(DOM.StyleSheetId styleSheetId) {
@@ -2336,16 +1912,7 @@ public final class CSS {
         }
         /**
          * Optional name for the container.
-         * @param name field value; empty omits the value
-         * @return this model
-         */
-        public CSSContainerQuery name(Optional<String> name) {
-            set("name", name.orElse(null));
-            return this;
-        }
-        /**
-         * Optional name for the container.
-         * @param name field value; null removes the value
+         * @param name field value
          * @return this model
          */
         public CSSContainerQuery name(String name) {
@@ -2354,16 +1921,7 @@ public final class CSS {
         }
         /**
          * Optional physical axes queried for the container.
-         * @param physicalAxes field value; empty omits the value
-         * @return this model
-         */
-        public CSSContainerQuery physicalAxes(Optional<DOM.PhysicalAxes> physicalAxes) {
-            set("physicalAxes", physicalAxes.orElse(null));
-            return this;
-        }
-        /**
-         * Optional physical axes queried for the container.
-         * @param physicalAxes field value; null removes the value
+         * @param physicalAxes field value
          * @return this model
          */
         public CSSContainerQuery physicalAxes(DOM.PhysicalAxes physicalAxes) {
@@ -2372,16 +1930,7 @@ public final class CSS {
         }
         /**
          * Optional logical axes queried for the container.
-         * @param logicalAxes field value; empty omits the value
-         * @return this model
-         */
-        public CSSContainerQuery logicalAxes(Optional<DOM.LogicalAxes> logicalAxes) {
-            set("logicalAxes", logicalAxes.orElse(null));
-            return this;
-        }
-        /**
-         * Optional logical axes queried for the container.
-         * @param logicalAxes field value; null removes the value
+         * @param logicalAxes field value
          * @return this model
          */
         public CSSContainerQuery logicalAxes(DOM.LogicalAxes logicalAxes) {
@@ -2390,37 +1939,19 @@ public final class CSS {
         }
         /**
          * true if the query contains scroll-state() queries.
-         * @param queriesScrollState field value; empty omits the value
+         * @param queriesScrollState field value
          * @return this model
          */
-        public CSSContainerQuery queriesScrollState(Optional<Boolean> queriesScrollState) {
-            set("queriesScrollState", queriesScrollState.orElse(null));
-            return this;
-        }
-        /**
-         * true if the query contains scroll-state() queries.
-         * @param queriesScrollState field value; null removes the value
-         * @return this model
-         */
-        public CSSContainerQuery queriesScrollState(Boolean queriesScrollState) {
+        public CSSContainerQuery queriesScrollState(boolean queriesScrollState) {
             set("queriesScrollState", queriesScrollState);
             return this;
         }
         /**
          * true if the query contains anchored() queries.
-         * @param queriesAnchored field value; empty omits the value
+         * @param queriesAnchored field value
          * @return this model
          */
-        public CSSContainerQuery queriesAnchored(Optional<Boolean> queriesAnchored) {
-            set("queriesAnchored", queriesAnchored.orElse(null));
-            return this;
-        }
-        /**
-         * true if the query contains anchored() queries.
-         * @param queriesAnchored field value; null removes the value
-         * @return this model
-         */
-        public CSSContainerQuery queriesAnchored(Boolean queriesAnchored) {
+        public CSSContainerQuery queriesAnchored(boolean queriesAnchored) {
             set("queriesAnchored", queriesAnchored);
             return this;
         }
@@ -2463,16 +1994,14 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            Object value = raw("range");
-            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("range").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            Object value = raw("styleSheetId");
-            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
+            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
         }
         /**
          * Supports rule text.
@@ -2494,16 +2023,7 @@ public final class CSS {
         }
         /**
          * The associated rule header range in the enclosing stylesheet (if available).
-         * @param range field value; empty omits the value
-         * @return this model
-         */
-        public CSSSupports range(Optional<CSS.SourceRange> range) {
-            set("range", range.orElse(null));
-            return this;
-        }
-        /**
-         * The associated rule header range in the enclosing stylesheet (if available).
-         * @param range field value; null removes the value
+         * @param range field value
          * @return this model
          */
         public CSSSupports range(CSS.SourceRange range) {
@@ -2512,16 +2032,7 @@ public final class CSS {
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
-         * @param styleSheetId field value; empty omits the value
-         * @return this model
-         */
-        public CSSSupports styleSheetId(Optional<DOM.StyleSheetId> styleSheetId) {
-            set("styleSheetId", styleSheetId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the stylesheet containing this object (if exists).
-         * @param styleSheetId field value; null removes the value
+         * @param styleSheetId field value
          * @return this model
          */
         public CSSSupports styleSheetId(DOM.StyleSheetId styleSheetId) {
@@ -2551,24 +2062,21 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> active() {
-            Object value = raw("active");
-            return Optional.ofNullable((Boolean) value);
+            return raw("active").map(value -> (Boolean) value);
         }
         /**
          * The associated rule header range in the enclosing stylesheet (if available).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            Object value = raw("range");
-            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("range").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            Object value = raw("styleSheetId");
-            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
+            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
         }
         /**
          * Navigation rule text.
@@ -2581,34 +2089,16 @@ public final class CSS {
         }
         /**
          * Whether the navigation condition is satisfied.
-         * @param active field value; empty omits the value
+         * @param active field value
          * @return this model
          */
-        public CSSNavigation active(Optional<Boolean> active) {
-            set("active", active.orElse(null));
-            return this;
-        }
-        /**
-         * Whether the navigation condition is satisfied.
-         * @param active field value; null removes the value
-         * @return this model
-         */
-        public CSSNavigation active(Boolean active) {
+        public CSSNavigation active(boolean active) {
             set("active", active);
             return this;
         }
         /**
          * The associated rule header range in the enclosing stylesheet (if available).
-         * @param range field value; empty omits the value
-         * @return this model
-         */
-        public CSSNavigation range(Optional<CSS.SourceRange> range) {
-            set("range", range.orElse(null));
-            return this;
-        }
-        /**
-         * The associated rule header range in the enclosing stylesheet (if available).
-         * @param range field value; null removes the value
+         * @param range field value
          * @return this model
          */
         public CSSNavigation range(CSS.SourceRange range) {
@@ -2617,16 +2107,7 @@ public final class CSS {
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
-         * @param styleSheetId field value; empty omits the value
-         * @return this model
-         */
-        public CSSNavigation styleSheetId(Optional<DOM.StyleSheetId> styleSheetId) {
-            set("styleSheetId", styleSheetId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the stylesheet containing this object (if exists).
-         * @param styleSheetId field value; null removes the value
+         * @param styleSheetId field value
          * @return this model
          */
         public CSSNavigation styleSheetId(DOM.StyleSheetId styleSheetId) {
@@ -2656,16 +2137,14 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            Object value = raw("range");
-            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("range").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            Object value = raw("styleSheetId");
-            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
+            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
         }
         /**
          * Scope rule text.
@@ -2678,16 +2157,7 @@ public final class CSS {
         }
         /**
          * The associated rule header range in the enclosing stylesheet (if available).
-         * @param range field value; empty omits the value
-         * @return this model
-         */
-        public CSSScope range(Optional<CSS.SourceRange> range) {
-            set("range", range.orElse(null));
-            return this;
-        }
-        /**
-         * The associated rule header range in the enclosing stylesheet (if available).
-         * @param range field value; null removes the value
+         * @param range field value
          * @return this model
          */
         public CSSScope range(CSS.SourceRange range) {
@@ -2696,16 +2166,7 @@ public final class CSS {
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
-         * @param styleSheetId field value; empty omits the value
-         * @return this model
-         */
-        public CSSScope styleSheetId(Optional<DOM.StyleSheetId> styleSheetId) {
-            set("styleSheetId", styleSheetId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the stylesheet containing this object (if exists).
-         * @param styleSheetId field value; null removes the value
+         * @param styleSheetId field value
          * @return this model
          */
         public CSSScope styleSheetId(DOM.StyleSheetId styleSheetId) {
@@ -2735,16 +2196,14 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            Object value = raw("range");
-            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("range").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            Object value = raw("styleSheetId");
-            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
+            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
         }
         /**
          * Layer name.
@@ -2757,16 +2216,7 @@ public final class CSS {
         }
         /**
          * The associated rule header range in the enclosing stylesheet (if available).
-         * @param range field value; empty omits the value
-         * @return this model
-         */
-        public CSSLayer range(Optional<CSS.SourceRange> range) {
-            set("range", range.orElse(null));
-            return this;
-        }
-        /**
-         * The associated rule header range in the enclosing stylesheet (if available).
-         * @param range field value; null removes the value
+         * @param range field value
          * @return this model
          */
         public CSSLayer range(CSS.SourceRange range) {
@@ -2775,16 +2225,7 @@ public final class CSS {
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
-         * @param styleSheetId field value; empty omits the value
-         * @return this model
-         */
-        public CSSLayer styleSheetId(Optional<DOM.StyleSheetId> styleSheetId) {
-            set("styleSheetId", styleSheetId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the stylesheet containing this object (if exists).
-         * @param styleSheetId field value; null removes the value
+         * @param styleSheetId field value
          * @return this model
          */
         public CSSLayer styleSheetId(DOM.StyleSheetId styleSheetId) {
@@ -2807,29 +2248,18 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            Object value = raw("range");
-            return Optional.ofNullable(value == null ? null : CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("range").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            Object value = raw("styleSheetId");
-            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
+            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
         }
         /**
          * The associated rule header range in the enclosing stylesheet (if available).
-         * @param range field value; empty omits the value
-         * @return this model
-         */
-        public CSSStartingStyle range(Optional<CSS.SourceRange> range) {
-            set("range", range.orElse(null));
-            return this;
-        }
-        /**
-         * The associated rule header range in the enclosing stylesheet (if available).
-         * @param range field value; null removes the value
+         * @param range field value
          * @return this model
          */
         public CSSStartingStyle range(CSS.SourceRange range) {
@@ -2838,16 +2268,7 @@ public final class CSS {
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
-         * @param styleSheetId field value; empty omits the value
-         * @return this model
-         */
-        public CSSStartingStyle styleSheetId(Optional<DOM.StyleSheetId> styleSheetId) {
-            set("styleSheetId", styleSheetId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the stylesheet containing this object (if exists).
-         * @param styleSheetId field value; null removes the value
+         * @param styleSheetId field value
          * @return this model
          */
         public CSSStartingStyle styleSheetId(DOM.StyleSheetId styleSheetId) {
@@ -2877,8 +2298,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSLayerData>> subLayers() {
-            Object value = raw("subLayers");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSLayerData.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("subLayers").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSLayerData.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Layer order. The order determines the order of the layer in the cascade order. A higher number has higher priority in the cascade order.
@@ -2898,16 +2318,7 @@ public final class CSS {
         }
         /**
          * Direct sub-layers
-         * @param subLayers field value; empty omits the value
-         * @return this model
-         */
-        public CSSLayerData subLayers(Optional<java.util.List<CSS.CSSLayerData>> subLayers) {
-            set("subLayers", subLayers.orElse(null));
-            return this;
-        }
-        /**
-         * Direct sub-layers
-         * @param subLayers field value; null removes the value
+         * @param subLayers field value
          * @return this model
          */
         public CSSLayerData subLayers(java.util.List<CSS.CSSLayerData> subLayers) {
@@ -3165,8 +2576,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.FontVariationAxis>> fontVariationAxes() {
-            Object value = raw("fontVariationAxes");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.FontVariationAxis.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("fontVariationAxes").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.FontVariationAxis.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * The font-family.
@@ -3251,16 +2661,7 @@ public final class CSS {
         }
         /**
          * Available variation settings (a.k.a. &quot;axes&quot;).
-         * @param fontVariationAxes field value; empty omits the value
-         * @return this model
-         */
-        public FontFace fontVariationAxes(Optional<java.util.List<CSS.FontVariationAxis>> fontVariationAxes) {
-            set("fontVariationAxes", fontVariationAxes.orElse(null));
-            return this;
-        }
-        /**
-         * Available variation settings (a.k.a. &quot;axes&quot;).
-         * @param fontVariationAxes field value; null removes the value
+         * @param fontVariationAxes field value
          * @return this model
          */
         public FontFace fontVariationAxes(java.util.List<CSS.FontVariationAxis> fontVariationAxes) {
@@ -3282,8 +2683,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            Object value = raw("styleSheetId");
-            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
+            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
         }
         /**
          * Parent stylesheet&#x27;s origin.
@@ -3297,20 +2697,11 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.CSSStyle style() {
-            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("style")))));
+            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(require("style"))));
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
-         * @param styleSheetId field value; empty omits the value
-         * @return this model
-         */
-        public CSSTryRule styleSheetId(Optional<DOM.StyleSheetId> styleSheetId) {
-            set("styleSheetId", styleSheetId.orElse(null));
-            return this;
-        }
-        /**
-         * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
-         * @param styleSheetId field value; null removes the value
+         * @param styleSheetId field value
          * @return this model
          */
         public CSSTryRule styleSheetId(DOM.StyleSheetId styleSheetId) {
@@ -3350,15 +2741,14 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.Value name() {
-            return java.util.Objects.requireNonNull(CSS.Value.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("name")))));
+            return java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(require("name"))));
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            Object value = raw("styleSheetId");
-            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
+            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
         }
         /**
          * Parent stylesheet&#x27;s origin.
@@ -3372,7 +2762,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.CSSStyle style() {
-            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("style")))));
+            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(require("style"))));
         }
         /**
          * Returns the active field.
@@ -3392,16 +2782,7 @@ public final class CSS {
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
-         * @param styleSheetId field value; empty omits the value
-         * @return this model
-         */
-        public CSSPositionTryRule styleSheetId(Optional<DOM.StyleSheetId> styleSheetId) {
-            set("styleSheetId", styleSheetId.orElse(null));
-            return this;
-        }
-        /**
-         * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
-         * @param styleSheetId field value; null removes the value
+         * @param styleSheetId field value
          * @return this model
          */
         public CSSPositionTryRule styleSheetId(DOM.StyleSheetId styleSheetId) {
@@ -3450,14 +2831,14 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.Value animationName() {
-            return java.util.Objects.requireNonNull(CSS.Value.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("animationName")))));
+            return java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(require("animationName"))));
         }
         /**
          * List of keyframes.
          * @return the protocol field value
          */
         public java.util.List<CSS.CSSKeyframeRule> keyframes() {
-            return CdpObject.requireList(require("keyframes"), element0 -> java.util.Objects.requireNonNull(CSS.CSSKeyframeRule.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("keyframes"), element0 -> java.util.Objects.requireNonNull(CSS.CSSKeyframeRule.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Animation name.
@@ -3499,8 +2880,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.Value> initialValue() {
-            Object value = raw("initialValue");
-            return Optional.ofNullable(value == null ? null : CSS.Value.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("initialValue").flatMap(CdpObject::objectMap).map(CSS.Value::fromMap);
         }
         /**
          * Returns the inherits field.
@@ -3527,16 +2907,7 @@ public final class CSS {
         }
         /**
          * Sets the initialValue field.
-         * @param initialValue field value; empty omits the value
-         * @return this model
-         */
-        public CSSPropertyRegistration initialValue(Optional<CSS.Value> initialValue) {
-            set("initialValue", initialValue.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the initialValue field.
-         * @param initialValue field value; null removes the value
+         * @param initialValue field value
          * @return this model
          */
         public CSSPropertyRegistration initialValue(CSS.Value initialValue) {
@@ -3581,7 +2952,7 @@ public final class CSS {
             COUNTER_STYLE("counter-style");
             public final String value;
             TypeValues(String value) { this.value = value; }
-            public String value() { return value; }
+            @Override public String value() { return value; }
             public static TypeValues of(String value) {
                 for (TypeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
@@ -3601,7 +2972,7 @@ public final class CSS {
             CHARACTER_VARIANT("character-variant");
             public final String value;
             SubsectionValues(String value) { this.value = value; }
-            public String value() { return value; }
+            @Override public String value() { return value; }
             public static SubsectionValues of(String value) {
                 for (SubsectionValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
@@ -3621,24 +2992,21 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSSAtRule.SubsectionValues> subsection() {
-            Object value = raw("subsection");
-            return Optional.ofNullable(value == null ? null : CSSAtRule.SubsectionValues.of((String) value));
+            return raw("subsection").map(value -> CSSAtRule.SubsectionValues.of((String) value));
         }
         /**
          * LINT.ThenChange(//third_party/blink/renderer/core/inspector/inspector_style_sheet.cc:FontVariantAlternatesFeatureType,//third_party/blink/renderer/core/inspector/inspector_css_agent.cc:FontVariantAlternatesFeatureType) Associated name, if applicable.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.Value> name() {
-            Object value = raw("name");
-            return Optional.ofNullable(value == null ? null : CSS.Value.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("name").flatMap(CdpObject::objectMap).map(CSS.Value::fromMap);
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            Object value = raw("styleSheetId");
-            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
+            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
         }
         /**
          * Parent stylesheet&#x27;s origin.
@@ -3652,7 +3020,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.CSSStyle style() {
-            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("style")))));
+            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(require("style"))));
         }
         /**
          * Type of at-rule.
@@ -3665,16 +3033,7 @@ public final class CSS {
         }
         /**
          * Subsection of font-feature-values, if this is a subsection.
-         * @param subsection field value; empty omits the value
-         * @return this model
-         */
-        public CSSAtRule subsection(Optional<CSSAtRule.SubsectionValues> subsection) {
-            set("subsection", subsection.orElse(null));
-            return this;
-        }
-        /**
-         * Subsection of font-feature-values, if this is a subsection.
-         * @param subsection field value; null removes the value
+         * @param subsection field value
          * @return this model
          */
         public CSSAtRule subsection(CSSAtRule.SubsectionValues subsection) {
@@ -3683,16 +3042,7 @@ public final class CSS {
         }
         /**
          * LINT.ThenChange(//third_party/blink/renderer/core/inspector/inspector_style_sheet.cc:FontVariantAlternatesFeatureType,//third_party/blink/renderer/core/inspector/inspector_css_agent.cc:FontVariantAlternatesFeatureType) Associated name, if applicable.
-         * @param name field value; empty omits the value
-         * @return this model
-         */
-        public CSSAtRule name(Optional<CSS.Value> name) {
-            set("name", name.orElse(null));
-            return this;
-        }
-        /**
-         * LINT.ThenChange(//third_party/blink/renderer/core/inspector/inspector_style_sheet.cc:FontVariantAlternatesFeatureType,//third_party/blink/renderer/core/inspector/inspector_css_agent.cc:FontVariantAlternatesFeatureType) Associated name, if applicable.
-         * @param name field value; null removes the value
+         * @param name field value
          * @return this model
          */
         public CSSAtRule name(CSS.Value name) {
@@ -3701,16 +3051,7 @@ public final class CSS {
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
-         * @param styleSheetId field value; empty omits the value
-         * @return this model
-         */
-        public CSSAtRule styleSheetId(Optional<DOM.StyleSheetId> styleSheetId) {
-            set("styleSheetId", styleSheetId.orElse(null));
-            return this;
-        }
-        /**
-         * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
-         * @param styleSheetId field value; null removes the value
+         * @param styleSheetId field value
          * @return this model
          */
         public CSSAtRule styleSheetId(DOM.StyleSheetId styleSheetId) {
@@ -3750,8 +3091,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            Object value = raw("styleSheetId");
-            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
+            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
         }
         /**
          * Parent stylesheet&#x27;s origin.
@@ -3765,27 +3105,18 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.Value propertyName() {
-            return java.util.Objects.requireNonNull(CSS.Value.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("propertyName")))));
+            return java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(require("propertyName"))));
         }
         /**
          * Associated style declaration.
          * @return the protocol field value
          */
         public CSS.CSSStyle style() {
-            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("style")))));
+            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(require("style"))));
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
-         * @param styleSheetId field value; empty omits the value
-         * @return this model
-         */
-        public CSSPropertyRule styleSheetId(Optional<DOM.StyleSheetId> styleSheetId) {
-            set("styleSheetId", styleSheetId.orElse(null));
-            return this;
-        }
-        /**
-         * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
-         * @param styleSheetId field value; null removes the value
+         * @param styleSheetId field value
          * @return this model
          */
         public CSSPropertyRule styleSheetId(DOM.StyleSheetId styleSheetId) {
@@ -3876,39 +3207,35 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSMedia> media() {
-            Object value = raw("media");
-            return Optional.ofNullable(value == null ? null : CSS.CSSMedia.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("media").flatMap(CdpObject::objectMap).map(CSS.CSSMedia::fromMap);
         }
         /**
          * Container query for this conditional block. Only one type of condition should be set.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSContainerQuery> containerQueries() {
-            Object value = raw("containerQueries");
-            return Optional.ofNullable(value == null ? null : CSS.CSSContainerQuery.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("containerQueries").flatMap(CdpObject::objectMap).map(CSS.CSSContainerQuery::fromMap);
         }
         /**
          * &#64;supports CSS at-rule condition. Only one type of condition should be set.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSSupports> supports() {
-            Object value = raw("supports");
-            return Optional.ofNullable(value == null ? null : CSS.CSSSupports.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("supports").flatMap(CdpObject::objectMap).map(CSS.CSSSupports::fromMap);
         }
         /**
          * &#64;navigation condition. Only one type of condition should be set.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSNavigation> navigation() {
-            Object value = raw("navigation");
-            return Optional.ofNullable(value == null ? null : CSS.CSSNavigation.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("navigation").flatMap(CdpObject::objectMap).map(CSS.CSSNavigation::fromMap);
         }
         /**
          * Block body.
          * @return the protocol field value
          */
         public java.util.List<CSS.CSSFunctionNode> children() {
-            return CdpObject.requireList(require("children"), element0 -> java.util.Objects.requireNonNull(CSS.CSSFunctionNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("children"), element0 -> java.util.Objects.requireNonNull(CSS.CSSFunctionNode.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * The condition text.
@@ -3919,16 +3246,7 @@ public final class CSS {
         }
         /**
          * Media query for this conditional block. Only one type of condition should be set.
-         * @param media field value; empty omits the value
-         * @return this model
-         */
-        public CSSFunctionConditionNode media(Optional<CSS.CSSMedia> media) {
-            set("media", media.orElse(null));
-            return this;
-        }
-        /**
-         * Media query for this conditional block. Only one type of condition should be set.
-         * @param media field value; null removes the value
+         * @param media field value
          * @return this model
          */
         public CSSFunctionConditionNode media(CSS.CSSMedia media) {
@@ -3937,16 +3255,7 @@ public final class CSS {
         }
         /**
          * Container query for this conditional block. Only one type of condition should be set.
-         * @param containerQueries field value; empty omits the value
-         * @return this model
-         */
-        public CSSFunctionConditionNode containerQueries(Optional<CSS.CSSContainerQuery> containerQueries) {
-            set("containerQueries", containerQueries.orElse(null));
-            return this;
-        }
-        /**
-         * Container query for this conditional block. Only one type of condition should be set.
-         * @param containerQueries field value; null removes the value
+         * @param containerQueries field value
          * @return this model
          */
         public CSSFunctionConditionNode containerQueries(CSS.CSSContainerQuery containerQueries) {
@@ -3955,16 +3264,7 @@ public final class CSS {
         }
         /**
          * &#64;supports CSS at-rule condition. Only one type of condition should be set.
-         * @param supports field value; empty omits the value
-         * @return this model
-         */
-        public CSSFunctionConditionNode supports(Optional<CSS.CSSSupports> supports) {
-            set("supports", supports.orElse(null));
-            return this;
-        }
-        /**
-         * &#64;supports CSS at-rule condition. Only one type of condition should be set.
-         * @param supports field value; null removes the value
+         * @param supports field value
          * @return this model
          */
         public CSSFunctionConditionNode supports(CSS.CSSSupports supports) {
@@ -3973,16 +3273,7 @@ public final class CSS {
         }
         /**
          * &#64;navigation condition. Only one type of condition should be set.
-         * @param navigation field value; empty omits the value
-         * @return this model
-         */
-        public CSSFunctionConditionNode navigation(Optional<CSS.CSSNavigation> navigation) {
-            set("navigation", navigation.orElse(null));
-            return this;
-        }
-        /**
-         * &#64;navigation condition. Only one type of condition should be set.
-         * @param navigation field value; null removes the value
+         * @param navigation field value
          * @return this model
          */
         public CSSFunctionConditionNode navigation(CSS.CSSNavigation navigation) {
@@ -4022,29 +3313,18 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSFunctionConditionNode> condition() {
-            Object value = raw("condition");
-            return Optional.ofNullable(value == null ? null : CSS.CSSFunctionConditionNode.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("condition").flatMap(CdpObject::objectMap).map(CSS.CSSFunctionConditionNode::fromMap);
         }
         /**
          * Values set by this node. If set, condition should not be set.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> style() {
-            Object value = raw("style");
-            return Optional.ofNullable(value == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("style").flatMap(CdpObject::objectMap).map(CSS.CSSStyle::fromMap);
         }
         /**
          * A conditional block. If set, style should not be set.
-         * @param condition field value; empty omits the value
-         * @return this model
-         */
-        public CSSFunctionNode condition(Optional<CSS.CSSFunctionConditionNode> condition) {
-            set("condition", condition.orElse(null));
-            return this;
-        }
-        /**
-         * A conditional block. If set, style should not be set.
-         * @param condition field value; null removes the value
+         * @param condition field value
          * @return this model
          */
         public CSSFunctionNode condition(CSS.CSSFunctionConditionNode condition) {
@@ -4053,16 +3333,7 @@ public final class CSS {
         }
         /**
          * Values set by this node. If set, condition should not be set.
-         * @param style field value; empty omits the value
-         * @return this model
-         */
-        public CSSFunctionNode style(Optional<CSS.CSSStyle> style) {
-            set("style", style.orElse(null));
-            return this;
-        }
-        /**
-         * Values set by this node. If set, condition should not be set.
-         * @param style field value; null removes the value
+         * @param style field value
          * @return this model
          */
         public CSSFunctionNode style(CSS.CSSStyle style) {
@@ -4084,15 +3355,14 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.Value name() {
-            return java.util.Objects.requireNonNull(CSS.Value.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("name")))));
+            return java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(require("name"))));
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            Object value = raw("styleSheetId");
-            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
+            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
         }
         /**
          * Parent stylesheet&#x27;s origin.
@@ -4106,14 +3376,14 @@ public final class CSS {
          * @return the protocol field value
          */
         public java.util.List<CSS.CSSFunctionParameter> parameters() {
-            return CdpObject.requireList(require("parameters"), element0 -> java.util.Objects.requireNonNull(CSS.CSSFunctionParameter.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("parameters"), element0 -> java.util.Objects.requireNonNull(CSS.CSSFunctionParameter.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Function body.
          * @return the protocol field value
          */
         public java.util.List<CSS.CSSFunctionNode> children() {
-            return CdpObject.requireList(require("children"), element0 -> java.util.Objects.requireNonNull(CSS.CSSFunctionNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("children"), element0 -> java.util.Objects.requireNonNull(CSS.CSSFunctionNode.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * The BackendNodeId of the DOM node that constitutes the origin tree scope of this rule.
@@ -4121,8 +3391,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> originTreeScopeNodeId() {
-            Object value = raw("originTreeScopeNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("originTreeScopeNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Name of the function.
@@ -4135,16 +3404,7 @@ public final class CSS {
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
-         * @param styleSheetId field value; empty omits the value
-         * @return this model
-         */
-        public CSSFunctionRule styleSheetId(Optional<DOM.StyleSheetId> styleSheetId) {
-            set("styleSheetId", styleSheetId.orElse(null));
-            return this;
-        }
-        /**
-         * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
-         * @param styleSheetId field value; null removes the value
+         * @param styleSheetId field value
          * @return this model
          */
         public CSSFunctionRule styleSheetId(DOM.StyleSheetId styleSheetId) {
@@ -4181,17 +3441,7 @@ public final class CSS {
         /**
          * The BackendNodeId of the DOM node that constitutes the origin tree scope of this rule.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param originTreeScopeNodeId field value; empty omits the value
-         * @return this model
-         */
-        public CSSFunctionRule originTreeScopeNodeId(Optional<DOM.BackendNodeId> originTreeScopeNodeId) {
-            set("originTreeScopeNodeId", originTreeScopeNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * The BackendNodeId of the DOM node that constitutes the origin tree scope of this rule.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param originTreeScopeNodeId field value; null removes the value
+         * @param originTreeScopeNodeId field value
          * @return this model
          */
         public CSSFunctionRule originTreeScopeNodeId(DOM.BackendNodeId originTreeScopeNodeId) {
@@ -4213,8 +3463,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            Object value = raw("styleSheetId");
-            return Optional.ofNullable(value == null ? null : new DOM.StyleSheetId((String) value));
+            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
         }
         /**
          * Parent stylesheet&#x27;s origin.
@@ -4228,27 +3477,18 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.Value keyText() {
-            return java.util.Objects.requireNonNull(CSS.Value.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("keyText")))));
+            return java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(require("keyText"))));
         }
         /**
          * Associated style declaration.
          * @return the protocol field value
          */
         public CSS.CSSStyle style() {
-            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("style")))));
+            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(require("style"))));
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
-         * @param styleSheetId field value; empty omits the value
-         * @return this model
-         */
-        public CSSKeyframeRule styleSheetId(Optional<DOM.StyleSheetId> styleSheetId) {
-            set("styleSheetId", styleSheetId.orElse(null));
-            return this;
-        }
-        /**
-         * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
-         * @param styleSheetId field value; null removes the value
+         * @param styleSheetId field value
          * @return this model
          */
         public CSSKeyframeRule styleSheetId(DOM.StyleSheetId styleSheetId) {
@@ -4304,7 +3544,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.SourceRange range() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("range")))));
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("range"))));
         }
         /**
          * New style text.
@@ -4353,12 +3593,10 @@ public final class CSS {
          * @param location protocol value
          */
         public AddRuleRequest(DOM.StyleSheetId styleSheetId, String ruleText, CSS.SourceRange location) {
-            set("styleSheetId", styleSheetId);
-            set("ruleText", ruleText);
-            set("location", location);
+            styleSheetId(styleSheetId).ruleText(ruleText).location(location);
         }
         public static AddRuleRequest fromMap(Map<String, Object> values) {
-            AddRuleRequest instance_ = new AddRuleRequest();
+            final AddRuleRequest instance_ = new AddRuleRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4381,7 +3619,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.SourceRange location() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("location")))));
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("location"))));
         }
         /**
          * NodeId for the DOM node in whose context custom property declarations for registered properties should be validated. If omitted, declarations in the new rule text can only be validated statically, which may produce incorrect results if the declaration contains a var() for example.
@@ -4389,8 +3627,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeForPropertySyntaxValidation() {
-            Object value = raw("nodeForPropertySyntaxValidation");
-            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
+            return raw("nodeForPropertySyntaxValidation").map(value -> new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * The css style sheet identifier where a new rule should be inserted.
@@ -4422,17 +3659,7 @@ public final class CSS {
         /**
          * NodeId for the DOM node in whose context custom property declarations for registered properties should be validated. If omitted, declarations in the new rule text can only be validated statically, which may produce incorrect results if the declaration contains a var() for example.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param nodeForPropertySyntaxValidation field value; empty omits the value
-         * @return this model
-         */
-        public AddRuleRequest nodeForPropertySyntaxValidation(Optional<DOM.NodeId> nodeForPropertySyntaxValidation) {
-            set("nodeForPropertySyntaxValidation", nodeForPropertySyntaxValidation.orElse(null));
-            return this;
-        }
-        /**
-         * NodeId for the DOM node in whose context custom property declarations for registered properties should be validated. If omitted, declarations in the new rule text can only be validated statically, which may produce incorrect results if the declaration contains a var() for example.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param nodeForPropertySyntaxValidation field value; null removes the value
+         * @param nodeForPropertySyntaxValidation field value
          * @return this model
          */
         public AddRuleRequest nodeForPropertySyntaxValidation(DOM.NodeId nodeForPropertySyntaxValidation) {
@@ -4450,10 +3677,10 @@ public final class CSS {
          * @param styleSheetId protocol value
          */
         public CollectClassNamesRequest(DOM.StyleSheetId styleSheetId) {
-            set("styleSheetId", styleSheetId);
+            styleSheetId(styleSheetId);
         }
         public static CollectClassNamesRequest fromMap(Map<String, Object> values) {
-            CollectClassNamesRequest instance_ = new CollectClassNamesRequest();
+            final CollectClassNamesRequest instance_ = new CollectClassNamesRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4484,10 +3711,10 @@ public final class CSS {
          * @param frameId protocol value
          */
         public CreateStyleSheetRequest(Page.FrameId frameId) {
-            set("frameId", frameId);
+            frameId(frameId);
         }
         public static CreateStyleSheetRequest fromMap(Map<String, Object> values) {
-            CreateStyleSheetRequest instance_ = new CreateStyleSheetRequest();
+            final CreateStyleSheetRequest instance_ = new CreateStyleSheetRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4503,8 +3730,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> force() {
-            Object value = raw("force");
-            return Optional.ofNullable((Boolean) value);
+            return raw("force").map(value -> (Boolean) value);
         }
         /**
          * Identifier of the frame where &quot;via-inspector&quot; stylesheet should be created.
@@ -4517,19 +3743,10 @@ public final class CSS {
         }
         /**
          * If true, creates a new stylesheet for every call. If false, returns a stylesheet previously created by a call with force=false for the frame&#x27;s document if it exists or creates a new stylesheet (default: false).
-         * @param force field value; empty omits the value
+         * @param force field value
          * @return this model
          */
-        public CreateStyleSheetRequest force(Optional<Boolean> force) {
-            set("force", force.orElse(null));
-            return this;
-        }
-        /**
-         * If true, creates a new stylesheet for every call. If false, returns a stylesheet previously created by a call with force=false for the frame&#x27;s document if it exists or creates a new stylesheet (default: false).
-         * @param force field value; null removes the value
-         * @return this model
-         */
-        public CreateStyleSheetRequest force(Boolean force) {
+        public CreateStyleSheetRequest force(boolean force) {
             set("force", force);
             return this;
         }
@@ -4545,11 +3762,10 @@ public final class CSS {
          * @param forcedPseudoClasses protocol value
          */
         public ForcePseudoStateRequest(DOM.NodeId nodeId, java.util.List<String> forcedPseudoClasses) {
-            set("nodeId", nodeId);
-            set("forcedPseudoClasses", forcedPseudoClasses);
+            nodeId(nodeId).forcedPseudoClasses(forcedPseudoClasses);
         }
         public static ForcePseudoStateRequest fromMap(Map<String, Object> values) {
-            ForcePseudoStateRequest instance_ = new ForcePseudoStateRequest();
+            final ForcePseudoStateRequest instance_ = new ForcePseudoStateRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4597,11 +3813,10 @@ public final class CSS {
          * @param forced protocol value
          */
         public ForceStartingStyleRequest(DOM.NodeId nodeId, boolean forced) {
-            set("nodeId", nodeId);
-            set("forced", forced);
+            nodeId(nodeId).forced(forced);
         }
         public static ForceStartingStyleRequest fromMap(Map<String, Object> values) {
-            ForceStartingStyleRequest instance_ = new ForceStartingStyleRequest();
+            final ForceStartingStyleRequest instance_ = new ForceStartingStyleRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4648,10 +3863,10 @@ public final class CSS {
          * @param nodeId protocol value
          */
         public GetBackgroundColorsRequest(DOM.NodeId nodeId) {
-            set("nodeId", nodeId);
+            nodeId(nodeId);
         }
         public static GetBackgroundColorsRequest fromMap(Map<String, Object> values) {
-            GetBackgroundColorsRequest instance_ = new GetBackgroundColorsRequest();
+            final GetBackgroundColorsRequest instance_ = new GetBackgroundColorsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4682,10 +3897,10 @@ public final class CSS {
          * @param nodeId protocol value
          */
         public GetComputedStyleForNodeRequest(DOM.NodeId nodeId) {
-            set("nodeId", nodeId);
+            nodeId(nodeId);
         }
         public static GetComputedStyleForNodeRequest fromMap(Map<String, Object> values) {
-            GetComputedStyleForNodeRequest instance_ = new GetComputedStyleForNodeRequest();
+            final GetComputedStyleForNodeRequest instance_ = new GetComputedStyleForNodeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4719,11 +3934,10 @@ public final class CSS {
          * @param nodeId protocol value
          */
         public ResolveValuesRequest(java.util.List<String> values, DOM.NodeId nodeId) {
-            set("values", values);
-            set("nodeId", nodeId);
+            values(values).nodeId(nodeId);
         }
         public static ResolveValuesRequest fromMap(Map<String, Object> values) {
-            ResolveValuesRequest instance_ = new ResolveValuesRequest();
+            final ResolveValuesRequest instance_ = new ResolveValuesRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4746,24 +3960,21 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> propertyName() {
-            Object value = raw("propertyName");
-            return Optional.ofNullable((String) value);
+            return raw("propertyName").map(value -> (String) value);
         }
         /**
          * Pseudo element type, only works for pseudo elements that generate elements in the tree, such as ::before and ::after.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.PseudoType> pseudoType() {
-            Object value = raw("pseudoType");
-            return Optional.ofNullable(value == null ? null : DOM.PseudoType.of((String) value));
+            return raw("pseudoType").map(value -> DOM.PseudoType.of((String) value));
         }
         /**
          * Pseudo element custom ident.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> pseudoIdentifier() {
-            Object value = raw("pseudoIdentifier");
-            return Optional.ofNullable((String) value);
+            return raw("pseudoIdentifier").map(value -> (String) value);
         }
         /**
          * Cascade-dependent keywords (revert/revert-layer) do not work.
@@ -4785,16 +3996,7 @@ public final class CSS {
         }
         /**
          * Only longhands and custom property names are accepted.
-         * @param propertyName field value; empty omits the value
-         * @return this model
-         */
-        public ResolveValuesRequest propertyName(Optional<String> propertyName) {
-            set("propertyName", propertyName.orElse(null));
-            return this;
-        }
-        /**
-         * Only longhands and custom property names are accepted.
-         * @param propertyName field value; null removes the value
+         * @param propertyName field value
          * @return this model
          */
         public ResolveValuesRequest propertyName(String propertyName) {
@@ -4803,16 +4005,7 @@ public final class CSS {
         }
         /**
          * Pseudo element type, only works for pseudo elements that generate elements in the tree, such as ::before and ::after.
-         * @param pseudoType field value; empty omits the value
-         * @return this model
-         */
-        public ResolveValuesRequest pseudoType(Optional<DOM.PseudoType> pseudoType) {
-            set("pseudoType", pseudoType.orElse(null));
-            return this;
-        }
-        /**
-         * Pseudo element type, only works for pseudo elements that generate elements in the tree, such as ::before and ::after.
-         * @param pseudoType field value; null removes the value
+         * @param pseudoType field value
          * @return this model
          */
         public ResolveValuesRequest pseudoType(DOM.PseudoType pseudoType) {
@@ -4821,16 +4014,7 @@ public final class CSS {
         }
         /**
          * Pseudo element custom ident.
-         * @param pseudoIdentifier field value; empty omits the value
-         * @return this model
-         */
-        public ResolveValuesRequest pseudoIdentifier(Optional<String> pseudoIdentifier) {
-            set("pseudoIdentifier", pseudoIdentifier.orElse(null));
-            return this;
-        }
-        /**
-         * Pseudo element custom ident.
-         * @param pseudoIdentifier field value; null removes the value
+         * @param pseudoIdentifier field value
          * @return this model
          */
         public ResolveValuesRequest pseudoIdentifier(String pseudoIdentifier) {
@@ -4851,11 +4035,10 @@ public final class CSS {
          * @param value protocol value
          */
         public GetLonghandPropertiesRequest(String shorthandName, String value) {
-            set("shorthandName", shorthandName);
-            set("value", value);
+            shorthandName(shorthandName).value(value);
         }
         public static GetLonghandPropertiesRequest fromMap(Map<String, Object> values) {
-            GetLonghandPropertiesRequest instance_ = new GetLonghandPropertiesRequest();
+            final GetLonghandPropertiesRequest instance_ = new GetLonghandPropertiesRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4902,10 +4085,10 @@ public final class CSS {
          * @param nodeId protocol value
          */
         public GetInlineStylesForNodeRequest(DOM.NodeId nodeId) {
-            set("nodeId", nodeId);
+            nodeId(nodeId);
         }
         public static GetInlineStylesForNodeRequest fromMap(Map<String, Object> values) {
-            GetInlineStylesForNodeRequest instance_ = new GetInlineStylesForNodeRequest();
+            final GetInlineStylesForNodeRequest instance_ = new GetInlineStylesForNodeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4938,10 +4121,10 @@ public final class CSS {
          * @param nodeId protocol value
          */
         public GetAnimatedStylesForNodeRequest(DOM.NodeId nodeId) {
-            set("nodeId", nodeId);
+            nodeId(nodeId);
         }
         public static GetAnimatedStylesForNodeRequest fromMap(Map<String, Object> values) {
-            GetAnimatedStylesForNodeRequest instance_ = new GetAnimatedStylesForNodeRequest();
+            final GetAnimatedStylesForNodeRequest instance_ = new GetAnimatedStylesForNodeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4972,10 +4155,10 @@ public final class CSS {
          * @param nodeId protocol value
          */
         public GetMatchedStylesForNodeRequest(DOM.NodeId nodeId) {
-            set("nodeId", nodeId);
+            nodeId(nodeId);
         }
         public static GetMatchedStylesForNodeRequest fromMap(Map<String, Object> values) {
-            GetMatchedStylesForNodeRequest instance_ = new GetMatchedStylesForNodeRequest();
+            final GetMatchedStylesForNodeRequest instance_ = new GetMatchedStylesForNodeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -5006,10 +4189,10 @@ public final class CSS {
          * @param nodeId protocol value
          */
         public GetPlatformFontsForNodeRequest(DOM.NodeId nodeId) {
-            set("nodeId", nodeId);
+            nodeId(nodeId);
         }
         public static GetPlatformFontsForNodeRequest fromMap(Map<String, Object> values) {
-            GetPlatformFontsForNodeRequest instance_ = new GetPlatformFontsForNodeRequest();
+            final GetPlatformFontsForNodeRequest instance_ = new GetPlatformFontsForNodeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -5040,10 +4223,10 @@ public final class CSS {
          * @param styleSheetId protocol value
          */
         public GetStyleSheetTextRequest(DOM.StyleSheetId styleSheetId) {
-            set("styleSheetId", styleSheetId);
+            styleSheetId(styleSheetId);
         }
         public static GetStyleSheetTextRequest fromMap(Map<String, Object> values) {
-            GetStyleSheetTextRequest instance_ = new GetStyleSheetTextRequest();
+            final GetStyleSheetTextRequest instance_ = new GetStyleSheetTextRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -5076,10 +4259,10 @@ public final class CSS {
          * @param nodeId protocol value
          */
         public GetLayersForNodeRequest(DOM.NodeId nodeId) {
-            set("nodeId", nodeId);
+            nodeId(nodeId);
         }
         public static GetLayersForNodeRequest fromMap(Map<String, Object> values) {
-            GetLayersForNodeRequest instance_ = new GetLayersForNodeRequest();
+            final GetLayersForNodeRequest instance_ = new GetLayersForNodeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -5113,11 +4296,10 @@ public final class CSS {
          * @param selectorText protocol value
          */
         public GetLocationForSelectorRequest(DOM.StyleSheetId styleSheetId, String selectorText) {
-            set("styleSheetId", styleSheetId);
-            set("selectorText", selectorText);
+            styleSheetId(styleSheetId).selectorText(selectorText);
         }
         public static GetLocationForSelectorRequest fromMap(Map<String, Object> values) {
-            GetLocationForSelectorRequest instance_ = new GetLocationForSelectorRequest();
+            final GetLocationForSelectorRequest instance_ = new GetLocationForSelectorRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -5161,7 +4343,7 @@ public final class CSS {
     public static final class TrackComputedStyleUpdatesForNodeRequest extends CdpObject {
         public TrackComputedStyleUpdatesForNodeRequest() {}
         public static TrackComputedStyleUpdatesForNodeRequest fromMap(Map<String, Object> values) {
-            TrackComputedStyleUpdatesForNodeRequest instance_ = new TrackComputedStyleUpdatesForNodeRequest();
+            final TrackComputedStyleUpdatesForNodeRequest instance_ = new TrackComputedStyleUpdatesForNodeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -5170,21 +4352,11 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            Object value = raw("nodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
+            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Sets the nodeId field.
-         * @param nodeId field value; empty omits the value
-         * @return this model
-         */
-        public TrackComputedStyleUpdatesForNodeRequest nodeId(Optional<DOM.NodeId> nodeId) {
-            set("nodeId", nodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the nodeId field.
-         * @param nodeId field value; null removes the value
+         * @param nodeId field value
          * @return this model
          */
         public TrackComputedStyleUpdatesForNodeRequest nodeId(DOM.NodeId nodeId) {
@@ -5204,10 +4376,10 @@ public final class CSS {
          * @param propertiesToTrack protocol value
          */
         public TrackComputedStyleUpdatesRequest(java.util.List<CSS.CSSComputedStyleProperty> propertiesToTrack) {
-            set("propertiesToTrack", propertiesToTrack);
+            propertiesToTrack(propertiesToTrack);
         }
         public static TrackComputedStyleUpdatesRequest fromMap(Map<String, Object> values) {
-            TrackComputedStyleUpdatesRequest instance_ = new TrackComputedStyleUpdatesRequest();
+            final TrackComputedStyleUpdatesRequest instance_ = new TrackComputedStyleUpdatesRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -5216,7 +4388,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public java.util.List<CSS.CSSComputedStyleProperty> propertiesToTrack() {
-            return CdpObject.requireList(require("propertiesToTrack"), element0 -> java.util.Objects.requireNonNull(CSS.CSSComputedStyleProperty.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("propertiesToTrack"), element0 -> java.util.Objects.requireNonNull(CSS.CSSComputedStyleProperty.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Sets the propertiesToTrack field.
@@ -5240,12 +4412,10 @@ public final class CSS {
          * @param value protocol value
          */
         public SetEffectivePropertyValueForNodeRequest(DOM.NodeId nodeId, String propertyName, String value) {
-            set("nodeId", nodeId);
-            set("propertyName", propertyName);
-            set("value", value);
+            nodeId(nodeId).propertyName(propertyName).value(value);
         }
         public static SetEffectivePropertyValueForNodeRequest fromMap(Map<String, Object> values) {
-            SetEffectivePropertyValueForNodeRequest instance_ = new SetEffectivePropertyValueForNodeRequest();
+            final SetEffectivePropertyValueForNodeRequest instance_ = new SetEffectivePropertyValueForNodeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -5310,12 +4480,10 @@ public final class CSS {
          * @param propertyName protocol value
          */
         public SetPropertyRulePropertyNameRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String propertyName) {
-            set("styleSheetId", styleSheetId);
-            set("range", range);
-            set("propertyName", propertyName);
+            styleSheetId(styleSheetId).range(range).propertyName(propertyName);
         }
         public static SetPropertyRulePropertyNameRequest fromMap(Map<String, Object> values) {
-            SetPropertyRulePropertyNameRequest instance_ = new SetPropertyRulePropertyNameRequest();
+            final SetPropertyRulePropertyNameRequest instance_ = new SetPropertyRulePropertyNameRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -5331,7 +4499,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.SourceRange range() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("range")))));
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("range"))));
         }
         /**
          * Returns the propertyName field.
@@ -5380,12 +4548,10 @@ public final class CSS {
          * @param keyText protocol value
          */
         public SetKeyframeKeyRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String keyText) {
-            set("styleSheetId", styleSheetId);
-            set("range", range);
-            set("keyText", keyText);
+            styleSheetId(styleSheetId).range(range).keyText(keyText);
         }
         public static SetKeyframeKeyRequest fromMap(Map<String, Object> values) {
-            SetKeyframeKeyRequest instance_ = new SetKeyframeKeyRequest();
+            final SetKeyframeKeyRequest instance_ = new SetKeyframeKeyRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -5401,7 +4567,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.SourceRange range() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("range")))));
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("range"))));
         }
         /**
          * Returns the keyText field.
@@ -5450,12 +4616,10 @@ public final class CSS {
          * @param text protocol value
          */
         public SetMediaTextRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            set("styleSheetId", styleSheetId);
-            set("range", range);
-            set("text", text);
+            styleSheetId(styleSheetId).range(range).text(text);
         }
         public static SetMediaTextRequest fromMap(Map<String, Object> values) {
-            SetMediaTextRequest instance_ = new SetMediaTextRequest();
+            final SetMediaTextRequest instance_ = new SetMediaTextRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -5471,7 +4635,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.SourceRange range() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("range")))));
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("range"))));
         }
         /**
          * Returns the text field.
@@ -5526,12 +4690,10 @@ public final class CSS {
          */
         @Deprecated
         public SetContainerQueryTextRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            set("styleSheetId", styleSheetId);
-            set("range", range);
-            set("text", text);
+            styleSheetId(styleSheetId).range(range).text(text);
         }
         public static SetContainerQueryTextRequest fromMap(Map<String, Object> values) {
-            SetContainerQueryTextRequest instance_ = new SetContainerQueryTextRequest();
+            final SetContainerQueryTextRequest instance_ = new SetContainerQueryTextRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -5547,7 +4709,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.SourceRange range() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("range")))));
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("range"))));
         }
         /**
          * Returns the text field.
@@ -5598,12 +4760,10 @@ public final class CSS {
          * @param text protocol value
          */
         public SetContainerQueryConditionTextRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            set("styleSheetId", styleSheetId);
-            set("range", range);
-            set("text", text);
+            styleSheetId(styleSheetId).range(range).text(text);
         }
         public static SetContainerQueryConditionTextRequest fromMap(Map<String, Object> values) {
-            SetContainerQueryConditionTextRequest instance_ = new SetContainerQueryConditionTextRequest();
+            final SetContainerQueryConditionTextRequest instance_ = new SetContainerQueryConditionTextRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -5619,7 +4779,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.SourceRange range() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("range")))));
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("range"))));
         }
         /**
          * Returns the text field.
@@ -5670,12 +4830,10 @@ public final class CSS {
          * @param text protocol value
          */
         public SetSupportsTextRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            set("styleSheetId", styleSheetId);
-            set("range", range);
-            set("text", text);
+            styleSheetId(styleSheetId).range(range).text(text);
         }
         public static SetSupportsTextRequest fromMap(Map<String, Object> values) {
-            SetSupportsTextRequest instance_ = new SetSupportsTextRequest();
+            final SetSupportsTextRequest instance_ = new SetSupportsTextRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -5691,7 +4849,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.SourceRange range() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("range")))));
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("range"))));
         }
         /**
          * Returns the text field.
@@ -5742,12 +4900,10 @@ public final class CSS {
          * @param text protocol value
          */
         public SetNavigationTextRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            set("styleSheetId", styleSheetId);
-            set("range", range);
-            set("text", text);
+            styleSheetId(styleSheetId).range(range).text(text);
         }
         public static SetNavigationTextRequest fromMap(Map<String, Object> values) {
-            SetNavigationTextRequest instance_ = new SetNavigationTextRequest();
+            final SetNavigationTextRequest instance_ = new SetNavigationTextRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -5763,7 +4919,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.SourceRange range() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("range")))));
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("range"))));
         }
         /**
          * Returns the text field.
@@ -5814,12 +4970,10 @@ public final class CSS {
          * @param text protocol value
          */
         public SetScopeTextRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            set("styleSheetId", styleSheetId);
-            set("range", range);
-            set("text", text);
+            styleSheetId(styleSheetId).range(range).text(text);
         }
         public static SetScopeTextRequest fromMap(Map<String, Object> values) {
-            SetScopeTextRequest instance_ = new SetScopeTextRequest();
+            final SetScopeTextRequest instance_ = new SetScopeTextRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -5835,7 +4989,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.SourceRange range() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("range")))));
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("range"))));
         }
         /**
          * Returns the text field.
@@ -5884,12 +5038,10 @@ public final class CSS {
          * @param selector protocol value
          */
         public SetRuleSelectorRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String selector) {
-            set("styleSheetId", styleSheetId);
-            set("range", range);
-            set("selector", selector);
+            styleSheetId(styleSheetId).range(range).selector(selector);
         }
         public static SetRuleSelectorRequest fromMap(Map<String, Object> values) {
-            SetRuleSelectorRequest instance_ = new SetRuleSelectorRequest();
+            final SetRuleSelectorRequest instance_ = new SetRuleSelectorRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -5905,7 +5057,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.SourceRange range() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("range")))));
+            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("range"))));
         }
         /**
          * Returns the selector field.
@@ -5953,11 +5105,10 @@ public final class CSS {
          * @param text protocol value
          */
         public SetStyleSheetTextRequest(DOM.StyleSheetId styleSheetId, String text) {
-            set("styleSheetId", styleSheetId);
-            set("text", text);
+            styleSheetId(styleSheetId).text(text);
         }
         public static SetStyleSheetTextRequest fromMap(Map<String, Object> values) {
-            SetStyleSheetTextRequest instance_ = new SetStyleSheetTextRequest();
+            final SetStyleSheetTextRequest instance_ = new SetStyleSheetTextRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -6004,10 +5155,10 @@ public final class CSS {
          * @param edits protocol value
          */
         public SetStyleTextsRequest(java.util.List<CSS.StyleDeclarationEdit> edits) {
-            set("edits", edits);
+            edits(edits);
         }
         public static SetStyleTextsRequest fromMap(Map<String, Object> values) {
-            SetStyleTextsRequest instance_ = new SetStyleTextsRequest();
+            final SetStyleTextsRequest instance_ = new SetStyleTextsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -6016,7 +5167,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public java.util.List<CSS.StyleDeclarationEdit> edits() {
-            return CdpObject.requireList(require("edits"), element0 -> java.util.Objects.requireNonNull(CSS.StyleDeclarationEdit.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("edits"), element0 -> java.util.Objects.requireNonNull(CSS.StyleDeclarationEdit.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * NodeId for the DOM node in whose context custom property declarations for registered properties should be validated. If omitted, declarations in the new rule text can only be validated statically, which may produce incorrect results if the declaration contains a var() for example.
@@ -6024,8 +5175,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeForPropertySyntaxValidation() {
-            Object value = raw("nodeForPropertySyntaxValidation");
-            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
+            return raw("nodeForPropertySyntaxValidation").map(value -> new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Sets the edits field.
@@ -6039,17 +5189,7 @@ public final class CSS {
         /**
          * NodeId for the DOM node in whose context custom property declarations for registered properties should be validated. If omitted, declarations in the new rule text can only be validated statically, which may produce incorrect results if the declaration contains a var() for example.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param nodeForPropertySyntaxValidation field value; empty omits the value
-         * @return this model
-         */
-        public SetStyleTextsRequest nodeForPropertySyntaxValidation(Optional<DOM.NodeId> nodeForPropertySyntaxValidation) {
-            set("nodeForPropertySyntaxValidation", nodeForPropertySyntaxValidation.orElse(null));
-            return this;
-        }
-        /**
-         * NodeId for the DOM node in whose context custom property declarations for registered properties should be validated. If omitted, declarations in the new rule text can only be validated statically, which may produce incorrect results if the declaration contains a var() for example.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param nodeForPropertySyntaxValidation field value; null removes the value
+         * @param nodeForPropertySyntaxValidation field value
          * @return this model
          */
         public SetStyleTextsRequest nodeForPropertySyntaxValidation(DOM.NodeId nodeForPropertySyntaxValidation) {
@@ -6069,10 +5209,10 @@ public final class CSS {
          * @param enabled protocol value
          */
         public SetLocalFontsEnabledRequest(boolean enabled) {
-            set("enabled", enabled);
+            enabled(enabled);
         }
         public static SetLocalFontsEnabledRequest fromMap(Map<String, Object> values) {
-            SetLocalFontsEnabledRequest instance_ = new SetLocalFontsEnabledRequest();
+            final SetLocalFontsEnabledRequest instance_ = new SetLocalFontsEnabledRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -6107,37 +5247,25 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> backgroundColors() {
-            Object value = raw("backgroundColors");
-            return Optional.ofNullable(list(value, element0 -> (String) element0));
+            return raw("backgroundColors").flatMap(value -> list(value, element0 -> (String) element0));
         }
         /**
          * The computed font size for this node, as a CSS computed value string (e.g. &#x27;12px&#x27;).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> computedFontSize() {
-            Object value = raw("computedFontSize");
-            return Optional.ofNullable((String) value);
+            return raw("computedFontSize").map(value -> (String) value);
         }
         /**
          * The computed font weight for this node, as a CSS computed value string (e.g. &#x27;normal&#x27; or &#x27;100&#x27;).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> computedFontWeight() {
-            Object value = raw("computedFontWeight");
-            return Optional.ofNullable((String) value);
+            return raw("computedFontWeight").map(value -> (String) value);
         }
         /**
          * The range of background colors behind this element, if it contains any visible text. If no visible text is present, this will be undefined. In the case of a flat background color, this will consist of simply that color. In the case of a gradient, this will consist of each of the color stops. For anything more complicated, this will be an empty array. Images will be ignored (as if the image had failed to load).
-         * @param backgroundColors field value; empty omits the value
-         * @return this model
-         */
-        public GetBackgroundColorsResult backgroundColors(Optional<java.util.List<String>> backgroundColors) {
-            set("backgroundColors", backgroundColors.orElse(null));
-            return this;
-        }
-        /**
-         * The range of background colors behind this element, if it contains any visible text. If no visible text is present, this will be undefined. In the case of a flat background color, this will consist of simply that color. In the case of a gradient, this will consist of each of the color stops. For anything more complicated, this will be an empty array. Images will be ignored (as if the image had failed to load).
-         * @param backgroundColors field value; null removes the value
+         * @param backgroundColors field value
          * @return this model
          */
         public GetBackgroundColorsResult backgroundColors(java.util.List<String> backgroundColors) {
@@ -6146,16 +5274,7 @@ public final class CSS {
         }
         /**
          * The computed font size for this node, as a CSS computed value string (e.g. &#x27;12px&#x27;).
-         * @param computedFontSize field value; empty omits the value
-         * @return this model
-         */
-        public GetBackgroundColorsResult computedFontSize(Optional<String> computedFontSize) {
-            set("computedFontSize", computedFontSize.orElse(null));
-            return this;
-        }
-        /**
-         * The computed font size for this node, as a CSS computed value string (e.g. &#x27;12px&#x27;).
-         * @param computedFontSize field value; null removes the value
+         * @param computedFontSize field value
          * @return this model
          */
         public GetBackgroundColorsResult computedFontSize(String computedFontSize) {
@@ -6164,16 +5283,7 @@ public final class CSS {
         }
         /**
          * The computed font weight for this node, as a CSS computed value string (e.g. &#x27;normal&#x27; or &#x27;100&#x27;).
-         * @param computedFontWeight field value; empty omits the value
-         * @return this model
-         */
-        public GetBackgroundColorsResult computedFontWeight(Optional<String> computedFontWeight) {
-            set("computedFontWeight", computedFontWeight.orElse(null));
-            return this;
-        }
-        /**
-         * The computed font weight for this node, as a CSS computed value string (e.g. &#x27;normal&#x27; or &#x27;100&#x27;).
-         * @param computedFontWeight field value; null removes the value
+         * @param computedFontWeight field value
          * @return this model
          */
         public GetBackgroundColorsResult computedFontWeight(String computedFontWeight) {
@@ -6195,7 +5305,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public java.util.List<CSS.CSSComputedStyleProperty> computedStyle() {
-            return CdpObject.requireList(require("computedStyle"), element0 -> java.util.Objects.requireNonNull(CSS.CSSComputedStyleProperty.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("computedStyle"), element0 -> java.util.Objects.requireNonNull(CSS.CSSComputedStyleProperty.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * A list of non-standard &quot;extra fields&quot; which blink stores alongside each computed style.
@@ -6203,7 +5313,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.ComputedStyleExtraFields extraFields() {
-            return java.util.Objects.requireNonNull(CSS.ComputedStyleExtraFields.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("extraFields")))));
+            return java.util.Objects.requireNonNull(CSS.ComputedStyleExtraFields.fromMap(CdpObject.requireObjectMap(require("extraFields"))));
         }
         /**
          * Computed style for the specified DOM node.
@@ -6239,29 +5349,18 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> inlineStyle() {
-            Object value = raw("inlineStyle");
-            return Optional.ofNullable(value == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("inlineStyle").flatMap(CdpObject::objectMap).map(CSS.CSSStyle::fromMap);
         }
         /**
          * Attribute-defined element style (e.g. resulting from &quot;width=20 height=100%&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> attributesStyle() {
-            Object value = raw("attributesStyle");
-            return Optional.ofNullable(value == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("attributesStyle").flatMap(CdpObject::objectMap).map(CSS.CSSStyle::fromMap);
         }
         /**
          * Inline style for the specified DOM node.
-         * @param inlineStyle field value; empty omits the value
-         * @return this model
-         */
-        public GetInlineStylesForNodeResult inlineStyle(Optional<CSS.CSSStyle> inlineStyle) {
-            set("inlineStyle", inlineStyle.orElse(null));
-            return this;
-        }
-        /**
-         * Inline style for the specified DOM node.
-         * @param inlineStyle field value; null removes the value
+         * @param inlineStyle field value
          * @return this model
          */
         public GetInlineStylesForNodeResult inlineStyle(CSS.CSSStyle inlineStyle) {
@@ -6270,16 +5369,7 @@ public final class CSS {
         }
         /**
          * Attribute-defined element style (e.g. resulting from &quot;width=20 height=100%&quot;).
-         * @param attributesStyle field value; empty omits the value
-         * @return this model
-         */
-        public GetInlineStylesForNodeResult attributesStyle(Optional<CSS.CSSStyle> attributesStyle) {
-            set("attributesStyle", attributesStyle.orElse(null));
-            return this;
-        }
-        /**
-         * Attribute-defined element style (e.g. resulting from &quot;width=20 height=100%&quot;).
-         * @param attributesStyle field value; null removes the value
+         * @param attributesStyle field value
          * @return this model
          */
         public GetInlineStylesForNodeResult attributesStyle(CSS.CSSStyle attributesStyle) {
@@ -6302,37 +5392,25 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSAnimationStyle>> animationStyles() {
-            Object value = raw("animationStyles");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSAnimationStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("animationStyles").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSAnimationStyle.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Style coming from transitions.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> transitionsStyle() {
-            Object value = raw("transitionsStyle");
-            return Optional.ofNullable(value == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("transitionsStyle").flatMap(CdpObject::objectMap).map(CSS.CSSStyle::fromMap);
         }
         /**
          * Inherited style entries for animationsStyle and transitionsStyle from the inheritance chain of the element.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.InheritedAnimatedStyleEntry>> inherited() {
-            Object value = raw("inherited");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.InheritedAnimatedStyleEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("inherited").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.InheritedAnimatedStyleEntry.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Styles coming from animations.
-         * @param animationStyles field value; empty omits the value
-         * @return this model
-         */
-        public GetAnimatedStylesForNodeResult animationStyles(Optional<java.util.List<CSS.CSSAnimationStyle>> animationStyles) {
-            set("animationStyles", animationStyles.orElse(null));
-            return this;
-        }
-        /**
-         * Styles coming from animations.
-         * @param animationStyles field value; null removes the value
+         * @param animationStyles field value
          * @return this model
          */
         public GetAnimatedStylesForNodeResult animationStyles(java.util.List<CSS.CSSAnimationStyle> animationStyles) {
@@ -6341,16 +5419,7 @@ public final class CSS {
         }
         /**
          * Style coming from transitions.
-         * @param transitionsStyle field value; empty omits the value
-         * @return this model
-         */
-        public GetAnimatedStylesForNodeResult transitionsStyle(Optional<CSS.CSSStyle> transitionsStyle) {
-            set("transitionsStyle", transitionsStyle.orElse(null));
-            return this;
-        }
-        /**
-         * Style coming from transitions.
-         * @param transitionsStyle field value; null removes the value
+         * @param transitionsStyle field value
          * @return this model
          */
         public GetAnimatedStylesForNodeResult transitionsStyle(CSS.CSSStyle transitionsStyle) {
@@ -6359,16 +5428,7 @@ public final class CSS {
         }
         /**
          * Inherited style entries for animationsStyle and transitionsStyle from the inheritance chain of the element.
-         * @param inherited field value; empty omits the value
-         * @return this model
-         */
-        public GetAnimatedStylesForNodeResult inherited(Optional<java.util.List<CSS.InheritedAnimatedStyleEntry>> inherited) {
-            set("inherited", inherited.orElse(null));
-            return this;
-        }
-        /**
-         * Inherited style entries for animationsStyle and transitionsStyle from the inheritance chain of the element.
-         * @param inherited field value; null removes the value
+         * @param inherited field value
          * @return this model
          */
         public GetAnimatedStylesForNodeResult inherited(java.util.List<CSS.InheritedAnimatedStyleEntry> inherited) {
@@ -6390,96 +5450,84 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> inlineStyle() {
-            Object value = raw("inlineStyle");
-            return Optional.ofNullable(value == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("inlineStyle").flatMap(CdpObject::objectMap).map(CSS.CSSStyle::fromMap);
         }
         /**
          * Attribute-defined element style (e.g. resulting from &quot;width=20 height=100%&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> attributesStyle() {
-            Object value = raw("attributesStyle");
-            return Optional.ofNullable(value == null ? null : CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("attributesStyle").flatMap(CdpObject::objectMap).map(CSS.CSSStyle::fromMap);
         }
         /**
          * CSS rules matching this node, from all applicable stylesheets.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.RuleMatch>> matchedCSSRules() {
-            Object value = raw("matchedCSSRules");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.RuleMatch.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("matchedCSSRules").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.RuleMatch.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Pseudo style matches for this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.PseudoElementMatches>> pseudoElements() {
-            Object value = raw("pseudoElements");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.PseudoElementMatches.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("pseudoElements").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.PseudoElementMatches.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * A chain of inherited styles (from the immediate node parent up to the DOM tree root).
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.InheritedStyleEntry>> inherited() {
-            Object value = raw("inherited");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.InheritedStyleEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("inherited").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.InheritedStyleEntry.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * A chain of inherited pseudo element styles (from the immediate node parent up to the DOM tree root).
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.InheritedPseudoElementMatches>> inheritedPseudoElements() {
-            Object value = raw("inheritedPseudoElements");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.InheritedPseudoElementMatches.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("inheritedPseudoElements").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.InheritedPseudoElementMatches.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * A list of CSS keyframed animations matching this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSKeyframesRule>> cssKeyframesRules() {
-            Object value = raw("cssKeyframesRules");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSKeyframesRule.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("cssKeyframesRules").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSKeyframesRule.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * A list of CSS &#64;position-try rules matching this node, based on the position-try-fallbacks property.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSPositionTryRule>> cssPositionTryRules() {
-            Object value = raw("cssPositionTryRules");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSPositionTryRule.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("cssPositionTryRules").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSPositionTryRule.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Index of the active fallback in the applied position-try-fallback property, will not be set if there is no active position-try fallback.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong activePositionFallbackIndex() {
-            Long value = CdpObject.numberAsLong(raw("activePositionFallbackIndex"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("activePositionFallbackIndex").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * A list of CSS at-property rules matching this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSPropertyRule>> cssPropertyRules() {
-            Object value = raw("cssPropertyRules");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSPropertyRule.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("cssPropertyRules").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSPropertyRule.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * A list of CSS property registrations matching this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSPropertyRegistration>> cssPropertyRegistrations() {
-            Object value = raw("cssPropertyRegistrations");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSPropertyRegistration.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("cssPropertyRegistrations").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSPropertyRegistration.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * A list of simple &#64;rules matching this node or its pseudo-elements.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSAtRule>> cssAtRules() {
-            Object value = raw("cssAtRules");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSAtRule.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("cssAtRules").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSAtRule.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Id of the first parent element that does not have display: contents.
@@ -6487,8 +5535,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> parentLayoutNodeId() {
-            Object value = raw("parentLayoutNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
+            return raw("parentLayoutNodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * A list of CSS at-function rules referenced by styles of this node.
@@ -6496,21 +5543,11 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSFunctionRule>> cssFunctionRules() {
-            Object value = raw("cssFunctionRules");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSFunctionRule.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("cssFunctionRules").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSFunctionRule.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Inline style for the specified DOM node.
-         * @param inlineStyle field value; empty omits the value
-         * @return this model
-         */
-        public GetMatchedStylesForNodeResult inlineStyle(Optional<CSS.CSSStyle> inlineStyle) {
-            set("inlineStyle", inlineStyle.orElse(null));
-            return this;
-        }
-        /**
-         * Inline style for the specified DOM node.
-         * @param inlineStyle field value; null removes the value
+         * @param inlineStyle field value
          * @return this model
          */
         public GetMatchedStylesForNodeResult inlineStyle(CSS.CSSStyle inlineStyle) {
@@ -6519,16 +5556,7 @@ public final class CSS {
         }
         /**
          * Attribute-defined element style (e.g. resulting from &quot;width=20 height=100%&quot;).
-         * @param attributesStyle field value; empty omits the value
-         * @return this model
-         */
-        public GetMatchedStylesForNodeResult attributesStyle(Optional<CSS.CSSStyle> attributesStyle) {
-            set("attributesStyle", attributesStyle.orElse(null));
-            return this;
-        }
-        /**
-         * Attribute-defined element style (e.g. resulting from &quot;width=20 height=100%&quot;).
-         * @param attributesStyle field value; null removes the value
+         * @param attributesStyle field value
          * @return this model
          */
         public GetMatchedStylesForNodeResult attributesStyle(CSS.CSSStyle attributesStyle) {
@@ -6537,16 +5565,7 @@ public final class CSS {
         }
         /**
          * CSS rules matching this node, from all applicable stylesheets.
-         * @param matchedCSSRules field value; empty omits the value
-         * @return this model
-         */
-        public GetMatchedStylesForNodeResult matchedCSSRules(Optional<java.util.List<CSS.RuleMatch>> matchedCSSRules) {
-            set("matchedCSSRules", matchedCSSRules.orElse(null));
-            return this;
-        }
-        /**
-         * CSS rules matching this node, from all applicable stylesheets.
-         * @param matchedCSSRules field value; null removes the value
+         * @param matchedCSSRules field value
          * @return this model
          */
         public GetMatchedStylesForNodeResult matchedCSSRules(java.util.List<CSS.RuleMatch> matchedCSSRules) {
@@ -6555,16 +5574,7 @@ public final class CSS {
         }
         /**
          * Pseudo style matches for this node.
-         * @param pseudoElements field value; empty omits the value
-         * @return this model
-         */
-        public GetMatchedStylesForNodeResult pseudoElements(Optional<java.util.List<CSS.PseudoElementMatches>> pseudoElements) {
-            set("pseudoElements", pseudoElements.orElse(null));
-            return this;
-        }
-        /**
-         * Pseudo style matches for this node.
-         * @param pseudoElements field value; null removes the value
+         * @param pseudoElements field value
          * @return this model
          */
         public GetMatchedStylesForNodeResult pseudoElements(java.util.List<CSS.PseudoElementMatches> pseudoElements) {
@@ -6573,16 +5583,7 @@ public final class CSS {
         }
         /**
          * A chain of inherited styles (from the immediate node parent up to the DOM tree root).
-         * @param inherited field value; empty omits the value
-         * @return this model
-         */
-        public GetMatchedStylesForNodeResult inherited(Optional<java.util.List<CSS.InheritedStyleEntry>> inherited) {
-            set("inherited", inherited.orElse(null));
-            return this;
-        }
-        /**
-         * A chain of inherited styles (from the immediate node parent up to the DOM tree root).
-         * @param inherited field value; null removes the value
+         * @param inherited field value
          * @return this model
          */
         public GetMatchedStylesForNodeResult inherited(java.util.List<CSS.InheritedStyleEntry> inherited) {
@@ -6591,16 +5592,7 @@ public final class CSS {
         }
         /**
          * A chain of inherited pseudo element styles (from the immediate node parent up to the DOM tree root).
-         * @param inheritedPseudoElements field value; empty omits the value
-         * @return this model
-         */
-        public GetMatchedStylesForNodeResult inheritedPseudoElements(Optional<java.util.List<CSS.InheritedPseudoElementMatches>> inheritedPseudoElements) {
-            set("inheritedPseudoElements", inheritedPseudoElements.orElse(null));
-            return this;
-        }
-        /**
-         * A chain of inherited pseudo element styles (from the immediate node parent up to the DOM tree root).
-         * @param inheritedPseudoElements field value; null removes the value
+         * @param inheritedPseudoElements field value
          * @return this model
          */
         public GetMatchedStylesForNodeResult inheritedPseudoElements(java.util.List<CSS.InheritedPseudoElementMatches> inheritedPseudoElements) {
@@ -6609,16 +5601,7 @@ public final class CSS {
         }
         /**
          * A list of CSS keyframed animations matching this node.
-         * @param cssKeyframesRules field value; empty omits the value
-         * @return this model
-         */
-        public GetMatchedStylesForNodeResult cssKeyframesRules(Optional<java.util.List<CSS.CSSKeyframesRule>> cssKeyframesRules) {
-            set("cssKeyframesRules", cssKeyframesRules.orElse(null));
-            return this;
-        }
-        /**
-         * A list of CSS keyframed animations matching this node.
-         * @param cssKeyframesRules field value; null removes the value
+         * @param cssKeyframesRules field value
          * @return this model
          */
         public GetMatchedStylesForNodeResult cssKeyframesRules(java.util.List<CSS.CSSKeyframesRule> cssKeyframesRules) {
@@ -6627,16 +5610,7 @@ public final class CSS {
         }
         /**
          * A list of CSS &#64;position-try rules matching this node, based on the position-try-fallbacks property.
-         * @param cssPositionTryRules field value; empty omits the value
-         * @return this model
-         */
-        public GetMatchedStylesForNodeResult cssPositionTryRules(Optional<java.util.List<CSS.CSSPositionTryRule>> cssPositionTryRules) {
-            set("cssPositionTryRules", cssPositionTryRules.orElse(null));
-            return this;
-        }
-        /**
-         * A list of CSS &#64;position-try rules matching this node, based on the position-try-fallbacks property.
-         * @param cssPositionTryRules field value; null removes the value
+         * @param cssPositionTryRules field value
          * @return this model
          */
         public GetMatchedStylesForNodeResult cssPositionTryRules(java.util.List<CSS.CSSPositionTryRule> cssPositionTryRules) {
@@ -6645,34 +5619,16 @@ public final class CSS {
         }
         /**
          * Index of the active fallback in the applied position-try-fallback property, will not be set if there is no active position-try fallback.
-         * @param activePositionFallbackIndex field value; empty omits the value
+         * @param activePositionFallbackIndex field value
          * @return this model
          */
-        public GetMatchedStylesForNodeResult activePositionFallbackIndex(OptionalLong activePositionFallbackIndex) {
-            set("activePositionFallbackIndex", activePositionFallbackIndex.isPresent() ? activePositionFallbackIndex.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Index of the active fallback in the applied position-try-fallback property, will not be set if there is no active position-try fallback.
-         * @param activePositionFallbackIndex field value; null removes the value
-         * @return this model
-         */
-        public GetMatchedStylesForNodeResult activePositionFallbackIndex(Long activePositionFallbackIndex) {
+        public GetMatchedStylesForNodeResult activePositionFallbackIndex(long activePositionFallbackIndex) {
             set("activePositionFallbackIndex", activePositionFallbackIndex);
             return this;
         }
         /**
          * A list of CSS at-property rules matching this node.
-         * @param cssPropertyRules field value; empty omits the value
-         * @return this model
-         */
-        public GetMatchedStylesForNodeResult cssPropertyRules(Optional<java.util.List<CSS.CSSPropertyRule>> cssPropertyRules) {
-            set("cssPropertyRules", cssPropertyRules.orElse(null));
-            return this;
-        }
-        /**
-         * A list of CSS at-property rules matching this node.
-         * @param cssPropertyRules field value; null removes the value
+         * @param cssPropertyRules field value
          * @return this model
          */
         public GetMatchedStylesForNodeResult cssPropertyRules(java.util.List<CSS.CSSPropertyRule> cssPropertyRules) {
@@ -6681,16 +5637,7 @@ public final class CSS {
         }
         /**
          * A list of CSS property registrations matching this node.
-         * @param cssPropertyRegistrations field value; empty omits the value
-         * @return this model
-         */
-        public GetMatchedStylesForNodeResult cssPropertyRegistrations(Optional<java.util.List<CSS.CSSPropertyRegistration>> cssPropertyRegistrations) {
-            set("cssPropertyRegistrations", cssPropertyRegistrations.orElse(null));
-            return this;
-        }
-        /**
-         * A list of CSS property registrations matching this node.
-         * @param cssPropertyRegistrations field value; null removes the value
+         * @param cssPropertyRegistrations field value
          * @return this model
          */
         public GetMatchedStylesForNodeResult cssPropertyRegistrations(java.util.List<CSS.CSSPropertyRegistration> cssPropertyRegistrations) {
@@ -6699,16 +5646,7 @@ public final class CSS {
         }
         /**
          * A list of simple &#64;rules matching this node or its pseudo-elements.
-         * @param cssAtRules field value; empty omits the value
-         * @return this model
-         */
-        public GetMatchedStylesForNodeResult cssAtRules(Optional<java.util.List<CSS.CSSAtRule>> cssAtRules) {
-            set("cssAtRules", cssAtRules.orElse(null));
-            return this;
-        }
-        /**
-         * A list of simple &#64;rules matching this node or its pseudo-elements.
-         * @param cssAtRules field value; null removes the value
+         * @param cssAtRules field value
          * @return this model
          */
         public GetMatchedStylesForNodeResult cssAtRules(java.util.List<CSS.CSSAtRule> cssAtRules) {
@@ -6718,17 +5656,7 @@ public final class CSS {
         /**
          * Id of the first parent element that does not have display: contents.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param parentLayoutNodeId field value; empty omits the value
-         * @return this model
-         */
-        public GetMatchedStylesForNodeResult parentLayoutNodeId(Optional<DOM.NodeId> parentLayoutNodeId) {
-            set("parentLayoutNodeId", parentLayoutNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Id of the first parent element that does not have display: contents.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param parentLayoutNodeId field value; null removes the value
+         * @param parentLayoutNodeId field value
          * @return this model
          */
         public GetMatchedStylesForNodeResult parentLayoutNodeId(DOM.NodeId parentLayoutNodeId) {
@@ -6738,17 +5666,7 @@ public final class CSS {
         /**
          * A list of CSS at-function rules referenced by styles of this node.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param cssFunctionRules field value; empty omits the value
-         * @return this model
-         */
-        public GetMatchedStylesForNodeResult cssFunctionRules(Optional<java.util.List<CSS.CSSFunctionRule>> cssFunctionRules) {
-            set("cssFunctionRules", cssFunctionRules.orElse(null));
-            return this;
-        }
-        /**
-         * A list of CSS at-function rules referenced by styles of this node.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param cssFunctionRules field value; null removes the value
+         * @param cssFunctionRules field value
          * @return this model
          */
         public GetMatchedStylesForNodeResult cssFunctionRules(java.util.List<CSS.CSSFunctionRule> cssFunctionRules) {
@@ -6770,7 +5688,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public java.util.List<CSS.RuleUsage> coverage() {
-            return CdpObject.requireList(require("coverage"), element0 -> java.util.Objects.requireNonNull(CSS.RuleUsage.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("coverage"), element0 -> java.util.Objects.requireNonNull(CSS.RuleUsage.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Monotonically increasing time, in seconds.
@@ -6812,21 +5730,11 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.FontFace> font() {
-            Object value = raw("font");
-            return Optional.ofNullable(value == null ? null : CSS.FontFace.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("font").flatMap(CdpObject::objectMap).map(CSS.FontFace::fromMap);
         }
         /**
          * The web font that has loaded.
-         * @param font field value; empty omits the value
-         * @return this model
-         */
-        public FontsUpdatedEvent font(Optional<CSS.FontFace> font) {
-            set("font", font.orElse(null));
-            return this;
-        }
-        /**
-         * The web font that has loaded.
-         * @param font field value; null removes the value
+         * @param font field value
          * @return this model
          */
         public FontsUpdatedEvent font(CSS.FontFace font) {
@@ -6858,7 +5766,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.CSSStyleSheetHeader header() {
-            return java.util.Objects.requireNonNull(CSS.CSSStyleSheetHeader.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("header")))));
+            return java.util.Objects.requireNonNull(CSS.CSSStyleSheetHeader.fromMap(CdpObject.requireObjectMap(require("header"))));
         }
         /**
          * Added stylesheet metainfo.
@@ -6960,13 +5868,13 @@ public final class CSS {
          * @param nodeForPropertySyntaxValidation protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<CSS.CSSRule> addRule(DOM.StyleSheetId styleSheetId, String ruleText, CSS.SourceRange location, Optional<DOM.NodeId> nodeForPropertySyntaxValidation) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<CSS.CSSRule> addRule(DOM.StyleSheetId styleSheetId, String ruleText, CSS.SourceRange location, DOM.NodeId nodeForPropertySyntaxValidation) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("styleSheetId", CdpObject.json(styleSheetId));
             params.put("ruleText", CdpObject.json(ruleText));
             params.put("location", CdpObject.json(location));
-            nodeForPropertySyntaxValidation.ifPresent(value_ -> params.put("nodeForPropertySyntaxValidation", CdpObject.json(value_)));
-            return client.call("CSS.addRule", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSRule.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("rule")))))));
+            params.put("nodeForPropertySyntaxValidation", CdpObject.json(nodeForPropertySyntaxValidation));
+            return client.call("CSS.addRule", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSRule.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("rule"))))));
         }
         /**
          * Inserts a new rule with the given {@code ruleText} in a stylesheet with given {@code styleSheetId}, at the position specified by {@code location}.
@@ -6976,7 +5884,11 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSRule> addRule(DOM.StyleSheetId styleSheetId, String ruleText, CSS.SourceRange location) {
-            return addRule(styleSheetId, ruleText, location, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("styleSheetId", CdpObject.json(styleSheetId));
+            params.put("ruleText", CdpObject.json(ruleText));
+            params.put("location", CdpObject.json(location));
+            return client.call("CSS.addRule", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSRule.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("rule"))))));
         }
         /**
          * Inserts a new rule with the given {@code ruleText} in a stylesheet with given {@code styleSheetId}, at the position specified by {@code location}.
@@ -6984,7 +5896,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSRule> addRule(AddRuleRequest request) {
-            return client.call("CSS.addRule", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSRule.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("rule")))))));
+            return client.call("CSS.addRule", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSRule.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("rule"))))));
         }
         /**
          * Returns all class names from specified stylesheet.
@@ -6992,7 +5904,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> collectClassNames(DOM.StyleSheetId styleSheetId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("styleSheetId", CdpObject.json(styleSheetId));
             return client.call("CSS.collectClassNames", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("classNames")), element0 -> (String) element0));
         }
@@ -7010,10 +5922,10 @@ public final class CSS {
          * @param force protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<DOM.StyleSheetId> createStyleSheet(Page.FrameId frameId, Optional<Boolean> force) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<DOM.StyleSheetId> createStyleSheet(Page.FrameId frameId, boolean force) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("frameId", CdpObject.json(frameId));
-            force.ifPresent(value_ -> params.put("force", value_));
+            params.put("force", CdpObject.json(force));
             return client.call("CSS.createStyleSheet", params, result_ -> new DOM.StyleSheetId((String) java.util.Objects.requireNonNull(result_.get("styleSheetId"))));
         }
         /**
@@ -7022,7 +5934,9 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.StyleSheetId> createStyleSheet(Page.FrameId frameId) {
-            return createStyleSheet(frameId, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("frameId", CdpObject.json(frameId));
+            return client.call("CSS.createStyleSheet", params, result_ -> new DOM.StyleSheetId((String) java.util.Objects.requireNonNull(result_.get("styleSheetId"))));
         }
         /**
          * Creates a new special &quot;via-inspector&quot; stylesheet in the frame with given {@code frameId}.
@@ -7053,7 +5967,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> forcePseudoState(DOM.NodeId nodeId, java.util.List<String> forcedPseudoClasses) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("forcedPseudoClasses", CdpObject.json(forcedPseudoClasses));
             return client.call("CSS.forcePseudoState", params);
@@ -7073,7 +5987,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> forceStartingStyle(DOM.NodeId nodeId, boolean forced) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("forced", CdpObject.json(forced));
             return client.call("CSS.forceStartingStyle", params);
@@ -7092,7 +6006,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetBackgroundColorsResult> getBackgroundColors(DOM.NodeId nodeId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             return client.call("CSS.getBackgroundColors", params, result_ -> new GetBackgroundColorsResult(result_));
         }
@@ -7110,7 +6024,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetComputedStyleForNodeResult> getComputedStyleForNode(DOM.NodeId nodeId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             return client.call("CSS.getComputedStyleForNode", params, result_ -> new GetComputedStyleForNodeResult(result_));
         }
@@ -7132,13 +6046,13 @@ public final class CSS {
          * @param pseudoIdentifier protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<java.util.List<String>> resolveValues(java.util.List<String> values, DOM.NodeId nodeId, Optional<String> propertyName, Optional<DOM.PseudoType> pseudoType, Optional<String> pseudoIdentifier) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<java.util.List<String>> resolveValues(java.util.List<String> values, DOM.NodeId nodeId, @Nullable String propertyName, DOM.@Nullable PseudoType pseudoType, @Nullable String pseudoIdentifier) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("values", CdpObject.json(values));
             params.put("nodeId", CdpObject.json(nodeId));
-            propertyName.ifPresent(value_ -> params.put("propertyName", CdpObject.json(value_)));
-            pseudoType.ifPresent(value_ -> params.put("pseudoType", CdpObject.json(value_)));
-            pseudoIdentifier.ifPresent(value_ -> params.put("pseudoIdentifier", CdpObject.json(value_)));
+            if (propertyName != null) params.put("propertyName", CdpObject.json(propertyName));
+            if (pseudoType != null) params.put("pseudoType", CdpObject.json(pseudoType));
+            if (pseudoIdentifier != null) params.put("pseudoIdentifier", CdpObject.json(pseudoIdentifier));
             return client.call("CSS.resolveValues", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("results")), element0 -> (String) element0));
         }
         /**
@@ -7149,7 +6063,10 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> resolveValues(java.util.List<String> values, DOM.NodeId nodeId) {
-            return resolveValues(values, nodeId, Optional.empty(), Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("values", CdpObject.json(values));
+            params.put("nodeId", CdpObject.json(nodeId));
+            return client.call("CSS.resolveValues", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("results")), element0 -> (String) element0));
         }
         /**
          * Resolve the specified values in the context of the provided element. For example, a value of &#x27;1em&#x27; is evaluated according to the computed &#x27;font-size&#x27; of the element and a value &#x27;calc(1px + 2px)&#x27; will be resolved to &#x27;3px&#x27;. If the {@code propertyName} was specified the {@code values} are resolved as if they were property&#x27;s declaration. If a value cannot be parsed according to the provided property syntax, the value is parsed using combined syntax as if null {@code propertyName} was provided. If the value cannot be resolved even then, return the provided value without any changes. Note: this function currently does not resolve CSS random() function, it returns unmodified random() function parts.`
@@ -7168,10 +6085,10 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.CSSProperty>> getLonghandProperties(String shorthandName, String value) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("shorthandName", CdpObject.json(shorthandName));
             params.put("value", CdpObject.json(value));
-            return client.call("CSS.getLonghandProperties", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("longhandProperties")), element0 -> java.util.Objects.requireNonNull(CSS.CSSProperty.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("CSS.getLonghandProperties", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("longhandProperties")), element0 -> java.util.Objects.requireNonNull(CSS.CSSProperty.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Invokes CSS.getLonghandProperties with a request object.
@@ -7180,7 +6097,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.CSSProperty>> getLonghandProperties(GetLonghandPropertiesRequest request) {
-            return client.call("CSS.getLonghandProperties", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("longhandProperties")), element0 -> java.util.Objects.requireNonNull(CSS.CSSProperty.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("CSS.getLonghandProperties", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("longhandProperties")), element0 -> java.util.Objects.requireNonNull(CSS.CSSProperty.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Returns the styles defined inline (explicitly in the &quot;style&quot; attribute and implicitly, using DOM attributes) for a DOM node identified by {@code nodeId}.
@@ -7188,7 +6105,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetInlineStylesForNodeResult> getInlineStylesForNode(DOM.NodeId nodeId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             return client.call("CSS.getInlineStylesForNode", params, result_ -> new GetInlineStylesForNodeResult(result_));
         }
@@ -7207,7 +6124,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetAnimatedStylesForNodeResult> getAnimatedStylesForNode(DOM.NodeId nodeId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             return client.call("CSS.getAnimatedStylesForNode", params, result_ -> new GetAnimatedStylesForNodeResult(result_));
         }
@@ -7226,7 +6143,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetMatchedStylesForNodeResult> getMatchedStylesForNode(DOM.NodeId nodeId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             return client.call("CSS.getMatchedStylesForNode", params, result_ -> new GetMatchedStylesForNodeResult(result_));
         }
@@ -7244,14 +6161,14 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.Map<String, Object>> getEnvironmentVariables() {
-            return client.call("CSS.getEnvironmentVariables", null, result_ -> java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("environmentVariables")))));
+            return client.call("CSS.getEnvironmentVariables", null, result_ -> CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("environmentVariables"))));
         }
         /**
          * Returns all media queries parsed by the rendering engine.
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.CSSMedia>> getMediaQueries() {
-            return client.call("CSS.getMediaQueries", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("medias")), element0 -> java.util.Objects.requireNonNull(CSS.CSSMedia.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("CSS.getMediaQueries", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("medias")), element0 -> java.util.Objects.requireNonNull(CSS.CSSMedia.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Requests information about platform fonts which we used to render child TextNodes in the given node.
@@ -7259,9 +6176,9 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.PlatformFontUsage>> getPlatformFontsForNode(DOM.NodeId nodeId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("CSS.getPlatformFontsForNode", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("fonts")), element0 -> java.util.Objects.requireNonNull(CSS.PlatformFontUsage.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("CSS.getPlatformFontsForNode", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("fonts")), element0 -> java.util.Objects.requireNonNull(CSS.PlatformFontUsage.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Requests information about platform fonts which we used to render child TextNodes in the given node.
@@ -7269,7 +6186,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.PlatformFontUsage>> getPlatformFontsForNode(GetPlatformFontsForNodeRequest request) {
-            return client.call("CSS.getPlatformFontsForNode", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("fonts")), element0 -> java.util.Objects.requireNonNull(CSS.PlatformFontUsage.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("CSS.getPlatformFontsForNode", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("fonts")), element0 -> java.util.Objects.requireNonNull(CSS.PlatformFontUsage.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Returns the current textual content for a stylesheet.
@@ -7277,7 +6194,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> getStyleSheetText(DOM.StyleSheetId styleSheetId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("styleSheetId", CdpObject.json(styleSheetId));
             return client.call("CSS.getStyleSheetText", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("text")));
         }
@@ -7296,9 +6213,9 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSLayerData> getLayersForNode(DOM.NodeId nodeId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("CSS.getLayersForNode", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSLayerData.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("rootLayer")))))));
+            return client.call("CSS.getLayersForNode", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSLayerData.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("rootLayer"))))));
         }
         /**
          * Returns all layers parsed by the rendering engine for the tree scope of a node. Given a DOM element identified by nodeId, getLayersForNode returns the root layer for the nearest ancestor document or shadow root. The layer root contains the full layer tree for the tree scope and their ordering.
@@ -7307,7 +6224,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSLayerData> getLayersForNode(GetLayersForNodeRequest request) {
-            return client.call("CSS.getLayersForNode", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSLayerData.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("rootLayer")))))));
+            return client.call("CSS.getLayersForNode", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSLayerData.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("rootLayer"))))));
         }
         /**
          * Given a CSS selector text and a style sheet ID, getLocationForSelector returns an array of locations of the CSS selector in the style sheet.
@@ -7317,10 +6234,10 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.SourceRange>> getLocationForSelector(DOM.StyleSheetId styleSheetId, String selectorText) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("styleSheetId", CdpObject.json(styleSheetId));
             params.put("selectorText", CdpObject.json(selectorText));
-            return client.call("CSS.getLocationForSelector", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("ranges")), element0 -> java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("CSS.getLocationForSelector", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("ranges")), element0 -> java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Given a CSS selector text and a style sheet ID, getLocationForSelector returns an array of locations of the CSS selector in the style sheet.
@@ -7329,7 +6246,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.SourceRange>> getLocationForSelector(GetLocationForSelectorRequest request) {
-            return client.call("CSS.getLocationForSelector", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("ranges")), element0 -> java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("CSS.getLocationForSelector", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("ranges")), element0 -> java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Starts tracking the given node for the computed style updates and whenever the computed style is updated for node, it queues a {@code computedStyleUpdated} event with throttling. There can only be 1 node tracked for computed style updates so passing a new node id removes tracking from the previous node. Pass {@code undefined} to disable tracking.
@@ -7337,9 +6254,9 @@ public final class CSS {
          * @param nodeId protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> trackComputedStyleUpdatesForNode(Optional<DOM.NodeId> nodeId) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
+        public CompletionStage<Void> trackComputedStyleUpdatesForNode(DOM.NodeId nodeId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
             return client.call("CSS.trackComputedStyleUpdatesForNode", params);
         }
         /**
@@ -7348,7 +6265,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackComputedStyleUpdatesForNode() {
-            return trackComputedStyleUpdatesForNode(Optional.empty());
+            return client.call("CSS.trackComputedStyleUpdatesForNode", null);
         }
         /**
          * Starts tracking the given node for the computed style updates and whenever the computed style is updated for node, it queues a {@code computedStyleUpdated} event with throttling. There can only be 1 node tracked for computed style updates so passing a new node id removes tracking from the previous node. Pass {@code undefined} to disable tracking.
@@ -7366,7 +6283,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackComputedStyleUpdates(java.util.List<CSS.CSSComputedStyleProperty> propertiesToTrack) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("propertiesToTrack", CdpObject.json(propertiesToTrack));
             return client.call("CSS.trackComputedStyleUpdates", params);
         }
@@ -7395,7 +6312,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setEffectivePropertyValueForNode(DOM.NodeId nodeId, String propertyName, String value) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("propertyName", CdpObject.json(propertyName));
             params.put("value", CdpObject.json(value));
@@ -7417,11 +6334,11 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.Value> setPropertyRulePropertyName(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String propertyName) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("styleSheetId", CdpObject.json(styleSheetId));
             params.put("range", CdpObject.json(range));
             params.put("propertyName", CdpObject.json(propertyName));
-            return client.call("CSS.setPropertyRulePropertyName", params, result_ -> java.util.Objects.requireNonNull(CSS.Value.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("propertyName")))))));
+            return client.call("CSS.setPropertyRulePropertyName", params, result_ -> java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("propertyName"))))));
         }
         /**
          * Modifies the property rule property name.
@@ -7429,7 +6346,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.Value> setPropertyRulePropertyName(SetPropertyRulePropertyNameRequest request) {
-            return client.call("CSS.setPropertyRulePropertyName", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.Value.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("propertyName")))))));
+            return client.call("CSS.setPropertyRulePropertyName", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("propertyName"))))));
         }
         /**
          * Modifies the keyframe rule key text.
@@ -7439,11 +6356,11 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.Value> setKeyframeKey(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String keyText) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("styleSheetId", CdpObject.json(styleSheetId));
             params.put("range", CdpObject.json(range));
             params.put("keyText", CdpObject.json(keyText));
-            return client.call("CSS.setKeyframeKey", params, result_ -> java.util.Objects.requireNonNull(CSS.Value.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("keyText")))))));
+            return client.call("CSS.setKeyframeKey", params, result_ -> java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("keyText"))))));
         }
         /**
          * Modifies the keyframe rule key text.
@@ -7451,7 +6368,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.Value> setKeyframeKey(SetKeyframeKeyRequest request) {
-            return client.call("CSS.setKeyframeKey", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.Value.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("keyText")))))));
+            return client.call("CSS.setKeyframeKey", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("keyText"))))));
         }
         /**
          * Modifies the rule selector.
@@ -7461,11 +6378,11 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSMedia> setMediaText(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("styleSheetId", CdpObject.json(styleSheetId));
             params.put("range", CdpObject.json(range));
             params.put("text", CdpObject.json(text));
-            return client.call("CSS.setMediaText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSMedia.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("media")))))));
+            return client.call("CSS.setMediaText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSMedia.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("media"))))));
         }
         /**
          * Modifies the rule selector.
@@ -7473,7 +6390,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSMedia> setMediaText(SetMediaTextRequest request) {
-            return client.call("CSS.setMediaText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSMedia.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("media")))))));
+            return client.call("CSS.setMediaText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSMedia.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("media"))))));
         }
         /**
          * Modifies the expression of a container query. Deprecated. Use setContainerQueryConditionText instead.
@@ -7486,11 +6403,11 @@ public final class CSS {
          */
         @Deprecated
         public CompletionStage<CSS.CSSContainerQuery> setContainerQueryText(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("styleSheetId", CdpObject.json(styleSheetId));
             params.put("range", CdpObject.json(range));
             params.put("text", CdpObject.json(text));
-            return client.call("CSS.setContainerQueryText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("containerQuery")))))));
+            return client.call("CSS.setContainerQueryText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("containerQuery"))))));
         }
         /**
          * Modifies the expression of a container query. Deprecated. Use setContainerQueryConditionText instead.
@@ -7501,7 +6418,7 @@ public final class CSS {
          */
         @Deprecated
         public CompletionStage<CSS.CSSContainerQuery> setContainerQueryText(SetContainerQueryTextRequest request) {
-            return client.call("CSS.setContainerQueryText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("containerQuery")))))));
+            return client.call("CSS.setContainerQueryText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("containerQuery"))))));
         }
         /**
          * Invokes CSS.setContainerQueryConditionText.
@@ -7512,11 +6429,11 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSContainerQuery> setContainerQueryConditionText(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("styleSheetId", CdpObject.json(styleSheetId));
             params.put("range", CdpObject.json(range));
             params.put("text", CdpObject.json(text));
-            return client.call("CSS.setContainerQueryConditionText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("containerQuery")))))));
+            return client.call("CSS.setContainerQueryConditionText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("containerQuery"))))));
         }
         /**
          * Invokes CSS.setContainerQueryConditionText with a request object.
@@ -7525,7 +6442,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSContainerQuery> setContainerQueryConditionText(SetContainerQueryConditionTextRequest request) {
-            return client.call("CSS.setContainerQueryConditionText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("containerQuery")))))));
+            return client.call("CSS.setContainerQueryConditionText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("containerQuery"))))));
         }
         /**
          * Modifies the expression of a supports at-rule.
@@ -7536,11 +6453,11 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSSupports> setSupportsText(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("styleSheetId", CdpObject.json(styleSheetId));
             params.put("range", CdpObject.json(range));
             params.put("text", CdpObject.json(text));
-            return client.call("CSS.setSupportsText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSSupports.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("supports")))))));
+            return client.call("CSS.setSupportsText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSSupports.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("supports"))))));
         }
         /**
          * Modifies the expression of a supports at-rule.
@@ -7549,7 +6466,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSSupports> setSupportsText(SetSupportsTextRequest request) {
-            return client.call("CSS.setSupportsText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSSupports.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("supports")))))));
+            return client.call("CSS.setSupportsText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSSupports.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("supports"))))));
         }
         /**
          * Modifies the expression of a navigation at-rule.
@@ -7560,11 +6477,11 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSNavigation> setNavigationText(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("styleSheetId", CdpObject.json(styleSheetId));
             params.put("range", CdpObject.json(range));
             params.put("text", CdpObject.json(text));
-            return client.call("CSS.setNavigationText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSNavigation.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("navigation")))))));
+            return client.call("CSS.setNavigationText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSNavigation.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("navigation"))))));
         }
         /**
          * Modifies the expression of a navigation at-rule.
@@ -7573,7 +6490,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSNavigation> setNavigationText(SetNavigationTextRequest request) {
-            return client.call("CSS.setNavigationText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSNavigation.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("navigation")))))));
+            return client.call("CSS.setNavigationText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSNavigation.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("navigation"))))));
         }
         /**
          * Modifies the expression of a scope at-rule.
@@ -7584,11 +6501,11 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSScope> setScopeText(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("styleSheetId", CdpObject.json(styleSheetId));
             params.put("range", CdpObject.json(range));
             params.put("text", CdpObject.json(text));
-            return client.call("CSS.setScopeText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSScope.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("scope")))))));
+            return client.call("CSS.setScopeText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSScope.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("scope"))))));
         }
         /**
          * Modifies the expression of a scope at-rule.
@@ -7597,7 +6514,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSScope> setScopeText(SetScopeTextRequest request) {
-            return client.call("CSS.setScopeText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSScope.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("scope")))))));
+            return client.call("CSS.setScopeText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSScope.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("scope"))))));
         }
         /**
          * Modifies the rule selector.
@@ -7607,11 +6524,11 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.SelectorList> setRuleSelector(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String selector) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("styleSheetId", CdpObject.json(styleSheetId));
             params.put("range", CdpObject.json(range));
             params.put("selector", CdpObject.json(selector));
-            return client.call("CSS.setRuleSelector", params, result_ -> java.util.Objects.requireNonNull(CSS.SelectorList.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("selectorList")))))));
+            return client.call("CSS.setRuleSelector", params, result_ -> java.util.Objects.requireNonNull(CSS.SelectorList.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("selectorList"))))));
         }
         /**
          * Modifies the rule selector.
@@ -7619,7 +6536,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.SelectorList> setRuleSelector(SetRuleSelectorRequest request) {
-            return client.call("CSS.setRuleSelector", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.SelectorList.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("selectorList")))))));
+            return client.call("CSS.setRuleSelector", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.SelectorList.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("selectorList"))))));
         }
         /**
          * Sets the new stylesheet text.
@@ -7628,10 +6545,10 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<Optional<String>> setStyleSheetText(DOM.StyleSheetId styleSheetId, String text) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("styleSheetId", CdpObject.json(styleSheetId));
             params.put("text", CdpObject.json(text));
-            return client.call("CSS.setStyleSheetText", params, result_ -> Optional.ofNullable((String) result_.get("sourceMapURL")));
+            return client.call("CSS.setStyleSheetText", params, result_ -> Optional.ofNullable(result_.get("sourceMapURL")).map(value -> (String) value));
         }
         /**
          * Sets the new stylesheet text.
@@ -7639,7 +6556,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<Optional<String>> setStyleSheetText(SetStyleSheetTextRequest request) {
-            return client.call("CSS.setStyleSheetText", request == null ? null : request.toMap(), result_ -> Optional.ofNullable((String) result_.get("sourceMapURL")));
+            return client.call("CSS.setStyleSheetText", request == null ? null : request.toMap(), result_ -> Optional.ofNullable(result_.get("sourceMapURL")).map(value -> (String) value));
         }
         /**
          * Applies specified style edits one after another in the given order.
@@ -7647,11 +6564,11 @@ public final class CSS {
          * @param nodeForPropertySyntaxValidation protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<java.util.List<CSS.CSSStyle>> setStyleTexts(java.util.List<CSS.StyleDeclarationEdit> edits, Optional<DOM.NodeId> nodeForPropertySyntaxValidation) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<java.util.List<CSS.CSSStyle>> setStyleTexts(java.util.List<CSS.StyleDeclarationEdit> edits, DOM.NodeId nodeForPropertySyntaxValidation) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("edits", CdpObject.json(edits));
-            nodeForPropertySyntaxValidation.ifPresent(value_ -> params.put("nodeForPropertySyntaxValidation", CdpObject.json(value_)));
-            return client.call("CSS.setStyleTexts", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("styles")), element0 -> java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            params.put("nodeForPropertySyntaxValidation", CdpObject.json(nodeForPropertySyntaxValidation));
+            return client.call("CSS.setStyleTexts", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("styles")), element0 -> java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Applies specified style edits one after another in the given order.
@@ -7659,7 +6576,9 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.CSSStyle>> setStyleTexts(java.util.List<CSS.StyleDeclarationEdit> edits) {
-            return setStyleTexts(edits, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("edits", CdpObject.json(edits));
+            return client.call("CSS.setStyleTexts", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("styles")), element0 -> java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Applies specified style edits one after another in the given order.
@@ -7667,7 +6586,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.CSSStyle>> setStyleTexts(SetStyleTextsRequest request) {
-            return client.call("CSS.setStyleTexts", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("styles")), element0 -> java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("CSS.setStyleTexts", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("styles")), element0 -> java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Enables the selector recording.
@@ -7681,7 +6600,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.RuleUsage>> stopRuleUsageTracking() {
-            return client.call("CSS.stopRuleUsageTracking", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("ruleUsage")), element0 -> java.util.Objects.requireNonNull(CSS.RuleUsage.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("CSS.stopRuleUsageTracking", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("ruleUsage")), element0 -> java.util.Objects.requireNonNull(CSS.RuleUsage.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Obtain list of rules that became used since last call to this method (or since start of coverage instrumentation).
@@ -7697,7 +6616,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setLocalFontsEnabled(boolean enabled) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("enabled", CdpObject.json(enabled));
             return client.call("CSS.setLocalFontsEnabled", params);
         }

@@ -3,11 +3,13 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class TriggerInterceptResponse implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 8;
@@ -34,7 +36,7 @@ public final class TriggerInterceptResponse implements CefMessageView, CefMessag
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(returnedPayload.length);
@@ -45,11 +47,9 @@ public final class TriggerInterceptResponse implements CefMessageView, CefMessag
     }
 
     public static final CefMessageDecoder<TriggerInterceptResponse> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        int returnedPayloadLen = WireDecoder.length(__buf, "returnedPayload");
-        byte[] returnedPayload = new byte[returnedPayloadLen];
-        __buf.get(returnedPayload);
+        final byte[] returnedPayload = WireDecoder.bytes(__buf, "returnedPayload");
         WireDecoder.requireFullyConsumed(__buf, "TriggerInterceptResponse");
         return new TriggerInterceptResponse(returnedPayload);
     };

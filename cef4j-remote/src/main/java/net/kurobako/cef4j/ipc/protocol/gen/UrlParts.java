@@ -4,6 +4,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
@@ -11,6 +12,7 @@ import net.kurobako.cef4j.ipc.session.WireDecoder;
  * to facade methods (or factory requests) that take this struct. The dispatcher decodes them on the
  * runtime-server side and fills the matching {@code cef_urlparts_t} before invoking CEF.
  */
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class UrlParts {
 
     private final long size;
@@ -88,38 +90,38 @@ public final class UrlParts {
     }
 
     public void encodeInto(ByteBuffer dst) {
-        ByteOrder originalOrder = dst.order();
+        final ByteOrder originalOrder = dst.order();
         try {
             dst.order(ByteOrder.LITTLE_ENDIAN);
             dst.putLong(size);
-            byte[] specBytes = spec.getBytes(StandardCharsets.UTF_8);
+            final byte[] specBytes = spec.getBytes(StandardCharsets.UTF_8);
             dst.putInt(specBytes.length);
             dst.put(specBytes);
-            byte[] schemeBytes = scheme.getBytes(StandardCharsets.UTF_8);
+            final byte[] schemeBytes = scheme.getBytes(StandardCharsets.UTF_8);
             dst.putInt(schemeBytes.length);
             dst.put(schemeBytes);
-            byte[] usernameBytes = username.getBytes(StandardCharsets.UTF_8);
+            final byte[] usernameBytes = username.getBytes(StandardCharsets.UTF_8);
             dst.putInt(usernameBytes.length);
             dst.put(usernameBytes);
-            byte[] passwordBytes = password.getBytes(StandardCharsets.UTF_8);
+            final byte[] passwordBytes = password.getBytes(StandardCharsets.UTF_8);
             dst.putInt(passwordBytes.length);
             dst.put(passwordBytes);
-            byte[] hostBytes = host.getBytes(StandardCharsets.UTF_8);
+            final byte[] hostBytes = host.getBytes(StandardCharsets.UTF_8);
             dst.putInt(hostBytes.length);
             dst.put(hostBytes);
-            byte[] portBytes = port.getBytes(StandardCharsets.UTF_8);
+            final byte[] portBytes = port.getBytes(StandardCharsets.UTF_8);
             dst.putInt(portBytes.length);
             dst.put(portBytes);
-            byte[] originBytes = origin.getBytes(StandardCharsets.UTF_8);
+            final byte[] originBytes = origin.getBytes(StandardCharsets.UTF_8);
             dst.putInt(originBytes.length);
             dst.put(originBytes);
-            byte[] pathBytes = path.getBytes(StandardCharsets.UTF_8);
+            final byte[] pathBytes = path.getBytes(StandardCharsets.UTF_8);
             dst.putInt(pathBytes.length);
             dst.put(pathBytes);
-            byte[] queryBytes = query.getBytes(StandardCharsets.UTF_8);
+            final byte[] queryBytes = query.getBytes(StandardCharsets.UTF_8);
             dst.putInt(queryBytes.length);
             dst.put(queryBytes);
-            byte[] fragmentBytes = fragment.getBytes(StandardCharsets.UTF_8);
+            final byte[] fragmentBytes = fragment.getBytes(StandardCharsets.UTF_8);
             dst.putInt(fragmentBytes.length);
             dst.put(fragmentBytes);
         } finally {
@@ -133,48 +135,17 @@ public final class UrlParts {
       * configured the buffer.
       */
     public static UrlParts decode(ByteBuffer __buf) {
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "size");
-        long size = __buf.getLong();
-        int specLen = WireDecoder.length(__buf, "spec");
-        byte[] specBuf = new byte[specLen];
-        __buf.get(specBuf);
-        String spec = new String(specBuf, StandardCharsets.UTF_8);
-        int schemeLen = WireDecoder.length(__buf, "scheme");
-        byte[] schemeBuf = new byte[schemeLen];
-        __buf.get(schemeBuf);
-        String scheme = new String(schemeBuf, StandardCharsets.UTF_8);
-        int usernameLen = WireDecoder.length(__buf, "username");
-        byte[] usernameBuf = new byte[usernameLen];
-        __buf.get(usernameBuf);
-        String username = new String(usernameBuf, StandardCharsets.UTF_8);
-        int passwordLen = WireDecoder.length(__buf, "password");
-        byte[] passwordBuf = new byte[passwordLen];
-        __buf.get(passwordBuf);
-        String password = new String(passwordBuf, StandardCharsets.UTF_8);
-        int hostLen = WireDecoder.length(__buf, "host");
-        byte[] hostBuf = new byte[hostLen];
-        __buf.get(hostBuf);
-        String host = new String(hostBuf, StandardCharsets.UTF_8);
-        int portLen = WireDecoder.length(__buf, "port");
-        byte[] portBuf = new byte[portLen];
-        __buf.get(portBuf);
-        String port = new String(portBuf, StandardCharsets.UTF_8);
-        int originLen = WireDecoder.length(__buf, "origin");
-        byte[] originBuf = new byte[originLen];
-        __buf.get(originBuf);
-        String origin = new String(originBuf, StandardCharsets.UTF_8);
-        int pathLen = WireDecoder.length(__buf, "path");
-        byte[] pathBuf = new byte[pathLen];
-        __buf.get(pathBuf);
-        String path = new String(pathBuf, StandardCharsets.UTF_8);
-        int queryLen = WireDecoder.length(__buf, "query");
-        byte[] queryBuf = new byte[queryLen];
-        __buf.get(queryBuf);
-        String query = new String(queryBuf, StandardCharsets.UTF_8);
-        int fragmentLen = WireDecoder.length(__buf, "fragment");
-        byte[] fragmentBuf = new byte[fragmentLen];
-        __buf.get(fragmentBuf);
-        String fragment = new String(fragmentBuf, StandardCharsets.UTF_8);
+        final long size = WireDecoder.int64(__buf, "size");
+        final String spec = WireDecoder.utf8(__buf, "spec");
+        final String scheme = WireDecoder.utf8(__buf, "scheme");
+        final String username = WireDecoder.utf8(__buf, "username");
+        final String password = WireDecoder.utf8(__buf, "password");
+        final String host = WireDecoder.utf8(__buf, "host");
+        final String port = WireDecoder.utf8(__buf, "port");
+        final String origin = WireDecoder.utf8(__buf, "origin");
+        final String path = WireDecoder.utf8(__buf, "path");
+        final String query = WireDecoder.utf8(__buf, "query");
+        final String fragment = WireDecoder.utf8(__buf, "fragment");
         return new UrlParts(size, spec, scheme, username, password, host, port, origin, path, query, fragment);
     }
 
@@ -185,7 +156,7 @@ public final class UrlParts {
     /** Lombok-style builder. */
     public static final class Builder {
 
-        private long size = 0L;
+        private long size;
         private String spec = "";
         private String scheme = "";
         private String username = "";
@@ -197,58 +168,58 @@ public final class UrlParts {
         private String query = "";
         private String fragment = "";
 
-        public Builder size(long size) {
-            this.size = size;
+        public Builder size(long value) {
+            this.size = value;
             return this;
         }
 
-        public Builder spec(String spec) {
-            this.spec = spec;
+        public Builder spec(String value) {
+            this.spec = value;
             return this;
         }
 
-        public Builder scheme(String scheme) {
-            this.scheme = scheme;
+        public Builder scheme(String value) {
+            this.scheme = value;
             return this;
         }
 
-        public Builder username(String username) {
-            this.username = username;
+        public Builder username(String value) {
+            this.username = value;
             return this;
         }
 
-        public Builder password(String password) {
-            this.password = password;
+        public Builder password(String value) {
+            this.password = value;
             return this;
         }
 
-        public Builder host(String host) {
-            this.host = host;
+        public Builder host(String value) {
+            this.host = value;
             return this;
         }
 
-        public Builder port(String port) {
-            this.port = port;
+        public Builder port(String value) {
+            this.port = value;
             return this;
         }
 
-        public Builder origin(String origin) {
-            this.origin = origin;
+        public Builder origin(String value) {
+            this.origin = value;
             return this;
         }
 
-        public Builder path(String path) {
-            this.path = path;
+        public Builder path(String value) {
+            this.path = value;
             return this;
         }
 
-        public Builder query(String query) {
-            this.query = query;
+        public Builder query(String value) {
+            this.query = value;
             return this;
         }
 
-        public Builder fragment(String fragment) {
-            this.fragment = fragment;
+        public Builder fragment(String value) {
+            this.fragment = value;
             return this;
         }
 

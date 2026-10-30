@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -57,8 +58,8 @@ final class CdpRequestTrackerTest {
             }
 
             @Override
-            public Object decode(byte[] json) {
-                return Map.of();
+            public Optional<Object> decode(byte[] json) {
+                return Optional.of(Map.of());
             }
         };
         CompletableFuture<String> call = new CdpClient(transport, codec)

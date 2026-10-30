@@ -48,7 +48,10 @@ class CHeaderParserSpec extends munit.FunSuite {
           const void* buffer, int width, int height);
     } cef_render_handler_t;"""
     val decls = CHeaderParser.parse(stub, handlerNames = Set("cef_render_handler_t"))
-    assert(decls.head.isInstanceOf[CefDecl.HandlerStruct])
+    assert(decls.head match {
+      case CefDecl.HandlerStruct(_, _, _) => true
+      case _                              => false
+    })
   }
 
   test("marks on_paint as SpecialFn.OnPaint") {

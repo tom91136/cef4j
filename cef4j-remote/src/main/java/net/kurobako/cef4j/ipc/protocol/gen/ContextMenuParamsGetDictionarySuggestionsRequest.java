@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class ContextMenuParamsGetDictionarySuggestionsRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 1501656540;
@@ -42,13 +44,13 @@ public final class ContextMenuParamsGetDictionarySuggestionsRequest implements C
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
             __dst.putInt(suggestions.length);
-            for (String __s : suggestions) {
-                byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
+            for (final String __s : suggestions) {
+                final byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
                 __dst.putInt(__b.length);
                 __dst.put(__b);
             }
@@ -58,18 +60,10 @@ public final class ContextMenuParamsGetDictionarySuggestionsRequest implements C
     }
 
     public static final CefMessageDecoder<ContextMenuParamsGetDictionarySuggestionsRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int suggestionsCount = WireDecoder.count(__buf, "suggestions");
-        String[] suggestions = new String[suggestionsCount];
-        for (int __i = 0; __i < suggestionsCount; __i++) {
-            int __slen = WireDecoder.length(__buf, "suggestions[" + __i + "]");
-            byte[] __sb = new byte[__slen];
-            __buf.get(__sb);
-            suggestions[__i] = new String(__sb, StandardCharsets.UTF_8);
-        }
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final String[] suggestions = WireDecoder.utf8List(__buf, "suggestions");
         WireDecoder.requireFullyConsumed(__buf, "ContextMenuParamsGetDictionarySuggestionsRequest");
         return new ContextMenuParamsGetDictionarySuggestionsRequest(self, suggestions);
     };

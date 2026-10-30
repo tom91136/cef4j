@@ -24,7 +24,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:1979</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefLinuxWindowProperties {
 
@@ -54,14 +53,14 @@ public final class CefLinuxWindowProperties {
 
     /** Create a mutable copy of this instance. */
     public Mutable toMutable() {
-        return new Mutable(this.waylandAppId, this.wmClassClass, this.wmClassName, this.wmRoleName);
+        return new Mutable(waylandAppId, wmClassClass, wmClassName, wmRoleName);
     }
 
     @Override
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefLinuxWindowProperties)) return false;
-        CefLinuxWindowProperties other = (CefLinuxWindowProperties) obj;
+        final CefLinuxWindowProperties other = (CefLinuxWindowProperties) obj;
         return java.util.Objects.equals(this.waylandAppId, other.waylandAppId)
                 && java.util.Objects.equals(this.wmClassClass, other.wmClassClass)
                 && java.util.Objects.equals(this.wmClassName, other.wmClassName)
@@ -119,15 +118,14 @@ public final class CefLinuxWindowProperties {
 
         /** Create an immutable snapshot of this instance. */
         public CefLinuxWindowProperties toImmutable() {
-            return new CefLinuxWindowProperties(
-                    this.waylandAppId, this.wmClassClass, this.wmClassName, this.wmRoleName);
+            return new CefLinuxWindowProperties(waylandAppId, wmClassClass, wmClassName, wmRoleName);
         }
 
         @Override
         public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
-            Mutable other = (Mutable) obj;
+            final Mutable other = (Mutable) obj;
             return java.util.Objects.equals(this.waylandAppId, other.waylandAppId)
                     && java.util.Objects.equals(this.wmClassClass, other.wmClassClass)
                     && java.util.Objects.equals(this.wmClassName, other.wmClassName)

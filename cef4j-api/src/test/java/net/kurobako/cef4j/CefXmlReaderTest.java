@@ -106,11 +106,6 @@ class CefXmlReaderTest extends CefTestBase {
         public int eof() {
             return pos >= data.length ? 1 : 0;
         }
-
-        @Override
-        public boolean mayBlock() {
-            return false;
-        }
     }
 
     private static final class ManagedXmlReader implements AutoCloseable {

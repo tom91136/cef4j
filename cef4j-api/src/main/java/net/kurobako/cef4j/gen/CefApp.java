@@ -21,7 +21,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__app_8h.html">cef_app.h:188</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefApp extends CefClientHandler {
 
@@ -103,8 +102,8 @@ public interface CefApp extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefApp {
         private final java.util.List<CefApp> delegates;
@@ -115,18 +114,18 @@ public interface CefApp extends CefClientHandler {
 
         @Override
         public void onBeforeCommandLineProcessing(@Nullable String processType, @Nullable CefCommandLine commandLine) {
-            for (CefApp d : delegates) d.onBeforeCommandLineProcessing(processType, commandLine);
+            for (final CefApp d : delegates) d.onBeforeCommandLineProcessing(processType, commandLine);
         }
 
         @Override
         public void onRegisterCustomSchemes(@Nullable CefSchemeRegistrar registrar) {
-            for (CefApp d : delegates) d.onRegisterCustomSchemes(registrar);
+            for (final CefApp d : delegates) d.onRegisterCustomSchemes(registrar);
         }
 
         @Override
         public Optional<CefResourceBundleHandler> getResourceBundleHandler() {
-            java.util.ArrayList<CefResourceBundleHandler> collected = new java.util.ArrayList<>();
-            for (CefApp d : delegates) d.getResourceBundleHandler().ifPresent(collected::add);
+            final java.util.ArrayList<CefResourceBundleHandler> collected = new java.util.ArrayList<>();
+            for (final CefApp d : delegates) d.getResourceBundleHandler().ifPresent(collected::add);
             return collected.isEmpty()
                     ? Optional.empty()
                     : Optional.of(new CefResourceBundleHandler.Delegating(collected));
@@ -134,8 +133,8 @@ public interface CefApp extends CefClientHandler {
 
         @Override
         public Optional<CefBrowserProcessHandler> getBrowserProcessHandler() {
-            java.util.ArrayList<CefBrowserProcessHandler> collected = new java.util.ArrayList<>();
-            for (CefApp d : delegates) d.getBrowserProcessHandler().ifPresent(collected::add);
+            final java.util.ArrayList<CefBrowserProcessHandler> collected = new java.util.ArrayList<>();
+            for (final CefApp d : delegates) d.getBrowserProcessHandler().ifPresent(collected::add);
             return collected.isEmpty()
                     ? Optional.empty()
                     : Optional.of(new CefBrowserProcessHandler.Delegating(collected));
@@ -143,8 +142,8 @@ public interface CefApp extends CefClientHandler {
 
         @Override
         public Optional<CefRenderProcessHandler> getRenderProcessHandler() {
-            java.util.ArrayList<CefRenderProcessHandler> collected = new java.util.ArrayList<>();
-            for (CefApp d : delegates) d.getRenderProcessHandler().ifPresent(collected::add);
+            final java.util.ArrayList<CefRenderProcessHandler> collected = new java.util.ArrayList<>();
+            for (final CefApp d : delegates) d.getRenderProcessHandler().ifPresent(collected::add);
             return collected.isEmpty()
                     ? Optional.empty()
                     : Optional.of(new CefRenderProcessHandler.Delegating(collected));

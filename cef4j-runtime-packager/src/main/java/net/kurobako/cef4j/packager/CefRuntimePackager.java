@@ -20,10 +20,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
@@ -52,17 +54,17 @@ public final class CefRuntimePackager {
     /** Returns whether an existing output is complete and was produced from the same material inputs. */
     public boolean isCurrent(Request request) throws IOException {
         Objects.requireNonNull(request, "request");
-        Path runtimeRoot = request.output
+        final Path runtimeRoot = request.output
                 .toAbsolutePath()
                 .normalize()
                 .resolve("cef-runtime")
                 .resolve(request.platform.cefName());
-        Path metadata = runtimeRoot.resolve("cef-runtime.properties");
-        Path fileList = runtimeRoot.resolve("file-list.txt");
+        final Path metadata = runtimeRoot.resolve("cef-runtime.properties");
+        final Path fileList = runtimeRoot.resolve("file-list.txt");
         if (!Files.isRegularFile(metadata) || !Files.isRegularFile(fileList)) return false;
         if (!CefRuntimeVerifier.verifyRuntime(runtimeRoot, request.platform).isEmpty()) return false;
 
-        Properties properties = new Properties();
+        final Properties properties = new Properties();
         try (var reader = Files.newBufferedReader(metadata, StandardCharsets.UTF_8)) {
             properties.load(reader);
         }
@@ -80,32 +82,31 @@ public final class CefRuntimePackager {
         if (!Boolean.toString(request.strip).equals(properties.getProperty("stripped", "false"))) return false;
         if (!request.buildType.name().toLowerCase(Locale.ROOT).equals(properties.getProperty("cef.build")))
             return false;
-        if (request.strip && !request.stripCommand.equals(properties.getProperty("strip.command"))) return false;
-        return true;
+        return !request.strip || request.stripCommand.equals(properties.getProperty("strip.command"));
     }
 
     /** Creates a reusable cef4j resource tree from an upstream minimal archive. */
     public Result packageArchive(Request request) throws IOException {
         Objects.requireNonNull(request, "request");
-        if (request.strip && !request.platform.isLinux()) {
+        if (request.strip && request.platform.isNotLinux()) {
             throw new IllegalArgumentException("Stripping is currently supported only for Linux CEF runtimes");
         }
         if (request.strip && request.buildType == CefBuildType.DEBUG) {
             throw new IllegalArgumentException("Debug CEF runtimes must retain their diagnostic symbols");
         }
-        Path output = request.output.toAbsolutePath().normalize();
+        final Path output = request.output.toAbsolutePath().normalize();
         Files.createDirectories(output);
-        Path runtimeRoot = output.resolve("cef-runtime")
+        final Path runtimeRoot = output.resolve("cef-runtime")
                 .resolve(request.platform.cefName())
                 .normalize();
         requireContained(output, runtimeRoot);
-        Path temporary = Files.createTempDirectory(output, ".cef4j-runtime-");
-        Path stagedRoot = temporary.resolve(request.platform.cefName());
+        final Path temporary = Files.createTempDirectory(output, ".cef4j-runtime-");
+        final Path stagedRoot = temporary.resolve(request.platform.cefName());
         Files.createDirectories(stagedRoot);
 
-        Set<String> files = new TreeSet<>();
-        Set<String> matchedLocales = new TreeSet<>();
-        Set<String> requestedLocales = normalizeLocales(request.locales);
+        final Set<String> files = new TreeSet<>();
+        final Set<String> matchedLocales = new TreeSet<>();
+        final Set<String> requestedLocales = normalizeLocales(request.locales);
         try {
             extract(request, stagedRoot, files, matchedLocales, requestedLocales);
             verifyRequired(stagedRoot, request.platform);
@@ -117,7 +118,7 @@ public final class CefRuntimePackager {
             files.add("cef-runtime.properties");
             writeFileList(stagedRoot, files);
 
-            Path runtimeParent = runtimeRoot.getParent();
+            final Path runtimeParent = runtimeRoot.getParent();
             if (runtimeParent == null) throw new IOException("CEF runtime has no parent directory: " + runtimeRoot);
             Files.createDirectories(runtimeParent);
             replaceRuntime(stagedRoot, runtimeRoot);
@@ -150,19 +151,21 @@ public final class CefRuntimePackager {
                 if (entry.getSize() < 0 || entry.getSize() > MAX_ENTRY_SIZE) {
                     throw new IOException("CEF archive entry has an unsafe size: " + entry.getName());
                 }
-                String source = safeArchivePath(entry.getName());
-                String relative = mapRuntimePath(source, request.platform, request.buildType);
-                if (relative == null || isBuildOnly(relative)) continue;
+                final String source = safeArchivePath(entry.getName());
+                final String relative = mapRuntimePath(source, request.platform, request.buildType)
+                        .filter(mapped -> !isBuildOnly(mapped))
+                        .orElse(null);
+                if (relative == null) continue;
                 if (!requestedLocales.isEmpty() && isLocale(relative, request.platform)) {
-                    String locale = localeOf(relative, request.platform);
+                    final String locale = localeOf(relative, request.platform);
                     if (!matchesLocale(locale, requestedLocales)) continue;
                     matchedLocales.add(normalizeLocaleBase(locale));
                 }
                 if (request.withoutSwiftShader && isSwiftShader(relative)) continue;
 
-                Path target = stagedRoot.resolve(relative).normalize();
+                final Path target = stagedRoot.resolve(relative).normalize();
                 requireContained(stagedRoot, target);
-                Path targetParent = target.getParent();
+                final Path targetParent = target.getParent();
                 if (targetParent == null) throw new IOException("CEF runtime entry has no parent: " + relative);
                 Files.createDirectories(targetParent);
                 Files.copy(tarInput, target, StandardCopyOption.REPLACE_EXISTING);
@@ -170,10 +173,10 @@ public final class CefRuntimePackager {
             }
             // XXX: The archive digest must cover source EOF; remove this drain only when extraction independently
             // hashes the complete source or the decompressor guarantees full source consumption.
-            byte[] drain = new byte[8192];
+            final byte[] drain = new byte[8192];
             while (fileInput.read(drain) >= 0) {}
         }
-        String actual = hex(sha256.digest());
+        final String actual = hex(sha256.digest());
         if (!request.archiveSha256.equalsIgnoreCase(actual)) {
             throw new IOException(
                     "archive changed during extraction: sha256 " + actual + " != expected " + request.archiveSha256);
@@ -181,38 +184,40 @@ public final class CefRuntimePackager {
     }
 
     private static String hex(byte[] bytes) {
-        StringBuilder result = new StringBuilder(bytes.length * 2);
+        final StringBuilder result = new StringBuilder(bytes.length * 2);
         for (byte value : bytes) result.append(String.format("%02x", value & 0xff));
         return result.toString();
     }
 
     private static String safeArchivePath(String raw) throws IOException {
-        String normalized = raw.replace('\\', '/');
+        final String normalized = raw.replace('\\', '/');
         if (normalized.startsWith("/") || normalized.matches("^[A-Za-z]:.*")) {
             throw new IOException("CEF archive contains an absolute path: " + raw);
         }
-        Path path = Path.of(normalized).normalize();
+        final Path path = Path.of(normalized).normalize();
         if (path.startsWith("..")) throw new IOException("CEF archive path escapes its root: " + raw);
         return path.toString().replace('\\', '/');
     }
 
-    private static String mapRuntimePath(String source, CefPlatform platform, CefBuildType buildType) {
-        int firstSlash = source.indexOf('/');
-        if (firstSlash < 0) return null;
-        String relative = source.substring(firstSlash + 1);
-        if (relative.equals("LICENSE.txt")) return "CEF-LICENSE.txt";
-        if (relative.equals("CREDITS.html")) return "CEF-CREDITS.html";
-        String binaryPrefix = buildType.directory() + "/";
+    private static Optional<String> mapRuntimePath(String source, CefPlatform platform, CefBuildType buildType) {
+        final int firstSlash = source.indexOf('/');
+        if (firstSlash < 0) return Optional.empty();
+        final String relative = source.substring(firstSlash + 1);
+        if (relative.equals("LICENSE.txt")) return Optional.of("CEF-LICENSE.txt");
+        if (relative.equals("CREDITS.html")) return Optional.of("CEF-CREDITS.html");
+        final String binaryPrefix = buildType.directory() + "/";
         if (platform.isMacOS()) {
-            return relative.startsWith(binaryPrefix + MAC_FRAMEWORK) ? relative.substring(binaryPrefix.length()) : null;
+            return relative.startsWith(binaryPrefix + MAC_FRAMEWORK)
+                    ? Optional.of(relative.substring(binaryPrefix.length()))
+                    : Optional.empty();
         }
-        if (relative.startsWith(binaryPrefix)) return relative.substring(binaryPrefix.length());
-        if (relative.startsWith("Resources/")) return relative.substring("Resources/".length());
-        return null;
+        if (relative.startsWith(binaryPrefix)) return Optional.of(relative.substring(binaryPrefix.length()));
+        if (relative.startsWith("Resources/")) return Optional.of(relative.substring("Resources/".length()));
+        return Optional.empty();
     }
 
     private static boolean isBuildOnly(String relative) {
-        String lower = relative.toLowerCase(Locale.ROOT);
+        final String lower = relative.toLowerCase(Locale.ROOT);
         return lower.endsWith(".lib") || lower.endsWith(".a") || lower.endsWith(".pdb") || lower.endsWith(".exp");
     }
 
@@ -221,7 +226,7 @@ public final class CefRuntimePackager {
     }
 
     private static boolean isLocale(String relative, CefPlatform platform) {
-        String normalized = relative.replace('\\', '/');
+        final String normalized = relative.replace('\\', '/');
         if (platform.isMacOS()) {
             return normalized.startsWith(MAC_FRAMEWORK + "Resources/") && normalized.contains(".lproj/");
         }
@@ -230,16 +235,16 @@ public final class CefRuntimePackager {
 
     private static String localeOf(String relative, CefPlatform platform) {
         if (platform.isMacOS()) {
-            String prefix = MAC_FRAMEWORK + "Resources/";
-            String name = relative.substring(prefix.length(), relative.indexOf(".lproj/"));
+            final String prefix = MAC_FRAMEWORK + "Resources/";
+            final String name = relative.substring(prefix.length(), relative.indexOf(".lproj/"));
             return name.replace('_', '-');
         }
-        String name = relative.substring("locales/".length(), relative.length() - ".pak".length());
+        final String name = relative.substring("locales/".length(), relative.length() - ".pak".length());
         return name.replace('_', '-');
     }
 
     private static boolean matchesLocale(String candidate, Set<String> requested) {
-        String base = normalizeLocaleBase(candidate);
+        final String base = normalizeLocaleBase(candidate);
         if (requested.contains(base)) return true;
         if (base.equals("en") && requested.contains("en-us")) return true;
         return requested.stream().anyMatch(value -> value.startsWith(base + "-") || base.startsWith(value + "-"));
@@ -247,7 +252,7 @@ public final class CefRuntimePackager {
 
     private static Set<String> normalizeLocales(Collection<String> locales) {
         return locales.stream()
-                .flatMap(value -> List.of(value.split(",")).stream())
+                .flatMap(value -> Stream.of(value.split(",")))
                 .map(String::trim)
                 .filter(value -> !value.isEmpty())
                 .map(CefRuntimePackager::normalizeLocaleBase)
@@ -255,7 +260,7 @@ public final class CefRuntimePackager {
     }
 
     private static String normalizeLocaleBase(String locale) {
-        String normalized = locale.replace('_', '-').toLowerCase(Locale.ROOT);
+        final String normalized = locale.replace('_', '-').toLowerCase(Locale.ROOT);
         for (String suffix : List.of("-feminine", "-masculine", "-neuter")) {
             if (normalized.endsWith(suffix)) return normalized.substring(0, normalized.length() - suffix.length());
         }
@@ -263,14 +268,14 @@ public final class CefRuntimePackager {
     }
 
     private static void verifyLocales(Set<String> requested, Set<String> matched) throws IOException {
-        List<String> missing = requested.stream()
+        final List<String> missing = requested.stream()
                 .filter(locale -> !matched.contains(locale) && !(locale.equals("en-us") && matched.contains("en")))
                 .collect(Collectors.toList());
         if (!missing.isEmpty()) throw new IOException("Requested CEF locales were not found: " + missing);
     }
 
     static List<String> missingRequired(Path root, CefPlatform platform) throws IOException {
-        List<String> required = new ArrayList<>();
+        final List<String> required = new ArrayList<>();
         required.add(platform.runtimeBinary());
         if (platform.isMacOS() && Files.isDirectory(root.resolve(MAC_FRAMEWORK + "Resources"))) {
             required.add(MAC_FRAMEWORK + "Resources/icudtl.dat");
@@ -279,15 +284,15 @@ public final class CefRuntimePackager {
             required.add("v8_context_snapshot.bin");
             if (platform.isWindows()) required.add("chrome_elf.dll");
         }
-        List<String> missing = required.stream()
+        final List<String> missing = required.stream()
                 .filter(path -> !Files.isRegularFile(root.resolve(path)))
                 .collect(Collectors.toList());
         if (platform.isMacOS()) {
-            Path resources = root.resolve(MAC_FRAMEWORK + "Resources");
+            final Path resources = root.resolve(MAC_FRAMEWORK + "Resources");
             boolean snapshot;
             try (var entries = Files.list(resources)) {
                 snapshot = entries.anyMatch(path -> {
-                    Path fileName = path.getFileName();
+                    final Path fileName = path.getFileName();
                     return fileName != null && fileName.toString().startsWith("v8_context_snapshot");
                 });
             }
@@ -297,12 +302,12 @@ public final class CefRuntimePackager {
     }
 
     private static void verifyRequired(Path root, CefPlatform platform) throws IOException {
-        List<String> missing = missingRequired(root, platform);
+        final List<String> missing = missingRequired(root, platform);
         if (!missing.isEmpty()) throw new IOException("CEF runtime is missing required files: " + missing);
     }
 
     private static void writeMetadata(Request request, Path root, Set<String> files) throws IOException {
-        Path metadata = root.resolve("cef-runtime.properties");
+        final Path metadata = root.resolve("cef-runtime.properties");
         try (BufferedWriter writer = Files.newBufferedWriter(metadata, StandardCharsets.UTF_8)) {
             writer.write("format.version=1\n");
             writer.write("cef.version=" + request.cefVersion + "\n");
@@ -322,14 +327,14 @@ public final class CefRuntimePackager {
     }
 
     static String stableApiVersion(String cefVersion) {
-        int dot = cefVersion.indexOf('.');
-        String majorText = dot < 0 ? cefVersion : cefVersion.substring(0, dot);
-        int major = Integer.parseInt(majorText);
+        final int dot = cefVersion.indexOf('.');
+        final String majorText = dot < 0 ? cefVersion : cefVersion.substring(0, dot);
+        final int major = Integer.parseInt(majorText);
         return major >= 133 ? Integer.toString(major * 100) : Integer.toString(major);
     }
 
     private static void stripBinary(Path binary, String command) throws IOException {
-        Process process = new ProcessBuilder(command, "--strip-unneeded", binary.toString())
+        final Process process = new ProcessBuilder(command, "--strip-unneeded", binary.toString())
                 .inheritIO()
                 .start();
         int status;
@@ -375,7 +380,7 @@ public final class CefRuntimePackager {
     }
 
     private void replaceRuntime(Path stagedRoot, Path runtimeRoot) throws IOException {
-        Path backup = runtimeRoot.resolveSibling(runtimeRoot.getFileName() + ".cef4j-backup");
+        final Path backup = runtimeRoot.resolveSibling(runtimeRoot.getFileName() + ".cef4j-backup");
         if (Files.exists(backup)) {
             if (Files.exists(runtimeRoot)) deleteTree(backup);
             else runtimeMover.move(backup, runtimeRoot);

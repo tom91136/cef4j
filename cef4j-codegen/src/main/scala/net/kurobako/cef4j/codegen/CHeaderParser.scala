@@ -46,6 +46,11 @@ object CHeaderParser {
   private val FnPtrLineRe     =
     """\w\s*\*?\s*\(\s*(?:(?:CEF_CALLBACK|__stdcall|__cdecl|WINAPI|APIENTRY)\s*)?\*\s*\w+\s*\)""".r
   private val EnumClosingRe     = """}\s*\w+\s*;""".r
+  private val EnumClosingNameRe = """}\s*(\w+)\s*;""".r
+  private val ConstPointerRe    = """.*\bconst\s*\*""".r
+  private val BufferBaseNames   = Set("bytes", "buffer", "data", "ptr")
+  private val BufferSizeNames   = Set("size", "length", "bytes_to_read", "byte_length")
+  private val EnumShiftRe       = """(\w+)\s*<<\s*(\d+)""".r
   private val BaseFieldRe       = """.*cef_\w+_t\s+base\s*;.*""".r
   private val ScopedBaseRe      = """.*cef_base_scoped_t\s+base\s*;.*""".r
   private val BaseTypeCaptureRe = """(cef_\w+_t)\s+base\s*;""".r
@@ -122,56 +127,55 @@ object CHeaderParser {
     val openingLine = lines(startIdx)
     if (StructClosingRe.findFirstIn(openingLine).isDefined) {
       val structName = StructCloseRe.findFirstMatchIn(openingLine).map(_.group(1)).getOrElse("unknown_t")
-      val decl       = CefDecl.DataStruct(structName, Nil)
-      return (decl, startIdx + 1)
-    }
-
-    @tailrec
-    def loop(state: StructState): StructState =
-      if (state.idx >= lines.length || StructClosingRe.matches(lines(state.idx))) {
-        state
-      } else {
-        val line = lines(state.idx)
-        if (BaseFieldRe.matches(line)) {
-          val scoped     = ScopedBaseRe.matches(line)
-          val parentType = BaseTypeCaptureRe.findFirstMatchIn(line)
-            .map(_.group(1))
-            .filterNot(RootBaseTypes.contains)
-          loop(state.copy(hasBase = true, isScoped = scoped, parentType = parentType, idx = state.idx + 1))
-        } else if (isFnPtrLine(line)) {
-          val fnText = collectFnPtr(lines, state.idx)
-          val newFns = parseFnPtr(fnText, dataStructNames).fold(state.fnPtrs)(_ :: state.fnPtrs)
-          loop(state.copy(fnPtrs = newFns, idx = skipPastSemicolon(lines, state.idx)))
-        } else if (line.nonEmpty && !line.startsWith("//") && !line.startsWith("/*") && line != "{") {
-          val newFields = parseField(line, dataStructNames).fold(state.fields)(_ :: state.fields)
-          loop(state.copy(fields = newFields, idx = state.idx + 1))
+      (CefDecl.DataStruct(structName, Nil), startIdx + 1)
+    } else {
+      @tailrec
+      def loop(state: StructState): StructState =
+        if (state.idx >= lines.length || StructClosingRe.matches(lines(state.idx))) {
+          state
         } else {
-          loop(state.copy(idx = state.idx + 1))
+          val line = lines(state.idx)
+          if (BaseFieldRe.matches(line)) {
+            val scoped     = ScopedBaseRe.matches(line)
+            val parentType = BaseTypeCaptureRe.findFirstMatchIn(line)
+              .map(_.group(1))
+              .filterNot(RootBaseTypes.contains)
+            loop(state.copy(hasBase = true, isScoped = scoped, parentType = parentType, idx = state.idx + 1))
+          } else if (isFnPtrLine(line)) {
+            val fnText = collectFnPtr(lines, state.idx)
+            val newFns = parseFnPtr(fnText, dataStructNames).fold(state.fnPtrs)(_ :: state.fnPtrs)
+            loop(state.copy(fnPtrs = newFns, idx = skipPastSemicolon(lines, state.idx)))
+          } else if (line.nonEmpty && !line.startsWith("//") && !line.startsWith("/*") && line != "{") {
+            val newFields = parseField(line, dataStructNames).fold(state.fields)(_ :: state.fields)
+            loop(state.copy(fields = newFields, idx = state.idx + 1))
+          } else {
+            loop(state.copy(idx = state.idx + 1))
+          }
         }
+
+      val result = loop(StructState(Nil, Nil, hasBase = false, isScoped = false, parentType = None, startIdx + 1))
+
+      val closingLine = if (result.idx < lines.length) lines(result.idx) else ""
+      val structName  = StructCloseRe
+        .findFirstMatchIn(closingLine)
+        .map(_.group(1))
+        .getOrElse("unknown_t")
+
+      val decl = if (!result.hasBase && result.fields.nonEmpty) {
+        CefDecl.DataStruct(structName, result.fields.reverse)
+      } else if (handlerNames.contains(structName)) {
+        CefDecl.HandlerStruct(structName, result.fnPtrs.reverse.map(classifySpecial(_)))
+      } else {
+        CefDecl.ObjectStruct(
+          structName,
+          result.fnPtrs.reverse.map(classifySpecial(_)),
+          scoped = result.isScoped,
+          parentStruct = result.parentType
+        )
       }
 
-    val result = loop(StructState(Nil, Nil, hasBase = false, isScoped = false, parentType = None, startIdx + 1))
-
-    val closingLine = if (result.idx < lines.length) lines(result.idx) else ""
-    val structName  = """}\s*(cef_\w+_t)\s*;""".r
-      .findFirstMatchIn(closingLine)
-      .map(_.group(1))
-      .getOrElse("unknown_t")
-
-    val decl = if (!result.hasBase && result.fields.nonEmpty) {
-      CefDecl.DataStruct(structName, result.fields.reverse)
-    } else if (handlerNames.contains(structName)) {
-      CefDecl.HandlerStruct(structName, result.fnPtrs.reverse.map(classifySpecial))
-    } else {
-      CefDecl.ObjectStruct(
-        structName,
-        result.fnPtrs.reverse.map(classifySpecial),
-        scoped = result.isScoped,
-        parentStruct = result.parentType
-      )
+      (decl, result.idx + 1)
     }
-
-    (decl, result.idx + 1)
   }
 
   private def collectFnPtr(lines: Vector[String], startIdx: Int): String = {
@@ -189,7 +193,7 @@ object CHeaderParser {
         if (newFound && newDepth <= 0 && line.contains(";")) newAcc.trim
         else loop(i + 1, newAcc, newDepth, newFound)
       }
-    loop(startIdx, "", 0, false)
+    loop(startIdx, "", 0, foundOpen = false)
   }
 
   @tailrec
@@ -231,14 +235,14 @@ object CHeaderParser {
         else {
           val (typ, name) = splitTypeName(trimmed)
           val trimTyp     = typ.trim
-          val isConst     = trimTyp.startsWith("const ") || trimTyp.matches(""".*\bconst\s*\*""")
+          val isConst     = trimTyp.startsWith("const ") || ConstPointerRe.matches(trimTyp)
           Some(Param(name, parseType(typ, dataStructNames), isConst = isConst, rawCType = typ.trim))
         }
       }
     }
 
   private def splitParams(s: String): List[String] =
-    s.split(",").iterator.map(_.trim).filter(_.nonEmpty).toList
+    s.split(",").view.map(_.trim).filter(_.nonEmpty).toList
 
   private def splitTypeName(s: String): (String, String) = {
     val trimmed      = s.trim
@@ -297,9 +301,9 @@ object CHeaderParser {
           | "HWND" | "HMENU" | "HCURSOR" | "HINSTANCE" | "HANDLE" => CType.Long
       case "cef_color_t"                                                           => CType.UInt
       case t if ByValueStructs.exists(g => t == s"const $g*" || t == s"$g const*") =>
-        CType.ByValueIn(ByValueStructs.find(t.contains).getOrElse(throw IllegalStateException(t)))
+        CType.ByValueIn(ByValueStructs.find(t.contains(_)).getOrElse(throw IllegalStateException(t)))
       case t if ByValueStructs.exists(g => t == s"$g*") =>
-        CType.ByValueOut(ByValueStructs.find(t.contains).getOrElse(throw IllegalStateException(t)))
+        CType.ByValueOut(ByValueStructs.find(t.contains(_)).getOrElse(throw IllegalStateException(t)))
       case "int*" | "const int*" => CType.OutInt
       case t if t.endsWith("*")  =>
         CType.Ptr(t.stripSuffix("*").trim)
@@ -323,10 +327,11 @@ object CHeaderParser {
   }
 
   private def promoteByValueArrays(fn: FnPtr): FnPtr = {
-    val promoted = fn.params.zipWithIndex.map { case (p, i) =>
+    val params   = fn.params.toIndexedSeq
+    val promoted = params.zipWithIndex.map { case (p, i) =>
       p.typ match {
         case CType.ByValueIn(cefName) if i > 0 =>
-          val prev           = fn.params(i - 1)
+          val prev           = params(i - 1)
           val isCountForThis = (prev.typ == CType.SizeT || prev.typ == CType.Int) &&
             prev.name.toLowerCase == s"${p.name.toLowerCase}count"
           if (isCountForThis) p.copy(typ = CType.ByValueArray(cefName))
@@ -334,7 +339,7 @@ object CHeaderParser {
         case _ => p
       }
     }
-    fn.copy(params = promoted)
+    fn.copy(params = promoted.toList)
   }
 
   private def classifySpecial(fn: FnPtr): FnPtr = {
@@ -364,18 +369,20 @@ object CHeaderParser {
       } else scan(idx + 1, acc)
 
     def scanStruct(lines: Vector[String], startIdx: Int): (Boolean, String, Int) = {
-      if (StructClosingRe.findFirstIn(lines(startIdx - 1)).isDefined) {
-        val m = StructCloseRe.findFirstMatchIn(lines(startIdx - 1))
-        return (false, m.map(_.group(1)).getOrElse(""), startIdx)
+      val previous = lines(startIdx - 1)
+      if (StructClosingRe.findFirstIn(previous).isDefined) {
+        val m = StructCloseRe.findFirstMatchIn(previous)
+        (false, m.fold("")(_.group(1)), startIdx)
+      } else {
+        @tailrec
+        def loop(i: Int, hasBase: Boolean): (Boolean, String, Int) =
+          if (i >= lines.length) (hasBase, "", i)
+          else StructCloseRe.findFirstMatchIn(lines(i)) match {
+            case Some(m) => (hasBase, m.group(1), i + 1)
+            case None    => loop(i + 1, hasBase || BaseFieldRe.matches(lines(i)))
+          }
+        loop(startIdx, hasBase = false)
       }
-      @tailrec
-      def loop(i: Int, hasBase: Boolean): (Boolean, String, Int) =
-        if (i >= lines.length) (hasBase, "", i)
-        else StructCloseRe.findFirstMatchIn(lines(i)) match {
-          case Some(m) => (hasBase, m.group(1), i + 1)
-          case None    => loop(i + 1, hasBase || BaseFieldRe.matches(lines(i)))
-        }
-      loop(startIdx, false)
     }
 
     scan(0, Set.empty)
@@ -416,7 +423,7 @@ object CHeaderParser {
     val result = loop(EnumState(Nil, -1L, startIdx + 1))
 
     val closingLine = if (result.idx < lines.length) lines(result.idx) else ""
-    val enumName    = """}\s*(\w+)\s*;""".r
+    val enumName    = EnumClosingNameRe
       .findFirstMatchIn(closingLine)
       .map(_.group(1))
       .getOrElse("unknown_t")
@@ -459,9 +466,8 @@ object CHeaderParser {
       -parseEnumValue(trimmed.substring(1), existing)
     } else {
       parseNumericToken(trimmed).getOrElse {
-        val shiftPattern = """(\w+)\s*<<\s*(\d+)""".r
         unwrapped match {
-          case shiftPattern(base, shift) =>
+          case EnumShiftRe(base, shift) =>
             val baseVal = existing.find(_._1 == base).map(_._2).getOrElse(
               parseEnumValue(base, existing)
             )
@@ -502,17 +508,21 @@ object CHeaderParser {
     "cef_request_context_cef_create_context_shared" -> "cef_request_context_t"
   )
 
+  def capiHeaderFiles(capiDir: Path, extraCapiDirs: List[String], suffix: String): List[Path] =
+    HeaderMetadataIndex
+      .headerFiles(
+        (capiDir :: extraCapiDirs.map(capiDir.resolve(_))).filter(Files.isDirectory(_)),
+        suffix
+      )
+      .sorted
+
   def parseFreeExports(
       capiDir: Path,
       knownStructNames: Set[String],
       dataStructNames: Set[String],
       extraCapiDirs: List[String] = Nil
   ): List[CefDecl.FreeFunction] = {
-    val capiHeaders = (capiDir :: extraCapiDirs.map(capiDir.resolve)).filter(Files.isDirectory(_))
-      .flatMap(dir =>
-        FileSystem.children(dir).filter(p => Files.isRegularFile(p) && p.toString.endsWith("_capi.h"))
-      )
-      .sorted
+    val capiHeaders = capiHeaderFiles(capiDir, extraCapiDirs, "_capi.h")
 
     capiHeaders.flatMap { header =>
       val headerName = capiDir.relativize(header).toString.replace('\\', '/')
@@ -710,12 +720,21 @@ object CHeaderParser {
     }
   }
 
+  private def promoteParams(decls: List[CefDecl])(promote: FnPtr => FnPtr): List[CefDecl] =
+    decls.map {
+      case d: CefDecl.FreeFunction =>
+        val promoted = promote(FnPtr("_ff", d.ret, d.params))
+        d.copy(params = promoted.params)
+      case other => other.mapFns(promote)
+    }
+
   def promoteArrayParams(decls: List[CefDecl]): List[CefDecl] = {
     def promote(fn: FnPtr): FnPtr = {
-      val promoted = fn.params.zipWithIndex.map { case (p, i) =>
+      val params   = fn.params.toIndexedSeq
+      val promoted = params.zipWithIndex.map { case (p, i) =>
         p.typ match {
           case CType.OutObjectPtr(cefName) if i > 0 =>
-            val prev           = fn.params(i - 1)
+            val prev           = params(i - 1)
             val isCountForThis =
               (prev.typ == CType.SizeT || prev.typ == CType.OutPrimitivePtr(CType.SizeT)) &&
                 prev.name.toLowerCase == s"${p.name.toLowerCase}count"
@@ -724,15 +743,10 @@ object CHeaderParser {
           case _ => p
         }
       }
-      fn.copy(params = promoted)
+      fn.copy(params = promoted.toList)
     }
 
-    decls.map {
-      case d: CefDecl.FreeFunction =>
-        val promoted = promote(FnPtr("_ff", d.ret, d.params))
-        d.copy(params = promoted.params)
-      case other => other.mapFns(promote)
-    }
+    promoteParams(decls)(promote(_))
   }
 
   def promoteBufferParams(decls: List[CefDecl]): List[CefDecl] = {
@@ -759,12 +773,7 @@ object CHeaderParser {
                 p.name.toLowerCase == s"${lower}length" ||
                 p.name.toLowerCase == s"${lower}_length" ||
                 p.name.toLowerCase == "bytes_to_read" ||
-                (Set("bytes", "buffer", "data", "ptr").contains(normalized) && Set(
-                  "size",
-                  "length",
-                  "bytes_to_read",
-                  "byte_length"
-                ).contains(p.name.toLowerCase))
+                (BufferBaseNames(normalized) && BufferSizeNames(p.name.toLowerCase))
             ) =>
           p.name
       }
@@ -789,11 +798,6 @@ object CHeaderParser {
       }
     }
 
-    decls.map {
-      case d: CefDecl.FreeFunction =>
-        val promoted = promote(FnPtr("_ff", d.ret, d.params))
-        d.copy(params = promoted.params)
-      case other => other.mapFns(promote)
-    }
+    promoteParams(decls)(promote(_))
   }
 }

@@ -3,12 +3,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class UrlRequestClientOnUploadProgressEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 756967378;
@@ -47,7 +49,7 @@ public final class UrlRequestClientOnUploadProgressEvent implements CefMessageVi
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(request.id());
@@ -59,14 +61,11 @@ public final class UrlRequestClientOnUploadProgressEvent implements CefMessageVi
     }
 
     public static final CefMessageDecoder<UrlRequestClientOnUploadProgressEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "request");
-        RemoteHandle request = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "current");
-        long current = __buf.getLong();
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "total");
-        long total = __buf.getLong();
+        final RemoteHandle request = WireDecoder.handle(__buf, "request");
+        final long current = WireDecoder.int64(__buf, "current");
+        final long total = WireDecoder.int64(__buf, "total");
         WireDecoder.requireFullyConsumed(__buf, "UrlRequestClientOnUploadProgressEvent");
         return new UrlRequestClientOnUploadProgressEvent(request, current, total);
     };

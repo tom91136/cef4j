@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class V8InterceptorSetByindexEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 1441819079;
@@ -56,7 +58,7 @@ public final class V8InterceptorSetByindexEvent implements CefMessageView, CefMe
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(index);
@@ -70,18 +72,12 @@ public final class V8InterceptorSetByindexEvent implements CefMessageView, CefMe
     }
 
     public static final CefMessageDecoder<V8InterceptorSetByindexEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "index");
-        int index = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "object");
-        RemoteHandle object = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "value");
-        RemoteHandle value = new RemoteHandle(__buf.getInt());
-        int exceptionLen = WireDecoder.length(__buf, "exception");
-        byte[] exceptionBuf = new byte[exceptionLen];
-        __buf.get(exceptionBuf);
-        String exception = new String(exceptionBuf, StandardCharsets.UTF_8);
+        final int index = WireDecoder.int32(__buf, "index");
+        final RemoteHandle object = WireDecoder.handle(__buf, "object");
+        final RemoteHandle value = WireDecoder.handle(__buf, "value");
+        final String exception = WireDecoder.utf8(__buf, "exception");
         WireDecoder.requireFullyConsumed(__buf, "V8InterceptorSetByindexEvent");
         return new V8InterceptorSetByindexEvent(index, object, value, exception);
     };

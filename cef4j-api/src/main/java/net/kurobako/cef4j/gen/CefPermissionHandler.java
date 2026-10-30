@@ -21,7 +21,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__permission__handler_8h.html">cef_permission_handler.h:82</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefPermissionHandler extends CefClientHandler {
 
@@ -101,8 +100,8 @@ public interface CefPermissionHandler extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefPermissionHandler {
         private final java.util.List<CefPermissionHandler> delegates;
@@ -118,7 +117,7 @@ public interface CefPermissionHandler extends CefClientHandler {
                 @Nullable String requestingOrigin,
                 int requestedPermissions,
                 @Nullable CefMediaAccessCallback callback) {
-            for (CefPermissionHandler d : delegates) {
+            for (final CefPermissionHandler d : delegates) {
                 if (d.onRequestMediaAccessPermission(browser, frame, requestingOrigin, requestedPermissions, callback))
                     return true;
             }
@@ -133,7 +132,7 @@ public interface CefPermissionHandler extends CefClientHandler {
                 @Nullable String requestingOrigin,
                 int requestedPermissions,
                 @Nullable CefPermissionPromptCallback callback) {
-            for (CefPermissionHandler d : delegates) {
+            for (final CefPermissionHandler d : delegates) {
                 if (d.onShowPermissionPrompt(browser, promptId, requestingOrigin, requestedPermissions, callback))
                     return true;
             }
@@ -144,7 +143,7 @@ public interface CefPermissionHandler extends CefClientHandler {
         @Override
         public void onDismissPermissionPrompt(
                 @Nullable CefBrowser browser, long promptId, CefPermissionRequestResult result) {
-            for (CefPermissionHandler d : delegates) d.onDismissPermissionPrompt(browser, promptId, result);
+            for (final CefPermissionHandler d : delegates) d.onDismissPermissionPrompt(browser, promptId, result);
         }
     }
 }

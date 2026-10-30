@@ -13,7 +13,7 @@ class PendingFramesTest {
         assertThat(frames.offer(new byte[1])).isTrue();
         assertThat(frames.offer(new byte[1])).isTrue();
         assertThat(frames.offer(new byte[1])).isFalse();
-        assertThat(frames.poll()).hasSize(1);
+        assertThat(frames.poll().orElseThrow()).hasSize(1);
         assertThat(frames.offer(new byte[1])).isTrue();
     }
 
@@ -24,7 +24,7 @@ class PendingFramesTest {
         assertThat(frames.offer(new byte[5])).isFalse();
         assertThat(frames.offer(new byte[3])).isTrue();
         assertThat(frames.offer(new byte[2])).isFalse();
-        assertThat(frames.poll()).hasSize(3);
+        assertThat(frames.poll().orElseThrow()).hasSize(3);
         assertThat(frames.offer(new byte[4])).isTrue();
     }
 

@@ -4,11 +4,13 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class EndTracingCallbackOnEndTracingCompleteEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 1608024082;
@@ -37,7 +39,7 @@ public final class EndTracingCallbackOnEndTracingCompleteEvent implements CefMes
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(tracingFileBytes.length);
@@ -48,12 +50,9 @@ public final class EndTracingCallbackOnEndTracingCompleteEvent implements CefMes
     }
 
     public static final CefMessageDecoder<EndTracingCallbackOnEndTracingCompleteEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        int tracingFileLen = WireDecoder.length(__buf, "tracingFile");
-        byte[] tracingFileBuf = new byte[tracingFileLen];
-        __buf.get(tracingFileBuf);
-        String tracingFile = new String(tracingFileBuf, StandardCharsets.UTF_8);
+        final String tracingFile = WireDecoder.utf8(__buf, "tracingFile");
         WireDecoder.requireFullyConsumed(__buf, "EndTracingCallbackOnEndTracingCompleteEvent");
         return new EndTracingCallbackOnEndTracingCompleteEvent(tracingFile);
     };

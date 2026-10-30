@@ -26,7 +26,7 @@ final class ScrollbarTheme {
      * if no scene is available.
      */
     static String generateCss(javafx.scene.@Nullable Scene scene) {
-        ScrollbarPalette palette = ScrollbarPalette.from(resolveBase(scene));
+        final ScrollbarPalette palette = ScrollbarPalette.from(resolveBase(scene));
 
         return String.join(
                 "\n",
@@ -61,7 +61,7 @@ final class ScrollbarTheme {
 
     /** JavaScript snippet that injects a {@code <style>} element into the page head. */
     static String injectScript(String css) {
-        String escaped = css.replace("\\", "\\\\").replace("'", "\\'").replace("\n", "\\n");
+        final String escaped = css.replace("\\", "\\\\").replace("'", "\\'").replace("\n", "\\n");
         return "(function(){"
                 + "function apply(doc){"
                 + "if(!doc)return;"
@@ -88,7 +88,7 @@ final class ScrollbarTheme {
                     bg = ((javafx.scene.layout.Region) scene.getRoot()).getBackground();
                 }
                 if (bg != null && !bg.getFills().isEmpty()) {
-                    javafx.scene.paint.Paint fill = bg.getFills().get(0).getFill();
+                    final javafx.scene.paint.Paint fill = bg.getFills().get(0).getFill();
                     if (fill instanceof Color) {
                         return (Color) fill;
                     }
@@ -126,11 +126,11 @@ final class ScrollbarTheme {
         }
 
         private static ScrollbarPalette from(Color base) {
-            boolean dark = luminance(base) < 0.5;
-            Color track = mix(base, dark ? Color.WHITE : Color.BLACK, dark ? 0.08 : 0.05);
-            Color thumb = mix(base, dark ? Color.WHITE : Color.BLACK, dark ? 0.32 : 0.22);
-            Color thumbHover = mix(base, dark ? Color.WHITE : Color.BLACK, dark ? 0.42 : 0.32);
-            Color thumbActive = mix(base, dark ? Color.WHITE : Color.BLACK, dark ? 0.52 : 0.42);
+            final boolean dark = luminance(base) < 0.5;
+            final Color track = mix(base, dark ? Color.WHITE : Color.BLACK, dark ? 0.08 : 0.05);
+            final Color thumb = mix(base, dark ? Color.WHITE : Color.BLACK, dark ? 0.32 : 0.22);
+            final Color thumbHover = mix(base, dark ? Color.WHITE : Color.BLACK, dark ? 0.42 : 0.32);
+            final Color thumbActive = mix(base, dark ? Color.WHITE : Color.BLACK, dark ? 0.52 : 0.42);
             return new ScrollbarPalette(dark, track, thumb, thumbHover, thumbActive);
         }
     }
@@ -141,8 +141,8 @@ final class ScrollbarTheme {
     }
 
     private static Color mix(Color a, Color b, double ratio) {
-        double clamped = Math.max(0.0, Math.min(1.0, ratio));
-        double inv = 1.0 - clamped;
+        final double clamped = Math.max(0.0, Math.min(1.0, ratio));
+        final double inv = 1.0 - clamped;
         return new Color(
                 a.getRed() * inv + b.getRed() * clamped,
                 a.getGreen() * inv + b.getGreen() * clamped,

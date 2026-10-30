@@ -27,7 +27,6 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -59,7 +58,7 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 import org.jspecify.annotations.Nullable;
 
 /** Swing off-screen rendering panel for a CEF browser. */
-@SuppressWarnings({"this-escape", "resource"})
+@SuppressWarnings("this-escape")
 public class CefBrowserPanel extends JPanel implements AutoCloseable {
     private static final long serialVersionUID = 1L;
 
@@ -95,9 +94,9 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
 
     // XXX: CEF render callbacks run outside the AWT EDT, where querying Component location can deadlock on AWTTreeLock;
     // remove this cache only if a bridge snapshots the coordinates on the EDT before every render callback reads them.
-    private volatile int cachedScreenX;
-    private volatile int cachedScreenY;
-    private volatile boolean screenLocationValid;
+    private volatile int cachedScreenX = 0;
+    private volatile int cachedScreenY = 0;
+    private volatile boolean screenLocationValid = false;
 
     /**
      * Initialise CEF for off-screen rendering. Must be called before constructing any {@link CefBrowserPanel},
@@ -112,40 +111,49 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
      *
      * @param settings caller-provided settings; OSR fields will be overwritten
      * @param extraArgs additional CEF command-line args; OSR defaults are prepended
-     * @param appHandler optional {@link CefApp} handler; if present it is registered via
-     *     {@link Cef#addAppHandler(CefApp)} before initialisation
      * @throws IllegalStateException if CEF has been terminated
      */
-    public static void initialise(CefSettings.Mutable settings, List<String> extraArgs, Optional<CefApp> appHandler) {
+    public static void initialise(CefSettings.Mutable settings, List<String> extraArgs) {
+        initialiseImpl(settings, extraArgs, null);
+    }
+
+    /**
+     * Initialise CEF for off-screen rendering with an application handler.
+     *
+     * @param settings caller-provided settings; OSR fields will be overwritten
+     * @param extraArgs additional CEF command-line args; OSR defaults are prepended
+     * @param appHandler {@link CefApp} handler registered via {@link Cef#addAppHandler(CefApp)} before initialisation
+     * @throws IllegalStateException if CEF has been terminated
+     */
+    public static void initialise(CefSettings.Mutable settings, List<String> extraArgs, CefApp appHandler) {
+        initialiseImpl(settings, extraArgs, Objects.requireNonNull(appHandler, "appHandler"));
+    }
+
+    private static void initialiseImpl(
+            CefSettings.Mutable settings, List<String> extraArgs, @Nullable CefApp appHandler) {
         synchronized (INITIALISE_LOCK) {
             Objects.requireNonNull(settings, "settings");
             Objects.requireNonNull(extraArgs, "extraArgs");
-            Cef.State cefState = Cef.INSTANCE.state();
+            final Cef.State cefState = Cef.INSTANCE.state();
             if (cefState == Cef.State.INITIALISED) {
                 requireOsrInitialised();
                 return;
             }
             initialiseAwtPeer();
             SystemBootstrap.load();
-            Cef.LaunchArgs defaults = Cef.osrLaunchArgs();
-            CefSettings.Mutable osrDefaults = defaults.settings();
-            settings.windowlessRenderingEnabled = osrDefaults.windowlessRenderingEnabled;
-            settings.externalMessagePump = osrDefaults.externalMessagePump;
-            settings.multiThreadedMessageLoop = osrDefaults.multiThreadedMessageLoop;
-            List<String> combinedArgs = new ArrayList<>(defaults.args().size() + extraArgs.size());
-            combinedArgs.addAll(defaults.args());
-            combinedArgs.addAll(extraArgs);
-            if (appHandler.isPresent()) {
-                Cef.INSTANCE.addAppHandler(appHandler.get());
+            final Cef.LaunchArgs defaults = Cef.osrLaunchArgs();
+            defaults.applyTo(settings);
+            if (appHandler != null) {
+                Cef.INSTANCE.addAppHandler(appHandler);
             }
-            Cef.INSTANCE.initialise(settings, combinedArgs);
+            Cef.INSTANCE.initialise(settings, defaults.argsWith(extraArgs));
         }
     }
 
     private static void initialiseAwtPeer() {
         if (OS.isMacOS()) return;
-        Runnable initialise = () -> {
-            JFrame frame = new JFrame();
+        final Runnable initialise = () -> {
+            final JFrame frame = new JFrame();
             frame.setUndecorated(true);
             frame.pack();
             awtBootstrapFrame = frame;
@@ -167,7 +175,7 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
     /** Terminate CEF. See {@link Cef#terminate()}. */
     public static void terminate() {
         synchronized (INITIALISE_LOCK) {
-            JFrame frame = awtBootstrapFrame;
+            final JFrame frame = awtBootstrapFrame;
             awtBootstrapFrame = null;
             if (frame != null && !SwingUtilities.isEventDispatchThread()) {
                 try {
@@ -188,7 +196,7 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
     }
 
     private static void disposeAwtBootstrap(JFrame frame) {
-        Runnable dispose = frame::dispose;
+        final Runnable dispose = frame::dispose;
         if (SwingUtilities.isEventDispatchThread()) {
             dispose.run();
             return;
@@ -205,11 +213,11 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
     }
 
     private static void requireOsrInitialised() {
-        Cef.State state = Cef.INSTANCE.state();
+        final Cef.State state = Cef.INSTANCE.state();
         if (state != Cef.State.INITIALISED) {
             throw new IllegalStateException(
                     "CEF must be initialised for off-screen rendering before creating a CefBrowserPanel.\n"
-                            + "Call CefBrowserPanel.initialise(settings, args, handler) before constructing any panel.\n");
+                            + "Call CefBrowserPanel.initialise(settings, args) before constructing any panel.\n");
         }
         Cef.INSTANCE
                 .activeSettings()
@@ -226,18 +234,19 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
         int maxW = 1, maxH = 1;
         for (GraphicsDevice dev :
                 GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()) {
-            DisplayMode dm = dev.getDisplayMode();
-            AffineTransform tx = dev.getDefaultConfiguration().getDefaultTransform();
-            double scale = Math.max(tx.getScaleX(), tx.getScaleY());
-            int pw = (int) Math.ceil(dm.getWidth() * scale);
-            int ph = (int) Math.ceil(dm.getHeight() * scale);
+            final DisplayMode dm = dev.getDisplayMode();
+            final AffineTransform tx = dev.getDefaultConfiguration().getDefaultTransform();
+            final double scale = Math.max(tx.getScaleX(), tx.getScaleY());
+            final int pw = (int) Math.ceil(dm.getWidth() * scale);
+            final int ph = (int) Math.ceil(dm.getHeight() * scale);
             if (pw > maxW) maxW = pw;
             if (ph > maxH) maxH = ph;
         }
         frameBuffer = new CefFrameBuffer<>(maxW, maxH, (prev, pixels, w, h, dirty) -> {
-            BufferedImage img = prev.filter(p -> p.getWidth() == w && p.getHeight() == h)
-                    .orElseGet(() -> new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB));
-            int[] dst = ((java.awt.image.DataBufferInt) img.getRaster().getDataBuffer()).getData();
+            final BufferedImage img = prev != null && prev.getWidth() == w && prev.getHeight() == h
+                    ? prev
+                    : new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+            final int[] dst = ((java.awt.image.DataBufferInt) img.getRaster().getDataBuffer()).getData();
             System.arraycopy(pixels, 0, dst, 0, w * h);
             return img;
         });
@@ -259,7 +268,7 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
             }
         });
 
-        Consumer<MouseEvent> sendMouseMove = e -> ifHostPresent(
+        final Consumer<MouseEvent> sendMouseMove = e -> ifHostPresent(
                 h -> h.sendMouseMoveEvent(new CefMouseEvent(e.getX(), e.getY(), mouseModifiers(e)), false));
         addMouseListener(new MouseAdapter() {
             @Override
@@ -290,9 +299,9 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
 
             @Override
             public void mouseExited(MouseEvent e) {
-                JWindow popup = osrPopupWindow;
+                final JWindow popup = osrPopupWindow;
                 if (popup != null && popup.isVisible()) {
-                    Point screen = e.getLocationOnScreen();
+                    final Point screen = e.getLocationOnScreen();
                     if (popup.getBounds().contains(screen)) return;
                 }
                 ifHostPresent(
@@ -311,7 +320,7 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
             }
         });
         addMouseWheelListener(e -> ifHostPresent(h -> {
-            int delta = -e.getUnitsToScroll() * SCROLL_UNITS_MULTIPLIER;
+            final int delta = -e.getUnitsToScroll() * SCROLL_UNITS_MULTIPLIER;
             int deltaX = 0;
             int deltaY = delta;
             if (e.isShiftDown()) {
@@ -326,12 +335,12 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
             public void keyPressed(KeyEvent e) {
                 if (e.isConsumed()) return;
                 ifHostPresent(h -> {
-                    int mods = keyModifiers(e);
+                    final int mods = keyModifiers(e);
                     h.sendKeyEvent(new CefKeyEvent(
                             KEY_RAWKEYDOWN, mods, e.getKeyCode(), e.getKeyCode(), 0, (char) 0, (char) 0, 0));
-                    char c = e.getKeyChar();
+                    final char c = e.getKeyChar();
                     if (c != KeyEvent.CHAR_UNDEFINED && !e.isActionKey()) {
-                        h.sendKeyEvent(new CefKeyEvent(KEY_CHAR, mods, (int) c, (int) c, 0, c, c, 0));
+                        h.sendKeyEvent(new CefKeyEvent(KEY_CHAR, mods, c, c, 0, c, c, 0));
                     }
                 });
             }
@@ -348,25 +357,25 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
             @Override
             public void componentResized(ComponentEvent e) {
                 updateScreenLocation();
-                refreshView(false);
+                refreshView(h -> {});
             }
 
             @Override
             public void componentMoved(ComponentEvent e) {
                 updateScreenLocation();
-                refreshView(true);
+                refreshView(CefBrowserHost::notifyScreenInfoChanged);
             }
         });
         addHierarchyBoundsListener(new HierarchyBoundsAdapter() {
             @Override
             public void ancestorMoved(HierarchyEvent e) {
                 updateScreenLocation();
-                refreshView(true);
+                refreshView(CefBrowserHost::notifyScreenInfoChanged);
             }
         });
 
         addHierarchyListener(e -> {
-            long flags = e.getChangeFlags();
+            final long flags = e.getChangeFlags();
             if ((flags & (HierarchyEvent.SHOWING_CHANGED | HierarchyEvent.PARENT_CHANGED)) != 0) {
                 updateScreenLocation();
             }
@@ -378,23 +387,19 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
         });
     }
 
-    @Nullable
-    private CefBrowserHost host() {
-        CefBrowser current = browser;
-        return current != null ? current.getHost().orElse(null) : null;
+    private Optional<CefBrowserHost> host() {
+        return Optional.ofNullable(browser).flatMap(CefBrowser::getHost);
     }
 
     private void ifHostPresent(Consumer<CefBrowserHost> action) {
-        CefBrowserHost h = host();
-        if (h != null) action.accept(h);
+        host().ifPresent(action);
     }
 
-    private void refreshView(boolean screenInfoChanged) {
+    /** Refreshes the view, which tells CEF about the screen information when it changed. */
+    private void refreshView(Consumer<CefBrowserHost> screenInfoChanged) {
         ifHostPresent(h -> {
             frameBuffer.resetBackPressure();
-            if (screenInfoChanged) {
-                h.notifyScreenInfoChanged();
-            }
+            screenInfoChanged.accept(h);
             h.wasResized();
             h.invalidate(PAINT_VIEW);
         });
@@ -408,7 +413,7 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
     private void updateScreenLocation() {
         if (isShowing()) {
             try {
-                Point loc = getLocationOnScreen();
+                final Point loc = getLocationOnScreen();
                 cachedScreenX = loc.x;
                 cachedScreenY = loc.y;
                 screenLocationValid = true;
@@ -451,19 +456,19 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
 
             @Override
             public boolean getScreenInfo(@Nullable CefBrowser b, CefScreenInfo.Mutable screenInfo) {
-                GraphicsConfiguration gc = getGraphicsConfiguration();
+                final GraphicsConfiguration gc = getGraphicsConfiguration();
                 if (gc == null) return false;
-                float scale = getEffectiveScaleFactor();
+                final float scale = getEffectiveScaleFactor();
                 screenInfo.deviceScaleFactor = scale;
                 screenInfo.depth = SCREEN_DEPTH;
                 screenInfo.depthPerComponent = SCREEN_DEPTH_PER_COMPONENT;
-                Rectangle bounds = gc.getBounds();
+                final Rectangle bounds = gc.getBounds();
                 screenInfo.rect = new CefRect(
                         (int) (bounds.x * scale),
                         (int) (bounds.y * scale),
                         Math.max(1, (int) (bounds.width * scale)),
                         Math.max(1, (int) (bounds.height * scale)));
-                Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
+                final Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
                 screenInfo.availableRect = new CefRect(
                         (int) ((bounds.x + insets.left) * scale),
                         (int) ((bounds.y + insets.top) * scale),
@@ -497,7 +502,8 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
                     ByteBuffer buffer,
                     int width,
                     int height) {
-                boolean isPopup = type.kind().orElse(CefPaintElementType.Kind.VIEW) == CefPaintElementType.Kind.POPUP;
+                final boolean isPopup =
+                        type.kind().orElse(CefPaintElementType.Kind.VIEW) == CefPaintElementType.Kind.POPUP;
                 if (isPopup) {
                     CefFrameBuffer.copyBgraPixels(buffer, width, height)
                             .ifPresent(px -> SwingUtilities.invokeLater(() -> blitOsrPopup(px, width, height)));
@@ -519,32 +525,30 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
     public void browser(@Nullable CefBrowser browser) {
         this.browser = browser;
         if (browser == null) return;
-        Runnable refresh = () -> {
+        final Runnable refresh = () -> {
             updateScreenLocation();
-            refreshView(true);
+            refreshView(CefBrowserHost::notifyScreenInfoChanged);
         };
         if (SwingUtilities.isEventDispatchThread()) refresh.run();
         else SwingUtilities.invokeLater(refresh);
     }
 
-    /** Returns the attached browser, or {@code null} if none is attached. */
-    @NullableBoundary("Swing component may not have an attached browser")
-    @Nullable
-    public CefBrowser browser() {
-        return browser;
+    /** Returns the attached browser, or empty if none is attached. */
+    public Optional<CefBrowser> browser() {
+        return Optional.ofNullable(browser);
     }
 
     /** Returns the physical-pixel scale reported to CEF for this panel's display. */
     protected float getEffectiveScaleFactor() {
-        GraphicsConfiguration gc = getGraphicsConfiguration();
+        final GraphicsConfiguration gc = getGraphicsConfiguration();
         if (gc == null) return 1f;
-        AffineTransform tx = gc.getDefaultTransform();
+        final AffineTransform tx = gc.getDefaultTransform();
         return (float) Math.max(tx.getScaleX(), tx.getScaleY());
     }
 
     /** Releases the attached browser if present. */
     public void release() {
-        CefBrowser b = browser;
+        final CefBrowser b = browser;
         browser = null;
         lastPaintedImage = null;
         hideOsrPopup();
@@ -562,7 +566,7 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         frameBuffer.consume().ifPresent(fresh -> lastPaintedImage = fresh);
-        BufferedImage img = lastPaintedImage;
+        final BufferedImage img = lastPaintedImage;
         if (img != null) {
             g.drawImage(img, 0, 0, getWidth(), getHeight(), null);
         }
@@ -574,14 +578,14 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
 
     private void showOsrPopup() {
         hideOsrPopup();
-        Window ancestor = SwingUtilities.getWindowAncestor(this);
+        final Window ancestor = SwingUtilities.getWindowAncestor(this);
         if (ancestor == null) return;
-        JWindow popup = new JWindow(ancestor);
+        final JWindow popup = new JWindow(ancestor);
         popup.setFocusableWindowState(false);
-        JComponent surface = new JComponent() {
+        final JComponent surface = new JComponent() {
             @Override
             protected void paintComponent(Graphics g) {
-                BufferedImage img = osrPopupImage;
+                final BufferedImage img = osrPopupImage;
                 if (img != null) {
                     g.drawImage(img, 0, 0, getWidth(), getHeight(), null);
                 }
@@ -590,12 +594,12 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
         surface.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                forwardPopupMouse(e, false);
+                forwardPopupMouseDown(e);
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                forwardPopupMouse(e, true);
+                forwardPopupMouseUp(e);
             }
         });
         surface.addMouseMotionListener(new MouseMotionAdapter() {
@@ -610,10 +614,10 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
             }
         });
         surface.addMouseWheelListener(e -> {
-            CefRect rect = popupRect;
+            final CefRect rect = popupRect;
             if (rect == null) return;
             ifHostPresent(h -> {
-                int delta = -e.getUnitsToScroll() * SCROLL_UNITS_MULTIPLIER;
+                final int delta = -e.getUnitsToScroll() * SCROLL_UNITS_MULTIPLIER;
                 h.sendMouseWheelEvent(
                         new CefMouseEvent(e.getX() + rect.x, e.getY() + rect.y, baseModifiers(e)), 0, delta);
             });
@@ -622,18 +626,28 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
         osrPopupWindow = popup;
     }
 
-    private void forwardPopupMouse(MouseEvent e, boolean mouseUp) {
-        CefRect rect = popupRect;
-        if (rect == null) return;
-        ifHostPresent(h -> h.sendMouseClickEvent(
-                new CefMouseEvent(e.getX() + rect.x, e.getY() + rect.y, mouseModifiers(e)),
-                CefMouseButtonType.of(cefButton(e)),
-                mouseUp,
-                e.getClickCount()));
+    /** Forwards the press of the mouse to the popup of the panel. */
+    private void forwardPopupMouseDown(MouseEvent e) {
+        popupMouseEvent(e)
+                .ifPresent(event -> ifHostPresent(h ->
+                        h.sendMouseClickEvent(event, CefMouseButtonType.of(cefButton(e)), false, e.getClickCount())));
+    }
+
+    /** Forwards the release of the mouse to the popup of the panel. */
+    private void forwardPopupMouseUp(MouseEvent e) {
+        popupMouseEvent(e)
+                .ifPresent(event -> ifHostPresent(h ->
+                        h.sendMouseClickEvent(event, CefMouseButtonType.of(cefButton(e)), true, e.getClickCount())));
+    }
+
+    /** The CEF mouse event of the AWT event, which is empty when the popup is not shown. */
+    private Optional<CefMouseEvent> popupMouseEvent(MouseEvent e) {
+        return Optional.ofNullable(popupRect)
+                .map(rect -> new CefMouseEvent(e.getX() + rect.x, e.getY() + rect.y, mouseModifiers(e)));
     }
 
     private void forwardPopupMouseMove(MouseEvent e) {
-        CefRect rect = popupRect;
+        final CefRect rect = popupRect;
         if (rect == null) return;
         ifHostPresent(h -> h.sendMouseMoveEvent(
                 new CefMouseEvent(e.getX() + rect.x, e.getY() + rect.y, mouseModifiers(e)), false));
@@ -649,20 +663,20 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
 
     private void blitOsrPopup(int[] pixels, int width, int height) {
         if (osrPopupWindow == null) return;
-        CefRect rect = popupRect;
+        final CefRect rect = popupRect;
         if (rect == null) return;
         BufferedImage img = osrPopupImage;
         if (img == null || img.getWidth() != width || img.getHeight() != height) {
             img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             osrPopupImage = img;
         }
-        int[] dst = ((java.awt.image.DataBufferInt) img.getRaster().getDataBuffer()).getData();
+        final int[] dst = ((java.awt.image.DataBufferInt) img.getRaster().getDataBuffer()).getData();
         System.arraycopy(pixels, 0, dst, 0, width * height);
         osrPopupWindow.setSize(rect.width, rect.height);
         try {
-            Point panelScreen = getLocationOnScreen();
+            final Point panelScreen = getLocationOnScreen();
             osrPopupWindow.setLocation(panelScreen.x + rect.x, panelScreen.y + rect.y);
-        } catch (java.awt.IllegalComponentStateException e) {
+        } catch (java.awt.IllegalComponentStateException ignored) {
             osrPopupWindow.setLocation(rect.x, rect.y);
         }
         if (!osrPopupWindow.isVisible()) {
@@ -728,7 +742,7 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
     }
 
     private static int keyModifiers(KeyEvent e) {
-        int loc = e.getKeyLocation();
+        final int loc = e.getKeyLocation();
         return CefInputEventFlags.withKeyLocation(
                 baseModifiers(e), loc == KeyEvent.KEY_LOCATION_LEFT, loc == KeyEvent.KEY_LOCATION_RIGHT);
     }

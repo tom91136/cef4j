@@ -63,7 +63,6 @@ class CefViewsInteropTest extends CefTestBase {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     @Order(20)
     void browserViewCreateAndGetBrowser() {
@@ -233,7 +232,6 @@ class CefViewsInteropTest extends CefTestBase {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     @Order(50)
     void labelButtonCreateAndGetText() {
@@ -260,7 +258,6 @@ class CefViewsInteropTest extends CefTestBase {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     @Order(51)
     void labelButtonAsMenuButton() {
@@ -346,7 +343,6 @@ class CefViewsInteropTest extends CefTestBase {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     @Order(70)
     void menuButtonCreateDoesNotCrash() {

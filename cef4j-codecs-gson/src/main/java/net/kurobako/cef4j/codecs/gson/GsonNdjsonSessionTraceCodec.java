@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import net.kurobako.cef4j.ipc.session.middleware.SessionTrace;
 import net.kurobako.cef4j.ipc.session.middleware.SessionTraceCodec;
 import net.kurobako.cef4j.ipc.session.middleware.SessionTraceWriter;
@@ -55,17 +56,17 @@ public final class GsonNdjsonSessionTraceCodec implements SessionTraceCodec {
 
     @Override
     public SessionTrace.Recording read(InputStream source) throws IOException {
-        BufferedReader input = new BufferedReader(
+        final BufferedReader input = new BufferedReader(
                 new InputStreamReader(Objects.requireNonNull(source, "source"), StandardCharsets.UTF_8));
-        String headerLine = readCompleteLine(input);
-        if (headerLine == null) throw invalid("trace has no complete header record");
-        Map<String, String> metadata = parseHeader(object(headerLine));
-        List<SessionTrace.Entry> entries = new ArrayList<>();
+        final String headerLine =
+                readCompleteLine(input).orElseThrow(() -> invalid("trace has no complete header record"));
+        final Map<String, String> metadata = parseHeader(object(headerLine));
+        final List<SessionTrace.Entry> entries = new ArrayList<>();
         long expected = 1, lastElapsed = 0;
         String line;
-        while ((line = readCompleteLine(input)) != null) {
+        while ((line = readCompleteLine(input).orElse(null)) != null) {
             if (line.isBlank()) continue;
-            SessionTrace.Entry entry = parseEntry(object(line));
+            final SessionTrace.Entry entry = parseEntry(object(line));
             if (entry.sequence != expected)
                 throw invalid("invalid trace sequence " + entry.sequence + ", expected " + expected);
             if (entry.elapsedNanos < lastElapsed)
@@ -77,26 +78,25 @@ public final class GsonNdjsonSessionTraceCodec implements SessionTraceCodec {
         return new SessionTrace.Recording(metadata, entries);
     }
 
-    @Nullable
-    private static String readCompleteLine(BufferedReader input) throws IOException {
-        StringBuilder line = new StringBuilder();
-        while (true) {
-            int value = input.read();
-            if (value < 0) return null;
+    private static Optional<String> readCompleteLine(BufferedReader input) throws IOException {
+        final StringBuilder line = new StringBuilder();
+        int value;
+        while ((value = input.read()) >= 0) {
             if (value == '\n') {
-                int n = line.length();
+                final int n = line.length();
                 if (n > 0 && line.charAt(n - 1) == '\r') line.setLength(n - 1);
-                return line.toString();
+                return Optional.of(line.toString());
             }
             if (line.length() >= MAX_LINE_CHARACTERS) throw invalid("trace record is too large");
             line.append((char) value);
         }
+        return Optional.empty();
     }
 
     private static JsonObject object(String line) throws IOException {
         try {
             validateJson(line);
-            JsonElement value = JsonParser.parseString(line);
+            final JsonElement value = JsonParser.parseString(line);
             if (!value.isJsonObject()) throw invalid("record must be an object");
             return value.getAsJsonObject();
         } catch (JsonParseException | IllegalStateException e) {
@@ -118,9 +118,9 @@ public final class GsonNdjsonSessionTraceCodec implements SessionTraceCodec {
         switch (reader.peek()) {
             case BEGIN_OBJECT:
                 reader.beginObject();
-                java.util.Set<String> names = new HashSet<>();
+                final java.util.Set<String> names = new HashSet<>();
                 while (reader.hasNext()) {
-                    String name = reader.nextName();
+                    final String name = reader.nextName();
                     if (!names.add(name)) throw invalid("duplicate field " + name);
                     validateValue(reader, depth + 1);
                 }
@@ -137,7 +137,7 @@ public final class GsonNdjsonSessionTraceCodec implements SessionTraceCodec {
                 reader.skipValue();
                 return;
             case NUMBER:
-                String number = reader.nextString();
+                final String number = reader.nextString();
                 if (number.length() > 128) throw invalid("number exceeds 128 characters");
                 return;
             default:
@@ -149,16 +149,13 @@ public final class GsonNdjsonSessionTraceCodec implements SessionTraceCodec {
         if (!"header".equals(text(value, "type"))) throw invalid("first record is not a header");
         if (!SessionTrace.FORMAT.equals(text(value, "format"))) throw invalid("unsupported trace format");
         if (integer(value, "version") != SessionTrace.VERSION) throw invalid("unsupported trace version");
-        String created = decimal(value, "createdEpochMillis");
-        Map<String, String> metadata = new LinkedHashMap<>();
-        JsonElement raw = value.get("metadata");
+        final String created = decimal(value, "createdEpochMillis");
+        final Map<String, String> metadata = new LinkedHashMap<>();
+        final JsonElement raw = value.get("metadata");
         if (raw == null || !raw.isJsonObject()) throw invalid("metadata must be an object");
         for (Map.Entry<String, JsonElement> entry : raw.getAsJsonObject().entrySet())
             metadata.put(entry.getKey(), text(entry.getValue(), "metadata." + entry.getKey()));
-        metadata.put("format", SessionTrace.FORMAT);
-        metadata.put("formatVersion", Integer.toString(SessionTrace.VERSION));
-        metadata.put("createdEpochMillis", created);
-        return metadata;
+        return SessionTrace.headerMetadata(metadata, created);
     }
 
     private static SessionTrace.Entry parseEntry(JsonObject value) throws IOException {
@@ -169,20 +166,21 @@ public final class GsonNdjsonSessionTraceCodec implements SessionTraceCodec {
                 || !value.has("messageId")) {
             throw invalid("trace entry is missing a required field");
         }
-        String type = text(value, "type");
-        long sequence = number(decimal(value, "sequence"), "sequence");
-        long elapsed = number(decimal(value, "elapsedNanos"), "elapsedNanos");
-        long operation = number(decimal(value, "operationId"), "operationId");
-        int message = integer(value, "messageId");
+        final String type = text(value, "type");
+        final long sequence = number(decimal(value, "sequence"), "sequence");
+        final long elapsed = number(decimal(value, "elapsedNanos"), "elapsedNanos");
+        final long operation = number(decimal(value, "operationId"), "operationId");
+        final int message = integer(value, "messageId");
         byte[] payload = null;
-        JsonElement encoded = value.get("payloadBase64");
+        final JsonElement encoded = value.get("payloadBase64");
         if (encoded != null)
             try {
                 payload = Base64.getDecoder().decode(text(encoded, "payloadBase64"));
             } catch (IllegalArgumentException e) {
                 throw invalid("invalid payloadBase64", e);
             }
-        String detailType = optionalText(value, "detailType"), detailMessage = optionalText(value, "detailMessage");
+        final String detailType = optionalText(value, "detailType").orElse(null),
+                detailMessage = optionalText(value, "detailMessage").orElse(null);
         SessionTrace.Kind kind;
         try {
             kind = SessionTrace.Kind.valueOf(type.toUpperCase(Locale.ROOT));
@@ -198,7 +196,7 @@ public final class GsonNdjsonSessionTraceCodec implements SessionTraceCodec {
     }
 
     private static String text(JsonObject value, String name) throws IOException {
-        JsonElement element = value.get(name);
+        final JsonElement element = value.get(name);
         if (element == null) return missing(name);
         return text(element, name);
     }
@@ -209,19 +207,18 @@ public final class GsonNdjsonSessionTraceCodec implements SessionTraceCodec {
         return value.getAsString();
     }
 
-    @Nullable
-    private static String optionalText(JsonObject value, String name) throws IOException {
-        JsonElement element = value.get(name);
-        return element == null ? null : text(element, name);
+    private static Optional<String> optionalText(JsonObject value, String name) throws IOException {
+        final JsonElement element = value.get(name);
+        return element == null ? Optional.empty() : Optional.of(text(element, name));
     }
 
     private static int integer(JsonObject value, String name) throws IOException {
-        JsonElement element = value.get(name);
+        final JsonElement element = value.get(name);
         if (element == null
                 || !element.isJsonPrimitive()
                 || !element.getAsJsonPrimitive().isNumber()) throw invalid(name + " must be an integer");
         try {
-            java.math.BigDecimal exact = element.getAsBigDecimal();
+            final java.math.BigDecimal exact = element.getAsBigDecimal();
             return exact.intValueExact();
         } catch (NumberFormatException | ArithmeticException e) {
             throw invalid(name + " must be an integer", e);
@@ -229,7 +226,7 @@ public final class GsonNdjsonSessionTraceCodec implements SessionTraceCodec {
     }
 
     private static String decimal(JsonObject value, String name) throws IOException {
-        String result = text(value, name);
+        final String result = text(value, name);
         if (!result.matches("-?[0-9]+")) throw invalid(name + " must be a decimal integer string");
         return result;
     }
@@ -262,12 +259,12 @@ public final class GsonNdjsonSessionTraceCodec implements SessionTraceCodec {
 
         TraceWriter(OutputStream destination, Map<String, String> metadata) throws IOException {
             output = new OutputStreamWriter(Objects.requireNonNull(destination, "destination"), StandardCharsets.UTF_8);
-            JsonObject header = new JsonObject();
+            final JsonObject header = new JsonObject();
             header.addProperty("type", "header");
             header.addProperty("format", SessionTrace.FORMAT);
             header.addProperty("version", SessionTrace.VERSION);
             header.addProperty("createdEpochMillis", Long.toString(System.currentTimeMillis()));
-            JsonObject values = new JsonObject();
+            final JsonObject values = new JsonObject();
             metadata.forEach(values::addProperty);
             header.add("metadata", values);
             line(header, true);
@@ -283,7 +280,7 @@ public final class GsonNdjsonSessionTraceCodec implements SessionTraceCodec {
                 @Nullable String detailMessage)
                 throws IOException {
             if (closed) throw new IOException("session trace writer closed");
-            JsonObject value = new JsonObject();
+            final JsonObject value = new JsonObject();
             value.addProperty("type", kind.name().toLowerCase(Locale.ROOT));
             value.addProperty("sequence", Long.toString(nextSequence++));
             value.addProperty("elapsedNanos", Long.toString(Math.max(0, System.nanoTime() - startNanos)));

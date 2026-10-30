@@ -3,9 +3,9 @@ package net.kurobako.cef4j.ipc.session.middleware;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -26,6 +26,10 @@ import org.slf4j.LoggerFactory;
  * authentication material. Store them accordingly. A {@link TracePayloadFilter} can redact data, but transformed traces
  * are replayable only if the transformation preserves values needed by strict request matching and decoders.
  */
+// The arguments of append are the fields of a trace entry, which the writer stamps with the sequence and the time of
+// the entry; the entry type carries those two fields as well, so a parameter object would have to invent the values
+// the writer adds.
+@SuppressWarnings("baumkuchen:data-clump")
 public final class RecordingCefSession implements CefSession {
     private static final Logger LOG = LoggerFactory.getLogger(RecordingCefSession.class);
 
@@ -76,10 +80,10 @@ public final class RecordingCefSession implements CefSession {
         Objects.requireNonNull(traceFile, "traceFile");
         Objects.requireNonNull(codec, "codec");
         Objects.requireNonNull(filter, "filter");
-        AtomicLong generations = new AtomicLong();
+        final AtomicLong generations = new AtomicLong();
         return delegate -> {
-            long generation = generations.incrementAndGet();
-            Path file = Objects.requireNonNull(traceFile.apply(generation), "traceFile result");
+            final long generation = generations.incrementAndGet();
+            final Path file = Objects.requireNonNull(traceFile.apply(generation), "traceFile result");
             try {
                 return toFile(delegate, file, codec, filter);
             } catch (IOException failure) {
@@ -103,11 +107,17 @@ public final class RecordingCefSession implements CefSession {
             CefMessageEncoder request, CefMessageDecoder<R> decoder) {
         Objects.requireNonNull(request, "request");
         Objects.requireNonNull(decoder, "decoder");
-        long operationId = nextOperationId.getAndIncrement();
-        append(SessionTrace.Kind.REQUEST, operationId, request.messageId(), encode(request), null, null);
-        AtomicBoolean receivedResponse = new AtomicBoolean();
-        CefMessageDecoder<R> recordingDecoder = payload -> {
-            byte[] bytes = copy(payload);
+        final long operationId = nextOperationId.getAndIncrement();
+        append(
+                SessionTrace.Kind.REQUEST,
+                operationId,
+                request.messageId(),
+                MessagePayloads.encode(request),
+                null,
+                null);
+        final AtomicBoolean receivedResponse = new AtomicBoolean();
+        final CefMessageDecoder<R> recordingDecoder = payload -> {
+            final byte[] bytes = copy(payload);
             append(SessionTrace.Kind.RESPONSE, operationId, request.messageId(), bytes, null, null);
             receivedResponse.set(true);
             return decoder.decode(payload);
@@ -127,27 +137,27 @@ public final class RecordingCefSession implements CefSession {
     @Override
     public <E extends CefMessageView> HandlerRegistration on(
             int messageId, CefMessageDecoder<E> decoder, Consumer<E> handler) {
-        return subscribe(SessionTrace.Kind.SUBSCRIBE, false, messageId, decoder, handler);
+        return subscribe(SessionTrace.Kind.SUBSCRIBE, messageId, decoder, handler);
     }
 
     @Override
     public <E extends CefMessageView> HandlerRegistration onLatest(
             int messageId, CefMessageDecoder<E> decoder, Consumer<E> handler) {
-        return subscribe(SessionTrace.Kind.SUBSCRIBE_LATEST, true, messageId, decoder, handler);
+        return subscribe(SessionTrace.Kind.SUBSCRIBE_LATEST, messageId, decoder, handler);
     }
 
     private <E extends CefMessageView> HandlerRegistration subscribe(
-            SessionTrace.Kind kind, boolean latest, int messageId, CefMessageDecoder<E> decoder, Consumer<E> handler) {
-        long subscriptionId = nextOperationId.getAndIncrement();
+            SessionTrace.Kind kind, int messageId, CefMessageDecoder<E> decoder, Consumer<E> handler) {
+        final long subscriptionId = nextOperationId.getAndIncrement();
         append(kind, subscriptionId, messageId, null, null, null);
-        CefMessageDecoder<E> recordingDecoder = payload -> {
+        final CefMessageDecoder<E> recordingDecoder = payload -> {
             append(SessionTrace.Kind.EVENT, subscriptionId, messageId, copy(payload), null, null);
             return decoder.decode(payload);
         };
-        HandlerRegistration registration = latest
+        final HandlerRegistration registration = kind == SessionTrace.Kind.SUBSCRIBE_LATEST
                 ? delegate.onLatest(messageId, recordingDecoder, handler)
                 : delegate.on(messageId, recordingDecoder, handler);
-        AtomicBoolean registered = new AtomicBoolean(true);
+        final AtomicBoolean registered = new AtomicBoolean(true);
         return () -> {
             if (!registered.compareAndSet(true, false)) return;
             append(SessionTrace.Kind.UNSUBSCRIBE, subscriptionId, messageId, null, null, null);
@@ -158,14 +168,14 @@ public final class RecordingCefSession implements CefSession {
     @Override
     public <E extends CefMessageView> HandlerRegistration intercept(
             int messageId, CefMessageDecoder<E> decoder, InterceptHandler<E> handler) {
-        long registrationId = nextOperationId.getAndIncrement();
+        final long registrationId = nextOperationId.getAndIncrement();
         append(SessionTrace.Kind.INTERCEPT_REGISTER, registrationId, messageId, null, null, null);
         // Wrap the decoded view with its recorded call id; the delegate decodes and invokes the handler on the same
         // reader thread, so the exact incoming payload and its synchronous reply remain paired.
-        HandlerRegistration recordingRegistration = delegate.intercept(
+        final HandlerRegistration recordingRegistration = delegate.intercept(
                 messageId,
                 payload -> {
-                    long callId = nextOperationId.getAndIncrement();
+                    final long callId = nextOperationId.getAndIncrement();
                     append(
                             SessionTrace.Kind.INTERCEPT,
                             callId,
@@ -174,7 +184,7 @@ public final class RecordingCefSession implements CefSession {
                             Long.toString(registrationId),
                             null);
                     try {
-                        E event = decoder.decode(payload);
+                        final E event = decoder.decode(payload);
                         return new InterceptDelivery<>(callId, event);
                     } catch (RuntimeException failure) {
                         recordFailure(callId, messageId, failure);
@@ -183,12 +193,12 @@ public final class RecordingCefSession implements CefSession {
                 },
                 delivery -> {
                     try {
-                        CefMessageEncoder response = handler.onIntercept(delivery.event);
+                        final Optional<? extends CefMessageEncoder> response = handler.onIntercept(delivery.event);
                         append(
                                 SessionTrace.Kind.INTERCEPT_RESPONSE,
                                 delivery.callId,
-                                response == null ? messageId : response.messageId(),
-                                response == null ? null : encode(response),
+                                response.map(CefMessageEncoder::messageId).orElse(messageId),
+                                response.map(MessagePayloads::encode).orElse(null),
                                 Long.toString(registrationId),
                                 null);
                         return response;
@@ -197,7 +207,7 @@ public final class RecordingCefSession implements CefSession {
                         throw failure;
                     }
                 });
-        AtomicBoolean registered = new AtomicBoolean(true);
+        final AtomicBoolean registered = new AtomicBoolean(true);
         return () -> {
             if (!registered.compareAndSet(true, false)) return;
             append(SessionTrace.Kind.INTERCEPT_UNREGISTER, registrationId, messageId, null, null, null);
@@ -226,7 +236,7 @@ public final class RecordingCefSession implements CefSession {
     }
 
     private void recordFailure(long operationId, int messageId, Throwable failure) {
-        Throwable cause = unwrap(failure);
+        final Throwable cause = unwrap(failure);
         append(
                 SessionTrace.Kind.FAILURE,
                 operationId,
@@ -245,7 +255,7 @@ public final class RecordingCefSession implements CefSession {
             @Nullable String detailMessage) {
         if (!traceHealthy.get()) return;
         try {
-            byte[] stored = payload == null ? null : filter.filter(kind, messageId, payload.clone());
+            final byte[] stored = payload == null ? null : filter.filter(kind, messageId, payload.clone());
             trace.append(kind, operationId, messageId, stored, detailType, detailMessage);
         } catch (IOException | RuntimeException failure) {
             if (traceHealthy.compareAndSet(true, false)) {
@@ -254,19 +264,9 @@ public final class RecordingCefSession implements CefSession {
         }
     }
 
-    private static byte[] encode(CefMessageEncoder encoder) {
-        ByteBuffer payload = ByteBuffer.allocate(encoder.encodedSize()).order(ByteOrder.LITTLE_ENDIAN);
-        encoder.encodeInto(payload);
-        if (payload.position() != encoder.encodedSize()) {
-            throw new IllegalArgumentException("encoder for message " + encoder.messageId() + " wrote "
-                    + payload.position() + " bytes, expected " + encoder.encodedSize());
-        }
-        return payload.array();
-    }
-
     private static byte[] copy(ByteBuffer payload) {
-        ByteBuffer view = payload.duplicate();
-        byte[] bytes = new byte[view.remaining()];
+        final ByteBuffer view = payload.duplicate();
+        final byte[] bytes = new byte[view.remaining()];
         view.get(bytes);
         return bytes;
     }

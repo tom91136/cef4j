@@ -47,7 +47,7 @@ struct JniCefResponseFilter : public cef_response_filter_t {
                                                            size_t *data_out_written) {
     auto *h = reinterpret_cast<JniCefResponseFilter *>(self);
     ScopedJNIEnv env(h->jvm);
-    if (env->PushLocalFrame(10) < 0) {
+    if (env->PushLocalFrame(13) < 0) {
       return cef_response_filter_status_t::RESPONSE_FILTER_ERROR;
     }
     jobject j_data_in =
@@ -66,13 +66,12 @@ struct JniCefResponseFilter : public cef_response_filter_t {
       env->SetLongArrayRegion(j_data_out_written, 0, 1, &_v);
     }
     auto cls = env->GetObjectClass(h->javaHandler);
-    auto mid =
-        env->GetMethodID(cls, "filter", "(Ljava/nio/ByteBuffer;[JLjava/nio/ByteBuffer;[J)Lnet/kurobako/cef4j/gen/CefResponseFilterStatus;");
+    auto mid = env->GetMethodID(cls, "filter", "(Ljava/nio/ByteBuffer;[JLjava/nio/ByteBuffer;[J)Ljava/util/Optional;");
     if (!mid) {
       env->PopLocalFrame(nullptr);
       return cef_response_filter_status_t::RESPONSE_FILTER_ERROR;
     }
-    auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_data_in, j_data_in_read, j_data_out, j_data_out_written);
+    auto jOptional = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_data_in, j_data_in_read, j_data_out, j_data_out_written);
     if (CheckJNIException(env)) {
       env->PopLocalFrame(nullptr);
       return cef_response_filter_status_t::RESPONSE_FILTER_ERROR;
@@ -87,6 +86,9 @@ struct JniCefResponseFilter : public cef_response_filter_t {
       env->GetLongArrayRegion(j_data_out_written, 0, 1, &_v);
       *data_out_written = static_cast<size_t>(_v);
     }
+    auto _optCls = FindClassCached(env, "java/util/Optional");
+    auto _orElseMid = env->GetMethodID(_optCls, "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    auto jResult = jOptional ? (jobject)env->CallObjectMethod(jOptional, _orElseMid, (jobject) nullptr) : nullptr;
     cef_response_filter_status_t nativeResult = static_cast<cef_response_filter_status_t>(
         jResult ? env->GetLongField(jResult, env->GetFieldID(env->GetObjectClass(jResult), "value", "J")) : 0);
     env->PopLocalFrame(nullptr);

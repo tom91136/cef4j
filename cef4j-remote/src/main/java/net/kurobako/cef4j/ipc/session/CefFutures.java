@@ -6,6 +6,13 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * Helpers that map the completion of one future into another.
+ *
+ * <p>A mapper that fails must be reported to the caller, so every failure of the mapper is caught and delivered through
+ * the returned future rather than being lost in the completion stage.
+ */
+@SuppressWarnings("baumkuchen:catch-throwable")
 public final class CefFutures {
     private CefFutures() {}
 
@@ -14,7 +21,7 @@ public final class CefFutures {
             CompletableFuture<S> source, Function<? super S, ? extends T> mapper) {
         Objects.requireNonNull(source, "source");
         Objects.requireNonNull(mapper, "mapper");
-        PropagatingFuture<T> result = new PropagatingFuture<>(source::cancel);
+        final PropagatingFuture<T> result = new PropagatingFuture<>(source::cancel);
         source.whenComplete((value, failure) -> {
             if (failure != null) {
                 result.completeExceptionally(failure);
@@ -32,7 +39,7 @@ public final class CefFutures {
     @SuppressWarnings("FutureReturnValueIgnored")
     public static CompletableFuture<Void> discard(CompletableFuture<?> source) {
         Objects.requireNonNull(source, "source");
-        PropagatingFuture<Void> result = new PropagatingFuture<>(source::cancel);
+        final PropagatingFuture<Void> result = new PropagatingFuture<>(source::cancel);
         source.whenComplete((value, failure) -> {
             if (failure != null) result.completeExceptionally(failure);
             else result.complete(null);
@@ -45,8 +52,8 @@ public final class CefFutures {
             CompletableFuture<S> source, Function<? super S, ? extends CompletableFuture<T>> mapper) {
         Objects.requireNonNull(source, "source");
         Objects.requireNonNull(mapper, "mapper");
-        AtomicReference<CompletableFuture<?>> active = new AtomicReference<>(source);
-        PropagatingFuture<T> result = new PropagatingFuture<>(mayInterrupt ->
+        final AtomicReference<CompletableFuture<?>> active = new AtomicReference<>(source);
+        final PropagatingFuture<T> result = new PropagatingFuture<>(mayInterrupt ->
                 Objects.requireNonNull(active.get(), "active future").cancel(mayInterrupt));
         source.whenComplete((value, failure) -> {
             if (failure != null) {
@@ -82,7 +89,6 @@ public final class CefFutures {
         });
     }
 
-    @SuppressWarnings("serial")
     private static final class PropagatingFuture<T> extends CompletableFuture<T> {
         private final java.util.function.Consumer<Boolean> cancellation;
 
@@ -92,7 +98,7 @@ public final class CefFutures {
 
         @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
-            boolean cancelled = super.cancel(mayInterruptIfRunning);
+            final boolean cancelled = super.cancel(mayInterruptIfRunning);
             if (cancelled) cancellation.accept(mayInterruptIfRunning);
             return cancelled;
         }

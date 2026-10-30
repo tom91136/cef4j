@@ -23,6 +23,8 @@ import com.sun.source.util.TreeScanner;
 import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.code.Symbol.VarSymbol;
 import com.sun.tools.javac.tree.JCTree;
+import java.io.Serial;
+import java.util.Optional;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import org.jspecify.annotations.Nullable;
@@ -31,24 +33,32 @@ import org.jspecify.annotations.Nullable;
  * A volatile field can change between reads, so a null check proves nothing about the next read. NullAway trusts the
  * check anyway. Read the field once into a local and check and use the local.
  */
+// an Error Prone checker reads the symbols and trees of javac itself, which jdk.compiler does not export
+@SuppressWarnings("baumkuchen:jdk-internal-api")
 @AutoService(BugChecker.class)
 @BugPattern(
         summary = "Null-checked volatile field is read again; copy it to a local and use that instead",
         severity = SeverityLevel.ERROR)
 public final class VolatileNullCheckReread extends BugChecker implements BinaryTreeMatcher {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Override
     public Description matchBinary(BinaryTree tree, VisitorState state) {
         if (tree.getKind() != Tree.Kind.EQUAL_TO && tree.getKind() != Tree.Kind.NOT_EQUAL_TO) return NO_MATCH;
-        VarSymbol field = volatileField(tree.getLeftOperand(), tree.getRightOperand());
-        if (field == null) field = volatileField(tree.getRightOperand(), tree.getLeftOperand());
-        if (field == null) return NO_MATCH;
-        Tree body = enclosingBody(state.getPath());
-        if (body == null) return NO_MATCH;
-        int checkEnd = state.getEndPosition(tree);
-        VarSymbol checked = field;
-        Boolean reread = new TreeScanner<Boolean, Void>() {
+        return volatileField(tree.getLeftOperand(), tree.getRightOperand())
+                .or(() -> volatileField(tree.getRightOperand(), tree.getLeftOperand()))
+                .flatMap(field -> enclosingBody(state.getPath())
+                        .filter(body -> rereadsAfter(body, field, state.getEndPosition(tree)))
+                        .map(body -> buildDescription(tree)
+                                .setMessage("volatile field '" + field.getSimpleName()
+                                        + "' is read again after this null check; copy it to a local first")
+                                .build()))
+                .orElse(NO_MATCH);
+    }
+
+    private static boolean rereadsAfter(Tree body, VarSymbol field, int checkEnd) {
+        final Boolean reread = new TreeScanner<Boolean, Void>() {
             @Override
             public Boolean visitAssignment(AssignmentTree node, Void unused) {
                 return scan(node.getExpression(), null);
@@ -70,29 +80,25 @@ public final class VolatileNullCheckReread extends BugChecker implements BinaryT
             }
 
             private boolean readsAfterCheck(ExpressionTree node) {
-                return checked.equals(ASTHelpers.getSymbol(node)) && ((JCTree) node).getStartPosition() > checkEnd;
+                return field.equals(ASTHelpers.getSymbol(node)) && ((JCTree) node).getStartPosition() > checkEnd;
             }
         }.scan(body, null);
-        if (!Boolean.TRUE.equals(reread)) return NO_MATCH;
-        return buildDescription(tree)
-                .setMessage("volatile field '" + field.getSimpleName()
-                        + "' is read again after this null check; copy it to a local first")
-                .build();
+        return Boolean.TRUE.equals(reread);
     }
 
-    private static @Nullable VarSymbol volatileField(ExpressionTree candidate, ExpressionTree other) {
-        if (other.getKind() != Tree.Kind.NULL_LITERAL) return null;
-        Symbol symbol = ASTHelpers.getSymbol(candidate);
-        if (!(symbol instanceof VarSymbol variable) || variable.getKind() != ElementKind.FIELD) return null;
-        return variable.getModifiers().contains(Modifier.VOLATILE) ? variable : null;
+    private static Optional<VarSymbol> volatileField(ExpressionTree candidate, ExpressionTree other) {
+        if (other.getKind() != Tree.Kind.NULL_LITERAL) return Optional.empty();
+        final Symbol symbol = ASTHelpers.getSymbol(candidate);
+        if (!(symbol instanceof VarSymbol variable) || variable.getKind() != ElementKind.FIELD) return Optional.empty();
+        return variable.getModifiers().contains(Modifier.VOLATILE) ? Optional.of(variable) : Optional.empty();
     }
 
-    private static @Nullable Tree enclosingBody(TreePath path) {
+    private static Optional<Tree> enclosingBody(TreePath path) {
         for (TreePath up = path; up != null; up = up.getParentPath()) {
-            Tree leaf = up.getLeaf();
-            if (leaf instanceof LambdaExpressionTree lambda) return lambda.getBody();
-            if (leaf instanceof MethodTree method) return method.getBody();
+            final Tree leaf = up.getLeaf();
+            if (leaf instanceof LambdaExpressionTree lambda) return Optional.ofNullable(lambda.getBody());
+            if (leaf instanceof MethodTree method) return Optional.ofNullable(method.getBody());
         }
-        return null;
+        return Optional.empty();
     }
 }

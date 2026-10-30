@@ -12,22 +12,34 @@ public final class CdpRequestTracker<T> {
 
     @SuppressWarnings("FutureReturnValueIgnored")
     public Request<T> register() {
-        while (true) {
-            int id = nextId.updateAndGet(previous -> previous == Integer.MAX_VALUE ? 1 : previous + 1);
-            Request<T> request = new Request<>(id);
-            if (pending.putIfAbsent(id, request) != null) continue;
-            request.whenComplete((ignored, failure) -> pending.remove(id, request));
-            return request;
+        int id = allocateId();
+        Request<T> request = new Request<>(id);
+        while (pending.putIfAbsent(id, request) != null) {
+            id = allocateId();
+            request = new Request<>(id);
         }
+        trackCompletion(id, request);
+        return request;
+    }
+
+    /** The identifier of the next request, which wraps around when the counter is exhausted. */
+    private int allocateId() {
+        return nextId.updateAndGet(previous -> previous == Integer.MAX_VALUE ? 1 : previous + 1);
+    }
+
+    /** Forgets the request once it is done. */
+    @SuppressWarnings("FutureReturnValueIgnored")
+    private void trackCompletion(int id, Request<T> request) {
+        request.whenComplete((ignored, failure) -> pending.remove(id, request));
     }
 
     public void complete(int id, T value) {
-        Request<T> request = pending.remove(id);
+        final Request<T> request = pending.remove(id);
         if (request != null) request.complete(Objects.requireNonNull(value, "value"));
     }
 
     public void fail(int id, Throwable failure) {
-        Request<T> request = pending.remove(id);
+        final Request<T> request = pending.remove(id);
         if (request != null) request.completeExceptionally(Objects.requireNonNull(failure, "failure"));
     }
 
@@ -42,7 +54,6 @@ public final class CdpRequestTracker<T> {
         return pending.size();
     }
 
-    @SuppressWarnings("serial")
     public static final class Request<T> extends CompletableFuture<T> {
         private final int id;
 

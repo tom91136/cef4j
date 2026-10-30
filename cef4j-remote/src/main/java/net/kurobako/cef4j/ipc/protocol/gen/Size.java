@@ -3,7 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
@@ -11,6 +11,7 @@ import net.kurobako.cef4j.ipc.session.WireDecoder;
  * to facade methods (or factory requests) that take this struct. The dispatcher decodes them on the
  * runtime-server side and fills the matching {@code cef_size_t} before invoking CEF.
  */
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class Size {
 
     private final int width;
@@ -29,12 +30,13 @@ public final class Size {
         return height;
     }
 
+    @SuppressWarnings("SameReturnValue")
     public int encodedSize() {
         return 8;
     }
 
     public void encodeInto(ByteBuffer dst) {
-        ByteOrder originalOrder = dst.order();
+        final ByteOrder originalOrder = dst.order();
         try {
             dst.order(ByteOrder.LITTLE_ENDIAN);
             dst.putInt(width);
@@ -50,10 +52,8 @@ public final class Size {
       * configured the buffer.
       */
     public static Size decode(ByteBuffer __buf) {
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "width");
-        int width = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "height");
-        int height = __buf.getInt();
+        final int width = WireDecoder.int32(__buf, "width");
+        final int height = WireDecoder.int32(__buf, "height");
         return new Size(width, height);
     }
 
@@ -64,16 +64,16 @@ public final class Size {
     /** Lombok-style builder. */
     public static final class Builder {
 
-        private int width = 0;
-        private int height = 0;
+        private int width;
+        private int height;
 
-        public Builder width(int width) {
-            this.width = width;
+        public Builder width(int value) {
+            this.width = value;
             return this;
         }
 
-        public Builder height(int height) {
-            this.height = height;
+        public Builder height(int value) {
+            this.height = value;
             return this;
         }
 

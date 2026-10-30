@@ -22,7 +22,7 @@ public final class RuntimeServerBrowserRuntimeFactory implements RemoteBrowserRu
     private static final AtomicInteger STARTUP_THREAD_IDS = new AtomicInteger();
     private static final Executor STARTUP_THREADS =
             Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), task -> {
-                Thread thread = new Thread(task, "cef4j-runtime-start-" + STARTUP_THREAD_IDS.incrementAndGet());
+                final Thread thread = new Thread(task, "cef4j-runtime-start-" + STARTUP_THREAD_IDS.incrementAndGet());
                 thread.setDaemon(true);
                 return thread;
             });
@@ -94,7 +94,7 @@ public final class RuntimeServerBrowserRuntimeFactory implements RemoteBrowserRu
 
     @Override
     public CompletableFuture<? extends RemoteBrowserRuntime> create() {
-        CompletableFuture<OwnedRuntime> result = new CompletableFuture<>();
+        final CompletableFuture<OwnedRuntime> result = new CompletableFuture<>();
         try {
             startupExecutor.execute(() -> {
                 OwnedRuntime runtime;
@@ -134,27 +134,27 @@ public final class RuntimeServerBrowserRuntimeFactory implements RemoteBrowserRu
         try {
             server = RuntimeServerProcess.spawn(
                     binary, controlTransport, endpoint, frameTransport, timeout, environment);
-            int serverApi = server.handshake().cefApiVersion();
+            final int serverApi = server.handshake().cefApiVersion();
             if (!RemoteApiCompatibility.supports(serverApi)) {
                 throw new IllegalStateException("Remote CEF API mismatch: client="
                         + RemoteApiCompatibility.cefApiVersion() + ", server=" + serverApi);
             }
-            CefSession undecorated = new CefSessionImpl(server.connect(), timeout);
+            final CefSession undecorated = new CefSessionImpl(server.connect(), timeout);
             try {
                 session = sessionMiddleware.wrap(undecorated);
             } catch (RuntimeException failure) {
                 undecorated.close();
                 throw failure;
             }
-            CompletableFuture<RemoteHandle> browser = new CompletableFuture<>();
-            CefSession.HandlerRegistration registration = session.onLatest(
+            final CompletableFuture<RemoteHandle> browser = new CompletableFuture<>();
+            final CefSession.HandlerRegistration registration = session.onLatest(
                     LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
                     LifeSpanHandlerOnAfterCreatedEvent.DECODER,
                     event -> browser.complete(event.browser()));
             // CefSessionImpl's runtime-server handshake creates the bootstrap browser only after the receive
             // handler is installed. onLatest also replays the event if creation wins this registration race.
             // Sending CreateBrowserRequest here would create an unowned second browser for every runtime.
-            RemoteHandle handle = browser.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+            final RemoteHandle handle = browser.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
             registration.close();
             return new OwnedRuntime(session, handle, server);
         } catch (Exception failure) {

@@ -59,7 +59,7 @@ public abstract class WebDriverServerContract {
 
     @Test
     final void suppliedHttpExecutorRemainsCallerOwned() throws Exception {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
         try {
             try (WebDriverServer server = WebDriverServer.start(
                     new InetSocketAddress(InetAddress.getLoopbackAddress(), 0),
@@ -77,7 +77,7 @@ public abstract class WebDriverServerContract {
 
     @Test
     final void suppliedPollingExecutorRunsLoadCompletionPolling() throws Exception {
-        AtomicInteger executions = new AtomicInteger();
+        final AtomicInteger executions = new AtomicInteger();
         try (CdpAutomationBackend backend = CdpAutomationBackend.create(new StubCdpBrowser(codec()), command -> {
                     executions.incrementAndGet();
                     command.run();
@@ -91,10 +91,10 @@ public abstract class WebDriverServerContract {
     @Test
     @SuppressWarnings("NullAway")
     final void recoversAfterSynchronousFactoryFailures() throws Exception {
-        AtomicInteger calls = new AtomicInteger();
+        final AtomicInteger calls = new AtomicInteger();
         try (WebDriverServer server = WebDriverServer.start(
                 capabilities -> {
-                    int call = calls.getAndIncrement();
+                    final int call = calls.getAndIncrement();
                     if (call == 0) throw new IllegalStateException("factory boom");
                     if (call == 1) return null;
                     return CompletableFuture.completedFuture(new Backend());
@@ -110,15 +110,15 @@ public abstract class WebDriverServerContract {
 
     @Test
     final void triesCapabilityCandidatesAndRejectsUnsatisfiedConstraints() throws Exception {
-        java.util.List<Backend> backends = new java.util.ArrayList<>();
+        final java.util.List<Backend> backends = new java.util.ArrayList<>();
         try (WebDriverServer server = WebDriverServer.start(
                 capabilities -> {
-                    Backend backend = new Backend();
+                    final Backend backend = new Backend();
                     backends.add(backend);
                     return CompletableFuture.completedFuture(backend);
                 },
                 codec())) {
-            Response matched =
+            final Response matched =
                     request(server, "{\"capabilities\":{\"firstMatch\":[{\"browserVersion\":\"wrong\"},{}]}}");
             assertThat(matched.status).isEqualTo(200);
             assertThat(backends).hasSize(2);
@@ -153,12 +153,13 @@ public abstract class WebDriverServerContract {
 
     @Test
     final void deletingSessionCancelsActiveCommandBeforeClosingBackend() throws Exception {
-        BlockingBackend backend = new BlockingBackend();
+        final BlockingBackend backend = new BlockingBackend();
         try (WebDriverServer server =
                 WebDriverServer.start(capabilities -> CompletableFuture.completedFuture(backend), codec())) {
-            String sessionId = member(request(server, "{\"capabilities\":{}}").value(), "sessionId")
+            final String sessionId = member(
+                            request(server, "{\"capabilities\":{}}").value(), "sessionId")
                     .string();
-            CompletableFuture<HttpResponse<String>> navigation = client.sendAsync(
+            final CompletableFuture<HttpResponse<String>> navigation = client.sendAsync(
                     HttpRequest.newBuilder(server.endpoint().resolve("/session/" + sessionId + "/url"))
                             .header("Content-Type", "application/json")
                             .POST(HttpRequest.BodyPublishers.ofString("{\"url\":\"https://pending.test\"}"))
@@ -166,7 +167,7 @@ public abstract class WebDriverServerContract {
                     HttpResponse.BodyHandlers.ofString());
             assertThat(backend.started.await(5, TimeUnit.SECONDS)).isTrue();
 
-            CompletableFuture<HttpResponse<String>> deletion = client.sendAsync(
+            final CompletableFuture<HttpResponse<String>> deletion = client.sendAsync(
                     HttpRequest.newBuilder(server.endpoint().resolve("/session/" + sessionId))
                             .DELETE()
                             .build(),
@@ -174,7 +175,7 @@ public abstract class WebDriverServerContract {
             assertThat(backend.cancelObserved.await(5, TimeUnit.SECONDS)).isTrue();
             assertThat(backend.closed).isFalse();
             backend.allowCommandExit.countDown();
-            HttpResponse<String> deleted = deletion.get(5, TimeUnit.SECONDS);
+            final HttpResponse<String> deleted = deletion.get(5, TimeUnit.SECONDS);
 
             assertThat(deleted.statusCode()).isEqualTo(200);
             assertThat(navigation.get(5, TimeUnit.SECONDS).statusCode()).isEqualTo(500);
@@ -185,13 +186,14 @@ public abstract class WebDriverServerContract {
 
     @Test
     final void deletingSessionStillClosesBackendWhenCancellationFails() throws Exception {
-        CancelFailingBackend backend = new CancelFailingBackend();
+        final CancelFailingBackend backend = new CancelFailingBackend();
         try (WebDriverServer server =
                 WebDriverServer.start(capabilities -> CompletableFuture.completedFuture(backend), codec())) {
-            String sessionId = member(request(server, "{\"capabilities\":{}}").value(), "sessionId")
+            final String sessionId = member(
+                            request(server, "{\"capabilities\":{}}").value(), "sessionId")
                     .string();
 
-            HttpResponse<String> deletion = client.send(
+            final HttpResponse<String> deletion = client.send(
                     HttpRequest.newBuilder(server.endpoint().resolve("/session/" + sessionId))
                             .DELETE()
                             .build(),
@@ -204,10 +206,10 @@ public abstract class WebDriverServerContract {
 
     @Test
     final void failedNewSessionResponseClosesBackendAndReleasesSession() throws Exception {
-        Backend backend = new Backend();
+        final Backend backend = new Backend();
         try (WebDriverServer server =
                 WebDriverServer.start(capabilities -> CompletableFuture.completedFuture(backend), codec())) {
-            Method handle = WebDriverServer.class.getDeclaredMethod("handle", HttpExchange.class);
+            final Method handle = WebDriverServer.class.getDeclaredMethod("handle", HttpExchange.class);
             handle.setAccessible(true);
             handle.invoke(server, new FailingResponseExchange("{\"capabilities\":{}}"));
 
@@ -218,9 +220,9 @@ public abstract class WebDriverServerContract {
 
     @Test
     final void codecKeepsExplicitNullsAndExactNumbers() {
-        String json = "{\"value\":null,\"items\":[1,null],\"int\":42,\"long\":9223372036854775807,"
+        final String json = "{\"value\":null,\"items\":[1,null],\"int\":42,\"long\":9223372036854775807,"
                 + "\"big\":9223372036854775808,\"decimal\":1.50,\"text\":\"<a&b>\"}";
-        JsonObject decoded = codec().decode(json).asObject();
+        final JsonObject decoded = codec().decode(json).asObject();
         assertThat(member(decoded, "value").isNull()).isTrue();
         assertThat(decoded.array("items").get(1).isNull()).isTrue();
         assertThat(member(decoded, "int").asPrimitive().value()).isEqualTo(42);
@@ -234,25 +236,25 @@ public abstract class WebDriverServerContract {
     final void ownsOneSessionAndReportsW3cCapabilities() throws Exception {
         assertThat(WebDriverJsonCodec.installed().cdpCodec().getClass())
                 .isEqualTo(codec().cdpCodec().getClass());
-        AtomicReference<@Nullable JsonObject> requested = new AtomicReference<>();
-        ScriptedBackend backend = new ScriptedBackend();
+        final AtomicReference<@Nullable JsonObject> requested = new AtomicReference<>();
+        final ScriptedBackend backend = new ScriptedBackend();
         try (WebDriverServer server = WebDriverServer.start(capabilities -> {
             requested.set(capabilities.deepCopy());
             return CompletableFuture.completedFuture(backend);
         })) {
-            Reply initial = exchange(server, "GET", "/status", null);
+            final Reply initial = exchange(server, "GET", "/status", null);
             assertThat(initial.status).isEqualTo(200);
             assertThat(member(initial.value().asObject(), "ready").booleanValue())
                     .isTrue();
 
-            String capabilities = "{\"capabilities\":{\"alwaysMatch\":{"
+            final String capabilities = "{\"capabilities\":{\"alwaysMatch\":{"
                     + "\"browserName\":\"cef4j\",\"pageLoadStrategy\":\"normal\"},"
                     + "\"firstMatch\":[{\"cef4j:options\":{\"transport\":\"uds\"}}]}}";
-            Reply created = exchange(server, "POST", "/session", capabilities);
+            final Reply created = exchange(server, "POST", "/session", capabilities);
 
             assertThat(created.status).isEqualTo(200);
-            JsonObject sessionValue = created.value().asObject();
-            String sessionId = member(sessionValue, "sessionId").string();
+            final JsonObject sessionValue = created.value().asObject();
+            final String sessionId = member(sessionValue, "sessionId").string();
             assertThat(sessionId).isNotBlank();
             assertThat(member(sessionValue.object("capabilities"), "browserName")
                             .string())
@@ -261,10 +263,10 @@ public abstract class WebDriverServerContract {
                             .string())
                     .isEqualTo("uds");
 
-            Reply second = exchange(server, "POST", "/session", "{\"capabilities\":{}}");
+            final Reply second = exchange(server, "POST", "/session", "{\"capabilities\":{}}");
             assertError(second, 500, "session not created");
 
-            Reply deleted = exchange(server, "DELETE", "/session/" + sessionId, null);
+            final Reply deleted = exchange(server, "DELETE", "/session/" + sessionId, null);
             assertThat(deleted.status).isEqualTo(200);
             assertThat(deleted.value().isNull()).isTrue();
             assertThat(backend.closed).isTrue();
@@ -276,10 +278,10 @@ public abstract class WebDriverServerContract {
 
     @Test
     final void routesInitialBrowserCommandSlice() throws Exception {
-        ScriptedBackend backend = new ScriptedBackend();
+        final ScriptedBackend backend = new ScriptedBackend();
         try (WebDriverServer server =
                 WebDriverServer.start(ignored -> CompletableFuture.completedFuture(backend), codec())) {
-            String prefix = "/session/" + createSession(server);
+            final String prefix = "/session/" + createSession(server);
 
             assertThat(exchange(server, "POST", prefix + "/url", "{\"url\":\"https://example.test/page\"}")
                             .value()
@@ -293,7 +295,7 @@ public abstract class WebDriverServerContract {
             assertThat(exchange(server, "GET", prefix + "/source", null).value().string())
                     .isEqualTo("<html>fake</html>");
 
-            Reply script = exchange(
+            final Reply script = exchange(
                     server,
                     "POST",
                     prefix + "/execute/sync",
@@ -310,7 +312,7 @@ public abstract class WebDriverServerContract {
 
     @Test
     final void returnsStandardErrorsForBadRequests() throws Exception {
-        ScriptedBackend backend = new ScriptedBackend();
+        final ScriptedBackend backend = new ScriptedBackend();
         try (WebDriverServer server =
                 WebDriverServer.start(ignored -> CompletableFuture.completedFuture(backend), codec())) {
             assertError(exchange(server, "POST", "/session", "not-json"), 400, "invalid argument");
@@ -320,7 +322,7 @@ public abstract class WebDriverServerContract {
                     "invalid argument");
             assertError(exchange(server, "GET", "/session/missing/url", null), 404, "invalid session id");
 
-            String sessionId = createSession(server);
+            final String sessionId = createSession(server);
             assertError(
                     exchange(server, "POST", "/session/" + sessionId + "/execute/sync", "{\"script\":7,\"args\":[]}"),
                     400,
@@ -332,7 +334,7 @@ public abstract class WebDriverServerContract {
 
     @Test
     final void mapsBackendTimeoutAndPreservesLoopbackDefault() throws Exception {
-        ScriptedBackend backend = new ScriptedBackend();
+        final ScriptedBackend backend = new ScriptedBackend();
         backend.hangNavigation = true;
         try (WebDriverServer server = WebDriverServer.start(
                 new InetSocketAddress(InetAddress.getLoopbackAddress(), 0),
@@ -340,9 +342,9 @@ public abstract class WebDriverServerContract {
                 Duration.ofMillis(50),
                 codec())) {
             assertThat(server.endpoint().getHost()).isIn("127.0.0.1", "0:0:0:0:0:0:0:1", "::1");
-            String sessionId = createSession(server);
+            final String sessionId = createSession(server);
             exchange(server, "POST", "/session/" + sessionId + "/timeouts", "{\"pageLoad\":50}");
-            Reply response =
+            final Reply response =
                     exchange(server, "POST", "/session/" + sessionId + "/url", "{\"url\":\"https://slow.test\"}");
             assertError(response, 500, "timeout");
             assertThat(backend.cancelledCommands).hasValue(1);
@@ -356,14 +358,15 @@ public abstract class WebDriverServerContract {
     final void appliesTimeoutsRequestedAtSessionCreation() throws Exception {
         try (WebDriverServer server =
                 WebDriverServer.start(ignored -> CompletableFuture.completedFuture(new ScriptedBackend()), codec())) {
-            Reply created = exchange(
+            final Reply created = exchange(
                     server,
                     "POST",
                     "/session",
                     "{\"capabilities\":{\"alwaysMatch\":{\"timeouts\":{\"implicit\":123}}}}");
-            String sessionId = member(created.value().asObject(), "sessionId").string();
+            final String sessionId =
+                    member(created.value().asObject(), "sessionId").string();
 
-            JsonObject timeouts = exchange(server, "GET", "/session/" + sessionId + "/timeouts", null)
+            final JsonObject timeouts = exchange(server, "GET", "/session/" + sessionId + "/timeouts", null)
                     .value()
                     .asObject();
             assertThat(member(timeouts, "implicit").longValue()).isEqualTo(123L);
@@ -372,14 +375,14 @@ public abstract class WebDriverServerContract {
 
     @Test
     final void closesBackendThatArrivesAfterSessionCreationTimeout() throws Exception {
-        CompletableFuture<AutomationBackend> creation = new CompletableFuture<>();
-        ScriptedBackend backend = new ScriptedBackend();
+        final CompletableFuture<AutomationBackend> creation = new CompletableFuture<>();
+        final ScriptedBackend backend = new ScriptedBackend();
         try (WebDriverServer server = WebDriverServer.start(
                 new InetSocketAddress(InetAddress.getLoopbackAddress(), 0),
                 ignored -> creation,
                 Duration.ofMillis(25),
                 codec())) {
-            Reply response = exchange(server, "POST", "/session", "{\"capabilities\":{}}");
+            final Reply response = exchange(server, "POST", "/session", "{\"capabilities\":{}}");
             assertError(response, 500, "timeout");
             creation.complete(backend);
             TestDeadline.after(Duration.ofSeconds(1))
@@ -390,68 +393,60 @@ public abstract class WebDriverServerContract {
 
     @Test
     final void implicitWaitRetriesElementSearch() throws Exception {
-        ScriptedBackend backend = new ScriptedBackend();
-        backend.emptySearches.set(2);
-        try (WebDriverServer server =
-                WebDriverServer.start(ignored -> CompletableFuture.completedFuture(backend), codec())) {
-            String sessionId = createSession(server);
-            exchange(server, "POST", "/session/" + sessionId + "/timeouts", "{\"implicit\":500}");
-            Reply found = exchange(
-                    server,
-                    "POST",
-                    "/session/" + sessionId + "/element",
-                    "{\"using\":\"css selector\",\"value\":\"#eventual\"}");
-            assertThat(found.status).isEqualTo(200);
-            assertThat(backend.searches).hasValue(3);
-        }
+        assertImplicitWaitFindsElement(2, "{\"implicit\":500}", 3);
     }
 
     @Test
     final void maximumImplicitWaitDoesNotOverflowDeadline() throws Exception {
-        ScriptedBackend backend = new ScriptedBackend();
-        backend.emptySearches.set(1);
+        assertImplicitWaitFindsElement(1, "{\"implicit\":9223372036854775807}", 2);
+    }
+
+    /** Searches for an element that is not there for the given number of searches, under the given implicit wait. */
+    private void assertImplicitWaitFindsElement(int emptySearches, String implicitWait, int attempts) throws Exception {
+        final ScriptedBackend backend = new ScriptedBackend();
+        backend.emptySearches.set(emptySearches);
         try (WebDriverServer server =
                 WebDriverServer.start(ignored -> CompletableFuture.completedFuture(backend), codec())) {
-            String sessionId = createSession(server);
-            exchange(server, "POST", "/session/" + sessionId + "/timeouts", "{\"implicit\":9223372036854775807}");
-            Reply found = exchange(
+            final String sessionId = createSession(server);
+            exchange(server, "POST", "/session/" + sessionId + "/timeouts", implicitWait);
+            final Reply found = exchange(
                     server,
                     "POST",
                     "/session/" + sessionId + "/element",
                     "{\"using\":\"css selector\",\"value\":\"#eventual\"}");
             assertThat(found.status).isEqualTo(200);
-            assertThat(backend.searches).hasValue(2);
+            assertThat(backend.searches).hasValue(attempts);
         }
     }
 
     private String createSession(WebDriverServer server) throws IOException, InterruptedException {
-        Reply response = exchange(server, "POST", "/session", "{\"capabilities\":{}}");
+        final Reply response = exchange(server, "POST", "/session", "{\"capabilities\":{}}");
         assertThat(response.status).isEqualTo(200);
         return member(response.value().asObject(), "sessionId").string();
     }
 
     private Reply exchange(WebDriverServer server, String method, String path, @Nullable String body)
             throws IOException, InterruptedException {
-        HttpRequest.BodyPublisher publisher =
+        final HttpRequest.BodyPublisher publisher =
                 body == null ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers.ofString(body);
-        HttpRequest request = HttpRequest.newBuilder(server.endpoint().resolve(path))
+        final HttpRequest request = HttpRequest.newBuilder(server.endpoint().resolve(path))
                 .method(method, publisher)
                 .header("Content-Type", "application/json; charset=utf-8")
                 .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         return new Reply(response.statusCode(), codec().decode(response.body()).asObject());
     }
 
     private static void assertError(Reply response, int status, String error) {
         assertThat(response.status).isEqualTo(status);
-        JsonObject value = response.value().asObject();
+        final JsonObject value = response.value().asObject();
         assertThat(member(value, "error").string()).isEqualTo(error);
         assertThat(member(value, "message").string()).isNotBlank();
         assertThat(member(value, "stacktrace").string()).isEmpty();
     }
 
     private void assertCookieFailure(String json, String message) throws Exception {
-        JsonObject cookie = codec().decode(json).asObject();
+        final JsonObject cookie = codec().decode(json).asObject();
         try (CdpAutomationBackend backend =
                 CdpAutomationBackend.create(new StubCdpBrowser(codec())).get(1, TimeUnit.SECONDS)) {
             assertThatThrownBy(() -> backend.addCookie(cookie))
@@ -477,7 +472,7 @@ public abstract class WebDriverServerContract {
             if (!method.equals("Browser.getVersion")) {
                 return CompletableFuture.failedFuture(new AssertionError("unexpected CDP command " + method));
             }
-            JsonObject version = new JsonObject();
+            final JsonObject version = new JsonObject();
             version.addProperty("protocolVersion", "1.3");
             version.addProperty("product", "cef4j-test");
             version.addProperty("revision", "test");
@@ -528,7 +523,7 @@ public abstract class WebDriverServerContract {
     private void assertSessionStatus(String timeout, int expectedStatus) throws Exception {
         try (WebDriverServer server =
                 WebDriverServer.start(capabilities -> CompletableFuture.completedFuture(new Backend()), codec())) {
-            Response response =
+            final Response response =
                     request(server, "{\"capabilities\":{\"alwaysMatch\":{\"timeouts\":{\"script\":" + timeout + "}}}}");
             assertThat(response.status).isEqualTo(expectedStatus);
             if (expectedStatus != 200) {
@@ -547,20 +542,20 @@ public abstract class WebDriverServerContract {
     }
 
     private boolean statusReady(WebDriverServer server) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder(server.endpoint().resolve("/status"))
+        final HttpRequest request = HttpRequest.newBuilder(server.endpoint().resolve("/status"))
                 .GET()
                 .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         return member(codec().decode(response.body()).asObject().object("value"), "ready")
                 .booleanValue();
     }
 
     private Response request(WebDriverServer server, String body) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder(server.endpoint().resolve("/session"))
+        final HttpRequest request = HttpRequest.newBuilder(server.endpoint().resolve("/session"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         return new Response(
                 response.statusCode(),
                 codec().decode(response.body()).asObject().object("value"));
@@ -610,7 +605,7 @@ public abstract class WebDriverServerContract {
 
         @Override
         public Headers getRequestHeaders() {
-            Headers headers = new Headers();
+            final Headers headers = new Headers();
             headers.set("Content-Type", "application/json");
             return headers;
         }
@@ -700,7 +695,7 @@ public abstract class WebDriverServerContract {
 
         @Override
         public JsonObject capabilities() {
-            JsonObject result = new JsonObject();
+            final JsonObject result = new JsonObject();
             result.addProperty("browserName", "cef4j");
             result.addProperty("browserVersion", "contract-version");
             result.addProperty("platformName", "contract-platform");
@@ -754,7 +749,7 @@ public abstract class WebDriverServerContract {
         private final AtomicInteger emptySearches = new AtomicInteger();
         private volatile String url = "about:blank";
         private volatile String lastScript = "";
-        private volatile boolean hangNavigation;
+        private volatile boolean hangNavigation = false;
 
         @Override
         public CompletableFuture<Void> navigate(String url) {
@@ -780,7 +775,7 @@ public abstract class WebDriverServerContract {
         @Override
         public CompletableFuture<JsonElement> executeScript(String script, JsonArray arguments) {
             lastScript = script;
-            JsonElement result = arguments.size() == 0
+            final JsonElement result = arguments.isEmpty()
                     ? new JsonPrimitive("no arguments")
                     : arguments.get(0).deepCopy();
             return CompletableFuture.completedFuture(result);
@@ -793,11 +788,15 @@ public abstract class WebDriverServerContract {
         }
 
         @Override
-        public CompletableFuture<List<String>> findElements(
-                String using, String value, Optional<String> parentElement) {
+        public CompletableFuture<List<String>> findElements(String using, String value) {
             searches.incrementAndGet();
             if (emptySearches.getAndDecrement() > 0) return CompletableFuture.completedFuture(List.of());
             return CompletableFuture.completedFuture(List.of("element-1"));
+        }
+
+        @Override
+        public CompletableFuture<List<String>> findElements(String using, String value, String parentElement) {
+            return findElements(using, value);
         }
 
         @Override
@@ -821,7 +820,7 @@ public abstract class WebDriverServerContract {
 
         @Override
         public CompletableFuture<Void> navigate(String url) {
-            BlockingFuture navigation = new BlockingFuture(cancelObserved, allowCommandExit);
+            final BlockingFuture navigation = new BlockingFuture(cancelObserved, allowCommandExit);
             cancelNavigation.set(navigation::completeExceptionally);
             started.countDown();
             return navigation;
@@ -830,7 +829,7 @@ public abstract class WebDriverServerContract {
         @Override
         public void cancelPendingCommands(Throwable failure) {
             cancelled.set(true);
-            Consumer<Throwable> cancel = cancelNavigation.get();
+            final Consumer<Throwable> cancel = cancelNavigation.get();
             if (cancel != null) cancel.accept(failure);
         }
 
@@ -869,15 +868,19 @@ public abstract class WebDriverServerContract {
                 return super.get(timeout, unit);
             } catch (ExecutionException | CancellationException failure) {
                 cancelObserved.countDown();
-                if (!allowCommandExit.await(timeout, unit)) throw new TimeoutException("command exit not released");
+                if (!allowCommandExit.await(timeout, unit)) {
+                    final TimeoutException timeoutException = new TimeoutException("command exit not released");
+                    timeoutException.initCause(failure);
+                    throw timeoutException;
+                }
                 throw failure;
             }
         }
     }
 
     private static JsonElement member(JsonObject object, String name) {
-        JsonElement value = object.get(name);
-        assertThat(value).as("JSON member %s", name).isNotNull();
-        return value;
+        final Optional<JsonElement> value = object.get(name);
+        assertThat(value).as("JSON member %s", name).isPresent();
+        return value.orElseThrow();
     }
 }

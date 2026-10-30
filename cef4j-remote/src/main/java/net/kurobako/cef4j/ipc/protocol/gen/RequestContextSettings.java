@@ -4,6 +4,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
@@ -11,6 +12,7 @@ import net.kurobako.cef4j.ipc.session.WireDecoder;
  * to facade methods (or factory requests) that take this struct. The dispatcher decodes them on the
  * runtime-server side and fills the matching {@code cef_request_context_settings_t} before invoking CEF.
  */
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class RequestContextSettings {
 
     private final long size;
@@ -58,18 +60,18 @@ public final class RequestContextSettings {
     }
 
     public void encodeInto(ByteBuffer dst) {
-        ByteOrder originalOrder = dst.order();
+        final ByteOrder originalOrder = dst.order();
         try {
             dst.order(ByteOrder.LITTLE_ENDIAN);
             dst.putLong(size);
-            byte[] cachePathBytes = cachePath.getBytes(StandardCharsets.UTF_8);
+            final byte[] cachePathBytes = cachePath.getBytes(StandardCharsets.UTF_8);
             dst.putInt(cachePathBytes.length);
             dst.put(cachePathBytes);
             dst.putInt(persistSessionCookies);
-            byte[] acceptLanguageListBytes = acceptLanguageList.getBytes(StandardCharsets.UTF_8);
+            final byte[] acceptLanguageListBytes = acceptLanguageList.getBytes(StandardCharsets.UTF_8);
             dst.putInt(acceptLanguageListBytes.length);
             dst.put(acceptLanguageListBytes);
-            byte[] cookieableSchemesListBytes = cookieableSchemesList.getBytes(StandardCharsets.UTF_8);
+            final byte[] cookieableSchemesListBytes = cookieableSchemesList.getBytes(StandardCharsets.UTF_8);
             dst.putInt(cookieableSchemesListBytes.length);
             dst.put(cookieableSchemesListBytes);
             dst.putInt(cookieableSchemesExcludeDefaults);
@@ -84,24 +86,12 @@ public final class RequestContextSettings {
       * configured the buffer.
       */
     public static RequestContextSettings decode(ByteBuffer __buf) {
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "size");
-        long size = __buf.getLong();
-        int cachePathLen = WireDecoder.length(__buf, "cachePath");
-        byte[] cachePathBuf = new byte[cachePathLen];
-        __buf.get(cachePathBuf);
-        String cachePath = new String(cachePathBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "persistSessionCookies");
-        int persistSessionCookies = __buf.getInt();
-        int acceptLanguageListLen = WireDecoder.length(__buf, "acceptLanguageList");
-        byte[] acceptLanguageListBuf = new byte[acceptLanguageListLen];
-        __buf.get(acceptLanguageListBuf);
-        String acceptLanguageList = new String(acceptLanguageListBuf, StandardCharsets.UTF_8);
-        int cookieableSchemesListLen = WireDecoder.length(__buf, "cookieableSchemesList");
-        byte[] cookieableSchemesListBuf = new byte[cookieableSchemesListLen];
-        __buf.get(cookieableSchemesListBuf);
-        String cookieableSchemesList = new String(cookieableSchemesListBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "cookieableSchemesExcludeDefaults");
-        int cookieableSchemesExcludeDefaults = __buf.getInt();
+        final long size = WireDecoder.int64(__buf, "size");
+        final String cachePath = WireDecoder.utf8(__buf, "cachePath");
+        final int persistSessionCookies = WireDecoder.int32(__buf, "persistSessionCookies");
+        final String acceptLanguageList = WireDecoder.utf8(__buf, "acceptLanguageList");
+        final String cookieableSchemesList = WireDecoder.utf8(__buf, "cookieableSchemesList");
+        final int cookieableSchemesExcludeDefaults = WireDecoder.int32(__buf, "cookieableSchemesExcludeDefaults");
         return new RequestContextSettings(size, cachePath, persistSessionCookies, acceptLanguageList, cookieableSchemesList, cookieableSchemesExcludeDefaults);
     }
 
@@ -112,40 +102,40 @@ public final class RequestContextSettings {
     /** Lombok-style builder. */
     public static final class Builder {
 
-        private long size = 0L;
+        private long size;
         private String cachePath = "";
-        private int persistSessionCookies = 0;
+        private int persistSessionCookies;
         private String acceptLanguageList = "";
         private String cookieableSchemesList = "";
-        private int cookieableSchemesExcludeDefaults = 0;
+        private int cookieableSchemesExcludeDefaults;
 
-        public Builder size(long size) {
-            this.size = size;
+        public Builder size(long value) {
+            this.size = value;
             return this;
         }
 
-        public Builder cachePath(String cachePath) {
-            this.cachePath = cachePath;
+        public Builder cachePath(String value) {
+            this.cachePath = value;
             return this;
         }
 
-        public Builder persistSessionCookies(int persistSessionCookies) {
-            this.persistSessionCookies = persistSessionCookies;
+        public Builder persistSessionCookies(int value) {
+            this.persistSessionCookies = value;
             return this;
         }
 
-        public Builder acceptLanguageList(String acceptLanguageList) {
-            this.acceptLanguageList = acceptLanguageList;
+        public Builder acceptLanguageList(String value) {
+            this.acceptLanguageList = value;
             return this;
         }
 
-        public Builder cookieableSchemesList(String cookieableSchemesList) {
-            this.cookieableSchemesList = cookieableSchemesList;
+        public Builder cookieableSchemesList(String value) {
+            this.cookieableSchemesList = value;
             return this;
         }
 
-        public Builder cookieableSchemesExcludeDefaults(int cookieableSchemesExcludeDefaults) {
-            this.cookieableSchemesExcludeDefaults = cookieableSchemesExcludeDefaults;
+        public Builder cookieableSchemesExcludeDefaults(int value) {
+            this.cookieableSchemesExcludeDefaults = value;
             return this;
         }
 

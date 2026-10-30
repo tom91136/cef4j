@@ -1,5 +1,47 @@
 package net.kurobako.cef4j.codegen
 
+object JniCppByValueCodeGen {
+  enum BvFieldType {
+    case Int, Float, Double, Long, Char, String
+    case CStringArray(mutable: Boolean)
+    case Enum(cefName: scala.Predef.String)
+    case NestedStruct(cefName: scala.Predef.String)
+    case OpaquePtr
+
+    def bvCastToJni(expr: String): String = this match {
+      case BvFieldType.Int     => s"static_cast<jint>($expr)"
+      case BvFieldType.Char    => s"static_cast<jchar>($expr)"
+      case BvFieldType.Float   => s"static_cast<jfloat>($expr)"
+      case BvFieldType.Double  => s"static_cast<jdouble>($expr)"
+      case BvFieldType.Long    => s"to_jlong($expr)"
+      case BvFieldType.String  => s"CefStringToJString(env, &($expr))"
+      case BvFieldType.Enum(_) => s"static_cast<jlong>($expr)"
+      case _                   => expr
+    }
+
+    def bvGetAndCast(ref: FieldRef): String = this match {
+      case BvFieldType.Int  => s"""env->GetIntField(${ref.obj}, env->GetFieldID(${ref.cls}, "${ref.javaName}", "I"))"""
+      case BvFieldType.Char => s"""env->GetCharField(${ref.obj}, env->GetFieldID(${ref.cls}, "${ref.javaName}", "C"))"""
+      case BvFieldType.Float =>
+        s"""env->GetFloatField(${ref.obj}, env->GetFieldID(${ref.cls}, "${ref.javaName}", "F"))"""
+      case BvFieldType.Double =>
+        s"""env->GetDoubleField(${ref.obj}, env->GetFieldID(${ref.cls}, "${ref.javaName}", "D"))"""
+      case BvFieldType.Long =>
+        s"""env->GetLongField(${ref.obj}, env->GetFieldID(${ref.cls}, "${ref.javaName}", "J"))"""
+      case _ =>
+        throw IllegalArgumentException(s"bvGetAndCast called on $this; use bvCopyJavaToCStruct for strings/nested")
+    }
+  }
+
+  case class BvField(cName: String, javaName: String, typ: BvFieldType)
+
+  case class FieldRef(obj: String, cls: String, javaName: String)
+  case class NativeTarget(cefName: String, ptrName: String, javaObj: String, clsVar: String)
+  case class NativeSize(cefName: String, javaObj: String, clsVar: String, nativePtr: String)
+  case class ArrayRef(ptrName: String, index: String)
+  case class CtorInfo(signature: String, args: List[String], preLines: List[String])
+}
+
 class JniCppByValueCodeGen(
     dataStructs: Map[String, CefDecl.DataStruct]
 )(using Naming.Context) {
@@ -10,17 +52,17 @@ class JniCppByValueCodeGen(
   private def isSizeField(f: Field): Boolean = f.name == "size" && f.typ == CType.SizeT
 
   def hasNativeSizeField(cefName: String): Boolean =
-    dataStructs.get(cefName).exists(_.fields.exists(isSizeField))
+    dataStructs.get(cefName).exists(_.fields.exists(isSizeField(_)))
 
-  def bvSetNativeSize(cefName: String, javaObj: String, clsVar: String, nativePtr: String): String =
-    if (hasNativeSizeField(cefName))
-      s"""if ($javaObj) env->SetLongField($javaObj, env->GetFieldID($clsVar, "size", "J"), static_cast<jlong>($nativePtr->size));"""
+  def bvSetNativeSize(target: NativeSize): String =
+    if (hasNativeSizeField(target.cefName))
+      s"""if (${target.javaObj}) env->SetLongField(${target.javaObj}, env->GetFieldID(${target.clsVar}, "size", "J"), static_cast<jlong>(${target.nativePtr}->size));"""
     else ""
 
   def byValueFields(cefName: String): List[BvField] =
     dataStructs.get(cefName) match {
       case Some(ds) =>
-        ds.fields.filterNot(isSizeField).map { f =>
+        ds.fields.filterNot(isSizeField(_)).map { f =>
           val javaName = Naming.toCamelCase(f.name)
           val bvType   = f.typ match {
             case CType.Int | CType.UInt | CType.Bool => BvFieldType.Int
@@ -62,39 +104,17 @@ class JniCppByValueCodeGen(
     case BvFieldType.OpaquePtr       => s"L${Naming.nativePointerInternalName};"
   }
 
-  def bvCastToJni(t: BvFieldType, expr: String): String = t match {
-    case BvFieldType.Int     => s"static_cast<jint>($expr)"
-    case BvFieldType.Char    => s"static_cast<jchar>($expr)"
-    case BvFieldType.Float   => s"static_cast<jfloat>($expr)"
-    case BvFieldType.Double  => s"static_cast<jdouble>($expr)"
-    case BvFieldType.Long    => s"to_jlong($expr)"
-    case BvFieldType.String  => s"CefStringToJString(env, &($expr))"
-    case BvFieldType.Enum(_) => s"static_cast<jlong>($expr)"
-    case _                   => expr
+  def fmtNewObject(clsVar: String, ctorVar: String, args: List[String], guard: String = ""): String = {
+    val (argsStr, argSeparator, guardSeparator, nullSuffix) =
+      if (args.length <= 4) (args.mkString(", "), " ", " ? ", " : nullptr")
+      else {
+        val indent    = "        "
+        val argsBlock = args.map(a => s"$indent$a").mkString(",\n")
+        (argsBlock, "\n", "\n    ? ", "\n    : nullptr")
+      }
+    val newObject = s"env->NewObject($clsVar, $ctorVar,$argSeparator$argsStr)"
+    if (guard.nonEmpty) s"$guard$guardSeparator$newObject$nullSuffix" else newObject
   }
-
-  def bvGetAndCast(t: BvFieldType, obj: String, cls: String, javaName: String): String = t match {
-    case BvFieldType.Int    => s"""env->GetIntField($obj, env->GetFieldID($cls, "$javaName", "I"))"""
-    case BvFieldType.Char   => s"""env->GetCharField($obj, env->GetFieldID($cls, "$javaName", "C"))"""
-    case BvFieldType.Float  => s"""env->GetFloatField($obj, env->GetFieldID($cls, "$javaName", "F"))"""
-    case BvFieldType.Double => s"""env->GetDoubleField($obj, env->GetFieldID($cls, "$javaName", "D"))"""
-    case BvFieldType.Long   =>
-      s"""env->GetLongField($obj, env->GetFieldID($cls, "$javaName", "J"))"""
-    case _ => throw IllegalArgumentException(s"bvGetAndCast called on $t; use bvCopyJavaToCStruct for strings/nested")
-  }
-
-  def fmtNewObject(clsVar: String, ctorVar: String, args: List[String], guard: String = ""): String =
-    if (args.length <= 4) {
-      val argsStr = args.mkString(", ")
-      if (guard.nonEmpty) s"$guard ? env->NewObject($clsVar, $ctorVar, $argsStr) : nullptr"
-      else s"env->NewObject($clsVar, $ctorVar, $argsStr)"
-    } else {
-      val indent    = "        "
-      val argsBlock = args.map(a => s"$indent$a").mkString(",\n")
-      if (guard.nonEmpty)
-        s"$guard\n    ? env->NewObject($clsVar, $ctorVar,\n$argsBlock)\n    : nullptr"
-      else s"env->NewObject($clsVar, $ctorVar,\n$argsBlock)"
-    }
 
   private def sanitiseIdent(raw: String): String =
     raw.map(ch => if (ch.isLetterOrDigit || ch == '_') ch else '_')
@@ -102,7 +122,7 @@ class JniCppByValueCodeGen(
   private def buildCtorExpr(fieldType: BvFieldType, cExpr: String, varPrefix: String): (List[String], String) =
     fieldType match {
       case BvFieldType.Int | BvFieldType.Char | BvFieldType.Float | BvFieldType.Double | BvFieldType.Long =>
-        (Nil, bvCastToJni(fieldType, cExpr))
+        (Nil, fieldType.bvCastToJni(cExpr))
       case BvFieldType.String =>
         (List(s"""auto $varPrefix = CefStringToJString(env, &$cExpr);"""), varPrefix)
       case BvFieldType.CStringArray(_) =>
@@ -129,13 +149,11 @@ class JniCppByValueCodeGen(
         )
       case BvFieldType.NestedStruct(nestedCef) =>
         val nestedFields = byValueFields(nestedCef)
-        val nestedBuilds = nestedFields.map { f =>
-          buildCtorExpr(f.typ, s"$cExpr.${f.cName}", s"${varPrefix}_${f.cName}")
-        }
-        val nestedPre  = nestedBuilds.flatMap(_._1)
-        val nestedArgs = nestedBuilds.map(_._2)
-        val nestedFqn  = jniName(nestedCef)
-        val nestedSig  = s"(${nestedFields.map(f => bvJniSig(f.typ)).mkString})V"
+        val nestedBuilds = buildCtorExprs(nestedFields, f => s"$cExpr.${f.cName}", s"${varPrefix}_")
+        val nestedPre    = nestedBuilds.flatMap(_._1)
+        val nestedArgs   = nestedBuilds.map(_._2)
+        val nestedFqn    = jniName(nestedCef)
+        val nestedSig    = s"(${nestedFields.map(f => bvJniSig(f.typ)).mkString})V"
         (
           nestedPre ++ List(
             s"""auto ${varPrefix}_cls = FindClassCached(env, "$nestedFqn");""",
@@ -146,19 +164,22 @@ class JniCppByValueCodeGen(
         )
     }
 
-  def byValueCtorFromPtr(cefName: String, ptrName: String): (String, List[String], List[String]) = {
+  private def buildCtorExprs(
+      fields: List[BvField],
+      fieldExpr: BvField => String,
+      varPrefix: String
+  ): List[(List[String], String)] =
+    fields.map(f => buildCtorExpr(f.typ, fieldExpr(f), s"$varPrefix${f.cName}"))
+
+  def byValueCtorFromPtr(cefName: String, ptrName: String): CtorInfo = {
     val fields    = byValueFields(cefName)
     val baseToken = sanitiseIdent(ptrName)
-    val builds    = fields.map { f =>
-      buildCtorExpr(f.typ, s"($ptrName)->${f.cName}", s"_bv_${baseToken}_${f.cName}")
-    }
-    val sig      = s"(${fields.map(f => bvJniSig(f.typ)).mkString})V"
-    val argsList = builds.map(_._2)
-    val preLines = builds.flatMap(_._1)
-    (sig, argsList, preLines)
+    val builds    = buildCtorExprs(fields, f => s"($ptrName)->${f.cName}", s"_bv_${baseToken}_")
+    val sig       = s"(${fields.map(f => bvJniSig(f.typ)).mkString})V"
+    CtorInfo(sig, builds.map(_._2), builds.flatMap(_._1))
   }
 
-  def bvCopyJavaToCStruct(
+  private def bvCopyJavaToCStruct(
       cefName: String,
       dest: String,
       accessor: String,
@@ -182,12 +203,11 @@ class JniCppByValueCodeGen(
             case BvFieldType.Long =>
               s"""    $fieldRef = from_jlong<decltype($fieldRef)>(env->GetLongField($v, env->GetFieldID(${v}c, "${nf.javaName}", "J")));"""
             case _ =>
-              s"""    $fieldRef = static_cast<decltype($fieldRef)>(${bvGetAndCast(
-                  nf.typ,
+              s"""    $fieldRef = static_cast<decltype($fieldRef)>(${nf.typ.bvGetAndCast(FieldRef(
                   v,
                   s"${v}c",
                   nf.javaName
-                )});"""
+                ))});"""
           }
         } ++ List("}")
       case BvField(cName, javaName, BvFieldType.String) =>
@@ -243,12 +263,11 @@ class JniCppByValueCodeGen(
         else List(copy)
       case BvField(cName, javaName, typ) =>
         List(
-          s"""$dest$accessor$cName = static_cast<decltype($dest$accessor$cName)>(${bvGetAndCast(
-              typ,
+          s"""$dest$accessor$cName = static_cast<decltype($dest$accessor$cName)>(${typ.bvGetAndCast(FieldRef(
               javaObj,
               clsVar,
               javaName
-            )});"""
+            ))});"""
         )
     }
   }
@@ -263,13 +282,16 @@ class JniCppByValueCodeGen(
     val fields = byValueFields(cefName)
     fields.flatMap {
       case BvField(cName, javaName, BvFieldType.NestedStruct(nestedCef)) =>
-        val nestedPrefix                 = s"_${prefix}_$cName"
-        val nestedSig                    = bvJniSig(BvFieldType.NestedStruct(nestedCef))
-        val nestedPtr                    = s"&(($srcPtr)->$cName)"
-        val (ctorSig, ctorArgs, ctorPre) = byValueCtorFromPtr(nestedCef, nestedPtr)
-        val nClsVar                      = s"${nestedPrefix}_cls"
-        val nCtorVar                     = s"${nestedPrefix}_ctor"
-        val nObjVar                      = s"${nestedPrefix}_obj"
+        val nestedPrefix = s"_${prefix}_$cName"
+        val nestedSig    = bvJniSig(BvFieldType.NestedStruct(nestedCef))
+        val nestedPtr    = s"&(($srcPtr)->$cName)"
+        val ctorInfo     = byValueCtorFromPtr(nestedCef, nestedPtr)
+        val ctorSig      = ctorInfo.signature
+        val ctorArgs     = ctorInfo.args
+        val ctorPre      = ctorInfo.preLines
+        val nClsVar      = s"${nestedPrefix}_cls"
+        val nCtorVar     = s"${nestedPrefix}_ctor"
+        val nObjVar      = s"${nestedPrefix}_obj"
         ctorPre ++ List(
           s"""auto $nClsVar = FindClassCached(env, "${jniName(nestedCef)}");""",
           s"""auto $nCtorVar = env->GetMethodID($nClsVar, "<init>", "$ctorSig");""",
@@ -336,20 +358,20 @@ class JniCppByValueCodeGen(
     }
   }
 
-  def bvWriteBackLines(cefName: String, ptrName: String, javaObj: String, clsVar: String): List[String] =
-    bvCopyCStructToJava(cefName, ptrName, javaObj, clsVar, "wb")
+  def bvWriteBackLines(target: NativeTarget): List[String] =
+    bvCopyCStructToJava(target.cefName, target.ptrName, target.javaObj, target.clsVar, "wb")
 
-  def bvWriteBackToNativeLines(cefName: String, ptrName: String, javaObj: String, clsVar: String): List[String] =
-    bvCopyJavaToCStruct(cefName, s"($ptrName)", "->", javaObj, clsVar, "wbn")
+  def bvWriteBackToNativeLines(target: NativeTarget): List[String] =
+    bvCopyJavaToCStruct(target.cefName, s"(${target.ptrName})", "->", target.javaObj, target.clsVar, "wbn")
 
-  def bvReadFromJavaLines(cefName: String, structVar: String, javaObj: String, clsVar: String): List[String] = {
-    val base     = bvCopyJavaToCStruct(cefName, structVar, ".", javaObj, clsVar, "rd")
-    val hasSize  = dataStructs.get(cefName).exists(_.fields.exists(f => f.name == "size" && f.typ == CType.SizeT))
-    val sizeInit = if (hasSize) List(s"$structVar.size = sizeof($cefName);") else Nil
+  def bvReadFromJavaLines(target: NativeTarget): List[String] = {
+    val base    = bvCopyJavaToCStruct(target.cefName, target.ptrName, ".", target.javaObj, target.clsVar, "rd")
+    val hasSize = dataStructs.get(target.cefName).exists(_.fields.exists(f => f.name == "size" && f.typ == CType.SizeT))
+    val sizeInit = if (hasSize) List(s"${target.ptrName}.size = sizeof(${target.cefName});") else Nil
     base ++ sizeInit
   }
 
-  def byValueArrayFieldExpr(cefName: String, ptrName: String, idxVar: String): String = {
+  def byValueArrayFieldExpr(cefName: String, ref: ArrayRef): String = {
     val fields = byValueFields(cefName)
     fields.map {
       case BvField(_, _, BvFieldType.NestedStruct(_)) =>
@@ -362,20 +384,20 @@ class JniCppByValueCodeGen(
         throw IllegalArgumentException(s"Enum field in ByValueArray not supported: $cefName")
       case BvField(_, _, BvFieldType.OpaquePtr) =>
         throw IllegalArgumentException(s"Opaque pointer field in ByValueArray not supported: $cefName")
-      case BvField(cName, _, typ) => bvCastToJni(typ, s"$ptrName[$idxVar].$cName")
+      case BvField(cName, _, typ) => typ.bvCastToJni(s"${ref.ptrName}[${ref.index}].$cName")
     }.mkString(", ")
   }
 
-  def dataStructCtorInfo(cefName: String): (String, List[String], List[String]) =
+  def dataStructCtorInfo(cefName: String): CtorInfo =
     dataStructs.get(cefName) match {
       case Some(_) => byValueCtorFromPtr(cefName, "(&result)")
-      case None    => ("()V", Nil, Nil)
+      case None    => CtorInfo("()V", Nil, Nil)
     }
 
   def byValueLocalRefs(cefName: String): Int =
     dataStructs.get(cefName) match {
       case Some(ds) =>
-        ds.fields.filterNot(isSizeField).map { f =>
+        ds.fields.filterNot(isSizeField(_)).map { f =>
           f.typ match {
             case CType.DataStruct(nested) =>
               3 + byValueLocalRefs(nested)
@@ -392,7 +414,7 @@ class JniCppByValueCodeGen(
   def byValueWriteBackRefs(cefName: String): Int =
     dataStructs.get(cefName) match {
       case Some(ds) =>
-        ds.fields.filterNot(isSizeField).map { f =>
+        ds.fields.filterNot(isSizeField(_)).map { f =>
           f.typ match {
             case CType.DataStruct(_)                          => 2
             case CType.JString                                => 1
@@ -404,16 +426,4 @@ class JniCppByValueCodeGen(
         }.sum
       case None => 0
     }
-}
-
-object JniCppByValueCodeGen {
-  enum BvFieldType {
-    case Int, Float, Double, Long, Char, String
-    case CStringArray(mutable: Boolean)
-    case Enum(cefName: scala.Predef.String)
-    case NestedStruct(cefName: scala.Predef.String)
-    case OpaquePtr
-  }
-
-  case class BvField(cName: String, javaName: String, typ: BvFieldType)
 }

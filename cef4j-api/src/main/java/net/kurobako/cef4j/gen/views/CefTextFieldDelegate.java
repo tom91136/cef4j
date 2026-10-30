@@ -23,7 +23,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__textfield__delegate_8h.html">views/cef_textfield_delegate.h:45</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefTextFieldDelegate extends CefClientHandler {
 
@@ -60,8 +59,8 @@ public interface CefTextFieldDelegate extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefTextFieldDelegate {
         private final java.util.List<CefTextFieldDelegate> delegates;
@@ -72,7 +71,7 @@ public interface CefTextFieldDelegate extends CefClientHandler {
 
         @Override
         public boolean onKeyEvent(@Nullable CefTextField textfield, CefKeyEvent event) {
-            for (CefTextFieldDelegate d : delegates) {
+            for (final CefTextFieldDelegate d : delegates) {
                 if (d.onKeyEvent(textfield, event)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -81,7 +80,7 @@ public interface CefTextFieldDelegate extends CefClientHandler {
 
         @Override
         public void onAfterUserAction(@Nullable CefTextField textfield) {
-            for (CefTextFieldDelegate d : delegates) d.onAfterUserAction(textfield);
+            for (final CefTextFieldDelegate d : delegates) d.onAfterUserAction(textfield);
         }
     }
 }

@@ -3,7 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
@@ -11,6 +11,7 @@ import net.kurobako.cef4j.ipc.session.WireDecoder;
  * to facade methods (or factory requests) that take this struct. The dispatcher decodes them on the
  * runtime-server side and fills the matching {@code cef_basetime_t} before invoking CEF.
  */
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class BaseTime {
 
     private final long val;
@@ -23,12 +24,13 @@ public final class BaseTime {
         return val;
     }
 
+    @SuppressWarnings("SameReturnValue")
     public int encodedSize() {
         return 8;
     }
 
     public void encodeInto(ByteBuffer dst) {
-        ByteOrder originalOrder = dst.order();
+        final ByteOrder originalOrder = dst.order();
         try {
             dst.order(ByteOrder.LITTLE_ENDIAN);
             dst.putLong(val);
@@ -43,8 +45,7 @@ public final class BaseTime {
       * configured the buffer.
       */
     public static BaseTime decode(ByteBuffer __buf) {
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "val");
-        long val = __buf.getLong();
+        final long val = WireDecoder.int64(__buf, "val");
         return new BaseTime(val);
     }
 
@@ -55,10 +56,10 @@ public final class BaseTime {
     /** Lombok-style builder. */
     public static final class Builder {
 
-        private long val = 0L;
+        private long val;
 
-        public Builder val(long val) {
-            this.val = val;
+        public Builder val(long value) {
+            this.val = value;
             return this;
         }
 

@@ -2,6 +2,7 @@ package net.kurobako.cef4j.webdriver.inprocess;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import net.kurobako.cef4j.cdp.CdpCodec;
 import net.kurobako.cef4j.webdriver.JsonObject;
@@ -27,7 +28,7 @@ class InProcessCefAutomationBackendFactoryTest {
         }
 
         @Override
-        public Object decode(byte[] json) {
+        public Optional<Object> decode(byte[] json) {
             throw new AssertionError("unexpected decode");
         }
     }

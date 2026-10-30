@@ -22,7 +22,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context__handler_8h.html">cef_request_context_handler.h:48</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefRequestContextHandler extends CefClientHandler {
 
@@ -81,8 +80,8 @@ public interface CefRequestContextHandler extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefRequestContextHandler {
         private final java.util.List<CefRequestContextHandler> delegates;
@@ -93,7 +92,7 @@ public interface CefRequestContextHandler extends CefClientHandler {
 
         @Override
         public void onRequestContextInitialized(@Nullable CefRequestContext requestContext) {
-            for (CefRequestContextHandler d : delegates) d.onRequestContextInitialized(requestContext);
+            for (final CefRequestContextHandler d : delegates) d.onRequestContextInitialized(requestContext);
         }
 
         @Override
@@ -105,8 +104,8 @@ public interface CefRequestContextHandler extends CefClientHandler {
                 boolean isDownload,
                 @Nullable String requestInitiator,
                 int[] disableDefaultHandling) {
-            java.util.ArrayList<CefResourceRequestHandler> collected = new java.util.ArrayList<>();
-            for (CefRequestContextHandler d : delegates)
+            final java.util.ArrayList<CefResourceRequestHandler> collected = new java.util.ArrayList<>();
+            for (final CefRequestContextHandler d : delegates)
                 d.getResourceRequestHandler(
                                 browser,
                                 frame,

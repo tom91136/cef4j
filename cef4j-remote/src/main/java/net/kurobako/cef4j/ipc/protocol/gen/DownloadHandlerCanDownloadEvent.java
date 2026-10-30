@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class DownloadHandlerCanDownloadEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 1646418617;
@@ -52,7 +54,7 @@ public final class DownloadHandlerCanDownloadEvent implements CefMessageView, Ce
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(browser.id());
@@ -66,18 +68,11 @@ public final class DownloadHandlerCanDownloadEvent implements CefMessageView, Ce
     }
 
     public static final CefMessageDecoder<DownloadHandlerCanDownloadEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
-        RemoteHandle browser = new RemoteHandle(__buf.getInt());
-        int urlLen = WireDecoder.length(__buf, "url");
-        byte[] urlBuf = new byte[urlLen];
-        __buf.get(urlBuf);
-        String url = new String(urlBuf, StandardCharsets.UTF_8);
-        int requestMethodLen = WireDecoder.length(__buf, "requestMethod");
-        byte[] requestMethodBuf = new byte[requestMethodLen];
-        __buf.get(requestMethodBuf);
-        String requestMethod = new String(requestMethodBuf, StandardCharsets.UTF_8);
+        final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
+        final String url = WireDecoder.utf8(__buf, "url");
+        final String requestMethod = WireDecoder.utf8(__buf, "requestMethod");
         WireDecoder.requireFullyConsumed(__buf, "DownloadHandlerCanDownloadEvent");
         return new DownloadHandlerCanDownloadEvent(browser, url, requestMethod);
     };

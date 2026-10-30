@@ -21,7 +21,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:70</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefPreferenceObserver extends CefClientHandler {
 
@@ -41,8 +40,8 @@ public interface CefPreferenceObserver extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefPreferenceObserver {
         private final java.util.List<CefPreferenceObserver> delegates;
@@ -53,7 +52,7 @@ public interface CefPreferenceObserver extends CefClientHandler {
 
         @Override
         public void onPreferenceChanged(@Nullable String name) {
-            for (CefPreferenceObserver d : delegates) d.onPreferenceChanged(name);
+            for (final CefPreferenceObserver d : delegates) d.onPreferenceChanged(name);
         }
     }
 }

@@ -9,7 +9,7 @@ import net.kurobako.cef4j.codegen.HeaderInputs
 object DiscoverHeaders {
   def apply(cfg: Config): HeaderInputs = {
     val capiDir     = cfg.cefInclude.resolve("capi")
-    val capiHeaders = (capiDir :: cfg.extraCapiDirs.map(capiDir.resolve)).filter(Files.isDirectory(_))
+    val capiHeaders = (capiDir :: cfg.extraCapiDirs.map(capiDir.resolve(_))).filter(Files.isDirectory(_))
       .flatMap(dir =>
         FileSystem.children(dir).filter(p => Files.isRegularFile(p) && p.toString.endsWith("_capi.h"))
       )

@@ -21,7 +21,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:3547</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefAudioParameters {
 
@@ -44,14 +43,14 @@ public final class CefAudioParameters {
 
     /** Create a mutable copy of this instance. */
     public Mutable toMutable() {
-        return new Mutable(this.channelLayout, this.sampleRate, this.framesPerBuffer);
+        return new Mutable(channelLayout, sampleRate, framesPerBuffer);
     }
 
     @Override
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefAudioParameters)) return false;
-        CefAudioParameters other = (CefAudioParameters) obj;
+        final CefAudioParameters other = (CefAudioParameters) obj;
         return java.util.Objects.equals(this.channelLayout, other.channelLayout)
                 && this.sampleRate == other.sampleRate
                 && this.framesPerBuffer == other.framesPerBuffer;
@@ -100,14 +99,14 @@ public final class CefAudioParameters {
 
         /** Create an immutable snapshot of this instance. */
         public CefAudioParameters toImmutable() {
-            return new CefAudioParameters(this.channelLayout, this.sampleRate, this.framesPerBuffer);
+            return new CefAudioParameters(channelLayout, sampleRate, framesPerBuffer);
         }
 
         @Override
         public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
-            Mutable other = (Mutable) obj;
+            final Mutable other = (Mutable) obj;
             return java.util.Objects.equals(this.channelLayout, other.channelLayout)
                     && this.sampleRate == other.sampleRate
                     && this.framesPerBuffer == other.framesPerBuffer;

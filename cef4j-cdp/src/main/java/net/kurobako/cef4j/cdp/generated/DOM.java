@@ -13,6 +13,8 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This domain exposes DOM read/write operations. Each DOM Node is represented with its mirror object that has an {@code id}. This {@code id} can be used to get additional information on the Node, resolve it into the JavaScript object wrapper, etc. It is important that client receives DOM events only for the nodes that are known to the client. Backend keeps track of the nodes that were sent to the client and never sends the same node twice. It is client&#x27;s responsibility to collect information about the nodes that were sent to the client. Note that {@code iframe} owner elements will return corresponding document elements as their child nodes.
@@ -20,6 +22,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class DOM {
     private DOM() {}
     /**
@@ -28,7 +31,7 @@ public final class DOM {
     public static final class NodeId implements CdpValue<Long> {
         public final long value;
         public NodeId(long value) { this.value = value; }
-        public Long value() { return value; }
+        @Override public Long value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof NodeId)) return false;
@@ -43,7 +46,7 @@ public final class DOM {
     public static final class BackendNodeId implements CdpValue<Long> {
         public final long value;
         public BackendNodeId(long value) { this.value = value; }
-        public Long value() { return value; }
+        @Override public Long value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof BackendNodeId)) return false;
@@ -58,7 +61,7 @@ public final class DOM {
     public static final class StyleSheetId implements CdpValue<String> {
         public final String value;
         public StyleSheetId(String value) { this.value = java.util.Objects.requireNonNull(value); }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof StyleSheetId)) return false;
@@ -172,7 +175,7 @@ public final class DOM {
         OVERSCROLL_AREA_PARENT("overscroll-area-parent");
         public final String value;
         PseudoType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static PseudoType of(String value) {
             for (PseudoType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -189,7 +192,7 @@ public final class DOM {
         CLOSED("closed");
         public final String value;
         ShadowRootType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static ShadowRootType of(String value) {
             for (ShadowRootType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -206,7 +209,7 @@ public final class DOM {
         NOQUIRKSMODE("NoQuirksMode");
         public final String value;
         CompatibilityMode(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static CompatibilityMode of(String value) {
             for (CompatibilityMode constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -223,7 +226,7 @@ public final class DOM {
         BOTH("Both");
         public final String value;
         PhysicalAxes(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static PhysicalAxes of(String value) {
             for (PhysicalAxes constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -240,7 +243,7 @@ public final class DOM {
         BOTH("Both");
         public final String value;
         LogicalAxes(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static LogicalAxes of(String value) {
             for (LogicalAxes constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -256,7 +259,7 @@ public final class DOM {
         VERTICAL("vertical");
         public final String value;
         ScrollOrientation(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static ScrollOrientation of(String value) {
             for (ScrollOrientation constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -285,8 +288,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> parentId() {
-            Object value = raw("parentId");
-            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
+            return raw("parentId").map(value -> new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * The BackendNodeId for this node.
@@ -328,152 +330,133 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong childNodeCount() {
-            Long value = CdpObject.numberAsLong(raw("childNodeCount"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("childNodeCount").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Child nodes of this node when requested with children.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOM.Node>> children() {
-            Object value = raw("children");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("children").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Attributes of the {@code Element} node in the form of flat array {@code [name1, value1, name2, value2]}.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> attributes() {
-            Object value = raw("attributes");
-            return Optional.ofNullable(list(value, element0 -> (String) element0));
+            return raw("attributes").flatMap(value -> list(value, element0 -> (String) element0));
         }
         /**
          * Document URL that {@code Document} or {@code FrameOwner} node points to.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> documentURL() {
-            Object value = raw("documentURL");
-            return Optional.ofNullable((String) value);
+            return raw("documentURL").map(value -> (String) value);
         }
         /**
          * Base URL that {@code Document} or {@code FrameOwner} node uses for URL completion.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> baseURL() {
-            Object value = raw("baseURL");
-            return Optional.ofNullable((String) value);
+            return raw("baseURL").map(value -> (String) value);
         }
         /**
          * {@code DocumentType}&#x27;s publicId.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> publicId() {
-            Object value = raw("publicId");
-            return Optional.ofNullable((String) value);
+            return raw("publicId").map(value -> (String) value);
         }
         /**
          * {@code DocumentType}&#x27;s systemId.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> systemId() {
-            Object value = raw("systemId");
-            return Optional.ofNullable((String) value);
+            return raw("systemId").map(value -> (String) value);
         }
         /**
          * {@code DocumentType}&#x27;s internalSubset.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> internalSubset() {
-            Object value = raw("internalSubset");
-            return Optional.ofNullable((String) value);
+            return raw("internalSubset").map(value -> (String) value);
         }
         /**
          * {@code Document}&#x27;s XML version in case of XML documents.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> xmlVersion() {
-            Object value = raw("xmlVersion");
-            return Optional.ofNullable((String) value);
+            return raw("xmlVersion").map(value -> (String) value);
         }
         /**
          * {@code Attr}&#x27;s name.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            Object value = raw("name");
-            return Optional.ofNullable((String) value);
+            return raw("name").map(value -> (String) value);
         }
         /**
          * {@code Attr}&#x27;s value.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> value() {
-            Object value = raw("value");
-            return Optional.ofNullable((String) value);
+            return raw("value").map(value -> (String) value);
         }
         /**
          * Pseudo element type for this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.PseudoType> pseudoType() {
-            Object value = raw("pseudoType");
-            return Optional.ofNullable(value == null ? null : DOM.PseudoType.of((String) value));
+            return raw("pseudoType").map(value -> DOM.PseudoType.of((String) value));
         }
         /**
          * Pseudo element identifier for this node. Only present if there is a valid pseudoType.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> pseudoIdentifier() {
-            Object value = raw("pseudoIdentifier");
-            return Optional.ofNullable((String) value);
+            return raw("pseudoIdentifier").map(value -> (String) value);
         }
         /**
          * Shadow root type.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.ShadowRootType> shadowRootType() {
-            Object value = raw("shadowRootType");
-            return Optional.ofNullable(value == null ? null : DOM.ShadowRootType.of((String) value));
+            return raw("shadowRootType").map(value -> DOM.ShadowRootType.of((String) value));
         }
         /**
          * Frame ID for frame owner elements.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            Object value = raw("frameId");
-            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
+            return raw("frameId").map(value -> new Page.FrameId((String) value));
         }
         /**
          * Content document for frame owner elements.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.Node> contentDocument() {
-            Object value = raw("contentDocument");
-            return Optional.ofNullable(value == null ? null : DOM.Node.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("contentDocument").flatMap(CdpObject::objectMap).map(DOM.Node::fromMap);
         }
         /**
          * Shadow root list for given element host.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOM.Node>> shadowRoots() {
-            Object value = raw("shadowRoots");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("shadowRoots").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Content document fragment for template elements.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.Node> templateContent() {
-            Object value = raw("templateContent");
-            return Optional.ofNullable(value == null ? null : DOM.Node.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("templateContent").flatMap(CdpObject::objectMap).map(DOM.Node::fromMap);
         }
         /**
          * Pseudo elements associated with this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOM.Node>> pseudoElements() {
-            Object value = raw("pseudoElements");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("pseudoElements").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Deprecated, as the HTML Imports API has been removed (crbug.com/937746). This property used to return the imported document for the HTMLImport links. The property is always undefined now.
@@ -482,40 +465,35 @@ public final class DOM {
          */
         @Deprecated
         public Optional<DOM.Node> importedDocument() {
-            Object value = raw("importedDocument");
-            return Optional.ofNullable(value == null ? null : DOM.Node.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("importedDocument").flatMap(CdpObject::objectMap).map(DOM.Node::fromMap);
         }
         /**
          * Distributed nodes for given insertion point.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOM.BackendNode>> distributedNodes() {
-            Object value = raw("distributedNodes");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(DOM.BackendNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("distributedNodes").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(DOM.BackendNode.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Whether the node is SVG.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isSVG() {
-            Object value = raw("isSVG");
-            return Optional.ofNullable((Boolean) value);
+            return raw("isSVG").map(value -> (Boolean) value);
         }
         /**
          * Returns the compatibilityMode field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.CompatibilityMode> compatibilityMode() {
-            Object value = raw("compatibilityMode");
-            return Optional.ofNullable(value == null ? null : DOM.CompatibilityMode.of((String) value));
+            return raw("compatibilityMode").map(value -> DOM.CompatibilityMode.of((String) value));
         }
         /**
          * Returns the assignedSlot field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNode> assignedSlot() {
-            Object value = raw("assignedSlot");
-            return Optional.ofNullable(value == null ? null : DOM.BackendNode.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("assignedSlot").flatMap(CdpObject::objectMap).map(DOM.BackendNode::fromMap);
         }
         /**
          * Returns the isScrollable field.
@@ -523,8 +501,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isScrollable() {
-            Object value = raw("isScrollable");
-            return Optional.ofNullable((Boolean) value);
+            return raw("isScrollable").map(value -> (Boolean) value);
         }
         /**
          * Returns the affectedByStartingStyles field.
@@ -532,8 +509,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> affectedByStartingStyles() {
-            Object value = raw("affectedByStartingStyles");
-            return Optional.ofNullable((Boolean) value);
+            return raw("affectedByStartingStyles").map(value -> (Boolean) value);
         }
         /**
          * Returns the adoptedStyleSheets field.
@@ -541,8 +517,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOM.StyleSheetId>> adoptedStyleSheets() {
-            Object value = raw("adoptedStyleSheets");
-            return Optional.ofNullable(list(value, element0 -> new DOM.StyleSheetId((String) element0)));
+            return raw("adoptedStyleSheets").flatMap(value -> list(value, element0 -> new DOM.StyleSheetId((String) element0)));
         }
         /**
          * Returns the adProvenance field.
@@ -550,8 +525,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.AdProvenance> adProvenance() {
-            Object value = raw("adProvenance");
-            return Optional.ofNullable(value == null ? null : Network.AdProvenance.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("adProvenance").flatMap(CdpObject::objectMap).map(Network.AdProvenance::fromMap);
         }
         /**
          * Node identifier that is passed into the rest of the DOM messages as the {@code nodeId}. Backend will only push node with given {@code id} once. It is aware of all requested nodes and will only fire DOM events for nodes known to the client.
@@ -564,16 +538,7 @@ public final class DOM {
         }
         /**
          * The id of the parent node if any.
-         * @param parentId field value; empty omits the value
-         * @return this model
-         */
-        public Node parentId(Optional<DOM.NodeId> parentId) {
-            set("parentId", parentId.orElse(null));
-            return this;
-        }
-        /**
-         * The id of the parent node if any.
-         * @param parentId field value; null removes the value
+         * @param parentId field value
          * @return this model
          */
         public Node parentId(DOM.NodeId parentId) {
@@ -627,34 +592,16 @@ public final class DOM {
         }
         /**
          * Child count for {@code Container} nodes.
-         * @param childNodeCount field value; empty omits the value
+         * @param childNodeCount field value
          * @return this model
          */
-        public Node childNodeCount(OptionalLong childNodeCount) {
-            set("childNodeCount", childNodeCount.isPresent() ? childNodeCount.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Child count for {@code Container} nodes.
-         * @param childNodeCount field value; null removes the value
-         * @return this model
-         */
-        public Node childNodeCount(Long childNodeCount) {
+        public Node childNodeCount(long childNodeCount) {
             set("childNodeCount", childNodeCount);
             return this;
         }
         /**
          * Child nodes of this node when requested with children.
-         * @param children field value; empty omits the value
-         * @return this model
-         */
-        public Node children(Optional<java.util.List<DOM.Node>> children) {
-            set("children", children.orElse(null));
-            return this;
-        }
-        /**
-         * Child nodes of this node when requested with children.
-         * @param children field value; null removes the value
+         * @param children field value
          * @return this model
          */
         public Node children(java.util.List<DOM.Node> children) {
@@ -663,16 +610,7 @@ public final class DOM {
         }
         /**
          * Attributes of the {@code Element} node in the form of flat array {@code [name1, value1, name2, value2]}.
-         * @param attributes field value; empty omits the value
-         * @return this model
-         */
-        public Node attributes(Optional<java.util.List<String>> attributes) {
-            set("attributes", attributes.orElse(null));
-            return this;
-        }
-        /**
-         * Attributes of the {@code Element} node in the form of flat array {@code [name1, value1, name2, value2]}.
-         * @param attributes field value; null removes the value
+         * @param attributes field value
          * @return this model
          */
         public Node attributes(java.util.List<String> attributes) {
@@ -681,16 +619,7 @@ public final class DOM {
         }
         /**
          * Document URL that {@code Document} or {@code FrameOwner} node points to.
-         * @param documentURL field value; empty omits the value
-         * @return this model
-         */
-        public Node documentURL(Optional<String> documentURL) {
-            set("documentURL", documentURL.orElse(null));
-            return this;
-        }
-        /**
-         * Document URL that {@code Document} or {@code FrameOwner} node points to.
-         * @param documentURL field value; null removes the value
+         * @param documentURL field value
          * @return this model
          */
         public Node documentURL(String documentURL) {
@@ -699,16 +628,7 @@ public final class DOM {
         }
         /**
          * Base URL that {@code Document} or {@code FrameOwner} node uses for URL completion.
-         * @param baseURL field value; empty omits the value
-         * @return this model
-         */
-        public Node baseURL(Optional<String> baseURL) {
-            set("baseURL", baseURL.orElse(null));
-            return this;
-        }
-        /**
-         * Base URL that {@code Document} or {@code FrameOwner} node uses for URL completion.
-         * @param baseURL field value; null removes the value
+         * @param baseURL field value
          * @return this model
          */
         public Node baseURL(String baseURL) {
@@ -717,16 +637,7 @@ public final class DOM {
         }
         /**
          * {@code DocumentType}&#x27;s publicId.
-         * @param publicId field value; empty omits the value
-         * @return this model
-         */
-        public Node publicId(Optional<String> publicId) {
-            set("publicId", publicId.orElse(null));
-            return this;
-        }
-        /**
-         * {@code DocumentType}&#x27;s publicId.
-         * @param publicId field value; null removes the value
+         * @param publicId field value
          * @return this model
          */
         public Node publicId(String publicId) {
@@ -735,16 +646,7 @@ public final class DOM {
         }
         /**
          * {@code DocumentType}&#x27;s systemId.
-         * @param systemId field value; empty omits the value
-         * @return this model
-         */
-        public Node systemId(Optional<String> systemId) {
-            set("systemId", systemId.orElse(null));
-            return this;
-        }
-        /**
-         * {@code DocumentType}&#x27;s systemId.
-         * @param systemId field value; null removes the value
+         * @param systemId field value
          * @return this model
          */
         public Node systemId(String systemId) {
@@ -753,16 +655,7 @@ public final class DOM {
         }
         /**
          * {@code DocumentType}&#x27;s internalSubset.
-         * @param internalSubset field value; empty omits the value
-         * @return this model
-         */
-        public Node internalSubset(Optional<String> internalSubset) {
-            set("internalSubset", internalSubset.orElse(null));
-            return this;
-        }
-        /**
-         * {@code DocumentType}&#x27;s internalSubset.
-         * @param internalSubset field value; null removes the value
+         * @param internalSubset field value
          * @return this model
          */
         public Node internalSubset(String internalSubset) {
@@ -771,16 +664,7 @@ public final class DOM {
         }
         /**
          * {@code Document}&#x27;s XML version in case of XML documents.
-         * @param xmlVersion field value; empty omits the value
-         * @return this model
-         */
-        public Node xmlVersion(Optional<String> xmlVersion) {
-            set("xmlVersion", xmlVersion.orElse(null));
-            return this;
-        }
-        /**
-         * {@code Document}&#x27;s XML version in case of XML documents.
-         * @param xmlVersion field value; null removes the value
+         * @param xmlVersion field value
          * @return this model
          */
         public Node xmlVersion(String xmlVersion) {
@@ -789,16 +673,7 @@ public final class DOM {
         }
         /**
          * {@code Attr}&#x27;s name.
-         * @param name field value; empty omits the value
-         * @return this model
-         */
-        public Node name(Optional<String> name) {
-            set("name", name.orElse(null));
-            return this;
-        }
-        /**
-         * {@code Attr}&#x27;s name.
-         * @param name field value; null removes the value
+         * @param name field value
          * @return this model
          */
         public Node name(String name) {
@@ -807,16 +682,7 @@ public final class DOM {
         }
         /**
          * {@code Attr}&#x27;s value.
-         * @param value field value; empty omits the value
-         * @return this model
-         */
-        public Node value(Optional<String> value) {
-            set("value", value.orElse(null));
-            return this;
-        }
-        /**
-         * {@code Attr}&#x27;s value.
-         * @param value field value; null removes the value
+         * @param value field value
          * @return this model
          */
         public Node value(String value) {
@@ -825,16 +691,7 @@ public final class DOM {
         }
         /**
          * Pseudo element type for this node.
-         * @param pseudoType field value; empty omits the value
-         * @return this model
-         */
-        public Node pseudoType(Optional<DOM.PseudoType> pseudoType) {
-            set("pseudoType", pseudoType.orElse(null));
-            return this;
-        }
-        /**
-         * Pseudo element type for this node.
-         * @param pseudoType field value; null removes the value
+         * @param pseudoType field value
          * @return this model
          */
         public Node pseudoType(DOM.PseudoType pseudoType) {
@@ -843,16 +700,7 @@ public final class DOM {
         }
         /**
          * Pseudo element identifier for this node. Only present if there is a valid pseudoType.
-         * @param pseudoIdentifier field value; empty omits the value
-         * @return this model
-         */
-        public Node pseudoIdentifier(Optional<String> pseudoIdentifier) {
-            set("pseudoIdentifier", pseudoIdentifier.orElse(null));
-            return this;
-        }
-        /**
-         * Pseudo element identifier for this node. Only present if there is a valid pseudoType.
-         * @param pseudoIdentifier field value; null removes the value
+         * @param pseudoIdentifier field value
          * @return this model
          */
         public Node pseudoIdentifier(String pseudoIdentifier) {
@@ -861,16 +709,7 @@ public final class DOM {
         }
         /**
          * Shadow root type.
-         * @param shadowRootType field value; empty omits the value
-         * @return this model
-         */
-        public Node shadowRootType(Optional<DOM.ShadowRootType> shadowRootType) {
-            set("shadowRootType", shadowRootType.orElse(null));
-            return this;
-        }
-        /**
-         * Shadow root type.
-         * @param shadowRootType field value; null removes the value
+         * @param shadowRootType field value
          * @return this model
          */
         public Node shadowRootType(DOM.ShadowRootType shadowRootType) {
@@ -879,16 +718,7 @@ public final class DOM {
         }
         /**
          * Frame ID for frame owner elements.
-         * @param frameId field value; empty omits the value
-         * @return this model
-         */
-        public Node frameId(Optional<Page.FrameId> frameId) {
-            set("frameId", frameId.orElse(null));
-            return this;
-        }
-        /**
-         * Frame ID for frame owner elements.
-         * @param frameId field value; null removes the value
+         * @param frameId field value
          * @return this model
          */
         public Node frameId(Page.FrameId frameId) {
@@ -897,16 +727,7 @@ public final class DOM {
         }
         /**
          * Content document for frame owner elements.
-         * @param contentDocument field value; empty omits the value
-         * @return this model
-         */
-        public Node contentDocument(Optional<DOM.Node> contentDocument) {
-            set("contentDocument", contentDocument.orElse(null));
-            return this;
-        }
-        /**
-         * Content document for frame owner elements.
-         * @param contentDocument field value; null removes the value
+         * @param contentDocument field value
          * @return this model
          */
         public Node contentDocument(DOM.Node contentDocument) {
@@ -915,16 +736,7 @@ public final class DOM {
         }
         /**
          * Shadow root list for given element host.
-         * @param shadowRoots field value; empty omits the value
-         * @return this model
-         */
-        public Node shadowRoots(Optional<java.util.List<DOM.Node>> shadowRoots) {
-            set("shadowRoots", shadowRoots.orElse(null));
-            return this;
-        }
-        /**
-         * Shadow root list for given element host.
-         * @param shadowRoots field value; null removes the value
+         * @param shadowRoots field value
          * @return this model
          */
         public Node shadowRoots(java.util.List<DOM.Node> shadowRoots) {
@@ -933,16 +745,7 @@ public final class DOM {
         }
         /**
          * Content document fragment for template elements.
-         * @param templateContent field value; empty omits the value
-         * @return this model
-         */
-        public Node templateContent(Optional<DOM.Node> templateContent) {
-            set("templateContent", templateContent.orElse(null));
-            return this;
-        }
-        /**
-         * Content document fragment for template elements.
-         * @param templateContent field value; null removes the value
+         * @param templateContent field value
          * @return this model
          */
         public Node templateContent(DOM.Node templateContent) {
@@ -951,16 +754,7 @@ public final class DOM {
         }
         /**
          * Pseudo elements associated with this node.
-         * @param pseudoElements field value; empty omits the value
-         * @return this model
-         */
-        public Node pseudoElements(Optional<java.util.List<DOM.Node>> pseudoElements) {
-            set("pseudoElements", pseudoElements.orElse(null));
-            return this;
-        }
-        /**
-         * Pseudo elements associated with this node.
-         * @param pseudoElements field value; null removes the value
+         * @param pseudoElements field value
          * @return this model
          */
         public Node pseudoElements(java.util.List<DOM.Node> pseudoElements) {
@@ -969,18 +763,7 @@ public final class DOM {
         }
         /**
          * Deprecated, as the HTML Imports API has been removed (crbug.com/937746). This property used to return the imported document for the HTMLImport links. The property is always undefined now.
-         * @param importedDocument field value; empty omits the value
-         * @return this model
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public Node importedDocument(Optional<DOM.Node> importedDocument) {
-            set("importedDocument", importedDocument.orElse(null));
-            return this;
-        }
-        /**
-         * Deprecated, as the HTML Imports API has been removed (crbug.com/937746). This property used to return the imported document for the HTMLImport links. The property is always undefined now.
-         * @param importedDocument field value; null removes the value
+         * @param importedDocument field value
          * @return this model
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
@@ -991,16 +774,7 @@ public final class DOM {
         }
         /**
          * Distributed nodes for given insertion point.
-         * @param distributedNodes field value; empty omits the value
-         * @return this model
-         */
-        public Node distributedNodes(Optional<java.util.List<DOM.BackendNode>> distributedNodes) {
-            set("distributedNodes", distributedNodes.orElse(null));
-            return this;
-        }
-        /**
-         * Distributed nodes for given insertion point.
-         * @param distributedNodes field value; null removes the value
+         * @param distributedNodes field value
          * @return this model
          */
         public Node distributedNodes(java.util.List<DOM.BackendNode> distributedNodes) {
@@ -1009,34 +783,16 @@ public final class DOM {
         }
         /**
          * Whether the node is SVG.
-         * @param isSVG field value; empty omits the value
+         * @param isSVG field value
          * @return this model
          */
-        public Node isSVG(Optional<Boolean> isSVG) {
-            set("isSVG", isSVG.orElse(null));
-            return this;
-        }
-        /**
-         * Whether the node is SVG.
-         * @param isSVG field value; null removes the value
-         * @return this model
-         */
-        public Node isSVG(Boolean isSVG) {
+        public Node isSVG(boolean isSVG) {
             set("isSVG", isSVG);
             return this;
         }
         /**
          * Sets the compatibilityMode field.
-         * @param compatibilityMode field value; empty omits the value
-         * @return this model
-         */
-        public Node compatibilityMode(Optional<DOM.CompatibilityMode> compatibilityMode) {
-            set("compatibilityMode", compatibilityMode.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the compatibilityMode field.
-         * @param compatibilityMode field value; null removes the value
+         * @param compatibilityMode field value
          * @return this model
          */
         public Node compatibilityMode(DOM.CompatibilityMode compatibilityMode) {
@@ -1045,16 +801,7 @@ public final class DOM {
         }
         /**
          * Sets the assignedSlot field.
-         * @param assignedSlot field value; empty omits the value
-         * @return this model
-         */
-        public Node assignedSlot(Optional<DOM.BackendNode> assignedSlot) {
-            set("assignedSlot", assignedSlot.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the assignedSlot field.
-         * @param assignedSlot field value; null removes the value
+         * @param assignedSlot field value
          * @return this model
          */
         public Node assignedSlot(DOM.BackendNode assignedSlot) {
@@ -1064,57 +811,27 @@ public final class DOM {
         /**
          * Sets the isScrollable field.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param isScrollable field value; empty omits the value
+         * @param isScrollable field value
          * @return this model
          */
-        public Node isScrollable(Optional<Boolean> isScrollable) {
-            set("isScrollable", isScrollable.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the isScrollable field.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param isScrollable field value; null removes the value
-         * @return this model
-         */
-        public Node isScrollable(Boolean isScrollable) {
+        public Node isScrollable(boolean isScrollable) {
             set("isScrollable", isScrollable);
             return this;
         }
         /**
          * Sets the affectedByStartingStyles field.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param affectedByStartingStyles field value; empty omits the value
+         * @param affectedByStartingStyles field value
          * @return this model
          */
-        public Node affectedByStartingStyles(Optional<Boolean> affectedByStartingStyles) {
-            set("affectedByStartingStyles", affectedByStartingStyles.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the affectedByStartingStyles field.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param affectedByStartingStyles field value; null removes the value
-         * @return this model
-         */
-        public Node affectedByStartingStyles(Boolean affectedByStartingStyles) {
+        public Node affectedByStartingStyles(boolean affectedByStartingStyles) {
             set("affectedByStartingStyles", affectedByStartingStyles);
             return this;
         }
         /**
          * Sets the adoptedStyleSheets field.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param adoptedStyleSheets field value; empty omits the value
-         * @return this model
-         */
-        public Node adoptedStyleSheets(Optional<java.util.List<DOM.StyleSheetId>> adoptedStyleSheets) {
-            set("adoptedStyleSheets", adoptedStyleSheets.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the adoptedStyleSheets field.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param adoptedStyleSheets field value; null removes the value
+         * @param adoptedStyleSheets field value
          * @return this model
          */
         public Node adoptedStyleSheets(java.util.List<DOM.StyleSheetId> adoptedStyleSheets) {
@@ -1124,17 +841,7 @@ public final class DOM {
         /**
          * Sets the adProvenance field.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param adProvenance field value; empty omits the value
-         * @return this model
-         */
-        public Node adProvenance(Optional<Network.AdProvenance> adProvenance) {
-            set("adProvenance", adProvenance.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the adProvenance field.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param adProvenance field value; null removes the value
+         * @param adProvenance field value
          * @return this model
          */
         public Node adProvenance(Network.AdProvenance adProvenance) {
@@ -1156,7 +863,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.Node treeNode() {
-            return java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("treeNode")))));
+            return java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(require("treeNode"))));
         }
         /**
          * Returns the retainedNodeIds field.
@@ -1219,8 +926,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble a() {
-            Double value = CdpObject.numberAsDouble(raw("a"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("a").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * The red component, in the [0-255] range.
@@ -1251,19 +957,10 @@ public final class DOM {
         }
         /**
          * The alpha component, in the [0-1] range (default: 1).
-         * @param a field value; empty omits the value
+         * @param a field value
          * @return this model
          */
-        public RGBA a(OptionalDouble a) {
-            set("a", a.isPresent() ? a.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * The alpha component, in the [0-1] range (default: 1).
-         * @param a field value; null removes the value
-         * @return this model
-         */
-        public RGBA a(Double a) {
+        public RGBA a(double a) {
             set("a", a);
             return this;
         }
@@ -1324,8 +1021,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.ShapeOutsideInfo> shapeOutside() {
-            Object value = raw("shapeOutside");
-            return Optional.ofNullable(value == null ? null : DOM.ShapeOutsideInfo.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("shapeOutside").flatMap(CdpObject::objectMap).map(DOM.ShapeOutsideInfo::fromMap);
         }
         /**
          * Content box
@@ -1383,16 +1079,7 @@ public final class DOM {
         }
         /**
          * Shape outside coordinates
-         * @param shapeOutside field value; empty omits the value
-         * @return this model
-         */
-        public BoxModel shapeOutside(Optional<DOM.ShapeOutsideInfo> shapeOutside) {
-            set("shapeOutside", shapeOutside.orElse(null));
-            return this;
-        }
-        /**
-         * Shape outside coordinates
-         * @param shapeOutside field value; null removes the value
+         * @param shapeOutside field value
          * @return this model
          */
         public BoxModel shapeOutside(DOM.ShapeOutsideInfo shapeOutside) {
@@ -1585,10 +1272,10 @@ public final class DOM {
          * @param nodeId protocol value
          */
         public CollectClassNamesFromSubtreeRequest(DOM.NodeId nodeId) {
-            set("nodeId", nodeId);
+            nodeId(nodeId);
         }
         public static CollectClassNamesFromSubtreeRequest fromMap(Map<String, Object> values) {
-            CollectClassNamesFromSubtreeRequest instance_ = new CollectClassNamesFromSubtreeRequest();
+            final CollectClassNamesFromSubtreeRequest instance_ = new CollectClassNamesFromSubtreeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1622,11 +1309,10 @@ public final class DOM {
          * @param targetNodeId protocol value
          */
         public CopyToRequest(DOM.NodeId nodeId, DOM.NodeId targetNodeId) {
-            set("nodeId", nodeId);
-            set("targetNodeId", targetNodeId);
+            nodeId(nodeId).targetNodeId(targetNodeId);
         }
         public static CopyToRequest fromMap(Map<String, Object> values) {
-            CopyToRequest instance_ = new CopyToRequest();
+            final CopyToRequest instance_ = new CopyToRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1649,8 +1335,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> insertBeforeNodeId() {
-            Object value = raw("insertBeforeNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
+            return raw("insertBeforeNodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Id of the node to copy.
@@ -1672,16 +1357,7 @@ public final class DOM {
         }
         /**
          * Drop the copy before this node (if absent, the copy becomes the last child of {@code targetNodeId}).
-         * @param insertBeforeNodeId field value; empty omits the value
-         * @return this model
-         */
-        public CopyToRequest insertBeforeNodeId(Optional<DOM.NodeId> insertBeforeNodeId) {
-            set("insertBeforeNodeId", insertBeforeNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Drop the copy before this node (if absent, the copy becomes the last child of {@code targetNodeId}).
-         * @param insertBeforeNodeId field value; null removes the value
+         * @param insertBeforeNodeId field value
          * @return this model
          */
         public CopyToRequest insertBeforeNodeId(DOM.NodeId insertBeforeNodeId) {
@@ -1695,7 +1371,7 @@ public final class DOM {
     public static final class DescribeNodeRequest extends CdpObject {
         public DescribeNodeRequest() {}
         public static DescribeNodeRequest fromMap(Map<String, Object> values) {
-            DescribeNodeRequest instance_ = new DescribeNodeRequest();
+            final DescribeNodeRequest instance_ = new DescribeNodeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1704,53 +1380,39 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            Object value = raw("nodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
+            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            Object value = raw("backendNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            Object value = raw("objectId");
-            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
+            return raw("objectId").map(value -> new Runtime.RemoteObjectId((String) value));
         }
         /**
          * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong depth() {
-            Long value = CdpObject.numberAsLong(raw("depth"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("depth").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> pierce() {
-            Object value = raw("pierce");
-            return Optional.ofNullable((Boolean) value);
+            return raw("pierce").map(value -> (Boolean) value);
         }
         /**
          * Identifier of the node.
-         * @param nodeId field value; empty omits the value
-         * @return this model
-         */
-        public DescribeNodeRequest nodeId(Optional<DOM.NodeId> nodeId) {
-            set("nodeId", nodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the node.
-         * @param nodeId field value; null removes the value
+         * @param nodeId field value
          * @return this model
          */
         public DescribeNodeRequest nodeId(DOM.NodeId nodeId) {
@@ -1759,16 +1421,7 @@ public final class DOM {
         }
         /**
          * Identifier of the backend node.
-         * @param backendNodeId field value; empty omits the value
-         * @return this model
-         */
-        public DescribeNodeRequest backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
-            set("backendNodeId", backendNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the backend node.
-         * @param backendNodeId field value; null removes the value
+         * @param backendNodeId field value
          * @return this model
          */
         public DescribeNodeRequest backendNodeId(DOM.BackendNodeId backendNodeId) {
@@ -1777,16 +1430,7 @@ public final class DOM {
         }
         /**
          * JavaScript object id of the node wrapper.
-         * @param objectId field value; empty omits the value
-         * @return this model
-         */
-        public DescribeNodeRequest objectId(Optional<Runtime.RemoteObjectId> objectId) {
-            set("objectId", objectId.orElse(null));
-            return this;
-        }
-        /**
-         * JavaScript object id of the node wrapper.
-         * @param objectId field value; null removes the value
+         * @param objectId field value
          * @return this model
          */
         public DescribeNodeRequest objectId(Runtime.RemoteObjectId objectId) {
@@ -1795,37 +1439,19 @@ public final class DOM {
         }
         /**
          * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-         * @param depth field value; empty omits the value
+         * @param depth field value
          * @return this model
          */
-        public DescribeNodeRequest depth(OptionalLong depth) {
-            set("depth", depth.isPresent() ? depth.getAsLong() : null);
-            return this;
-        }
-        /**
-         * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-         * @param depth field value; null removes the value
-         * @return this model
-         */
-        public DescribeNodeRequest depth(Long depth) {
+        public DescribeNodeRequest depth(long depth) {
             set("depth", depth);
             return this;
         }
         /**
          * Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
-         * @param pierce field value; empty omits the value
+         * @param pierce field value
          * @return this model
          */
-        public DescribeNodeRequest pierce(Optional<Boolean> pierce) {
-            set("pierce", pierce.orElse(null));
-            return this;
-        }
-        /**
-         * Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
-         * @param pierce field value; null removes the value
-         * @return this model
-         */
-        public DescribeNodeRequest pierce(Boolean pierce) {
+        public DescribeNodeRequest pierce(boolean pierce) {
             set("pierce", pierce);
             return this;
         }
@@ -1836,7 +1462,7 @@ public final class DOM {
     public static final class ScrollIntoViewIfNeededRequest extends CdpObject {
         public ScrollIntoViewIfNeededRequest() {}
         public static ScrollIntoViewIfNeededRequest fromMap(Map<String, Object> values) {
-            ScrollIntoViewIfNeededRequest instance_ = new ScrollIntoViewIfNeededRequest();
+            final ScrollIntoViewIfNeededRequest instance_ = new ScrollIntoViewIfNeededRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1845,45 +1471,32 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            Object value = raw("nodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
+            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            Object value = raw("backendNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            Object value = raw("objectId");
-            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
+            return raw("objectId").map(value -> new Runtime.RemoteObjectId((String) value));
         }
         /**
          * The rect to be scrolled into view, relative to the node&#x27;s border box, in CSS pixels. When omitted, center of the node will be used, similar to Element.scrollIntoView.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.Rect> rect() {
-            Object value = raw("rect");
-            return Optional.ofNullable(value == null ? null : DOM.Rect.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("rect").flatMap(CdpObject::objectMap).map(DOM.Rect::fromMap);
         }
         /**
          * Identifier of the node.
-         * @param nodeId field value; empty omits the value
-         * @return this model
-         */
-        public ScrollIntoViewIfNeededRequest nodeId(Optional<DOM.NodeId> nodeId) {
-            set("nodeId", nodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the node.
-         * @param nodeId field value; null removes the value
+         * @param nodeId field value
          * @return this model
          */
         public ScrollIntoViewIfNeededRequest nodeId(DOM.NodeId nodeId) {
@@ -1892,16 +1505,7 @@ public final class DOM {
         }
         /**
          * Identifier of the backend node.
-         * @param backendNodeId field value; empty omits the value
-         * @return this model
-         */
-        public ScrollIntoViewIfNeededRequest backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
-            set("backendNodeId", backendNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the backend node.
-         * @param backendNodeId field value; null removes the value
+         * @param backendNodeId field value
          * @return this model
          */
         public ScrollIntoViewIfNeededRequest backendNodeId(DOM.BackendNodeId backendNodeId) {
@@ -1910,16 +1514,7 @@ public final class DOM {
         }
         /**
          * JavaScript object id of the node wrapper.
-         * @param objectId field value; empty omits the value
-         * @return this model
-         */
-        public ScrollIntoViewIfNeededRequest objectId(Optional<Runtime.RemoteObjectId> objectId) {
-            set("objectId", objectId.orElse(null));
-            return this;
-        }
-        /**
-         * JavaScript object id of the node wrapper.
-         * @param objectId field value; null removes the value
+         * @param objectId field value
          * @return this model
          */
         public ScrollIntoViewIfNeededRequest objectId(Runtime.RemoteObjectId objectId) {
@@ -1928,16 +1523,7 @@ public final class DOM {
         }
         /**
          * The rect to be scrolled into view, relative to the node&#x27;s border box, in CSS pixels. When omitted, center of the node will be used, similar to Element.scrollIntoView.
-         * @param rect field value; empty omits the value
-         * @return this model
-         */
-        public ScrollIntoViewIfNeededRequest rect(Optional<DOM.Rect> rect) {
-            set("rect", rect.orElse(null));
-            return this;
-        }
-        /**
-         * The rect to be scrolled into view, relative to the node&#x27;s border box, in CSS pixels. When omitted, center of the node will be used, similar to Element.scrollIntoView.
-         * @param rect field value; null removes the value
+         * @param rect field value
          * @return this model
          */
         public ScrollIntoViewIfNeededRequest rect(DOM.Rect rect) {
@@ -1957,10 +1543,10 @@ public final class DOM {
          * @param searchId protocol value
          */
         public DiscardSearchResultsRequest(String searchId) {
-            set("searchId", searchId);
+            searchId(searchId);
         }
         public static DiscardSearchResultsRequest fromMap(Map<String, Object> values) {
-            DiscardSearchResultsRequest instance_ = new DiscardSearchResultsRequest();
+            final DiscardSearchResultsRequest instance_ = new DiscardSearchResultsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1987,7 +1573,7 @@ public final class DOM {
     public static final class EnableRequest extends CdpObject {
         public EnableRequest() {}
         public static EnableRequest fromMap(Map<String, Object> values) {
-            EnableRequest instance_ = new EnableRequest();
+            final EnableRequest instance_ = new EnableRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1997,23 +1583,12 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<EnableIncludeWhitespaceValues> includeWhitespace() {
-            Object value = raw("includeWhitespace");
-            return Optional.ofNullable(value == null ? null : EnableIncludeWhitespaceValues.of((String) value));
+            return raw("includeWhitespace").map(value -> EnableIncludeWhitespaceValues.of((String) value));
         }
         /**
          * Whether to include whitespaces in the children array of returned Nodes.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param includeWhitespace field value; empty omits the value
-         * @return this model
-         */
-        public EnableRequest includeWhitespace(Optional<EnableIncludeWhitespaceValues> includeWhitespace) {
-            set("includeWhitespace", includeWhitespace.orElse(null));
-            return this;
-        }
-        /**
-         * Whether to include whitespaces in the children array of returned Nodes.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param includeWhitespace field value; null removes the value
+         * @param includeWhitespace field value
          * @return this model
          */
         public EnableRequest includeWhitespace(EnableIncludeWhitespaceValues includeWhitespace) {
@@ -2027,7 +1602,7 @@ public final class DOM {
     public static final class FocusRequest extends CdpObject {
         public FocusRequest() {}
         public static FocusRequest fromMap(Map<String, Object> values) {
-            FocusRequest instance_ = new FocusRequest();
+            final FocusRequest instance_ = new FocusRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2036,37 +1611,25 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            Object value = raw("nodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
+            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            Object value = raw("backendNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            Object value = raw("objectId");
-            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
+            return raw("objectId").map(value -> new Runtime.RemoteObjectId((String) value));
         }
         /**
          * Identifier of the node.
-         * @param nodeId field value; empty omits the value
-         * @return this model
-         */
-        public FocusRequest nodeId(Optional<DOM.NodeId> nodeId) {
-            set("nodeId", nodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the node.
-         * @param nodeId field value; null removes the value
+         * @param nodeId field value
          * @return this model
          */
         public FocusRequest nodeId(DOM.NodeId nodeId) {
@@ -2075,16 +1638,7 @@ public final class DOM {
         }
         /**
          * Identifier of the backend node.
-         * @param backendNodeId field value; empty omits the value
-         * @return this model
-         */
-        public FocusRequest backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
-            set("backendNodeId", backendNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the backend node.
-         * @param backendNodeId field value; null removes the value
+         * @param backendNodeId field value
          * @return this model
          */
         public FocusRequest backendNodeId(DOM.BackendNodeId backendNodeId) {
@@ -2093,16 +1647,7 @@ public final class DOM {
         }
         /**
          * JavaScript object id of the node wrapper.
-         * @param objectId field value; empty omits the value
-         * @return this model
-         */
-        public FocusRequest objectId(Optional<Runtime.RemoteObjectId> objectId) {
-            set("objectId", objectId.orElse(null));
-            return this;
-        }
-        /**
-         * JavaScript object id of the node wrapper.
-         * @param objectId field value; null removes the value
+         * @param objectId field value
          * @return this model
          */
         public FocusRequest objectId(Runtime.RemoteObjectId objectId) {
@@ -2120,10 +1665,10 @@ public final class DOM {
          * @param nodeId protocol value
          */
         public GetAttributesRequest(DOM.NodeId nodeId) {
-            set("nodeId", nodeId);
+            nodeId(nodeId);
         }
         public static GetAttributesRequest fromMap(Map<String, Object> values) {
-            GetAttributesRequest instance_ = new GetAttributesRequest();
+            final GetAttributesRequest instance_ = new GetAttributesRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2150,7 +1695,7 @@ public final class DOM {
     public static final class GetBoxModelRequest extends CdpObject {
         public GetBoxModelRequest() {}
         public static GetBoxModelRequest fromMap(Map<String, Object> values) {
-            GetBoxModelRequest instance_ = new GetBoxModelRequest();
+            final GetBoxModelRequest instance_ = new GetBoxModelRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2159,37 +1704,25 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            Object value = raw("nodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
+            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            Object value = raw("backendNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            Object value = raw("objectId");
-            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
+            return raw("objectId").map(value -> new Runtime.RemoteObjectId((String) value));
         }
         /**
          * Identifier of the node.
-         * @param nodeId field value; empty omits the value
-         * @return this model
-         */
-        public GetBoxModelRequest nodeId(Optional<DOM.NodeId> nodeId) {
-            set("nodeId", nodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the node.
-         * @param nodeId field value; null removes the value
+         * @param nodeId field value
          * @return this model
          */
         public GetBoxModelRequest nodeId(DOM.NodeId nodeId) {
@@ -2198,16 +1731,7 @@ public final class DOM {
         }
         /**
          * Identifier of the backend node.
-         * @param backendNodeId field value; empty omits the value
-         * @return this model
-         */
-        public GetBoxModelRequest backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
-            set("backendNodeId", backendNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the backend node.
-         * @param backendNodeId field value; null removes the value
+         * @param backendNodeId field value
          * @return this model
          */
         public GetBoxModelRequest backendNodeId(DOM.BackendNodeId backendNodeId) {
@@ -2216,16 +1740,7 @@ public final class DOM {
         }
         /**
          * JavaScript object id of the node wrapper.
-         * @param objectId field value; empty omits the value
-         * @return this model
-         */
-        public GetBoxModelRequest objectId(Optional<Runtime.RemoteObjectId> objectId) {
-            set("objectId", objectId.orElse(null));
-            return this;
-        }
-        /**
-         * JavaScript object id of the node wrapper.
-         * @param objectId field value; null removes the value
+         * @param objectId field value
          * @return this model
          */
         public GetBoxModelRequest objectId(Runtime.RemoteObjectId objectId) {
@@ -2240,7 +1755,7 @@ public final class DOM {
     public static final class GetContentQuadsRequest extends CdpObject {
         public GetContentQuadsRequest() {}
         public static GetContentQuadsRequest fromMap(Map<String, Object> values) {
-            GetContentQuadsRequest instance_ = new GetContentQuadsRequest();
+            final GetContentQuadsRequest instance_ = new GetContentQuadsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2249,37 +1764,25 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            Object value = raw("nodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
+            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            Object value = raw("backendNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            Object value = raw("objectId");
-            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
+            return raw("objectId").map(value -> new Runtime.RemoteObjectId((String) value));
         }
         /**
          * Identifier of the node.
-         * @param nodeId field value; empty omits the value
-         * @return this model
-         */
-        public GetContentQuadsRequest nodeId(Optional<DOM.NodeId> nodeId) {
-            set("nodeId", nodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the node.
-         * @param nodeId field value; null removes the value
+         * @param nodeId field value
          * @return this model
          */
         public GetContentQuadsRequest nodeId(DOM.NodeId nodeId) {
@@ -2288,16 +1791,7 @@ public final class DOM {
         }
         /**
          * Identifier of the backend node.
-         * @param backendNodeId field value; empty omits the value
-         * @return this model
-         */
-        public GetContentQuadsRequest backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
-            set("backendNodeId", backendNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the backend node.
-         * @param backendNodeId field value; null removes the value
+         * @param backendNodeId field value
          * @return this model
          */
         public GetContentQuadsRequest backendNodeId(DOM.BackendNodeId backendNodeId) {
@@ -2306,16 +1800,7 @@ public final class DOM {
         }
         /**
          * JavaScript object id of the node wrapper.
-         * @param objectId field value; empty omits the value
-         * @return this model
-         */
-        public GetContentQuadsRequest objectId(Optional<Runtime.RemoteObjectId> objectId) {
-            set("objectId", objectId.orElse(null));
-            return this;
-        }
-        /**
-         * JavaScript object id of the node wrapper.
-         * @param objectId field value; null removes the value
+         * @param objectId field value
          * @return this model
          */
         public GetContentQuadsRequest objectId(Runtime.RemoteObjectId objectId) {
@@ -2329,7 +1814,7 @@ public final class DOM {
     public static final class GetDocumentRequest extends CdpObject {
         public GetDocumentRequest() {}
         public static GetDocumentRequest fromMap(Map<String, Object> values) {
-            GetDocumentRequest instance_ = new GetDocumentRequest();
+            final GetDocumentRequest instance_ = new GetDocumentRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2338,50 +1823,30 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong depth() {
-            Long value = CdpObject.numberAsLong(raw("depth"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("depth").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> pierce() {
-            Object value = raw("pierce");
-            return Optional.ofNullable((Boolean) value);
+            return raw("pierce").map(value -> (Boolean) value);
         }
         /**
          * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-         * @param depth field value; empty omits the value
+         * @param depth field value
          * @return this model
          */
-        public GetDocumentRequest depth(OptionalLong depth) {
-            set("depth", depth.isPresent() ? depth.getAsLong() : null);
-            return this;
-        }
-        /**
-         * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-         * @param depth field value; null removes the value
-         * @return this model
-         */
-        public GetDocumentRequest depth(Long depth) {
+        public GetDocumentRequest depth(long depth) {
             set("depth", depth);
             return this;
         }
         /**
          * Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
-         * @param pierce field value; empty omits the value
+         * @param pierce field value
          * @return this model
          */
-        public GetDocumentRequest pierce(Optional<Boolean> pierce) {
-            set("pierce", pierce.orElse(null));
-            return this;
-        }
-        /**
-         * Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
-         * @param pierce field value; null removes the value
-         * @return this model
-         */
-        public GetDocumentRequest pierce(Boolean pierce) {
+        public GetDocumentRequest pierce(boolean pierce) {
             set("pierce", pierce);
             return this;
         }
@@ -2394,7 +1859,7 @@ public final class DOM {
     public static final class GetFlattenedDocumentRequest extends CdpObject {
         public GetFlattenedDocumentRequest() {}
         public static GetFlattenedDocumentRequest fromMap(Map<String, Object> values) {
-            GetFlattenedDocumentRequest instance_ = new GetFlattenedDocumentRequest();
+            final GetFlattenedDocumentRequest instance_ = new GetFlattenedDocumentRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2403,50 +1868,30 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong depth() {
-            Long value = CdpObject.numberAsLong(raw("depth"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("depth").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> pierce() {
-            Object value = raw("pierce");
-            return Optional.ofNullable((Boolean) value);
+            return raw("pierce").map(value -> (Boolean) value);
         }
         /**
          * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-         * @param depth field value; empty omits the value
+         * @param depth field value
          * @return this model
          */
-        public GetFlattenedDocumentRequest depth(OptionalLong depth) {
-            set("depth", depth.isPresent() ? depth.getAsLong() : null);
-            return this;
-        }
-        /**
-         * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-         * @param depth field value; null removes the value
-         * @return this model
-         */
-        public GetFlattenedDocumentRequest depth(Long depth) {
+        public GetFlattenedDocumentRequest depth(long depth) {
             set("depth", depth);
             return this;
         }
         /**
          * Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
-         * @param pierce field value; empty omits the value
+         * @param pierce field value
          * @return this model
          */
-        public GetFlattenedDocumentRequest pierce(Optional<Boolean> pierce) {
-            set("pierce", pierce.orElse(null));
-            return this;
-        }
-        /**
-         * Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
-         * @param pierce field value; null removes the value
-         * @return this model
-         */
-        public GetFlattenedDocumentRequest pierce(Boolean pierce) {
+        public GetFlattenedDocumentRequest pierce(boolean pierce) {
             set("pierce", pierce);
             return this;
         }
@@ -2464,11 +1909,10 @@ public final class DOM {
          * @param computedStyles protocol value
          */
         public GetNodesForSubtreeByStyleRequest(DOM.NodeId nodeId, java.util.List<DOM.CSSComputedStyleProperty> computedStyles) {
-            set("nodeId", nodeId);
-            set("computedStyles", computedStyles);
+            nodeId(nodeId).computedStyles(computedStyles);
         }
         public static GetNodesForSubtreeByStyleRequest fromMap(Map<String, Object> values) {
-            GetNodesForSubtreeByStyleRequest instance_ = new GetNodesForSubtreeByStyleRequest();
+            final GetNodesForSubtreeByStyleRequest instance_ = new GetNodesForSubtreeByStyleRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2484,15 +1928,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public java.util.List<DOM.CSSComputedStyleProperty> computedStyles() {
-            return CdpObject.requireList(require("computedStyles"), element0 -> java.util.Objects.requireNonNull(DOM.CSSComputedStyleProperty.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("computedStyles"), element0 -> java.util.Objects.requireNonNull(DOM.CSSComputedStyleProperty.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Whether or not iframes and shadow roots in the same target should be traversed when returning the results (default is false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> pierce() {
-            Object value = raw("pierce");
-            return Optional.ofNullable((Boolean) value);
+            return raw("pierce").map(value -> (Boolean) value);
         }
         /**
          * Node ID pointing to the root of a subtree.
@@ -2514,19 +1957,10 @@ public final class DOM {
         }
         /**
          * Whether or not iframes and shadow roots in the same target should be traversed when returning the results (default is false).
-         * @param pierce field value; empty omits the value
+         * @param pierce field value
          * @return this model
          */
-        public GetNodesForSubtreeByStyleRequest pierce(Optional<Boolean> pierce) {
-            set("pierce", pierce.orElse(null));
-            return this;
-        }
-        /**
-         * Whether or not iframes and shadow roots in the same target should be traversed when returning the results (default is false).
-         * @param pierce field value; null removes the value
-         * @return this model
-         */
-        public GetNodesForSubtreeByStyleRequest pierce(Boolean pierce) {
+        public GetNodesForSubtreeByStyleRequest pierce(boolean pierce) {
             set("pierce", pierce);
             return this;
         }
@@ -2542,11 +1976,10 @@ public final class DOM {
          * @param y protocol value
          */
         public GetNodeForLocationRequest(long x, long y) {
-            set("x", x);
-            set("y", y);
+            x(x).y(y);
         }
         public static GetNodeForLocationRequest fromMap(Map<String, Object> values) {
-            GetNodeForLocationRequest instance_ = new GetNodeForLocationRequest();
+            final GetNodeForLocationRequest instance_ = new GetNodeForLocationRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2569,16 +2002,14 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeUserAgentShadowDOM() {
-            Object value = raw("includeUserAgentShadowDOM");
-            return Optional.ofNullable((Boolean) value);
+            return raw("includeUserAgentShadowDOM").map(value -> (Boolean) value);
         }
         /**
          * Whether to ignore pointer-events: none on elements and hit test them.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> ignorePointerEventsNone() {
-            Object value = raw("ignorePointerEventsNone");
-            return Optional.ofNullable((Boolean) value);
+            return raw("ignorePointerEventsNone").map(value -> (Boolean) value);
         }
         /**
          * X coordinate.
@@ -2600,37 +2031,19 @@ public final class DOM {
         }
         /**
          * False to skip to the nearest non-UA shadow root ancestor (default: false).
-         * @param includeUserAgentShadowDOM field value; empty omits the value
+         * @param includeUserAgentShadowDOM field value
          * @return this model
          */
-        public GetNodeForLocationRequest includeUserAgentShadowDOM(Optional<Boolean> includeUserAgentShadowDOM) {
-            set("includeUserAgentShadowDOM", includeUserAgentShadowDOM.orElse(null));
-            return this;
-        }
-        /**
-         * False to skip to the nearest non-UA shadow root ancestor (default: false).
-         * @param includeUserAgentShadowDOM field value; null removes the value
-         * @return this model
-         */
-        public GetNodeForLocationRequest includeUserAgentShadowDOM(Boolean includeUserAgentShadowDOM) {
+        public GetNodeForLocationRequest includeUserAgentShadowDOM(boolean includeUserAgentShadowDOM) {
             set("includeUserAgentShadowDOM", includeUserAgentShadowDOM);
             return this;
         }
         /**
          * Whether to ignore pointer-events: none on elements and hit test them.
-         * @param ignorePointerEventsNone field value; empty omits the value
+         * @param ignorePointerEventsNone field value
          * @return this model
          */
-        public GetNodeForLocationRequest ignorePointerEventsNone(Optional<Boolean> ignorePointerEventsNone) {
-            set("ignorePointerEventsNone", ignorePointerEventsNone.orElse(null));
-            return this;
-        }
-        /**
-         * Whether to ignore pointer-events: none on elements and hit test them.
-         * @param ignorePointerEventsNone field value; null removes the value
-         * @return this model
-         */
-        public GetNodeForLocationRequest ignorePointerEventsNone(Boolean ignorePointerEventsNone) {
+        public GetNodeForLocationRequest ignorePointerEventsNone(boolean ignorePointerEventsNone) {
             set("ignorePointerEventsNone", ignorePointerEventsNone);
             return this;
         }
@@ -2641,7 +2054,7 @@ public final class DOM {
     public static final class GetOuterHTMLRequest extends CdpObject {
         public GetOuterHTMLRequest() {}
         public static GetOuterHTMLRequest fromMap(Map<String, Object> values) {
-            GetOuterHTMLRequest instance_ = new GetOuterHTMLRequest();
+            final GetOuterHTMLRequest instance_ = new GetOuterHTMLRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2650,24 +2063,21 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            Object value = raw("nodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
+            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            Object value = raw("backendNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            Object value = raw("objectId");
-            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
+            return raw("objectId").map(value -> new Runtime.RemoteObjectId((String) value));
         }
         /**
          * Include all shadow roots. Equals to false if not specified.
@@ -2675,21 +2085,11 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeShadowDOM() {
-            Object value = raw("includeShadowDOM");
-            return Optional.ofNullable((Boolean) value);
+            return raw("includeShadowDOM").map(value -> (Boolean) value);
         }
         /**
          * Identifier of the node.
-         * @param nodeId field value; empty omits the value
-         * @return this model
-         */
-        public GetOuterHTMLRequest nodeId(Optional<DOM.NodeId> nodeId) {
-            set("nodeId", nodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the node.
-         * @param nodeId field value; null removes the value
+         * @param nodeId field value
          * @return this model
          */
         public GetOuterHTMLRequest nodeId(DOM.NodeId nodeId) {
@@ -2698,16 +2098,7 @@ public final class DOM {
         }
         /**
          * Identifier of the backend node.
-         * @param backendNodeId field value; empty omits the value
-         * @return this model
-         */
-        public GetOuterHTMLRequest backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
-            set("backendNodeId", backendNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the backend node.
-         * @param backendNodeId field value; null removes the value
+         * @param backendNodeId field value
          * @return this model
          */
         public GetOuterHTMLRequest backendNodeId(DOM.BackendNodeId backendNodeId) {
@@ -2716,16 +2107,7 @@ public final class DOM {
         }
         /**
          * JavaScript object id of the node wrapper.
-         * @param objectId field value; empty omits the value
-         * @return this model
-         */
-        public GetOuterHTMLRequest objectId(Optional<Runtime.RemoteObjectId> objectId) {
-            set("objectId", objectId.orElse(null));
-            return this;
-        }
-        /**
-         * JavaScript object id of the node wrapper.
-         * @param objectId field value; null removes the value
+         * @param objectId field value
          * @return this model
          */
         public GetOuterHTMLRequest objectId(Runtime.RemoteObjectId objectId) {
@@ -2735,20 +2117,10 @@ public final class DOM {
         /**
          * Include all shadow roots. Equals to false if not specified.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param includeShadowDOM field value; empty omits the value
+         * @param includeShadowDOM field value
          * @return this model
          */
-        public GetOuterHTMLRequest includeShadowDOM(Optional<Boolean> includeShadowDOM) {
-            set("includeShadowDOM", includeShadowDOM.orElse(null));
-            return this;
-        }
-        /**
-         * Include all shadow roots. Equals to false if not specified.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param includeShadowDOM field value; null removes the value
-         * @return this model
-         */
-        public GetOuterHTMLRequest includeShadowDOM(Boolean includeShadowDOM) {
+        public GetOuterHTMLRequest includeShadowDOM(boolean includeShadowDOM) {
             set("includeShadowDOM", includeShadowDOM);
             return this;
         }
@@ -2765,10 +2137,10 @@ public final class DOM {
          * @param nodeId protocol value
          */
         public GetRelayoutBoundaryRequest(DOM.NodeId nodeId) {
-            set("nodeId", nodeId);
+            nodeId(nodeId);
         }
         public static GetRelayoutBoundaryRequest fromMap(Map<String, Object> values) {
-            GetRelayoutBoundaryRequest instance_ = new GetRelayoutBoundaryRequest();
+            final GetRelayoutBoundaryRequest instance_ = new GetRelayoutBoundaryRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2803,12 +2175,10 @@ public final class DOM {
          * @param toIndex protocol value
          */
         public GetSearchResultsRequest(String searchId, long fromIndex, long toIndex) {
-            set("searchId", searchId);
-            set("fromIndex", fromIndex);
-            set("toIndex", toIndex);
+            searchId(searchId).fromIndex(fromIndex).toIndex(toIndex);
         }
         public static GetSearchResultsRequest fromMap(Map<String, Object> values) {
-            GetSearchResultsRequest instance_ = new GetSearchResultsRequest();
+            final GetSearchResultsRequest instance_ = new GetSearchResultsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2872,11 +2242,10 @@ public final class DOM {
          * @param targetNodeId protocol value
          */
         public MoveToRequest(DOM.NodeId nodeId, DOM.NodeId targetNodeId) {
-            set("nodeId", nodeId);
-            set("targetNodeId", targetNodeId);
+            nodeId(nodeId).targetNodeId(targetNodeId);
         }
         public static MoveToRequest fromMap(Map<String, Object> values) {
-            MoveToRequest instance_ = new MoveToRequest();
+            final MoveToRequest instance_ = new MoveToRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2899,8 +2268,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> insertBeforeNodeId() {
-            Object value = raw("insertBeforeNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
+            return raw("insertBeforeNodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Id of the node to move.
@@ -2922,16 +2290,7 @@ public final class DOM {
         }
         /**
          * Drop node before this one (if absent, the moved node becomes the last child of {@code targetNodeId}).
-         * @param insertBeforeNodeId field value; empty omits the value
-         * @return this model
-         */
-        public MoveToRequest insertBeforeNodeId(Optional<DOM.NodeId> insertBeforeNodeId) {
-            set("insertBeforeNodeId", insertBeforeNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Drop node before this one (if absent, the moved node becomes the last child of {@code targetNodeId}).
-         * @param insertBeforeNodeId field value; null removes the value
+         * @param insertBeforeNodeId field value
          * @return this model
          */
         public MoveToRequest insertBeforeNodeId(DOM.NodeId insertBeforeNodeId) {
@@ -2951,10 +2310,10 @@ public final class DOM {
          * @param query protocol value
          */
         public PerformSearchRequest(String query) {
-            set("query", query);
+            query(query);
         }
         public static PerformSearchRequest fromMap(Map<String, Object> values) {
-            PerformSearchRequest instance_ = new PerformSearchRequest();
+            final PerformSearchRequest instance_ = new PerformSearchRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2970,8 +2329,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeUserAgentShadowDOM() {
-            Object value = raw("includeUserAgentShadowDOM");
-            return Optional.ofNullable((Boolean) value);
+            return raw("includeUserAgentShadowDOM").map(value -> (Boolean) value);
         }
         /**
          * Plain text or query selector or XPath search query.
@@ -2984,19 +2342,10 @@ public final class DOM {
         }
         /**
          * True to search in user agent shadow DOM.
-         * @param includeUserAgentShadowDOM field value; empty omits the value
+         * @param includeUserAgentShadowDOM field value
          * @return this model
          */
-        public PerformSearchRequest includeUserAgentShadowDOM(Optional<Boolean> includeUserAgentShadowDOM) {
-            set("includeUserAgentShadowDOM", includeUserAgentShadowDOM.orElse(null));
-            return this;
-        }
-        /**
-         * True to search in user agent shadow DOM.
-         * @param includeUserAgentShadowDOM field value; null removes the value
-         * @return this model
-         */
-        public PerformSearchRequest includeUserAgentShadowDOM(Boolean includeUserAgentShadowDOM) {
+        public PerformSearchRequest includeUserAgentShadowDOM(boolean includeUserAgentShadowDOM) {
             set("includeUserAgentShadowDOM", includeUserAgentShadowDOM);
             return this;
         }
@@ -3013,10 +2362,10 @@ public final class DOM {
          * @param path protocol value
          */
         public PushNodeByPathToFrontendRequest(String path) {
-            set("path", path);
+            path(path);
         }
         public static PushNodeByPathToFrontendRequest fromMap(Map<String, Object> values) {
-            PushNodeByPathToFrontendRequest instance_ = new PushNodeByPathToFrontendRequest();
+            final PushNodeByPathToFrontendRequest instance_ = new PushNodeByPathToFrontendRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3049,10 +2398,10 @@ public final class DOM {
          * @param backendNodeIds protocol value
          */
         public PushNodesByBackendIdsToFrontendRequest(java.util.List<DOM.BackendNodeId> backendNodeIds) {
-            set("backendNodeIds", backendNodeIds);
+            backendNodeIds(backendNodeIds);
         }
         public static PushNodesByBackendIdsToFrontendRequest fromMap(Map<String, Object> values) {
-            PushNodesByBackendIdsToFrontendRequest instance_ = new PushNodesByBackendIdsToFrontendRequest();
+            final PushNodesByBackendIdsToFrontendRequest instance_ = new PushNodesByBackendIdsToFrontendRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3084,11 +2433,10 @@ public final class DOM {
          * @param selector protocol value
          */
         public QuerySelectorRequest(DOM.NodeId nodeId, String selector) {
-            set("nodeId", nodeId);
-            set("selector", selector);
+            nodeId(nodeId).selector(selector);
         }
         public static QuerySelectorRequest fromMap(Map<String, Object> values) {
-            QuerySelectorRequest instance_ = new QuerySelectorRequest();
+            final QuerySelectorRequest instance_ = new QuerySelectorRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3136,11 +2484,10 @@ public final class DOM {
          * @param selector protocol value
          */
         public QuerySelectorAllRequest(DOM.NodeId nodeId, String selector) {
-            set("nodeId", nodeId);
-            set("selector", selector);
+            nodeId(nodeId).selector(selector);
         }
         public static QuerySelectorAllRequest fromMap(Map<String, Object> values) {
-            QuerySelectorAllRequest instance_ = new QuerySelectorAllRequest();
+            final QuerySelectorAllRequest instance_ = new QuerySelectorAllRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3190,11 +2537,10 @@ public final class DOM {
          * @param relation protocol value
          */
         public GetElementByRelationRequest(DOM.NodeId nodeId, GetElementByRelationRelationValues relation) {
-            set("nodeId", nodeId);
-            set("relation", relation);
+            nodeId(nodeId).relation(relation);
         }
         public static GetElementByRelationRequest fromMap(Map<String, Object> values) {
-            GetElementByRelationRequest instance_ = new GetElementByRelationRequest();
+            final GetElementByRelationRequest instance_ = new GetElementByRelationRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3242,11 +2588,10 @@ public final class DOM {
          * @param name protocol value
          */
         public RemoveAttributeRequest(DOM.NodeId nodeId, String name) {
-            set("nodeId", nodeId);
-            set("name", name);
+            nodeId(nodeId).name(name);
         }
         public static RemoveAttributeRequest fromMap(Map<String, Object> values) {
-            RemoveAttributeRequest instance_ = new RemoveAttributeRequest();
+            final RemoveAttributeRequest instance_ = new RemoveAttributeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3293,10 +2638,10 @@ public final class DOM {
          * @param nodeId protocol value
          */
         public RemoveNodeRequest(DOM.NodeId nodeId) {
-            set("nodeId", nodeId);
+            nodeId(nodeId);
         }
         public static RemoveNodeRequest fromMap(Map<String, Object> values) {
-            RemoveNodeRequest instance_ = new RemoveNodeRequest();
+            final RemoveNodeRequest instance_ = new RemoveNodeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3327,10 +2672,10 @@ public final class DOM {
          * @param nodeId protocol value
          */
         public RequestChildNodesRequest(DOM.NodeId nodeId) {
-            set("nodeId", nodeId);
+            nodeId(nodeId);
         }
         public static RequestChildNodesRequest fromMap(Map<String, Object> values) {
-            RequestChildNodesRequest instance_ = new RequestChildNodesRequest();
+            final RequestChildNodesRequest instance_ = new RequestChildNodesRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3346,16 +2691,14 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong depth() {
-            Long value = CdpObject.numberAsLong(raw("depth"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("depth").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Whether or not iframes and shadow roots should be traversed when returning the sub-tree (default is false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> pierce() {
-            Object value = raw("pierce");
-            return Optional.ofNullable((Boolean) value);
+            return raw("pierce").map(value -> (Boolean) value);
         }
         /**
          * Id of the node to get children for.
@@ -3368,37 +2711,19 @@ public final class DOM {
         }
         /**
          * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-         * @param depth field value; empty omits the value
+         * @param depth field value
          * @return this model
          */
-        public RequestChildNodesRequest depth(OptionalLong depth) {
-            set("depth", depth.isPresent() ? depth.getAsLong() : null);
-            return this;
-        }
-        /**
-         * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-         * @param depth field value; null removes the value
-         * @return this model
-         */
-        public RequestChildNodesRequest depth(Long depth) {
+        public RequestChildNodesRequest depth(long depth) {
             set("depth", depth);
             return this;
         }
         /**
          * Whether or not iframes and shadow roots should be traversed when returning the sub-tree (default is false).
-         * @param pierce field value; empty omits the value
+         * @param pierce field value
          * @return this model
          */
-        public RequestChildNodesRequest pierce(Optional<Boolean> pierce) {
-            set("pierce", pierce.orElse(null));
-            return this;
-        }
-        /**
-         * Whether or not iframes and shadow roots should be traversed when returning the sub-tree (default is false).
-         * @param pierce field value; null removes the value
-         * @return this model
-         */
-        public RequestChildNodesRequest pierce(Boolean pierce) {
+        public RequestChildNodesRequest pierce(boolean pierce) {
             set("pierce", pierce);
             return this;
         }
@@ -3413,10 +2738,10 @@ public final class DOM {
          * @param objectId protocol value
          */
         public RequestNodeRequest(Runtime.RemoteObjectId objectId) {
-            set("objectId", objectId);
+            objectId(objectId);
         }
         public static RequestNodeRequest fromMap(Map<String, Object> values) {
-            RequestNodeRequest instance_ = new RequestNodeRequest();
+            final RequestNodeRequest instance_ = new RequestNodeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3443,7 +2768,7 @@ public final class DOM {
     public static final class ResolveNodeRequest extends CdpObject {
         public ResolveNodeRequest() {}
         public static ResolveNodeRequest fromMap(Map<String, Object> values) {
-            ResolveNodeRequest instance_ = new ResolveNodeRequest();
+            final ResolveNodeRequest instance_ = new ResolveNodeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3452,45 +2777,32 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            Object value = raw("nodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
+            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Backend identifier of the node to resolve.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            Object value = raw("backendNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Symbolic group name that can be used to release multiple objects.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> objectGroup() {
-            Object value = raw("objectGroup");
-            return Optional.ofNullable((String) value);
+            return raw("objectGroup").map(value -> (String) value);
         }
         /**
          * Execution context in which to resolve the node.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ExecutionContextId> executionContextId() {
-            Object value = raw("executionContextId");
-            return Optional.ofNullable(value == null ? null : new Runtime.ExecutionContextId(((Number) value).longValue()));
+            return raw("executionContextId").map(value -> new Runtime.ExecutionContextId(((Number) value).longValue()));
         }
         /**
          * Id of the node to resolve.
-         * @param nodeId field value; empty omits the value
-         * @return this model
-         */
-        public ResolveNodeRequest nodeId(Optional<DOM.NodeId> nodeId) {
-            set("nodeId", nodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Id of the node to resolve.
-         * @param nodeId field value; null removes the value
+         * @param nodeId field value
          * @return this model
          */
         public ResolveNodeRequest nodeId(DOM.NodeId nodeId) {
@@ -3499,16 +2811,7 @@ public final class DOM {
         }
         /**
          * Backend identifier of the node to resolve.
-         * @param backendNodeId field value; empty omits the value
-         * @return this model
-         */
-        public ResolveNodeRequest backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
-            set("backendNodeId", backendNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Backend identifier of the node to resolve.
-         * @param backendNodeId field value; null removes the value
+         * @param backendNodeId field value
          * @return this model
          */
         public ResolveNodeRequest backendNodeId(DOM.BackendNodeId backendNodeId) {
@@ -3517,16 +2820,7 @@ public final class DOM {
         }
         /**
          * Symbolic group name that can be used to release multiple objects.
-         * @param objectGroup field value; empty omits the value
-         * @return this model
-         */
-        public ResolveNodeRequest objectGroup(Optional<String> objectGroup) {
-            set("objectGroup", objectGroup.orElse(null));
-            return this;
-        }
-        /**
-         * Symbolic group name that can be used to release multiple objects.
-         * @param objectGroup field value; null removes the value
+         * @param objectGroup field value
          * @return this model
          */
         public ResolveNodeRequest objectGroup(String objectGroup) {
@@ -3535,16 +2829,7 @@ public final class DOM {
         }
         /**
          * Execution context in which to resolve the node.
-         * @param executionContextId field value; empty omits the value
-         * @return this model
-         */
-        public ResolveNodeRequest executionContextId(Optional<Runtime.ExecutionContextId> executionContextId) {
-            set("executionContextId", executionContextId.orElse(null));
-            return this;
-        }
-        /**
-         * Execution context in which to resolve the node.
-         * @param executionContextId field value; null removes the value
+         * @param executionContextId field value
          * @return this model
          */
         public ResolveNodeRequest executionContextId(Runtime.ExecutionContextId executionContextId) {
@@ -3564,12 +2849,10 @@ public final class DOM {
          * @param value protocol value
          */
         public SetAttributeValueRequest(DOM.NodeId nodeId, String name, String value) {
-            set("nodeId", nodeId);
-            set("name", name);
-            set("value", value);
+            nodeId(nodeId).name(name).value(value);
         }
         public static SetAttributeValueRequest fromMap(Map<String, Object> values) {
-            SetAttributeValueRequest instance_ = new SetAttributeValueRequest();
+            final SetAttributeValueRequest instance_ = new SetAttributeValueRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3633,11 +2916,10 @@ public final class DOM {
          * @param text protocol value
          */
         public SetAttributesAsTextRequest(DOM.NodeId nodeId, String text) {
-            set("nodeId", nodeId);
-            set("text", text);
+            nodeId(nodeId).text(text);
         }
         public static SetAttributesAsTextRequest fromMap(Map<String, Object> values) {
-            SetAttributesAsTextRequest instance_ = new SetAttributesAsTextRequest();
+            final SetAttributesAsTextRequest instance_ = new SetAttributesAsTextRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3660,8 +2942,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            Object value = raw("name");
-            return Optional.ofNullable((String) value);
+            return raw("name").map(value -> (String) value);
         }
         /**
          * Id of the element to set attributes for.
@@ -3683,16 +2964,7 @@ public final class DOM {
         }
         /**
          * Attribute name to replace with new attributes derived from text in case text parsed successfully.
-         * @param name field value; empty omits the value
-         * @return this model
-         */
-        public SetAttributesAsTextRequest name(Optional<String> name) {
-            set("name", name.orElse(null));
-            return this;
-        }
-        /**
-         * Attribute name to replace with new attributes derived from text in case text parsed successfully.
-         * @param name field value; null removes the value
+         * @param name field value
          * @return this model
          */
         public SetAttributesAsTextRequest name(String name) {
@@ -3710,10 +2982,10 @@ public final class DOM {
          * @param files protocol value
          */
         public SetFileInputFilesRequest(java.util.List<String> files) {
-            set("files", files);
+            files(files);
         }
         public static SetFileInputFilesRequest fromMap(Map<String, Object> values) {
-            SetFileInputFilesRequest instance_ = new SetFileInputFilesRequest();
+            final SetFileInputFilesRequest instance_ = new SetFileInputFilesRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3729,24 +3001,21 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            Object value = raw("nodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
+            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            Object value = raw("backendNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            Object value = raw("objectId");
-            return Optional.ofNullable(value == null ? null : new Runtime.RemoteObjectId((String) value));
+            return raw("objectId").map(value -> new Runtime.RemoteObjectId((String) value));
         }
         /**
          * Array of file paths to set.
@@ -3759,16 +3028,7 @@ public final class DOM {
         }
         /**
          * Identifier of the node.
-         * @param nodeId field value; empty omits the value
-         * @return this model
-         */
-        public SetFileInputFilesRequest nodeId(Optional<DOM.NodeId> nodeId) {
-            set("nodeId", nodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the node.
-         * @param nodeId field value; null removes the value
+         * @param nodeId field value
          * @return this model
          */
         public SetFileInputFilesRequest nodeId(DOM.NodeId nodeId) {
@@ -3777,16 +3037,7 @@ public final class DOM {
         }
         /**
          * Identifier of the backend node.
-         * @param backendNodeId field value; empty omits the value
-         * @return this model
-         */
-        public SetFileInputFilesRequest backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
-            set("backendNodeId", backendNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the backend node.
-         * @param backendNodeId field value; null removes the value
+         * @param backendNodeId field value
          * @return this model
          */
         public SetFileInputFilesRequest backendNodeId(DOM.BackendNodeId backendNodeId) {
@@ -3795,16 +3046,7 @@ public final class DOM {
         }
         /**
          * JavaScript object id of the node wrapper.
-         * @param objectId field value; empty omits the value
-         * @return this model
-         */
-        public SetFileInputFilesRequest objectId(Optional<Runtime.RemoteObjectId> objectId) {
-            set("objectId", objectId.orElse(null));
-            return this;
-        }
-        /**
-         * JavaScript object id of the node wrapper.
-         * @param objectId field value; null removes the value
+         * @param objectId field value
          * @return this model
          */
         public SetFileInputFilesRequest objectId(Runtime.RemoteObjectId objectId) {
@@ -3824,10 +3066,10 @@ public final class DOM {
          * @param enable protocol value
          */
         public SetNodeStackTracesEnabledRequest(boolean enable) {
-            set("enable", enable);
+            enable(enable);
         }
         public static SetNodeStackTracesEnabledRequest fromMap(Map<String, Object> values) {
-            SetNodeStackTracesEnabledRequest instance_ = new SetNodeStackTracesEnabledRequest();
+            final SetNodeStackTracesEnabledRequest instance_ = new SetNodeStackTracesEnabledRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3860,10 +3102,10 @@ public final class DOM {
          * @param nodeId protocol value
          */
         public GetNodeStackTracesRequest(DOM.NodeId nodeId) {
-            set("nodeId", nodeId);
+            nodeId(nodeId);
         }
         public static GetNodeStackTracesRequest fromMap(Map<String, Object> values) {
-            GetNodeStackTracesRequest instance_ = new GetNodeStackTracesRequest();
+            final GetNodeStackTracesRequest instance_ = new GetNodeStackTracesRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3896,10 +3138,10 @@ public final class DOM {
          * @param objectId protocol value
          */
         public GetFileInfoRequest(Runtime.RemoteObjectId objectId) {
-            set("objectId", objectId);
+            objectId(objectId);
         }
         public static GetFileInfoRequest fromMap(Map<String, Object> values) {
-            GetFileInfoRequest instance_ = new GetFileInfoRequest();
+            final GetFileInfoRequest instance_ = new GetFileInfoRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3932,10 +3174,10 @@ public final class DOM {
          * @param nodeId protocol value
          */
         public SetInspectedNodeRequest(DOM.NodeId nodeId) {
-            set("nodeId", nodeId);
+            nodeId(nodeId);
         }
         public static SetInspectedNodeRequest fromMap(Map<String, Object> values) {
-            SetInspectedNodeRequest instance_ = new SetInspectedNodeRequest();
+            final SetInspectedNodeRequest instance_ = new SetInspectedNodeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3967,11 +3209,10 @@ public final class DOM {
          * @param name protocol value
          */
         public SetNodeNameRequest(DOM.NodeId nodeId, String name) {
-            set("nodeId", nodeId);
-            set("name", name);
+            nodeId(nodeId).name(name);
         }
         public static SetNodeNameRequest fromMap(Map<String, Object> values) {
-            SetNodeNameRequest instance_ = new SetNodeNameRequest();
+            final SetNodeNameRequest instance_ = new SetNodeNameRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4019,11 +3260,10 @@ public final class DOM {
          * @param value protocol value
          */
         public SetNodeValueRequest(DOM.NodeId nodeId, String value) {
-            set("nodeId", nodeId);
-            set("value", value);
+            nodeId(nodeId).value(value);
         }
         public static SetNodeValueRequest fromMap(Map<String, Object> values) {
-            SetNodeValueRequest instance_ = new SetNodeValueRequest();
+            final SetNodeValueRequest instance_ = new SetNodeValueRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4071,11 +3311,10 @@ public final class DOM {
          * @param outerHTML protocol value
          */
         public SetOuterHTMLRequest(DOM.NodeId nodeId, String outerHTML) {
-            set("nodeId", nodeId);
-            set("outerHTML", outerHTML);
+            nodeId(nodeId).outerHTML(outerHTML);
         }
         public static SetOuterHTMLRequest fromMap(Map<String, Object> values) {
-            SetOuterHTMLRequest instance_ = new SetOuterHTMLRequest();
+            final SetOuterHTMLRequest instance_ = new SetOuterHTMLRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4124,10 +3363,10 @@ public final class DOM {
          * @param frameId protocol value
          */
         public GetFrameOwnerRequest(Page.FrameId frameId) {
-            set("frameId", frameId);
+            frameId(frameId);
         }
         public static GetFrameOwnerRequest fromMap(Map<String, Object> values) {
-            GetFrameOwnerRequest instance_ = new GetFrameOwnerRequest();
+            final GetFrameOwnerRequest instance_ = new GetFrameOwnerRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4160,10 +3399,10 @@ public final class DOM {
          * @param nodeId protocol value
          */
         public GetContainerForNodeRequest(DOM.NodeId nodeId) {
-            set("nodeId", nodeId);
+            nodeId(nodeId);
         }
         public static GetContainerForNodeRequest fromMap(Map<String, Object> values) {
-            GetContainerForNodeRequest instance_ = new GetContainerForNodeRequest();
+            final GetContainerForNodeRequest instance_ = new GetContainerForNodeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4179,40 +3418,35 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> containerName() {
-            Object value = raw("containerName");
-            return Optional.ofNullable((String) value);
+            return raw("containerName").map(value -> (String) value);
         }
         /**
          * Returns the physicalAxes field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.PhysicalAxes> physicalAxes() {
-            Object value = raw("physicalAxes");
-            return Optional.ofNullable(value == null ? null : DOM.PhysicalAxes.of((String) value));
+            return raw("physicalAxes").map(value -> DOM.PhysicalAxes.of((String) value));
         }
         /**
          * Returns the logicalAxes field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.LogicalAxes> logicalAxes() {
-            Object value = raw("logicalAxes");
-            return Optional.ofNullable(value == null ? null : DOM.LogicalAxes.of((String) value));
+            return raw("logicalAxes").map(value -> DOM.LogicalAxes.of((String) value));
         }
         /**
          * Returns the queriesScrollState field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> queriesScrollState() {
-            Object value = raw("queriesScrollState");
-            return Optional.ofNullable((Boolean) value);
+            return raw("queriesScrollState").map(value -> (Boolean) value);
         }
         /**
          * Returns the queriesAnchored field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> queriesAnchored() {
-            Object value = raw("queriesAnchored");
-            return Optional.ofNullable((Boolean) value);
+            return raw("queriesAnchored").map(value -> (Boolean) value);
         }
         /**
          * Sets the nodeId field.
@@ -4225,16 +3459,7 @@ public final class DOM {
         }
         /**
          * Sets the containerName field.
-         * @param containerName field value; empty omits the value
-         * @return this model
-         */
-        public GetContainerForNodeRequest containerName(Optional<String> containerName) {
-            set("containerName", containerName.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the containerName field.
-         * @param containerName field value; null removes the value
+         * @param containerName field value
          * @return this model
          */
         public GetContainerForNodeRequest containerName(String containerName) {
@@ -4243,16 +3468,7 @@ public final class DOM {
         }
         /**
          * Sets the physicalAxes field.
-         * @param physicalAxes field value; empty omits the value
-         * @return this model
-         */
-        public GetContainerForNodeRequest physicalAxes(Optional<DOM.PhysicalAxes> physicalAxes) {
-            set("physicalAxes", physicalAxes.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the physicalAxes field.
-         * @param physicalAxes field value; null removes the value
+         * @param physicalAxes field value
          * @return this model
          */
         public GetContainerForNodeRequest physicalAxes(DOM.PhysicalAxes physicalAxes) {
@@ -4261,16 +3477,7 @@ public final class DOM {
         }
         /**
          * Sets the logicalAxes field.
-         * @param logicalAxes field value; empty omits the value
-         * @return this model
-         */
-        public GetContainerForNodeRequest logicalAxes(Optional<DOM.LogicalAxes> logicalAxes) {
-            set("logicalAxes", logicalAxes.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the logicalAxes field.
-         * @param logicalAxes field value; null removes the value
+         * @param logicalAxes field value
          * @return this model
          */
         public GetContainerForNodeRequest logicalAxes(DOM.LogicalAxes logicalAxes) {
@@ -4279,37 +3486,19 @@ public final class DOM {
         }
         /**
          * Sets the queriesScrollState field.
-         * @param queriesScrollState field value; empty omits the value
+         * @param queriesScrollState field value
          * @return this model
          */
-        public GetContainerForNodeRequest queriesScrollState(Optional<Boolean> queriesScrollState) {
-            set("queriesScrollState", queriesScrollState.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the queriesScrollState field.
-         * @param queriesScrollState field value; null removes the value
-         * @return this model
-         */
-        public GetContainerForNodeRequest queriesScrollState(Boolean queriesScrollState) {
+        public GetContainerForNodeRequest queriesScrollState(boolean queriesScrollState) {
             set("queriesScrollState", queriesScrollState);
             return this;
         }
         /**
          * Sets the queriesAnchored field.
-         * @param queriesAnchored field value; empty omits the value
+         * @param queriesAnchored field value
          * @return this model
          */
-        public GetContainerForNodeRequest queriesAnchored(Optional<Boolean> queriesAnchored) {
-            set("queriesAnchored", queriesAnchored.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the queriesAnchored field.
-         * @param queriesAnchored field value; null removes the value
-         * @return this model
-         */
-        public GetContainerForNodeRequest queriesAnchored(Boolean queriesAnchored) {
+        public GetContainerForNodeRequest queriesAnchored(boolean queriesAnchored) {
             set("queriesAnchored", queriesAnchored);
             return this;
         }
@@ -4326,10 +3515,10 @@ public final class DOM {
          * @param nodeId protocol value
          */
         public GetQueryingDescendantsForContainerRequest(DOM.NodeId nodeId) {
-            set("nodeId", nodeId);
+            nodeId(nodeId);
         }
         public static GetQueryingDescendantsForContainerRequest fromMap(Map<String, Object> values) {
-            GetQueryingDescendantsForContainerRequest instance_ = new GetQueryingDescendantsForContainerRequest();
+            final GetQueryingDescendantsForContainerRequest instance_ = new GetQueryingDescendantsForContainerRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4362,10 +3551,10 @@ public final class DOM {
          * @param nodeId protocol value
          */
         public GetAnchorElementRequest(DOM.NodeId nodeId) {
-            set("nodeId", nodeId);
+            nodeId(nodeId);
         }
         public static GetAnchorElementRequest fromMap(Map<String, Object> values) {
-            GetAnchorElementRequest instance_ = new GetAnchorElementRequest();
+            final GetAnchorElementRequest instance_ = new GetAnchorElementRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4381,8 +3570,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> anchorSpecifier() {
-            Object value = raw("anchorSpecifier");
-            return Optional.ofNullable((String) value);
+            return raw("anchorSpecifier").map(value -> (String) value);
         }
         /**
          * Id of the positioned element from which to find the anchor.
@@ -4395,16 +3583,7 @@ public final class DOM {
         }
         /**
          * An optional anchor specifier, as defined in https://www.w3.org/TR/css-anchor-position-1/#anchor-specifier. If not provided, it will return the implicit anchor element for the given positioned element.
-         * @param anchorSpecifier field value; empty omits the value
-         * @return this model
-         */
-        public GetAnchorElementRequest anchorSpecifier(Optional<String> anchorSpecifier) {
-            set("anchorSpecifier", anchorSpecifier.orElse(null));
-            return this;
-        }
-        /**
-         * An optional anchor specifier, as defined in https://www.w3.org/TR/css-anchor-position-1/#anchor-specifier. If not provided, it will return the implicit anchor element for the given positioned element.
-         * @param anchorSpecifier field value; null removes the value
+         * @param anchorSpecifier field value
          * @return this model
          */
         public GetAnchorElementRequest anchorSpecifier(String anchorSpecifier) {
@@ -4425,11 +3604,10 @@ public final class DOM {
          * @param enable protocol value
          */
         public ForceShowPopoverRequest(DOM.NodeId nodeId, boolean enable) {
-            set("nodeId", nodeId);
-            set("enable", enable);
+            nodeId(nodeId).enable(enable);
         }
         public static ForceShowPopoverRequest fromMap(Map<String, Object> values) {
-            ForceShowPopoverRequest instance_ = new ForceShowPopoverRequest();
+            final ForceShowPopoverRequest instance_ = new ForceShowPopoverRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4494,8 +3672,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            Object value = raw("nodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
+            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Resulting node.
@@ -4517,16 +3694,7 @@ public final class DOM {
         }
         /**
          * Id of the node at given coordinates, only when enabled and requested document.
-         * @param nodeId field value; empty omits the value
-         * @return this model
-         */
-        public GetNodeForLocationResult nodeId(Optional<DOM.NodeId> nodeId) {
-            set("nodeId", nodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Id of the node at given coordinates, only when enabled and requested document.
-         * @param nodeId field value; null removes the value
+         * @param nodeId field value
          * @return this model
          */
         public GetNodeForLocationResult nodeId(DOM.NodeId nodeId) {
@@ -4599,8 +3767,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            Object value = raw("nodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.NodeId(((Number) value).longValue()));
+            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
         }
         /**
          * Resulting node.
@@ -4613,16 +3780,7 @@ public final class DOM {
         }
         /**
          * Id of the node at given coordinates, only when enabled and requested document.
-         * @param nodeId field value; empty omits the value
-         * @return this model
-         */
-        public GetFrameOwnerResult nodeId(Optional<DOM.NodeId> nodeId) {
-            set("nodeId", nodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Id of the node at given coordinates, only when enabled and requested document.
-         * @param nodeId field value; null removes the value
+         * @param nodeId field value
          * @return this model
          */
         public GetFrameOwnerResult nodeId(DOM.NodeId nodeId) {
@@ -4887,7 +4045,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.Node node() {
-            return java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("node")))));
+            return java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(require("node"))));
         }
         /**
          * Id of the node that has changed.
@@ -4981,7 +4139,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public java.util.List<DOM.BackendNode> distributedNodes() {
-            return CdpObject.requireList(require("distributedNodes"), element0 -> java.util.Objects.requireNonNull(DOM.BackendNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("distributedNodes"), element0 -> java.util.Objects.requireNonNull(DOM.BackendNode.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Insertion point where distributed nodes were updated.
@@ -5061,7 +4219,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.Node pseudoElement() {
-            return java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("pseudoElement")))));
+            return java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(require("pseudoElement"))));
         }
         /**
          * Pseudo element&#x27;s parent element id.
@@ -5158,8 +4316,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.AdProvenance> adProvenance() {
-            Object value = raw("adProvenance");
-            return Optional.ofNullable(value == null ? null : Network.AdProvenance.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("adProvenance").flatMap(CdpObject::objectMap).map(Network.AdProvenance::fromMap);
         }
         /**
          * The id of the node.
@@ -5172,16 +4329,7 @@ public final class DOM {
         }
         /**
          * The provenance of the ad related node, if it is ad related.
-         * @param adProvenance field value; empty omits the value
-         * @return this model
-         */
-        public AdRelatedStateUpdatedEvent adProvenance(Optional<Network.AdProvenance> adProvenance) {
-            set("adProvenance", adProvenance.orElse(null));
-            return this;
-        }
-        /**
-         * The provenance of the ad related node, if it is ad related.
-         * @param adProvenance field value; null removes the value
+         * @param adProvenance field value
          * @return this model
          */
         public AdRelatedStateUpdatedEvent adProvenance(Network.AdProvenance adProvenance) {
@@ -5296,7 +4444,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public java.util.List<DOM.Node> nodes() {
-            return CdpObject.requireList(require("nodes"), element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("nodes"), element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Parent node id to populate with children.
@@ -5382,7 +4530,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.Node root() {
-            return java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("root")))));
+            return java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(require("root"))));
         }
         /**
          * Host element id.
@@ -5412,7 +4560,7 @@ public final class DOM {
         ALL("all");
         public final String value;
         EnableIncludeWhitespaceValues(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static EnableIncludeWhitespaceValues of(String value) {
             for (EnableIncludeWhitespaceValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -5429,7 +4577,7 @@ public final class DOM {
         COMMANDFOR("CommandFor");
         public final String value;
         GetElementByRelationRelationValues(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static GetElementByRelationRelationValues of(String value) {
             for (GetElementByRelationRelationValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -5447,7 +4595,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> collectClassNamesFromSubtree(DOM.NodeId nodeId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             return client.call("DOM.collectClassNamesFromSubtree", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("classNames")), element0 -> (String) element0));
         }
@@ -5468,11 +4616,11 @@ public final class DOM {
          * @param insertBeforeNodeId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<DOM.NodeId> copyTo(DOM.NodeId nodeId, DOM.NodeId targetNodeId, Optional<DOM.NodeId> insertBeforeNodeId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<DOM.NodeId> copyTo(DOM.NodeId nodeId, DOM.NodeId targetNodeId, DOM.NodeId insertBeforeNodeId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("targetNodeId", CdpObject.json(targetNodeId));
-            insertBeforeNodeId.ifPresent(value_ -> params.put("insertBeforeNodeId", CdpObject.json(value_)));
+            params.put("insertBeforeNodeId", CdpObject.json(insertBeforeNodeId));
             return client.call("DOM.copyTo", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
         }
         /**
@@ -5483,7 +4631,10 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> copyTo(DOM.NodeId nodeId, DOM.NodeId targetNodeId) {
-            return copyTo(nodeId, targetNodeId, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            params.put("targetNodeId", CdpObject.json(targetNodeId));
+            return client.call("DOM.copyTo", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
         }
         /**
          * Creates a deep copy of the specified node and places it into the target container before the given anchor.
@@ -5503,21 +4654,21 @@ public final class DOM {
          * @param pierce protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<DOM.Node> describeNode(Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<Runtime.RemoteObjectId> objectId, OptionalLong depth, Optional<Boolean> pierce) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
-            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
-            objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
-            depth.ifPresent(value_ -> params.put("depth", value_));
-            pierce.ifPresent(value_ -> params.put("pierce", value_));
-            return client.call("DOM.describeNode", params, result_ -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("node")))))));
+        public CompletionStage<DOM.Node> describeNode(DOM.@Nullable NodeId nodeId, DOM.@Nullable BackendNodeId backendNodeId, Runtime.@Nullable RemoteObjectId objectId, @Nullable Long depth, @Nullable Boolean pierce) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (nodeId != null) params.put("nodeId", CdpObject.json(nodeId));
+            if (backendNodeId != null) params.put("backendNodeId", CdpObject.json(backendNodeId));
+            if (objectId != null) params.put("objectId", CdpObject.json(objectId));
+            if (depth != null) params.put("depth", CdpObject.json(depth));
+            if (pierce != null) params.put("pierce", CdpObject.json(pierce));
+            return client.call("DOM.describeNode", params, result_ -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("node"))))));
         }
         /**
          * Describes node given its id, does not require domain to be enabled. Does not start tracking any objects, can be used for automation.
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.Node> describeNode() {
-            return describeNode(Optional.empty(), Optional.empty(), Optional.empty(), OptionalLong.empty(), Optional.empty());
+            return client.call("DOM.describeNode", null, result_ -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("node"))))));
         }
         /**
          * Describes node given its id, does not require domain to be enabled. Does not start tracking any objects, can be used for automation.
@@ -5525,7 +4676,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.Node> describeNode(DescribeNodeRequest request) {
-            return client.call("DOM.describeNode", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("node")))))));
+            return client.call("DOM.describeNode", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("node"))))));
         }
         /**
          * Scrolls the specified rect of the given node into view if not already visible. Note: exactly one between nodeId, backendNodeId and objectId should be passed to identify the node.
@@ -5535,12 +4686,12 @@ public final class DOM {
          * @param rect protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> scrollIntoViewIfNeeded(Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<Runtime.RemoteObjectId> objectId, Optional<DOM.Rect> rect) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
-            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
-            objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
-            rect.ifPresent(value_ -> params.put("rect", CdpObject.json(value_)));
+        public CompletionStage<Void> scrollIntoViewIfNeeded(DOM.@Nullable NodeId nodeId, DOM.@Nullable BackendNodeId backendNodeId, Runtime.@Nullable RemoteObjectId objectId, DOM.@Nullable Rect rect) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (nodeId != null) params.put("nodeId", CdpObject.json(nodeId));
+            if (backendNodeId != null) params.put("backendNodeId", CdpObject.json(backendNodeId));
+            if (objectId != null) params.put("objectId", CdpObject.json(objectId));
+            if (rect != null) params.put("rect", CdpObject.json(rect));
             return client.call("DOM.scrollIntoViewIfNeeded", params);
         }
         /**
@@ -5548,7 +4699,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> scrollIntoViewIfNeeded() {
-            return scrollIntoViewIfNeeded(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+            return client.call("DOM.scrollIntoViewIfNeeded", null);
         }
         /**
          * Scrolls the specified rect of the given node into view if not already visible. Note: exactly one between nodeId, backendNodeId and objectId should be passed to identify the node.
@@ -5572,7 +4723,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> discardSearchResults(String searchId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("searchId", CdpObject.json(searchId));
             return client.call("DOM.discardSearchResults", params);
         }
@@ -5590,9 +4741,9 @@ public final class DOM {
          * @param includeWhitespace protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> enable(Optional<EnableIncludeWhitespaceValues> includeWhitespace) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            includeWhitespace.ifPresent(value_ -> params.put("includeWhitespace", CdpObject.json(value_)));
+        public CompletionStage<Void> enable(EnableIncludeWhitespaceValues includeWhitespace) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("includeWhitespace", CdpObject.json(includeWhitespace));
             return client.call("DOM.enable", params);
         }
         /**
@@ -5600,7 +4751,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return enable(Optional.empty());
+            return client.call("DOM.enable", null);
         }
         /**
          * Enables DOM agent for the given page.
@@ -5617,11 +4768,11 @@ public final class DOM {
          * @param objectId protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> focus(Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<Runtime.RemoteObjectId> objectId) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
-            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
-            objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
+        public CompletionStage<Void> focus(DOM.@Nullable NodeId nodeId, DOM.@Nullable BackendNodeId backendNodeId, Runtime.@Nullable RemoteObjectId objectId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (nodeId != null) params.put("nodeId", CdpObject.json(nodeId));
+            if (backendNodeId != null) params.put("backendNodeId", CdpObject.json(backendNodeId));
+            if (objectId != null) params.put("objectId", CdpObject.json(objectId));
             return client.call("DOM.focus", params);
         }
         /**
@@ -5629,7 +4780,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> focus() {
-            return focus(Optional.empty(), Optional.empty(), Optional.empty());
+            return client.call("DOM.focus", null);
         }
         /**
          * Focuses the given element.
@@ -5645,7 +4796,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> getAttributes(DOM.NodeId nodeId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             return client.call("DOM.getAttributes", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("attributes")), element0 -> (String) element0));
         }
@@ -5664,19 +4815,19 @@ public final class DOM {
          * @param objectId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<DOM.BoxModel> getBoxModel(Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<Runtime.RemoteObjectId> objectId) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
-            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
-            objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
-            return client.call("DOM.getBoxModel", params, result_ -> java.util.Objects.requireNonNull(DOM.BoxModel.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("model")))))));
+        public CompletionStage<DOM.BoxModel> getBoxModel(DOM.@Nullable NodeId nodeId, DOM.@Nullable BackendNodeId backendNodeId, Runtime.@Nullable RemoteObjectId objectId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (nodeId != null) params.put("nodeId", CdpObject.json(nodeId));
+            if (backendNodeId != null) params.put("backendNodeId", CdpObject.json(backendNodeId));
+            if (objectId != null) params.put("objectId", CdpObject.json(objectId));
+            return client.call("DOM.getBoxModel", params, result_ -> java.util.Objects.requireNonNull(DOM.BoxModel.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("model"))))));
         }
         /**
          * Returns boxes for the given node.
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.BoxModel> getBoxModel() {
-            return getBoxModel(Optional.empty(), Optional.empty(), Optional.empty());
+            return client.call("DOM.getBoxModel", null, result_ -> java.util.Objects.requireNonNull(DOM.BoxModel.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("model"))))));
         }
         /**
          * Returns boxes for the given node.
@@ -5684,7 +4835,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.BoxModel> getBoxModel(GetBoxModelRequest request) {
-            return client.call("DOM.getBoxModel", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(DOM.BoxModel.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("model")))))));
+            return client.call("DOM.getBoxModel", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(DOM.BoxModel.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("model"))))));
         }
         /**
          * Returns quads that describe node position on the page. This method might return multiple quads for inline nodes.
@@ -5694,11 +4845,11 @@ public final class DOM {
          * @param objectId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<java.util.List<java.util.List<Double>>> getContentQuads(Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<Runtime.RemoteObjectId> objectId) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
-            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
-            objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
+        public CompletionStage<java.util.List<java.util.List<Double>>> getContentQuads(DOM.@Nullable NodeId nodeId, DOM.@Nullable BackendNodeId backendNodeId, Runtime.@Nullable RemoteObjectId objectId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (nodeId != null) params.put("nodeId", CdpObject.json(nodeId));
+            if (backendNodeId != null) params.put("backendNodeId", CdpObject.json(backendNodeId));
+            if (objectId != null) params.put("objectId", CdpObject.json(objectId));
             return client.call("DOM.getContentQuads", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("quads")), element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
         }
         /**
@@ -5707,7 +4858,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<java.util.List<Double>>> getContentQuads() {
-            return getContentQuads(Optional.empty(), Optional.empty(), Optional.empty());
+            return client.call("DOM.getContentQuads", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("quads")), element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
         }
         /**
          * Returns quads that describe node position on the page. This method might return multiple quads for inline nodes.
@@ -5724,18 +4875,18 @@ public final class DOM {
          * @param pierce protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<DOM.Node> getDocument(OptionalLong depth, Optional<Boolean> pierce) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            depth.ifPresent(value_ -> params.put("depth", value_));
-            pierce.ifPresent(value_ -> params.put("pierce", value_));
-            return client.call("DOM.getDocument", params, result_ -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("root")))))));
+        public CompletionStage<DOM.Node> getDocument(@Nullable Long depth, @Nullable Boolean pierce) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (depth != null) params.put("depth", CdpObject.json(depth));
+            if (pierce != null) params.put("pierce", CdpObject.json(pierce));
+            return client.call("DOM.getDocument", params, result_ -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("root"))))));
         }
         /**
          * Returns the root DOM node (and optionally the subtree) to the caller. Implicitly enables the DOM domain events for the current target.
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.Node> getDocument() {
-            return getDocument(OptionalLong.empty(), Optional.empty());
+            return client.call("DOM.getDocument", null, result_ -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("root"))))));
         }
         /**
          * Returns the root DOM node (and optionally the subtree) to the caller. Implicitly enables the DOM domain events for the current target.
@@ -5743,7 +4894,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.Node> getDocument(GetDocumentRequest request) {
-            return client.call("DOM.getDocument", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("root")))))));
+            return client.call("DOM.getDocument", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("root"))))));
         }
         /**
          * Returns the root DOM node (and optionally the subtree) to the caller. Deprecated, as it is not designed to work well with the rest of the DOM agent. Use DOMSnapshot.captureSnapshot instead.
@@ -5753,11 +4904,11 @@ public final class DOM {
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
         @Deprecated
-        public CompletionStage<java.util.List<DOM.Node>> getFlattenedDocument(OptionalLong depth, Optional<Boolean> pierce) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            depth.ifPresent(value_ -> params.put("depth", value_));
-            pierce.ifPresent(value_ -> params.put("pierce", value_));
-            return client.call("DOM.getFlattenedDocument", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        public CompletionStage<java.util.List<DOM.Node>> getFlattenedDocument(@Nullable Long depth, @Nullable Boolean pierce) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (depth != null) params.put("depth", CdpObject.json(depth));
+            if (pierce != null) params.put("pierce", CdpObject.json(pierce));
+            return client.call("DOM.getFlattenedDocument", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Returns the root DOM node (and optionally the subtree) to the caller. Deprecated, as it is not designed to work well with the rest of the DOM agent. Use DOMSnapshot.captureSnapshot instead.
@@ -5766,7 +4917,7 @@ public final class DOM {
          */
         @Deprecated
         public CompletionStage<java.util.List<DOM.Node>> getFlattenedDocument() {
-            return getFlattenedDocument(OptionalLong.empty(), Optional.empty());
+            return client.call("DOM.getFlattenedDocument", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Returns the root DOM node (and optionally the subtree) to the caller. Deprecated, as it is not designed to work well with the rest of the DOM agent. Use DOMSnapshot.captureSnapshot instead.
@@ -5776,7 +4927,7 @@ public final class DOM {
          */
         @Deprecated
         public CompletionStage<java.util.List<DOM.Node>> getFlattenedDocument(GetFlattenedDocumentRequest request) {
-            return client.call("DOM.getFlattenedDocument", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("DOM.getFlattenedDocument", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Finds nodes with a given computed style in a subtree.
@@ -5786,11 +4937,11 @@ public final class DOM {
          * @param pierce protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<java.util.List<DOM.NodeId>> getNodesForSubtreeByStyle(DOM.NodeId nodeId, java.util.List<DOM.CSSComputedStyleProperty> computedStyles, Optional<Boolean> pierce) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<java.util.List<DOM.NodeId>> getNodesForSubtreeByStyle(DOM.NodeId nodeId, java.util.List<DOM.CSSComputedStyleProperty> computedStyles, boolean pierce) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("computedStyles", CdpObject.json(computedStyles));
-            pierce.ifPresent(value_ -> params.put("pierce", value_));
+            params.put("pierce", CdpObject.json(pierce));
             return client.call("DOM.getNodesForSubtreeByStyle", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
         }
         /**
@@ -5801,7 +4952,10 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> getNodesForSubtreeByStyle(DOM.NodeId nodeId, java.util.List<DOM.CSSComputedStyleProperty> computedStyles) {
-            return getNodesForSubtreeByStyle(nodeId, computedStyles, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            params.put("computedStyles", CdpObject.json(computedStyles));
+            return client.call("DOM.getNodesForSubtreeByStyle", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
         }
         /**
          * Finds nodes with a given computed style in a subtree.
@@ -5820,12 +4974,12 @@ public final class DOM {
          * @param ignorePointerEventsNone protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetNodeForLocationResult> getNodeForLocation(long x, long y, Optional<Boolean> includeUserAgentShadowDOM, Optional<Boolean> ignorePointerEventsNone) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<GetNodeForLocationResult> getNodeForLocation(long x, long y, @Nullable Boolean includeUserAgentShadowDOM, @Nullable Boolean ignorePointerEventsNone) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("x", CdpObject.json(x));
             params.put("y", CdpObject.json(y));
-            includeUserAgentShadowDOM.ifPresent(value_ -> params.put("includeUserAgentShadowDOM", value_));
-            ignorePointerEventsNone.ifPresent(value_ -> params.put("ignorePointerEventsNone", value_));
+            if (includeUserAgentShadowDOM != null) params.put("includeUserAgentShadowDOM", CdpObject.json(includeUserAgentShadowDOM));
+            if (ignorePointerEventsNone != null) params.put("ignorePointerEventsNone", CdpObject.json(ignorePointerEventsNone));
             return client.call("DOM.getNodeForLocation", params, result_ -> new GetNodeForLocationResult(result_));
         }
         /**
@@ -5835,7 +4989,10 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetNodeForLocationResult> getNodeForLocation(long x, long y) {
-            return getNodeForLocation(x, y, Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("x", CdpObject.json(x));
+            params.put("y", CdpObject.json(y));
+            return client.call("DOM.getNodeForLocation", params, result_ -> new GetNodeForLocationResult(result_));
         }
         /**
          * Returns node id at given location. Depending on whether DOM domain is enabled, nodeId is either returned or not.
@@ -5853,12 +5010,12 @@ public final class DOM {
          * @param includeShadowDOM protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<String> getOuterHTML(Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<Runtime.RemoteObjectId> objectId, Optional<Boolean> includeShadowDOM) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
-            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
-            objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
-            includeShadowDOM.ifPresent(value_ -> params.put("includeShadowDOM", value_));
+        public CompletionStage<String> getOuterHTML(DOM.@Nullable NodeId nodeId, DOM.@Nullable BackendNodeId backendNodeId, Runtime.@Nullable RemoteObjectId objectId, @Nullable Boolean includeShadowDOM) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (nodeId != null) params.put("nodeId", CdpObject.json(nodeId));
+            if (backendNodeId != null) params.put("backendNodeId", CdpObject.json(backendNodeId));
+            if (objectId != null) params.put("objectId", CdpObject.json(objectId));
+            if (includeShadowDOM != null) params.put("includeShadowDOM", CdpObject.json(includeShadowDOM));
             return client.call("DOM.getOuterHTML", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("outerHTML")));
         }
         /**
@@ -5866,7 +5023,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> getOuterHTML() {
-            return getOuterHTML(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+            return client.call("DOM.getOuterHTML", null, result_ -> (String) java.util.Objects.requireNonNull(result_.get("outerHTML")));
         }
         /**
          * Returns node&#x27;s HTML markup.
@@ -5883,7 +5040,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> getRelayoutBoundary(DOM.NodeId nodeId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             return client.call("DOM.getRelayoutBoundary", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
         }
@@ -5905,7 +5062,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> getSearchResults(String searchId, long fromIndex, long toIndex) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("searchId", CdpObject.json(searchId));
             params.put("fromIndex", CdpObject.json(fromIndex));
             params.put("toIndex", CdpObject.json(toIndex));
@@ -5956,11 +5113,11 @@ public final class DOM {
          * @param insertBeforeNodeId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<DOM.NodeId> moveTo(DOM.NodeId nodeId, DOM.NodeId targetNodeId, Optional<DOM.NodeId> insertBeforeNodeId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<DOM.NodeId> moveTo(DOM.NodeId nodeId, DOM.NodeId targetNodeId, DOM.NodeId insertBeforeNodeId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("targetNodeId", CdpObject.json(targetNodeId));
-            insertBeforeNodeId.ifPresent(value_ -> params.put("insertBeforeNodeId", CdpObject.json(value_)));
+            params.put("insertBeforeNodeId", CdpObject.json(insertBeforeNodeId));
             return client.call("DOM.moveTo", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
         }
         /**
@@ -5970,7 +5127,10 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> moveTo(DOM.NodeId nodeId, DOM.NodeId targetNodeId) {
-            return moveTo(nodeId, targetNodeId, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            params.put("targetNodeId", CdpObject.json(targetNodeId));
+            return client.call("DOM.moveTo", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
         }
         /**
          * Moves node into the new container, places it before the given anchor.
@@ -5987,10 +5147,10 @@ public final class DOM {
          * @param includeUserAgentShadowDOM protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<PerformSearchResult> performSearch(String query, Optional<Boolean> includeUserAgentShadowDOM) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<PerformSearchResult> performSearch(String query, boolean includeUserAgentShadowDOM) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("query", CdpObject.json(query));
-            includeUserAgentShadowDOM.ifPresent(value_ -> params.put("includeUserAgentShadowDOM", value_));
+            params.put("includeUserAgentShadowDOM", CdpObject.json(includeUserAgentShadowDOM));
             return client.call("DOM.performSearch", params, result_ -> new PerformSearchResult(result_));
         }
         /**
@@ -6000,7 +5160,9 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<PerformSearchResult> performSearch(String query) {
-            return performSearch(query, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("query", CdpObject.json(query));
+            return client.call("DOM.performSearch", params, result_ -> new PerformSearchResult(result_));
         }
         /**
          * Searches for a given string in the DOM tree. Use {@code getSearchResults} to access search results or {@code cancelSearch} to end this search session.
@@ -6018,7 +5180,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> pushNodeByPathToFrontend(String path) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("path", CdpObject.json(path));
             return client.call("DOM.pushNodeByPathToFrontend", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
         }
@@ -6038,7 +5200,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> pushNodesByBackendIdsToFrontend(java.util.List<DOM.BackendNodeId> backendNodeIds) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("backendNodeIds", CdpObject.json(backendNodeIds));
             return client.call("DOM.pushNodesByBackendIdsToFrontend", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
         }
@@ -6058,7 +5220,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> querySelector(DOM.NodeId nodeId, String selector) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("selector", CdpObject.json(selector));
             return client.call("DOM.querySelector", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
@@ -6078,7 +5240,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> querySelectorAll(DOM.NodeId nodeId, String selector) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("selector", CdpObject.json(selector));
             return client.call("DOM.querySelectorAll", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
@@ -6107,7 +5269,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> getElementByRelation(DOM.NodeId nodeId, GetElementByRelationRelationValues relation) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("relation", CdpObject.json(relation));
             return client.call("DOM.getElementByRelation", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
@@ -6136,7 +5298,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeAttribute(DOM.NodeId nodeId, String name) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("name", CdpObject.json(name));
             return client.call("DOM.removeAttribute", params);
@@ -6155,7 +5317,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeNode(DOM.NodeId nodeId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             return client.call("DOM.removeNode", params);
         }
@@ -6174,11 +5336,11 @@ public final class DOM {
          * @param pierce protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> requestChildNodes(DOM.NodeId nodeId, OptionalLong depth, Optional<Boolean> pierce) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> requestChildNodes(DOM.NodeId nodeId, @Nullable Long depth, @Nullable Boolean pierce) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
-            depth.ifPresent(value_ -> params.put("depth", value_));
-            pierce.ifPresent(value_ -> params.put("pierce", value_));
+            if (depth != null) params.put("depth", CdpObject.json(depth));
+            if (pierce != null) params.put("pierce", CdpObject.json(pierce));
             return client.call("DOM.requestChildNodes", params);
         }
         /**
@@ -6187,7 +5349,9 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> requestChildNodes(DOM.NodeId nodeId) {
-            return requestChildNodes(nodeId, OptionalLong.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            return client.call("DOM.requestChildNodes", params);
         }
         /**
          * Requests that children of the node with given id are returned to the caller in form of {@code setChildNodes} events where not only immediate children are retrieved, but all children down to the specified depth.
@@ -6203,7 +5367,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> requestNode(Runtime.RemoteObjectId objectId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("objectId", CdpObject.json(objectId));
             return client.call("DOM.requestNode", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
         }
@@ -6223,20 +5387,20 @@ public final class DOM {
          * @param executionContextId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<Runtime.RemoteObject> resolveNode(Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<String> objectGroup, Optional<Runtime.ExecutionContextId> executionContextId) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
-            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
-            objectGroup.ifPresent(value_ -> params.put("objectGroup", CdpObject.json(value_)));
-            executionContextId.ifPresent(value_ -> params.put("executionContextId", CdpObject.json(value_)));
-            return client.call("DOM.resolveNode", params, result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("object")))))));
+        public CompletionStage<Runtime.RemoteObject> resolveNode(DOM.@Nullable NodeId nodeId, DOM.@Nullable BackendNodeId backendNodeId, @Nullable String objectGroup, Runtime.@Nullable ExecutionContextId executionContextId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (nodeId != null) params.put("nodeId", CdpObject.json(nodeId));
+            if (backendNodeId != null) params.put("backendNodeId", CdpObject.json(backendNodeId));
+            if (objectGroup != null) params.put("objectGroup", CdpObject.json(objectGroup));
+            if (executionContextId != null) params.put("executionContextId", CdpObject.json(executionContextId));
+            return client.call("DOM.resolveNode", params, result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("object"))))));
         }
         /**
          * Resolves the JavaScript node object for a given NodeId or BackendNodeId.
          * @return a stage completing with the command result
          */
         public CompletionStage<Runtime.RemoteObject> resolveNode() {
-            return resolveNode(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+            return client.call("DOM.resolveNode", null, result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("object"))))));
         }
         /**
          * Resolves the JavaScript node object for a given NodeId or BackendNodeId.
@@ -6244,7 +5408,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<Runtime.RemoteObject> resolveNode(ResolveNodeRequest request) {
-            return client.call("DOM.resolveNode", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("object")))))));
+            return client.call("DOM.resolveNode", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("object"))))));
         }
         /**
          * Sets attribute for an element with given id.
@@ -6254,7 +5418,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAttributeValue(DOM.NodeId nodeId, String name, String value) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("name", CdpObject.json(name));
             params.put("value", CdpObject.json(value));
@@ -6275,11 +5439,11 @@ public final class DOM {
          * @param name protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setAttributesAsText(DOM.NodeId nodeId, String text, Optional<String> name) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> setAttributesAsText(DOM.NodeId nodeId, String text, String name) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("text", CdpObject.json(text));
-            name.ifPresent(value_ -> params.put("name", CdpObject.json(value_)));
+            params.put("name", CdpObject.json(name));
             return client.call("DOM.setAttributesAsText", params);
         }
         /**
@@ -6289,7 +5453,10 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAttributesAsText(DOM.NodeId nodeId, String text) {
-            return setAttributesAsText(nodeId, text, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            params.put("text", CdpObject.json(text));
+            return client.call("DOM.setAttributesAsText", params);
         }
         /**
          * Sets attributes on element with given id. This method is useful when user edits some existing attribute value and types in several attribute name/value pairs.
@@ -6307,12 +5474,12 @@ public final class DOM {
          * @param objectId protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setFileInputFiles(java.util.List<String> files, Optional<DOM.NodeId> nodeId, Optional<DOM.BackendNodeId> backendNodeId, Optional<Runtime.RemoteObjectId> objectId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> setFileInputFiles(java.util.List<String> files, DOM.@Nullable NodeId nodeId, DOM.@Nullable BackendNodeId backendNodeId, Runtime.@Nullable RemoteObjectId objectId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("files", CdpObject.json(files));
-            nodeId.ifPresent(value_ -> params.put("nodeId", CdpObject.json(value_)));
-            backendNodeId.ifPresent(value_ -> params.put("backendNodeId", CdpObject.json(value_)));
-            objectId.ifPresent(value_ -> params.put("objectId", CdpObject.json(value_)));
+            if (nodeId != null) params.put("nodeId", CdpObject.json(nodeId));
+            if (backendNodeId != null) params.put("backendNodeId", CdpObject.json(backendNodeId));
+            if (objectId != null) params.put("objectId", CdpObject.json(objectId));
             return client.call("DOM.setFileInputFiles", params);
         }
         /**
@@ -6321,7 +5488,9 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setFileInputFiles(java.util.List<String> files) {
-            return setFileInputFiles(files, Optional.empty(), Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("files", CdpObject.json(files));
+            return client.call("DOM.setFileInputFiles", params);
         }
         /**
          * Sets files for the given file input element.
@@ -6338,7 +5507,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setNodeStackTracesEnabled(boolean enable) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("enable", CdpObject.json(enable));
             return client.call("DOM.setNodeStackTracesEnabled", params);
         }
@@ -6358,9 +5527,9 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<Optional<Runtime.StackTrace>> getNodeStackTraces(DOM.NodeId nodeId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("DOM.getNodeStackTraces", params, result_ -> Optional.ofNullable(result_.get("creation") == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(result_.get("creation"))))));
+            return client.call("DOM.getNodeStackTraces", params, result_ -> Optional.ofNullable(result_.get("creation")).flatMap(CdpObject::objectMap).map(Runtime.StackTrace::fromMap));
         }
         /**
          * Gets stack traces associated with a Node. As of now, only provides stack trace for Node creation.
@@ -6369,7 +5538,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<Optional<Runtime.StackTrace>> getNodeStackTraces(GetNodeStackTracesRequest request) {
-            return client.call("DOM.getNodeStackTraces", request == null ? null : request.toMap(), result_ -> Optional.ofNullable(result_.get("creation") == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(result_.get("creation"))))));
+            return client.call("DOM.getNodeStackTraces", request == null ? null : request.toMap(), result_ -> Optional.ofNullable(result_.get("creation")).flatMap(CdpObject::objectMap).map(Runtime.StackTrace::fromMap));
         }
         /**
          * Returns file information for the given File wrapper.
@@ -6378,7 +5547,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> getFileInfo(Runtime.RemoteObjectId objectId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("objectId", CdpObject.json(objectId));
             return client.call("DOM.getFileInfo", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("path")));
         }
@@ -6397,7 +5566,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.DetachedElementInfo>> getDetachedDomNodes() {
-            return client.call("DOM.getDetachedDomNodes", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("detachedNodes")), element0 -> java.util.Objects.requireNonNull(DOM.DetachedElementInfo.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("DOM.getDetachedDomNodes", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("detachedNodes")), element0 -> java.util.Objects.requireNonNull(DOM.DetachedElementInfo.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
@@ -6406,7 +5575,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setInspectedNode(DOM.NodeId nodeId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             return client.call("DOM.setInspectedNode", params);
         }
@@ -6426,7 +5595,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> setNodeName(DOM.NodeId nodeId, String name) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("name", CdpObject.json(name));
             return client.call("DOM.setNodeName", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
@@ -6446,7 +5615,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setNodeValue(DOM.NodeId nodeId, String value) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("value", CdpObject.json(value));
             return client.call("DOM.setNodeValue", params);
@@ -6466,7 +5635,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setOuterHTML(DOM.NodeId nodeId, String outerHTML) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("outerHTML", CdpObject.json(outerHTML));
             return client.call("DOM.setOuterHTML", params);
@@ -6494,7 +5663,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetFrameOwnerResult> getFrameOwner(Page.FrameId frameId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("frameId", CdpObject.json(frameId));
             return client.call("DOM.getFrameOwner", params, result_ -> new GetFrameOwnerResult(result_));
         }
@@ -6518,15 +5687,15 @@ public final class DOM {
          * @param queriesAnchored protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<Optional<DOM.NodeId>> getContainerForNode(DOM.NodeId nodeId, Optional<String> containerName, Optional<DOM.PhysicalAxes> physicalAxes, Optional<DOM.LogicalAxes> logicalAxes, Optional<Boolean> queriesScrollState, Optional<Boolean> queriesAnchored) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Optional<DOM.NodeId>> getContainerForNode(DOM.NodeId nodeId, @Nullable String containerName, DOM.@Nullable PhysicalAxes physicalAxes, DOM.@Nullable LogicalAxes logicalAxes, @Nullable Boolean queriesScrollState, @Nullable Boolean queriesAnchored) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
-            containerName.ifPresent(value_ -> params.put("containerName", CdpObject.json(value_)));
-            physicalAxes.ifPresent(value_ -> params.put("physicalAxes", CdpObject.json(value_)));
-            logicalAxes.ifPresent(value_ -> params.put("logicalAxes", CdpObject.json(value_)));
-            queriesScrollState.ifPresent(value_ -> params.put("queriesScrollState", value_));
-            queriesAnchored.ifPresent(value_ -> params.put("queriesAnchored", value_));
-            return client.call("DOM.getContainerForNode", params, result_ -> Optional.ofNullable(result_.get("nodeId") == null ? null : new DOM.NodeId(((Number) result_.get("nodeId")).longValue())));
+            if (containerName != null) params.put("containerName", CdpObject.json(containerName));
+            if (physicalAxes != null) params.put("physicalAxes", CdpObject.json(physicalAxes));
+            if (logicalAxes != null) params.put("logicalAxes", CdpObject.json(logicalAxes));
+            if (queriesScrollState != null) params.put("queriesScrollState", CdpObject.json(queriesScrollState));
+            if (queriesAnchored != null) params.put("queriesAnchored", CdpObject.json(queriesAnchored));
+            return client.call("DOM.getContainerForNode", params, result_ -> Optional.ofNullable(result_.get("nodeId")).map(value -> new DOM.NodeId(((Number) value).longValue())));
         }
         /**
          * Returns the query container of the given node based on container query conditions: containerName, physical and logical axes, and whether it queries scroll-state or anchored elements. If no axes are provided and queriesScrollState is false, the style container is returned, which is the direct parent or the closest element with a matching container-name.
@@ -6535,7 +5704,9 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<Optional<DOM.NodeId>> getContainerForNode(DOM.NodeId nodeId) {
-            return getContainerForNode(nodeId, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            return client.call("DOM.getContainerForNode", params, result_ -> Optional.ofNullable(result_.get("nodeId")).map(value -> new DOM.NodeId(((Number) value).longValue())));
         }
         /**
          * Returns the query container of the given node based on container query conditions: containerName, physical and logical axes, and whether it queries scroll-state or anchored elements. If no axes are provided and queriesScrollState is false, the style container is returned, which is the direct parent or the closest element with a matching container-name.
@@ -6544,7 +5715,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<Optional<DOM.NodeId>> getContainerForNode(GetContainerForNodeRequest request) {
-            return client.call("DOM.getContainerForNode", request == null ? null : request.toMap(), result_ -> Optional.ofNullable(result_.get("nodeId") == null ? null : new DOM.NodeId(((Number) result_.get("nodeId")).longValue())));
+            return client.call("DOM.getContainerForNode", request == null ? null : request.toMap(), result_ -> Optional.ofNullable(result_.get("nodeId")).map(value -> new DOM.NodeId(((Number) value).longValue())));
         }
         /**
          * Returns the descendants of a container query container that have container queries against this container.
@@ -6553,7 +5724,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> getQueryingDescendantsForContainer(DOM.NodeId nodeId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             return client.call("DOM.getQueryingDescendantsForContainer", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
         }
@@ -6573,10 +5744,10 @@ public final class DOM {
          * @param anchorSpecifier protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<DOM.NodeId> getAnchorElement(DOM.NodeId nodeId, Optional<String> anchorSpecifier) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<DOM.NodeId> getAnchorElement(DOM.NodeId nodeId, String anchorSpecifier) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
-            anchorSpecifier.ifPresent(value_ -> params.put("anchorSpecifier", CdpObject.json(value_)));
+            params.put("anchorSpecifier", CdpObject.json(anchorSpecifier));
             return client.call("DOM.getAnchorElement", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
         }
         /**
@@ -6586,7 +5757,9 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> getAnchorElement(DOM.NodeId nodeId) {
-            return getAnchorElement(nodeId, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("nodeId", CdpObject.json(nodeId));
+            return client.call("DOM.getAnchorElement", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
         }
         /**
          * Returns the target anchor element of the given anchor query according to https://www.w3.org/TR/css-anchor-position-1/#target.
@@ -6605,7 +5778,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> forceShowPopover(DOM.NodeId nodeId, boolean enable) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("nodeId", CdpObject.json(nodeId));
             params.put("enable", CdpObject.json(enable));
             return client.call("DOM.forceShowPopover", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));

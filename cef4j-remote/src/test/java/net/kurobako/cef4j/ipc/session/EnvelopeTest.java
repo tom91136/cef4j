@@ -20,7 +20,7 @@ class EnvelopeTest {
         byte[] payload = "hello".getBytes(StandardCharsets.UTF_8);
         ByteBuffer buf =
                 ByteBuffer.allocate(Envelope.HEADER_SIZE + payload.length).order(ByteOrder.LITTLE_ENDIAN);
-        Envelope.writeHeader(buf, Envelope.Kind.REQUEST, 0, 7, 42, payload.length);
+        Envelope.writeHeader(buf, new Envelope.Header(payload.length, Envelope.Kind.REQUEST, 0, 7, 42));
         buf.put(payload);
         buf.flip();
 
@@ -40,7 +40,7 @@ class EnvelopeTest {
     void allKindsRoundTrip() {
         for (Envelope.Kind k : Envelope.Kind.values()) {
             ByteBuffer buf = ByteBuffer.allocate(Envelope.HEADER_SIZE).order(ByteOrder.LITTLE_ENDIAN);
-            Envelope.writeHeader(buf, k, 0xFF, -1, 99, 0);
+            Envelope.writeHeader(buf, new Envelope.Header(0, k, 0xFF, -1, 99));
             buf.flip();
             Envelope.Header h = Envelope.readHeader(buf);
             assertThat(h.kind).isEqualTo(k);
@@ -54,7 +54,7 @@ class EnvelopeTest {
     @Test
     void byteOrderIsLittleEndianRegardlessOfBufferOrder() {
         ByteBuffer buf = ByteBuffer.allocate(Envelope.HEADER_SIZE).order(ByteOrder.BIG_ENDIAN);
-        Envelope.writeHeader(buf, Envelope.Kind.EVENT, 0, -1, 0x01020304, 0);
+        Envelope.writeHeader(buf, new Envelope.Header(0, Envelope.Kind.EVENT, 0, -1, 0x01020304));
         buf.flip();
         assertThat(buf.get(10)).isEqualTo((byte) 0x04);
         assertThat(buf.get(11)).isEqualTo((byte) 0x03);
@@ -65,7 +65,7 @@ class EnvelopeTest {
     @Test
     void writeRejectsNegativePayloadLength() {
         ByteBuffer buf = ByteBuffer.allocate(Envelope.HEADER_SIZE).order(ByteOrder.LITTLE_ENDIAN);
-        assertThatThrownBy(() -> Envelope.writeHeader(buf, Envelope.Kind.REQUEST, 0, 1, 2, -5))
+        assertThatThrownBy(() -> Envelope.writeHeader(buf, new Envelope.Header(-5, Envelope.Kind.REQUEST, 0, 1, 2)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -102,7 +102,7 @@ class EnvelopeTest {
     @Test
     void readRejectsPayloadLengthDifferentFromRemainingFrame() {
         ByteBuffer buf = ByteBuffer.allocate(Envelope.HEADER_SIZE + 3).order(ByteOrder.LITTLE_ENDIAN);
-        Envelope.writeHeader(buf, Envelope.Kind.RESPONSE, 0, 1, 2, 2);
+        Envelope.writeHeader(buf, new Envelope.Header(2, Envelope.Kind.RESPONSE, 0, 1, 2));
         buf.put(new byte[] {1, 2, 3}).flip();
         assertThatThrownBy(() -> Envelope.readHeader(buf)).hasMessageContaining("remaining");
     }

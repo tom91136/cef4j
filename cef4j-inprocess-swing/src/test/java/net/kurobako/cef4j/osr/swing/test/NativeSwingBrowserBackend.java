@@ -73,7 +73,7 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
             settings.noSandbox = 1;
             settings.cachePath = tmp.toAbsolutePath().toString();
             CefTestLaunch.setRootCachePath(settings, tmp.toAbsolutePath().toString());
-            CefBrowserPanel.initialise(settings, CefTestLaunch.extraArgs(), Optional.empty());
+            CefBrowserPanel.initialise(settings, CefTestLaunch.extraArgs());
             return new Session(config);
         } catch (Exception e) {
             throw new RuntimeException("failed to open native Swing contract session", e);
@@ -394,8 +394,8 @@ final class NativeSwingBrowserBackend implements BrowserBackend {
         private final String url;
         private final long paintBaseline;
         private final CompletableFuture<Void> result = new CompletableFuture<>();
-        private volatile boolean started;
-        private volatile boolean terminal;
+        private volatile boolean started = false;
+        private volatile boolean terminal = false;
         private volatile String activeUrl = "";
 
         private PendingLoad(String url, long paintBaseline) {

@@ -8,7 +8,7 @@ import scala.concurrent.duration.*
 class CoverageIntegrationSpec extends munit.FunSuite {
 
   // XXX: Reduce this timeout when hosted Windows preprocessing is consistently below two minutes.
-  override val munitTimeout = 5.minutes
+  override val munitTimeout: FiniteDuration = 5.minutes
 
   private val cefRoot: Path = {
     val prop = Option(System.getProperty("cef.root")).getOrElse(fail("cef.root is not set; run mvn verify"))

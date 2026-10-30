@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class DomNodeHasElementAttributeRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 191218072;
@@ -50,7 +52,7 @@ public final class DomNodeHasElementAttributeRequest implements CefMessageView, 
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(frame.id());
@@ -63,16 +65,11 @@ public final class DomNodeHasElementAttributeRequest implements CefMessageView, 
     }
 
     public static final CefMessageDecoder<DomNodeHasElementAttributeRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "frame");
-        RemoteHandle frame = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int attrNameLen = WireDecoder.length(__buf, "attrName");
-        byte[] attrNameBuf = new byte[attrNameLen];
-        __buf.get(attrNameBuf);
-        String attrName = new String(attrNameBuf, StandardCharsets.UTF_8);
+        final RemoteHandle frame = WireDecoder.handle(__buf, "frame");
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final String attrName = WireDecoder.utf8(__buf, "attrName");
         WireDecoder.requireFullyConsumed(__buf, "DomNodeHasElementAttributeRequest");
         return new DomNodeHasElementAttributeRequest(frame, self, attrName);
     };

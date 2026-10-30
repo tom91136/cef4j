@@ -10,8 +10,8 @@ final class UncaughtExceptionTrackerTest {
     void reportsFirstFailureOnceOnOwningThread() {
         UncaughtExceptionTracker tracker = new UncaughtExceptionTracker();
         IllegalStateException first = new IllegalStateException("first");
-        tracker.uncaughtException(new Thread("JavaFX Application Thread"), first);
-        tracker.uncaughtException(new Thread("later thread"), new IllegalArgumentException("later"));
+        tracker.uncaughtException(new Thread(() -> {}, "JavaFX Application Thread"), first);
+        tracker.uncaughtException(new Thread(() -> {}, "later thread"), new IllegalArgumentException("later"));
 
         assertThatThrownBy(tracker::throwIfPresent)
                 .isInstanceOf(AssertionError.class)

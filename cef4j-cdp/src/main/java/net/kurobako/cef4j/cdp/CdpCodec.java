@@ -1,16 +1,14 @@
 package net.kurobako.cef4j.cdp;
 
-import net.kurobako.cef4j.policy.NullableBoundary;
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
 
 /**
  * Converts between JSON bytes and JSON-compatible JDK values. Decoders return maps with string keys, lists, strings,
- * boxed numbers/booleans, or {@code null}; public CDP models never depend on the codec implementation's node types.
+ * boxed numbers/booleans, or empty for JSON null; public CDP models never depend on the codec implementation's node
+ * types.
  */
-@NullableBoundary("JSON null decodes to the JDK null wire value")
 public interface CdpCodec {
     byte[] encode(Object value);
 
-    @Nullable
-    Object decode(byte[] json);
+    Optional<Object> decode(byte[] json);
 }

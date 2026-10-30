@@ -30,7 +30,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:846</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefCookie {
 
@@ -96,25 +95,25 @@ public final class CefCookie {
     /** Create a mutable copy of this instance. */
     public Mutable toMutable() {
         return new Mutable(
-                this.name,
-                this.value,
-                this.domain,
-                this.path,
-                this.secure,
-                this.httponly,
-                this.creation,
-                this.lastAccess,
-                this.hasExpires,
-                this.expires,
-                this.sameSite,
-                this.priority);
+                name,
+                value,
+                domain,
+                path,
+                secure,
+                httponly,
+                creation,
+                lastAccess,
+                hasExpires,
+                expires,
+                sameSite,
+                priority);
     }
 
     @Override
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefCookie)) return false;
-        CefCookie other = (CefCookie) obj;
+        final CefCookie other = (CefCookie) obj;
         return java.util.Objects.equals(this.name, other.name)
                 && java.util.Objects.equals(this.value, other.value)
                 && java.util.Objects.equals(this.domain, other.domain)
@@ -228,25 +227,25 @@ public final class CefCookie {
         /** Create an immutable snapshot of this instance. */
         public CefCookie toImmutable() {
             return new CefCookie(
-                    this.name,
-                    this.value,
-                    this.domain,
-                    this.path,
-                    this.secure,
-                    this.httponly,
-                    this.creation,
-                    this.lastAccess,
-                    this.hasExpires,
-                    this.expires,
-                    this.sameSite,
-                    this.priority);
+                    name,
+                    value,
+                    domain,
+                    path,
+                    secure,
+                    httponly,
+                    creation,
+                    lastAccess,
+                    hasExpires,
+                    expires,
+                    sameSite,
+                    priority);
         }
 
         @Override
         public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
-            Mutable other = (Mutable) obj;
+            final Mutable other = (Mutable) obj;
             return java.util.Objects.equals(this.name, other.name)
                     && java.util.Objects.equals(this.value, other.value)
                     && java.util.Objects.equals(this.domain, other.domain)

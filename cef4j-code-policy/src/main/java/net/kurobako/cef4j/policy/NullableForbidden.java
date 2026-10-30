@@ -25,8 +25,10 @@ import com.sun.source.tree.Tree;
 import com.sun.source.tree.VariableTree;
 import com.sun.source.util.TreePath;
 import com.sun.tools.javac.code.Symbol.MethodSymbol;
+import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.lang.model.element.AnnotationMirror;
@@ -38,7 +40,6 @@ import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
-import org.jspecify.annotations.Nullable;
 
 /**
  * Bans JSpecify's {@code @Nullable} from public/protected API. The policy is that absence is modelled with
@@ -50,11 +51,14 @@ import org.jspecify.annotations.Nullable;
  * <p>Packages still under migration are exempted via {@code -XepOpt:NullableForbidden:AllowedPackages} (comma-separated
  * exact package names); the list shrinks as each package is cleaned up.
  */
+// an Error Prone checker reads the symbols and trees of javac itself, which jdk.compiler does not export
+@SuppressWarnings("baumkuchen:jdk-internal-api")
 @AutoService(BugChecker.class)
 @BugPattern(
         summary = "@Nullable must not appear on public/protected API; model absence with Optional<T>",
         severity = SeverityLevel.ERROR)
 public final class NullableForbidden extends BugChecker implements AnnotationTreeMatcher {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private static final String NULLABLE = "org.jspecify.annotations.Nullable";
@@ -77,15 +81,18 @@ public final class NullableForbidden extends BugChecker implements AnnotationTre
 
     @Override
     public Description matchAnnotation(AnnotationTree tree, VisitorState state) {
-        boolean suppression = isNullAwaySuppression(tree);
+        final boolean suppression = isNullAwaySuppression(tree);
         if (!suppression && !isNullable(tree)) {
             return NO_MATCH;
         }
-        Tree member = enclosingMember(state.getPath());
-        if (member == null || !isPublicOrProtected(member)) {
-            return NO_MATCH;
-        }
-        Element symbol = ASTHelpers.getSymbol(member);
+        return enclosingMember(state.getPath())
+                .filter(NullableForbidden::isPublicOrProtected)
+                .map(member -> describe(tree, member, suppression, state))
+                .orElse(NO_MATCH);
+    }
+
+    private Description describe(AnnotationTree tree, Tree member, boolean suppression, VisitorState state) {
+        final Element symbol = ASTHelpers.getSymbol(member);
         if (symbol == null || inAnonymousOrLocal(symbol) || isNullUnmarked(symbol) || isNullableBoundary(symbol)) {
             return NO_MATCH;
         }
@@ -107,15 +114,15 @@ public final class NullableForbidden extends BugChecker implements AnnotationTre
     }
 
     private static boolean isNullAwaySuppression(AnnotationTree tree) {
-        Element symbol = ASTHelpers.getSymbol(tree);
+        final Element symbol = ASTHelpers.getSymbol(tree);
         if (!(symbol instanceof TypeElement typeElement)
                 || !SUPPRESS_WARNINGS.contentEquals(typeElement.getQualifiedName())) {
             return false;
         }
         for (ExpressionTree argument : tree.getArguments()) {
-            ExpressionTree value =
+            final ExpressionTree value =
                     argument instanceof AssignmentTree assignment ? assignment.getExpression() : argument;
-            List<? extends ExpressionTree> values =
+            final List<? extends ExpressionTree> values =
                     value instanceof NewArrayTree array ? array.getInitializers() : List.of(value);
             for (ExpressionTree item : values) {
                 if (item instanceof LiteralTree literal && NULL_AWAY.equals(literal.getValue())) return true;
@@ -139,44 +146,44 @@ public final class NullableForbidden extends BugChecker implements AnnotationTre
     }
 
     private static boolean isNullable(AnnotationTree tree) {
-        Element symbol = ASTHelpers.getSymbol(tree);
+        final Element symbol = ASTHelpers.getSymbol(tree);
         return symbol instanceof TypeElement typeElement && NULLABLE.contentEquals(typeElement.getQualifiedName());
     }
 
-    private static @Nullable Tree enclosingMember(TreePath path) {
+    private static Optional<Tree> enclosingMember(TreePath path) {
         TreePath parent = path.getParentPath();
         while (parent != null) {
-            Tree leaf = parent.getLeaf();
+            final Tree leaf = parent.getLeaf();
             if (leaf instanceof BlockTree || leaf instanceof LambdaExpressionTree) {
-                return null;
+                return Optional.empty();
             }
             if (leaf instanceof MethodTree || leaf instanceof ClassTree) {
-                return leaf;
+                return Optional.of(leaf);
             }
             if (leaf instanceof VariableTree) {
-                TreePath up = parent.getParentPath();
+                final TreePath up = parent.getParentPath();
                 if (up == null) {
-                    return null;
+                    return Optional.empty();
                 }
                 if (up.getLeaf() instanceof ClassTree) {
-                    return leaf;
+                    return Optional.of(leaf);
                 }
                 if (up.getLeaf() instanceof MethodTree) {
-                    return up.getLeaf();
+                    return Optional.of(up.getLeaf());
                 }
-                return null;
+                return Optional.empty();
             }
             parent = parent.getParentPath();
         }
-        return null;
+        return Optional.empty();
     }
 
     private static boolean isPublicOrProtected(Tree member) {
-        Element symbol = ASTHelpers.getSymbol(member);
+        final Element symbol = ASTHelpers.getSymbol(member);
         if (symbol == null) {
             return false;
         }
-        Set<Modifier> modifiers = symbol.getModifiers();
+        final Set<Modifier> modifiers = symbol.getModifiers();
         return modifiers.contains(Modifier.PUBLIC) || modifiers.contains(Modifier.PROTECTED);
     }
 
@@ -184,7 +191,7 @@ public final class NullableForbidden extends BugChecker implements AnnotationTre
         Element enclosing = symbol.getEnclosingElement();
         while (enclosing != null) {
             if (enclosing instanceof TypeElement) {
-                NestingKind nesting = ((TypeElement) enclosing).getNestingKind();
+                final NestingKind nesting = ((TypeElement) enclosing).getNestingKind();
                 if (nesting == NestingKind.ANONYMOUS || nesting == NestingKind.LOCAL) {
                     return true;
                 }
@@ -245,13 +252,13 @@ public final class NullableForbidden extends BugChecker implements AnnotationTre
             }
             up = up.getParentPath();
         }
-        if (annotated instanceof VariableTree) {
-            Element param = ASTHelpers.getSymbol(annotated);
+        if (annotated instanceof VariableTree varTree) {
+            final VariableElement param = ASTHelpers.getSymbol(varTree);
             if (param == null || param.getKind() != ElementKind.PARAMETER) {
                 return false;
             }
-            ExecutableElement method = Objects.requireNonNull((ExecutableElement) param.getEnclosingElement());
-            int index = method.getParameters().indexOf((VariableElement) param);
+            final ExecutableElement method = Objects.requireNonNull((ExecutableElement) param.getEnclosingElement());
+            final int index = method.getParameters().indexOf(param);
             return overridesNullable(method, index, state);
         }
         if (member instanceof MethodTree) {
@@ -266,7 +273,7 @@ public final class NullableForbidden extends BugChecker implements AnnotationTre
             if (paramIndex < 0) {
                 if (isNullableElement(candidate)) return true;
             } else {
-                List<? extends VariableElement> params = candidate.getParameters();
+                final List<? extends VariableElement> params = candidate.getParameters();
                 if (paramIndex < params.size() && isNullableElement(params.get(paramIndex))) return true;
             }
         }
@@ -275,7 +282,7 @@ public final class NullableForbidden extends BugChecker implements AnnotationTre
 
     // Type-use @Nullable attaches to the return or parameter type rather than the declaration.
     private static boolean isNullableElement(Element element) {
-        TypeMirror type =
+        final TypeMirror type =
                 element instanceof ExecutableElement executable ? executable.getReturnType() : element.asType();
         return hasNullable(element.getAnnotationMirrors()) || hasNullable(type.getAnnotationMirrors());
     }

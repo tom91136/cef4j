@@ -1,5 +1,7 @@
 package net.kurobako.cef4j.codegen.ipc
 
+import scala.util.hashing.MurmurHash3
+
 import cats.syntax.all.*
 import net.kurobako.cef4j.codegen.CType
 import net.kurobako.cef4j.codegen.CefDecl
@@ -8,6 +10,7 @@ import net.kurobako.cef4j.codegen.Naming
 import net.kurobako.cef4j.codegen.Param
 
 object SpecDeriver {
+  private val CefStructNameRe = """cef_\w+_t""".r
 
   /** Keeps derived IDs outside the hand-written protocol range. */
   val AstIdBase: Int = 10000
@@ -18,6 +21,12 @@ object SpecDeriver {
 
   def affinityOf(cefStructName: String): ProcessAffinity =
     if (isRendererProcessStruct(cefStructName)) ProcessAffinity.Renderer else ProcessAffinity.Browser
+
+  private def visibleParams(fn: FnPtr): List[Param] =
+    fn.params.filterNot {
+      case Param(_, CType.BufferSize(_), _, _) => true
+      case _                                   => false
+    }
 
   def deriveHandlers(
       decls: List[CefDecl],
@@ -72,8 +81,8 @@ object SpecDeriver {
     val paramStructs: Set[String] = decls.collect {
       case o: CefDecl.ObjectStruct =>
         o.fns.flatMap(_.params.collect {
-          case Param(_, CType.ObjectPtr(name), _, _)                           => name
-          case Param(_, CType.Ptr(inner), _, _) if inner.matches("cef_\\w+_t") => inner
+          case Param(_, CType.ObjectPtr(name), _, _)                              => name
+          case Param(_, CType.Ptr(inner), _, _) if CefStructNameRe.matches(inner) => inner
         })
     }.flatten.toSet
 
@@ -85,10 +94,7 @@ object SpecDeriver {
           val fn = h.fns.head
           if (fn.ret != CType.Void) None
           else {
-            val visible = fn.params.filterNot {
-              case Param(_, CType.BufferSize(_), _, _) => true
-              case _                                   => false
-            }
+            val visible     = visibleParams(fn)
             val maybeFields = visible.map { p =>
               p.typ match {
                 case CType.Int | CType.UInt | CType.Enum(_) =>
@@ -153,10 +159,7 @@ object SpecDeriver {
       case CType.Int | CType.UInt | CType.Enum(_) => Some(Some(FieldType.Bool))
       case _                                      => None
     }
-    val visible = fn.params.filterNot {
-      case Param(_, CType.BufferSize(_), _, _) => true
-      case _                                   => false
-    }
+    val visible = visibleParams(fn)
     val triples = visible.traverse { p =>
       toFieldTypeWithStruct(p.typ, knownDataStructs).map { case (t, structOpt) =>
         (FieldSpec(safeFieldName(snakeToCamel(p.name)), t), structOpt, p.isConst)
@@ -234,12 +237,9 @@ object SpecDeriver {
       knownDataStructs: Set[String],
       javadoc: String
   )(using Naming.Context): Option[FacadeMethod] = {
-    val derivedName = snakeToCamel(fn.name)
-    val methodName  = if (derivedName == "close") "cefClose" else derivedName
-    val visible     = fn.params.filterNot {
-      case Param(_, CType.BufferSize(_), _, _) => true
-      case _                                   => false
-    }
+    val derivedName     = snakeToCamel(fn.name)
+    val methodName      = if (derivedName == "close") "cefClose" else derivedName
+    val visible         = visibleParams(fn)
     val hasOutputBuffer = visible.exists {
       case Param(_, CType.Buffer(_), isConst, _) => !isConst
       case _                                     => false
@@ -268,8 +268,8 @@ object SpecDeriver {
         val handleStructByField = paramHandles ++ resultHandle.toMap
         val opName              = toCamelCase(fn.name)
         val hasBuffer           = fn.params.exists {
-          case Param(_, CType.Buffer(_) | CType.BufferSize(_), _, _) => true
-          case _                                                     => false
+          case Param(typ = CType.Buffer(_) | CType.BufferSize(_)) => true
+          case _                                                  => false
         }
         val cCallArgs = Option.when(hasBuffer) {
           val byOriginalName = visible.map(p => p.name -> safeFieldName(snakeToCamel(p.name))).toMap
@@ -327,67 +327,71 @@ object SpecDeriver {
   )(using Naming.Context): List[MessageSpec] = {
     val all = decls.flatMap {
       case h: CefDecl.HandlerStruct =>
-        h.fns.flatMap(deriveOne(h.name, _, packageName, isMethod = false, knownDataStructs))
+        h.fns.flatMap(deriveFreeFunction(h.name, _, packageName, knownDataStructs))
       case o: CefDecl.ObjectStruct =>
-        o.fns.flatMap(deriveOne(o.name, _, packageName, isMethod = true, knownDataStructs))
+        o.fns.flatMap(deriveMethod(o.name, _, packageName, knownDataStructs))
       case _ => Nil
     }
     // Version-gated headers can produce duplicate generated class names.
     all.distinctBy(_.className)
   }
 
-  private def deriveOne(
+  private def deriveMethod(
       structName: String,
       fn: FnPtr,
       packageName: String,
-      isMethod: Boolean,
       knownDataStructs: Set[String]
-  )(using Naming.Context): List[MessageSpec] = {
-    val visible = fn.params.filterNot {
-      case Param(_, CType.BufferSize(_), _, _) => true
-      case _                                   => false
-    }
-    visible.traverse(p => toFieldSpec(p, knownDataStructs)).fold(Nil) { explicitFields =>
-      val baseName = toCamelCase(stripCefPrefix(structName)) + toCamelCase(fn.name)
-      if (isMethod) {
-        // Renderer dispatch needs the frame that owns the object.
-        val rendererPrefix =
-          if (isRendererProcessStruct(structName)) List(FieldSpec("frame", FieldType.RemoteHandle)) else Nil
-        val reqFields = rendererPrefix ::: (FieldSpec("self", FieldType.RemoteHandle) :: explicitFields)
-        val reqName   = baseName + "Request"
-        val msgId     = stableId(reqName)
-        val req       = MessageSpec(reqName, packageName, msgId, reqFields)
+  )(using Naming.Context): List[MessageSpec] =
+    visibleParams(fn).traverse(p => toFieldSpec(p, knownDataStructs)).fold(Nil) { explicitFields =>
+      val baseName = messageBaseName(structName, fn)
+      // Renderer dispatch needs the frame that owns the object.
+      val rendererPrefix =
+        if (isRendererProcessStruct(structName)) List(FieldSpec("frame", FieldType.RemoteHandle)) else Nil
+      val reqFields = rendererPrefix ::: (FieldSpec("self", FieldType.RemoteHandle) :: explicitFields)
+      val reqName   = baseName + "Request"
+      val msgId     = stableId(reqName)
+      val req       = MessageSpec(reqName, packageName, msgId, reqFields)
 
-        val respFields: Option[List[FieldSpec]] = fn.ret match {
-          case CType.Void => Some(Nil)
-          case other      => toFieldType(other, knownDataStructs).map(t => List(FieldSpec("result", t)))
-        }
-        respFields match {
-          case Some(fields) =>
-            List(req, MessageSpec(baseName + "Response", packageName, msgId, fields))
-          case None =>
-            Nil
-        }
-      } else {
-        val name      = baseName + "Event"
-        val eventSpec = MessageSpec(name, packageName, stableId(name), explicitFields)
-        fn.ret match {
-          case CType.Void                       => List(eventSpec)
-          case CType.Enum("cef_return_value_t") =>
-            val respName = baseName + "Response"
-            val respSpec =
-              MessageSpec(respName, packageName, stableId(respName), List(FieldSpec("result", FieldType.I32)))
-            List(eventSpec, respSpec)
-          case CType.Int | CType.UInt | CType.Enum(_) =>
-            val respName = baseName + "Response"
-            val respSpec =
-              MessageSpec(respName, packageName, stableId(respName), List(FieldSpec("result", FieldType.Bool)))
-            List(eventSpec, respSpec)
-          case _ => Nil
-        }
+      val respFields: Option[List[FieldSpec]] = fn.ret match {
+        case CType.Void => Some(Nil)
+        case other      => toFieldType(other, knownDataStructs).map(t => List(FieldSpec("result", t)))
+      }
+      respFields match {
+        case Some(fields) =>
+          List(req, MessageSpec(baseName + "Response", packageName, msgId, fields))
+        case None =>
+          Nil
       }
     }
-  }
+
+  private def deriveFreeFunction(
+      structName: String,
+      fn: FnPtr,
+      packageName: String,
+      knownDataStructs: Set[String]
+  )(using Naming.Context): List[MessageSpec] =
+    visibleParams(fn).traverse(p => toFieldSpec(p, knownDataStructs)).fold(Nil) { explicitFields =>
+      val baseName  = messageBaseName(structName, fn)
+      val name      = baseName + "Event"
+      val eventSpec = MessageSpec(name, packageName, stableId(name), explicitFields)
+      fn.ret match {
+        case CType.Void                       => List(eventSpec)
+        case CType.Enum("cef_return_value_t") =>
+          val respName = baseName + "Response"
+          val respSpec =
+            MessageSpec(respName, packageName, stableId(respName), List(FieldSpec("result", FieldType.I32)))
+          List(eventSpec, respSpec)
+        case CType.Int | CType.UInt | CType.Enum(_) =>
+          val respName = baseName + "Response"
+          val respSpec =
+            MessageSpec(respName, packageName, stableId(respName), List(FieldSpec("result", FieldType.Bool)))
+          List(eventSpec, respSpec)
+        case _ => Nil
+      }
+    }
+
+  private def messageBaseName(structName: String, fn: FnPtr)(using Naming.Context): String =
+    toCamelCase(stripCefPrefix(structName)) + toCamelCase(fn.name)
 
   // Avoid generated accessor collisions.
   private val ReservedFieldGetterNames: Set[String] =
@@ -442,7 +446,7 @@ object SpecDeriver {
   private def snakeToCamel(s: String)(using Naming.Context): String = Naming.toCamelCase(s)
 
   def stableId(name: String): Int = {
-    val raw    = scala.util.hashing.MurmurHash3.stringHash(name)
+    val raw    = MurmurHash3.stringHash(name)
     val nonNeg = if (raw == Int.MinValue) 0 else math.abs(raw)
     AstIdBase + (nonNeg % (Int.MaxValue - AstIdBase))
   }

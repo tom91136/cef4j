@@ -27,8 +27,8 @@ public final class RecordingTransport implements CefTransport {
 
     @Override
     public void send(ByteBuffer frame) throws CefTransportException {
-        ByteBuffer view = frame.duplicate();
-        byte[] copy = new byte[view.remaining()];
+        final ByteBuffer view = frame.duplicate();
+        final byte[] copy = new byte[view.remaining()];
         view.get(copy);
         try {
             log.append(MessageLog.Direction.OUTBOUND, System.nanoTime(), copy);
@@ -41,8 +41,8 @@ public final class RecordingTransport implements CefTransport {
     @Override
     public void onReceive(Consumer<ByteBuffer> handler) {
         delegate.onReceive(frame -> {
-            ByteBuffer view = frame.duplicate();
-            byte[] copy = new byte[view.remaining()];
+            final ByteBuffer view = frame.duplicate();
+            final byte[] copy = new byte[view.remaining()];
             view.get(copy);
             try {
                 log.append(MessageLog.Direction.INBOUND, System.nanoTime(), copy);

@@ -35,7 +35,7 @@ public final class LatestOnlyDispatcher<T> {
     }
 
     private void dispatch() {
-        T value = latest.getAndSet(null);
+        final T value = latest.getAndSet(null);
         try {
             if (value != null) consumer.accept(value);
         } finally {

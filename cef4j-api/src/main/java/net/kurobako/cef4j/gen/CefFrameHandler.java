@@ -131,7 +131,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame__handler_8h.html">cef_frame_handler.h:45</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefFrameHandler extends CefClientHandler {
 
@@ -238,8 +237,8 @@ public interface CefFrameHandler extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefFrameHandler {
         private final java.util.List<CefFrameHandler> delegates;
@@ -250,28 +249,28 @@ public interface CefFrameHandler extends CefClientHandler {
 
         @Override
         public void onFrameCreated(@Nullable CefBrowser browser, @Nullable CefFrame frame) {
-            for (CefFrameHandler d : delegates) d.onFrameCreated(browser, frame);
+            for (final CefFrameHandler d : delegates) d.onFrameCreated(browser, frame);
         }
 
         @Override
         public void onFrameDestroyed(@Nullable CefBrowser browser, @Nullable CefFrame frame) {
-            for (CefFrameHandler d : delegates) d.onFrameDestroyed(browser, frame);
+            for (final CefFrameHandler d : delegates) d.onFrameDestroyed(browser, frame);
         }
 
         @Override
         public void onFrameAttached(@Nullable CefBrowser browser, @Nullable CefFrame frame, boolean reattached) {
-            for (CefFrameHandler d : delegates) d.onFrameAttached(browser, frame, reattached);
+            for (final CefFrameHandler d : delegates) d.onFrameAttached(browser, frame, reattached);
         }
 
         @Override
         public void onFrameDetached(@Nullable CefBrowser browser, @Nullable CefFrame frame) {
-            for (CefFrameHandler d : delegates) d.onFrameDetached(browser, frame);
+            for (final CefFrameHandler d : delegates) d.onFrameDetached(browser, frame);
         }
 
         @Override
         public void onMainFrameChanged(
                 @Nullable CefBrowser browser, @Nullable CefFrame oldFrame, @Nullable CefFrame newFrame) {
-            for (CefFrameHandler d : delegates) d.onMainFrameChanged(browser, oldFrame, newFrame);
+            for (final CefFrameHandler d : delegates) d.onMainFrameChanged(browser, oldFrame, newFrame);
         }
     }
 }

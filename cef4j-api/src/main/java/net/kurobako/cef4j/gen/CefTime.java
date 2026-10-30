@@ -24,7 +24,6 @@ import net.kurobako.cef4j.policy.NullableBoundary;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__time_8h.html">internal/cef_time.h:57</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefTime {
 
@@ -61,7 +60,7 @@ public final class CefTime {
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefTime)) return false;
-        CefTime other = (CefTime) obj;
+        final CefTime other = (CefTime) obj;
         return this.year == other.year
                 && this.month == other.month
                 && this.dayOfWeek == other.dayOfWeek

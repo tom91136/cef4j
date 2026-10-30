@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import net.kurobako.cef4j.policy.NullableBoundary;
 import org.jspecify.annotations.Nullable;
@@ -29,35 +31,33 @@ public abstract class CdpObject {
         else values.put(name, json(value));
     }
 
-    @Nullable
-    protected final Object raw(String name) {
-        return values.get(name);
+    protected final Optional<Object> raw(String name) {
+        return Optional.ofNullable(values.get(name));
     }
 
     protected final Object require(String name) {
-        Object value = values.get(name);
+        final Object value = values.get(name);
         if (value == null) throw new IllegalStateException("Missing required protocol field: " + name);
         return value;
     }
 
     @SuppressWarnings("unchecked")
-    @Nullable
-    public static Map<String, Object> objectMap(@Nullable Object value) {
-        return value == null ? null : (Map<String, Object>) value;
+    public static Optional<Map<String, Object>> objectMap(@Nullable Object value) {
+        return Optional.ofNullable((Map<String, Object>) value);
     }
 
-    @Nullable
-    public static <T> List<T> list(@Nullable Object value, Function<Object, T> mapper) {
-        if (value == null) return null;
-        List<?> source = (List<?>) value;
-        List<T> result = new ArrayList<>(source.size());
-        for (Object element : source) result.add(mapper.apply(element));
-        return Collections.unmodifiableList(result);
+    @SuppressWarnings("unchecked")
+    public static Map<String, Object> requireObjectMap(Object value) {
+        return (Map<String, Object>) Objects.requireNonNull(value);
+    }
+
+    public static <T> Optional<List<T>> list(@Nullable Object value, Function<Object, T> mapper) {
+        return Optional.ofNullable(value).map(source -> requireList(source, mapper));
     }
 
     public static <T> List<T> requireList(Object value, Function<Object, T> mapper) {
-        List<?> source = (List<?>) value;
-        List<T> result = new ArrayList<>(source.size());
+        final List<?> source = (List<?>) value;
+        final List<T> result = new ArrayList<>(source.size());
         for (Object element : source) result.add(mapper.apply(element));
         return Collections.unmodifiableList(result);
     }
@@ -66,21 +66,19 @@ public abstract class CdpObject {
         if (value instanceof CdpObject) return ((CdpObject) value).toMap();
         if (value instanceof CdpValue<?>) return ((CdpValue<?>) value).value();
         if (value instanceof List<?>) {
-            List<Object> result = new ArrayList<>(((List<?>) value).size());
+            final List<Object> result = new ArrayList<>(((List<?>) value).size());
             for (Object element : (List<?>) value) result.add(json(element));
             return result;
         }
         return value;
     }
 
-    @Nullable
-    public static Long numberAsLong(@Nullable Object value) {
-        return value == null ? null : ((Number) value).longValue();
+    public static Optional<Long> numberAsLong(@Nullable Object value) {
+        return Optional.ofNullable(value).map(number -> ((Number) number).longValue());
     }
 
-    @Nullable
-    public static Double numberAsDouble(@Nullable Object value) {
-        return value == null ? null : ((Number) value).doubleValue();
+    public static Optional<Double> numberAsDouble(@Nullable Object value) {
+        return Optional.ofNullable(value).map(number -> ((Number) number).doubleValue());
     }
 
     @Override

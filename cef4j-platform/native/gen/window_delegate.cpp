@@ -223,7 +223,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
                                                        int *can_activate_menu) {
     auto *h = reinterpret_cast<JniCefWindowDelegate *>(self);
     ScopedJNIEnv env(h->jvm);
-    if (env->PushLocalFrame(11) < 0) {
+    if (env->PushLocalFrame(14) < 0) {
       return nullptr;
     }
     cef_window_t *_p_window = window;
@@ -245,13 +245,12 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
       env->SetIntArrayRegion(j_can_activate_menu, 0, 1, &_v);
     }
     auto cls = env->GetObjectClass(h->javaHandler);
-    auto mid =
-        env->GetMethodID(cls, "getParentWindow", "(Lnet/kurobako/cef4j/gen/views/CefWindow;[I[I)Lnet/kurobako/cef4j/gen/views/CefWindow;");
+    auto mid = env->GetMethodID(cls, "getParentWindow", "(Lnet/kurobako/cef4j/gen/views/CefWindow;[I[I)Ljava/util/Optional;");
     if (!mid) {
       env->PopLocalFrame(nullptr);
       return nullptr;
     }
-    auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_window, j_is_menu, j_can_activate_menu);
+    auto jOptional = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_window, j_is_menu, j_can_activate_menu);
     if (CheckJNIException(env)) {
       env->PopLocalFrame(nullptr);
       return nullptr;
@@ -266,6 +265,9 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
       env->GetIntArrayRegion(j_can_activate_menu, 0, 1, &_v);
       *can_activate_menu = _v;
     }
+    auto _optCls = FindClassCached(env, "java/util/Optional");
+    auto _orElseMid = env->GetMethodID(_optCls, "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    auto jResult = jOptional ? (jobject)env->CallObjectMethod(jOptional, _orElseMid, (jobject) nullptr) : nullptr;
     cef_window_t *nativeResult =
         jResult
             ? reinterpret_cast<cef_window_t *>(env->GetLongField(jResult, env->GetFieldID(env->GetObjectClass(jResult), "nativePtr", "J")))
@@ -306,7 +308,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
   static cef_rect_t CEF_CALLBACK _get_initial_bounds(cef_window_delegate_t *self, struct _cef_window_t *window) {
     auto *h = reinterpret_cast<JniCefWindowDelegate *>(self);
     ScopedJNIEnv env(h->jvm);
-    if (env->PushLocalFrame(8) < 0) {
+    if (env->PushLocalFrame(12) < 0) {
       return cef_rect_t{};
     }
     cef_window_t *_p_window = window;
@@ -318,16 +320,19 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
     auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
     auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
     auto cls = env->GetObjectClass(h->javaHandler);
-    auto mid = env->GetMethodID(cls, "getInitialBounds", "(Lnet/kurobako/cef4j/gen/views/CefWindow;)Lnet/kurobako/cef4j/gen/CefRect;");
+    auto mid = env->GetMethodID(cls, "getInitialBounds", "(Lnet/kurobako/cef4j/gen/views/CefWindow;)Ljava/util/Optional;");
     if (!mid) {
       env->PopLocalFrame(nullptr);
       return cef_rect_t{};
     }
-    auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_window);
+    auto jOptional = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_window);
     if (CheckJNIException(env)) {
       env->PopLocalFrame(nullptr);
       return cef_rect_t{};
     }
+    auto _optCls = FindClassCached(env, "java/util/Optional");
+    auto _orElseMid = env->GetMethodID(_optCls, "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    auto jResult = jOptional ? (jobject)env->CallObjectMethod(jOptional, _orElseMid, (jobject) nullptr) : nullptr;
     cef_rect_t nativeResult = ([&]() {
       cef_rect_t _result = {};
       if (jResult) {
@@ -346,7 +351,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
   static cef_show_state_t CEF_CALLBACK _get_initial_show_state(cef_window_delegate_t *self, struct _cef_window_t *window) {
     auto *h = reinterpret_cast<JniCefWindowDelegate *>(self);
     ScopedJNIEnv env(h->jvm);
-    if (env->PushLocalFrame(9) < 0) {
+    if (env->PushLocalFrame(12) < 0) {
       return cef_show_state_t::CEF_SHOW_STATE_NORMAL;
     }
     cef_window_t *_p_window = window;
@@ -358,17 +363,19 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
     auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
     auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
     auto cls = env->GetObjectClass(h->javaHandler);
-    auto mid =
-        env->GetMethodID(cls, "getInitialShowState", "(Lnet/kurobako/cef4j/gen/views/CefWindow;)Lnet/kurobako/cef4j/gen/CefShowState;");
+    auto mid = env->GetMethodID(cls, "getInitialShowState", "(Lnet/kurobako/cef4j/gen/views/CefWindow;)Ljava/util/Optional;");
     if (!mid) {
       env->PopLocalFrame(nullptr);
       return cef_show_state_t::CEF_SHOW_STATE_NORMAL;
     }
-    auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_window);
+    auto jOptional = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_window);
     if (CheckJNIException(env)) {
       env->PopLocalFrame(nullptr);
       return cef_show_state_t::CEF_SHOW_STATE_NORMAL;
     }
+    auto _optCls = FindClassCached(env, "java/util/Optional");
+    auto _orElseMid = env->GetMethodID(_optCls, "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    auto jResult = jOptional ? (jobject)env->CallObjectMethod(jOptional, _orElseMid, (jobject) nullptr) : nullptr;
     cef_show_state_t nativeResult = static_cast<cef_show_state_t>(
         jResult ? env->GetLongField(jResult, env->GetFieldID(env->GetObjectClass(jResult), "value", "J")) : 0);
     env->PopLocalFrame(nullptr);
@@ -475,7 +482,7 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
   static cef_state_t CEF_CALLBACK _accepts_first_mouse(cef_window_delegate_t *self, struct _cef_window_t *window) {
     auto *h = reinterpret_cast<JniCefWindowDelegate *>(self);
     ScopedJNIEnv env(h->jvm);
-    if (env->PushLocalFrame(9) < 0) {
+    if (env->PushLocalFrame(12) < 0) {
       return cef_state_t::STATE_DEFAULT;
     }
     cef_window_t *_p_window = window;
@@ -487,16 +494,19 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
     auto j_window_ctor = env->GetMethodID(j_window_cls, "<init>", "(J)V");
     auto j_window = _p_window ? env->NewObject(j_window_cls, j_window_ctor, reinterpret_cast<jlong>(_p_window)) : nullptr;
     auto cls = env->GetObjectClass(h->javaHandler);
-    auto mid = env->GetMethodID(cls, "acceptsFirstMouse", "(Lnet/kurobako/cef4j/gen/views/CefWindow;)Lnet/kurobako/cef4j/gen/CefState;");
+    auto mid = env->GetMethodID(cls, "acceptsFirstMouse", "(Lnet/kurobako/cef4j/gen/views/CefWindow;)Ljava/util/Optional;");
     if (!mid) {
       env->PopLocalFrame(nullptr);
       return cef_state_t::STATE_DEFAULT;
     }
-    auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_window);
+    auto jOptional = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_window);
     if (CheckJNIException(env)) {
       env->PopLocalFrame(nullptr);
       return cef_state_t::STATE_DEFAULT;
     }
+    auto _optCls = FindClassCached(env, "java/util/Optional");
+    auto _orElseMid = env->GetMethodID(_optCls, "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    auto jResult = jOptional ? (jobject)env->CallObjectMethod(jOptional, _orElseMid, (jobject) nullptr) : nullptr;
     cef_state_t nativeResult =
         static_cast<cef_state_t>(jResult ? env->GetLongField(jResult, env->GetFieldID(env->GetObjectClass(jResult), "value", "J")) : 0);
     env->PopLocalFrame(nullptr);
@@ -720,20 +730,23 @@ struct JniCefWindowDelegate : public cef_window_delegate_t {
   static cef_runtime_style_t CEF_CALLBACK _get_window_runtime_style(cef_window_delegate_t *self) {
     auto *h = reinterpret_cast<JniCefWindowDelegate *>(self);
     ScopedJNIEnv env(h->jvm);
-    if (env->PushLocalFrame(6) < 0) {
+    if (env->PushLocalFrame(9) < 0) {
       return cef_runtime_style_t::CEF_RUNTIME_STYLE_DEFAULT;
     }
     auto cls = env->GetObjectClass(h->javaHandler);
-    auto mid = env->GetMethodID(cls, "getWindowRuntimeStyle", "()Lnet/kurobako/cef4j/gen/CefRuntimeStyle;");
+    auto mid = env->GetMethodID(cls, "getWindowRuntimeStyle", "()Ljava/util/Optional;");
     if (!mid) {
       env->PopLocalFrame(nullptr);
       return cef_runtime_style_t::CEF_RUNTIME_STYLE_DEFAULT;
     }
-    auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid);
+    auto jOptional = (jobject)env->CallObjectMethod(h->javaHandler, mid);
     if (CheckJNIException(env)) {
       env->PopLocalFrame(nullptr);
       return cef_runtime_style_t::CEF_RUNTIME_STYLE_DEFAULT;
     }
+    auto _optCls = FindClassCached(env, "java/util/Optional");
+    auto _orElseMid = env->GetMethodID(_optCls, "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    auto jResult = jOptional ? (jobject)env->CallObjectMethod(jOptional, _orElseMid, (jobject) nullptr) : nullptr;
     cef_runtime_style_t nativeResult = static_cast<cef_runtime_style_t>(
         jResult ? env->GetLongField(jResult, env->GetFieldID(env->GetObjectClass(jResult), "value", "J")) : 0);
     env->PopLocalFrame(nullptr);

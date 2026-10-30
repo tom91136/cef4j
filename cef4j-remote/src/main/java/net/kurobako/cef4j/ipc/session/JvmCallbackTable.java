@@ -1,8 +1,7 @@
 package net.kurobako.cef4j.ipc.session;
 
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import net.kurobako.cef4j.policy.NullableBoundary;
-import org.jspecify.annotations.Nullable;
 
 /**
  * Client-side handle table for callback objects (e.g. visitors) that the client owns and the server invokes.
@@ -15,8 +14,8 @@ import org.jspecify.annotations.Nullable;
  * <ul>
  *   <li>{@link #register} stores the callback under a fresh id (returned for the caller to ship to the server as a
  *       method parameter). Until {@link #release} is called the entry stays live and dispatches into the Java object.
- *   <li>{@link #lookup} retrieves the callback when an inbound event names this id. Returns {@code null} for
- *       already-released or unknown ids — the caller decides whether to ignore or log.
+ *   <li>{@link #lookup} retrieves the callback when an inbound event names this id. Returns empty for already-released
+ *       or unknown ids — the caller decides whether to ignore or log.
  *   <li>{@link #release} drops the entry. Used after a one-shot callback has fired (most CEF visitors are one-shot) or
  *       at session shutdown to avoid retaining the Java side longer than the server.
  * </ul>
@@ -34,15 +33,13 @@ public final class JvmCallbackTable<T> {
         return ids.allocate(id -> entries.putIfAbsent(id, callback) == null);
     }
 
-    /** Looks up a callback by id, or {@code null} if it's unknown / already released. */
-    @NullableBoundary("generated routing treats null as an unknown callback id")
-    @Nullable
-    public T lookup(int id) {
-        if (id == 0) return null;
-        return entries.get(id);
+    /** Looks up a callback by id, or empty if it's unknown / already released. */
+    public Optional<T> lookup(int id) {
+        if (id == 0) return Optional.empty();
+        return Optional.ofNullable(entries.get(id));
     }
 
-    /** Drops the entry for {@code id}; subsequent {@link #lookup} calls return {@code null}. */
+    /** Drops the entry for {@code id}; subsequent {@link #lookup} calls return empty. */
     public void release(int id) {
         if (id == 0) return;
         entries.remove(id);

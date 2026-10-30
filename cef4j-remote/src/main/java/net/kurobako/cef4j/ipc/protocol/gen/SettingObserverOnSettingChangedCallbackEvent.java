@@ -4,11 +4,13 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class SettingObserverOnSettingChangedCallbackEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 950925082;
@@ -57,7 +59,7 @@ public final class SettingObserverOnSettingChangedCallbackEvent implements CefMe
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(callbackId);
@@ -72,20 +74,12 @@ public final class SettingObserverOnSettingChangedCallbackEvent implements CefMe
     }
 
     public static final CefMessageDecoder<SettingObserverOnSettingChangedCallbackEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "callbackId");
-        int callbackId = __buf.getInt();
-        int requestingUrlLen = WireDecoder.length(__buf, "requestingUrl");
-        byte[] requestingUrlBuf = new byte[requestingUrlLen];
-        __buf.get(requestingUrlBuf);
-        String requestingUrl = new String(requestingUrlBuf, StandardCharsets.UTF_8);
-        int topLevelUrlLen = WireDecoder.length(__buf, "topLevelUrl");
-        byte[] topLevelUrlBuf = new byte[topLevelUrlLen];
-        __buf.get(topLevelUrlBuf);
-        String topLevelUrl = new String(topLevelUrlBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "contentType");
-        int contentType = __buf.getInt();
+        final int callbackId = WireDecoder.int32(__buf, "callbackId");
+        final String requestingUrl = WireDecoder.utf8(__buf, "requestingUrl");
+        final String topLevelUrl = WireDecoder.utf8(__buf, "topLevelUrl");
+        final int contentType = WireDecoder.int32(__buf, "contentType");
         WireDecoder.requireFullyConsumed(__buf, "SettingObserverOnSettingChangedCallbackEvent");
         return new SettingObserverOnSettingChangedCallbackEvent(callbackId, requestingUrl, topLevelUrl, contentType);
     };

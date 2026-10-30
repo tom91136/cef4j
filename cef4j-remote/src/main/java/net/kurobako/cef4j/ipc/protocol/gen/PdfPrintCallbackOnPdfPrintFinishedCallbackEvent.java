@@ -4,11 +4,13 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class PdfPrintCallbackOnPdfPrintFinishedCallbackEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 253815785;
@@ -49,7 +51,7 @@ public final class PdfPrintCallbackOnPdfPrintFinishedCallbackEvent implements Ce
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(callbackId);
@@ -62,16 +64,11 @@ public final class PdfPrintCallbackOnPdfPrintFinishedCallbackEvent implements Ce
     }
 
     public static final CefMessageDecoder<PdfPrintCallbackOnPdfPrintFinishedCallbackEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "callbackId");
-        int callbackId = __buf.getInt();
-        int pathLen = WireDecoder.length(__buf, "path");
-        byte[] pathBuf = new byte[pathLen];
-        __buf.get(pathBuf);
-        String path = new String(pathBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "ok");
-        int ok = __buf.getInt();
+        final int callbackId = WireDecoder.int32(__buf, "callbackId");
+        final String path = WireDecoder.utf8(__buf, "path");
+        final int ok = WireDecoder.int32(__buf, "ok");
         WireDecoder.requireFullyConsumed(__buf, "PdfPrintCallbackOnPdfPrintFinishedCallbackEvent");
         return new PdfPrintCallbackOnPdfPrintFinishedCallbackEvent(callbackId, path, ok);
     };

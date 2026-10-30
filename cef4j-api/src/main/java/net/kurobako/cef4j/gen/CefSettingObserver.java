@@ -22,7 +22,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:71</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefSettingObserver extends CefClientHandler {
 
@@ -47,8 +46,8 @@ public interface CefSettingObserver extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefSettingObserver {
         private final java.util.List<CefSettingObserver> delegates;
@@ -60,7 +59,7 @@ public interface CefSettingObserver extends CefClientHandler {
         @Override
         public void onSettingChanged(
                 @Nullable String requestingUrl, @Nullable String topLevelUrl, CefContentSettingTypes contentType) {
-            for (CefSettingObserver d : delegates) d.onSettingChanged(requestingUrl, topLevelUrl, contentType);
+            for (final CefSettingObserver d : delegates) d.onSettingChanged(requestingUrl, topLevelUrl, contentType);
         }
     }
 }

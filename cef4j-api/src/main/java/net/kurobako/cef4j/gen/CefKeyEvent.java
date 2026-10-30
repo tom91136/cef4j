@@ -26,7 +26,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:2369</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefKeyEvent {
 
@@ -87,21 +86,21 @@ public final class CefKeyEvent {
     /** Create a mutable copy of this instance. */
     public Mutable toMutable() {
         return new Mutable(
-                this.type,
-                this.modifiers,
-                this.windowsKeyCode,
-                this.nativeKeyCode,
-                this.isSystemKey,
-                this.character,
-                this.unmodifiedCharacter,
-                this.focusOnEditableField);
+                type,
+                modifiers,
+                windowsKeyCode,
+                nativeKeyCode,
+                isSystemKey,
+                character,
+                unmodifiedCharacter,
+                focusOnEditableField);
     }
 
     @Override
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefKeyEvent)) return false;
-        CefKeyEvent other = (CefKeyEvent) obj;
+        final CefKeyEvent other = (CefKeyEvent) obj;
         return java.util.Objects.equals(this.type, other.type)
                 && this.modifiers == other.modifiers
                 && this.windowsKeyCode == other.windowsKeyCode
@@ -202,21 +201,21 @@ public final class CefKeyEvent {
         /** Create an immutable snapshot of this instance. */
         public CefKeyEvent toImmutable() {
             return new CefKeyEvent(
-                    this.type,
-                    this.modifiers,
-                    this.windowsKeyCode,
-                    this.nativeKeyCode,
-                    this.isSystemKey,
-                    this.character,
-                    this.unmodifiedCharacter,
-                    this.focusOnEditableField);
+                    type,
+                    modifiers,
+                    windowsKeyCode,
+                    nativeKeyCode,
+                    isSystemKey,
+                    character,
+                    unmodifiedCharacter,
+                    focusOnEditableField);
         }
 
         @Override
         public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
-            Mutable other = (Mutable) obj;
+            final Mutable other = (Mutable) obj;
             return java.util.Objects.equals(this.type, other.type)
                     && this.modifiers == other.modifiers
                     && this.windowsKeyCode == other.windowsKeyCode

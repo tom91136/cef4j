@@ -22,7 +22,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:202</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefRunFileDialogCallback extends CefClientHandler {
 
@@ -43,8 +42,8 @@ public interface CefRunFileDialogCallback extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefRunFileDialogCallback {
         private final java.util.List<CefRunFileDialogCallback> delegates;
@@ -55,7 +54,7 @@ public interface CefRunFileDialogCallback extends CefClientHandler {
 
         @Override
         public void onFileDialogDismissed(@Nullable List<String> filePaths) {
-            for (CefRunFileDialogCallback d : delegates) d.onFileDialogDismissed(filePaths);
+            for (final CefRunFileDialogCallback d : delegates) d.onFileDialogDismissed(filePaths);
         }
     }
 }

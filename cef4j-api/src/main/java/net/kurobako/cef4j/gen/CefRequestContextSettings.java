@@ -23,7 +23,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:514</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefRequestContextSettings {
 
@@ -82,18 +81,18 @@ public final class CefRequestContextSettings {
     /** Create a mutable copy of this instance. */
     public Mutable toMutable() {
         return new Mutable(
-                this.cachePath,
-                this.persistSessionCookies,
-                this.acceptLanguageList,
-                this.cookieableSchemesList,
-                this.cookieableSchemesExcludeDefaults);
+                cachePath,
+                persistSessionCookies,
+                acceptLanguageList,
+                cookieableSchemesList,
+                cookieableSchemesExcludeDefaults);
     }
 
     @Override
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefRequestContextSettings)) return false;
-        CefRequestContextSettings other = (CefRequestContextSettings) obj;
+        final CefRequestContextSettings other = (CefRequestContextSettings) obj;
         return java.util.Objects.equals(this.cachePath, other.cachePath)
                 && this.persistSessionCookies == other.persistSessionCookies
                 && java.util.Objects.equals(this.acceptLanguageList, other.acceptLanguageList)
@@ -187,18 +186,18 @@ public final class CefRequestContextSettings {
         /** Create an immutable snapshot of this instance. */
         public CefRequestContextSettings toImmutable() {
             return new CefRequestContextSettings(
-                    this.cachePath,
-                    this.persistSessionCookies,
-                    this.acceptLanguageList,
-                    this.cookieableSchemesList,
-                    this.cookieableSchemesExcludeDefaults);
+                    cachePath,
+                    persistSessionCookies,
+                    acceptLanguageList,
+                    cookieableSchemesList,
+                    cookieableSchemesExcludeDefaults);
         }
 
         @Override
         public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
-            Mutable other = (Mutable) obj;
+            final Mutable other = (Mutable) obj;
             return java.util.Objects.equals(this.cachePath, other.cachePath)
                     && this.persistSessionCookies == other.persistSessionCookies
                     && java.util.Objects.equals(this.acceptLanguageList, other.acceptLanguageList)

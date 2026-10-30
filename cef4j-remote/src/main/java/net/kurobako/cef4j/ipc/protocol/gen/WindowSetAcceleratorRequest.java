@@ -3,12 +3,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class WindowSetAcceleratorRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 407467693;
@@ -71,7 +73,7 @@ public final class WindowSetAcceleratorRequest implements CefMessageView, CefMes
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
@@ -87,22 +89,15 @@ public final class WindowSetAcceleratorRequest implements CefMessageView, CefMes
     }
 
     public static final CefMessageDecoder<WindowSetAcceleratorRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "commandId");
-        int commandId = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "keyCode");
-        int keyCode = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "shiftPressed");
-        int shiftPressed = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "ctrlPressed");
-        int ctrlPressed = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "altPressed");
-        int altPressed = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "highPriority");
-        int highPriority = __buf.getInt();
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final int commandId = WireDecoder.int32(__buf, "commandId");
+        final int keyCode = WireDecoder.int32(__buf, "keyCode");
+        final int shiftPressed = WireDecoder.int32(__buf, "shiftPressed");
+        final int ctrlPressed = WireDecoder.int32(__buf, "ctrlPressed");
+        final int altPressed = WireDecoder.int32(__buf, "altPressed");
+        final int highPriority = WireDecoder.int32(__buf, "highPriority");
         WireDecoder.requireFullyConsumed(__buf, "WindowSetAcceleratorRequest");
         return new WindowSetAcceleratorRequest(self, commandId, keyCode, shiftPressed, ctrlPressed, altPressed, highPriority);
     };

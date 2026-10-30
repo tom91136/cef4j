@@ -20,7 +20,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__handler_8h.html">cef_drag_handler.h:46</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefDragHandler extends CefClientHandler {
 
@@ -61,8 +60,8 @@ public interface CefDragHandler extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefDragHandler {
         private final java.util.List<CefDragHandler> delegates;
@@ -74,7 +73,7 @@ public interface CefDragHandler extends CefClientHandler {
         @Override
         public boolean onDragEnter(
                 @Nullable CefBrowser browser, @Nullable CefDragData dragData, CefDragOperationsMask mask) {
-            for (CefDragHandler d : delegates) {
+            for (final CefDragHandler d : delegates) {
                 if (d.onDragEnter(browser, dragData, mask)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -87,7 +86,7 @@ public interface CefDragHandler extends CefClientHandler {
                 @Nullable CefFrame frame,
                 long regionsCount,
                 CefDraggableRegion[] regions) {
-            for (CefDragHandler d : delegates) d.onDraggableRegionsChanged(browser, frame, regionsCount, regions);
+            for (final CefDragHandler d : delegates) d.onDraggableRegionsChanged(browser, frame, regionsCount, regions);
         }
     }
 }

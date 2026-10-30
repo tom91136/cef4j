@@ -10,7 +10,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.OptionalLong;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,13 +27,20 @@ import net.kurobako.cef4j.cdp.generated.Input;
 import net.kurobako.cef4j.cdp.generated.Network;
 import net.kurobako.cef4j.cdp.generated.Page;
 import net.kurobako.cef4j.cdp.generated.Runtime;
+import org.jspecify.annotations.Nullable;
 
 /** Shared CDP-backed automation implementation, independent of in-process or remote CEF lifecycle. */
 public final class CdpAutomationBackend implements AutomationBackend {
+    /** Whether an evaluation returns the value itself or the reference of the value, which the caller releases. */
+    private enum ResultMode {
+        VALUE,
+        REFERENCE
+    }
+
     private static final AtomicInteger POLL_THREAD_IDS = new AtomicInteger();
     private static final Executor POLL_EXECUTOR =
             Executors.newFixedThreadPool(java.lang.Runtime.getRuntime().availableProcessors(), task -> {
-                Thread thread = new Thread(task, "cef4j-webdriver-poll-" + POLL_THREAD_IDS.incrementAndGet());
+                final Thread thread = new Thread(task, "cef4j-webdriver-poll-" + POLL_THREAD_IDS.incrementAndGet());
                 thread.setDaemon(true);
                 return thread;
             });
@@ -69,7 +75,7 @@ public final class CdpAutomationBackend implements AutomationBackend {
         capabilities.addProperty("acceptInsecureCerts", false);
         capabilities.addProperty("pageLoadStrategy", "normal");
         capabilities.addProperty("setWindowRect", false);
-        JsonObject cef4j = new JsonObject();
+        final JsonObject cef4j = new JsonObject();
         cef4j.addProperty("protocolVersion", version.protocolVersion());
         cef4j.addProperty("revision", version.revision());
         capabilities.add("cef4j:devtools", cef4j);
@@ -83,7 +89,7 @@ public final class CdpAutomationBackend implements AutomationBackend {
     public static CompletableFuture<CdpAutomationBackend> create(JsonCdpBrowser cdp, Executor pollExecutor) {
         Objects.requireNonNull(cdp, "cdp");
         Objects.requireNonNull(pollExecutor, "pollExecutor");
-        CdpClient client = new CdpClient(cdp, cdp.jsonCodec().cdpCodec());
+        final CdpClient client = new CdpClient(cdp, cdp.jsonCodec().cdpCodec());
         return client.domains()
                 .browser()
                 .getVersion()
@@ -118,9 +124,9 @@ public final class CdpAutomationBackend implements AutomationBackend {
 
     @Override
     public CompletableFuture<String> pageSource() {
-        return dom.getDocument(OptionalLong.of(0), Optional.empty())
+        return dom.getDocument(0L, null)
                 .thenCompose(root -> {
-                    Map<String, Object> params = new LinkedHashMap<>();
+                    final Map<String, Object> params = new LinkedHashMap<>();
                     params.put("nodeId", CdpObject.json(root.nodeId()));
                     return client.call("DOM.getOuterHTML", params, result ->
                             (String) Objects.requireNonNull(result.get("outerHTML")));
@@ -135,7 +141,7 @@ public final class CdpAutomationBackend implements AutomationBackend {
         return remoteObject("globalThis").thenCompose(globalObject -> {
             CompletableFuture<List<Runtime.CallArgument>> callArguments =
                     CompletableFuture.completedFuture(new ArrayList<>());
-            List<String> borrowedObjects = new ArrayList<>();
+            final List<String> borrowedObjects = new ArrayList<>();
             for (JsonElement argument : arguments) {
                 callArguments = callArguments.thenCompose(
                         built -> toCallArgument(argument, borrowedObjects).thenApply(converted -> {
@@ -144,11 +150,10 @@ public final class CdpAutomationBackend implements AutomationBackend {
                         }));
             }
             return callArguments
-                    .thenCompose(converted -> callFunctionOn(
+                    .thenCompose(converted -> callFunctionOnValue(
                             globalObject,
                             "function(){return (function(){" + script + "\n}).apply(null,arguments);}",
-                            converted,
-                            true))
+                            converted))
                     .whenComplete((ignored, failure) -> {
                         releaseObject(globalObject);
                         borrowedObjects.forEach(this::releaseObject);
@@ -158,48 +163,68 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     private CompletableFuture<Runtime.CallArgument> toCallArgument(JsonElement argument, List<String> borrowedObjects) {
-        JsonElement element = argument.isObject() ? argument.asObject().get(WebDriverServer.ELEMENT_KEY) : null;
-        if (element != null && element.isPrimitive()) {
-            String id = element.string();
-            return resolveElement(id).thenApply(objectId -> {
-                borrowedObjects.add(objectId);
-                return new Runtime.CallArgument().objectId(new Runtime.RemoteObjectId(objectId));
-            });
-        }
-        Object value = WebDriverJsonCodec.fromJsonElement(argument);
-        // CallArgument.value(null) omits the member, which CDP reads as undefined rather than null
-        return CompletableFuture.completedFuture(
-                value == null
-                        ? Runtime.CallArgument.fromMap(Collections.singletonMap("value", null))
-                        : new Runtime.CallArgument().value(value));
+        final Optional<JsonElement> element = argument.isObject()
+                ? argument.asObject().get(WebDriverServer.ELEMENT_KEY).filter(JsonElement::isPrimitive)
+                : Optional.empty();
+        return element.map(reference -> resolveElement(reference.string()).thenApply(objectId -> {
+                    borrowedObjects.add(objectId);
+                    return new Runtime.CallArgument().objectId(new Runtime.RemoteObjectId(objectId));
+                }))
+                .orElseGet(() -> CompletableFuture.completedFuture(
+                        // CallArgument.value(null) omits the member, which CDP reads as undefined rather than null
+                        WebDriverJsonCodec.fromJsonElement(argument)
+                                .map(value -> new Runtime.CallArgument().value(value))
+                                .orElseGet(
+                                        () -> Runtime.CallArgument.fromMap(Collections.singletonMap("value", null)))));
     }
 
     @Override
     public CompletableFuture<byte[]> screenshot() {
-        Map<String, Object> params = new LinkedHashMap<>();
+        final Map<String, Object> params = new LinkedHashMap<>();
         params.put("format", CdpObject.json("png"));
         params.put("captureBeyondViewport", true);
-        return client.<String>call("Page.captureScreenshot", params, result ->
+        return client.call("Page.captureScreenshot", params, result ->
                         (String) java.util.Objects.requireNonNull(result.get("data")))
                 .thenApply(Base64.getDecoder()::decode)
                 .toCompletableFuture();
     }
 
     @Override
-    public CompletableFuture<String> findElement(String using, String value, Optional<String> parentElement) {
-        return findElements(using, value, parentElement).thenApply(found -> {
+    public CompletableFuture<String> findElement(String using, String value) {
+        return findElements(using, value).thenApply(found -> {
             if (found.isEmpty()) throw failure(WebDriverError.NO_SUCH_ELEMENT, "unable to locate element: " + value);
             return found.get(0);
         });
     }
 
     @Override
-    public CompletableFuture<List<String>> findElements(String using, String value, Optional<String> parentElement) {
+    public CompletableFuture<String> findElement(String using, String value, String parentElement) {
+        return findElements(using, value, Objects.requireNonNull(parentElement, "parentElement"))
+                .thenApply(found -> {
+                    if (found.isEmpty())
+                        throw failure(WebDriverError.NO_SUCH_ELEMENT, "unable to locate element: " + value);
+                    return found.get(0);
+                });
+    }
+
+    @Override
+    public CompletableFuture<List<String>> findElements(String using, String value) {
+        return findElementsImpl(using, value, null);
+    }
+
+    @Override
+    public CompletableFuture<List<String>> findElements(String using, String value, String parentElement) {
+        return findElementsImpl(using, value, Objects.requireNonNull(parentElement, "parentElement"));
+    }
+
+    private CompletableFuture<List<String>> findElementsImpl(
+            String using, String value, @Nullable String parentElement) {
         validateLocator(using);
-        CompletableFuture<String> root =
-                parentElement.map(this::resolveElement).orElseGet(() -> remoteObject("document"));
-        return root.thenCompose(objectId -> callFunctionOn(objectId, FIND_ELEMENTS, callArguments(using, value), false)
-                        .whenComplete((ignored, failure) -> releaseObject(objectId)))
+        final CompletableFuture<String> root =
+                parentElement != null ? resolveElement(parentElement) : remoteObject("document");
+        return root.thenCompose(
+                        objectId -> callFunctionOnReference(objectId, FIND_ELEMENTS, callArguments(using, value))
+                                .whenComplete((ignored, failure) -> releaseObject(objectId)))
                 .thenCompose(CdpAutomationBackend::remoteObjectId)
                 .thenCompose(this::readElementArray);
     }
@@ -274,10 +299,10 @@ public final class CdpAutomationBackend implements AutomationBackend {
 
     @Override
     public CompletableFuture<Void> elementClick(String elementId) {
-        DOM.BackendNodeId backendNodeId = requireElementId(elementId);
+        final DOM.BackendNodeId backendNodeId = requireElementId(elementId);
         return resolveElement(elementId)
                 .thenCompose(objectId -> {
-                    Map<String, Object> scrollParams = new LinkedHashMap<>();
+                    final Map<String, Object> scrollParams = new LinkedHashMap<>();
                     scrollParams.put("backendNodeId", CdpObject.json(backendNodeId.value()));
                     return client.call("DOM.scrollIntoViewIfNeeded", scrollParams)
                             .toCompletableFuture()
@@ -295,11 +320,11 @@ public final class CdpAutomationBackend implements AutomationBackend {
                     return elementRect(elementId);
                 })
                 .thenCompose(rect -> {
-                    double x = member(rect, "x").doubleValue()
+                    final double x = member(rect, "x").doubleValue()
                             + member(rect, "width").doubleValue() / 2;
-                    double y = member(rect, "y").doubleValue()
+                    final double y = member(rect, "y").doubleValue()
                             + member(rect, "height").doubleValue() / 2;
-                    List<Runtime.CallArgument> point =
+                    final List<Runtime.CallArgument> point =
                             List.of(new Runtime.CallArgument().value(x), new Runtime.CallArgument().value(y));
                     return callElementValue(
                                     elementId,
@@ -367,23 +392,20 @@ public final class CdpAutomationBackend implements AutomationBackend {
 
     @Override
     public CompletableFuture<JsonArray> cookies() {
-        return currentUrl()
-                .thenCompose(url -> network.getCookies(Optional.of(List.of(url))))
-                .thenApply(this::readCookies);
+        return currentUrl().thenCompose(url -> network.getCookies(List.of(url))).thenApply(this::readCookies);
     }
 
     private JsonArray readCookies(List<Network.Cookie> source) {
-        JsonArray result = new JsonArray();
+        final JsonArray result = new JsonArray();
         for (Network.Cookie cookie : source) {
-            JsonObject item = new JsonObject();
+            final JsonObject item = new JsonObject();
             item.addProperty("name", cookie.name());
             item.addProperty("value", cookie.value());
             item.addProperty("path", cookie.path());
             item.addProperty("domain", cookie.domain());
             item.addProperty("secure", cookie.secure());
             item.addProperty("httpOnly", cookie.httpOnly());
-            if (cookie.sameSite().isPresent())
-                item.addProperty("sameSite", cookie.sameSite().get().value());
+            cookie.sameSite().ifPresent(sameSite -> item.addProperty("sameSite", sameSite.value()));
             if (cookie.expires() >= 0) item.addProperty("expiry", (long) cookie.expires());
             result.add(item);
         }
@@ -405,7 +427,7 @@ public final class CdpAutomationBackend implements AutomationBackend {
         validateCookie(cookie);
         return currentUrl()
                 .thenCompose(url -> {
-                    Map<String, Object> params = new LinkedHashMap<>();
+                    final Map<String, Object> params = new LinkedHashMap<>();
                     params.put("name", CdpObject.json(member(cookie, "name").string()));
                     params.put("value", CdpObject.json(member(cookie, "value").string()));
                     params.put("url", CdpObject.json(url));
@@ -425,82 +447,89 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     static void validateCookie(JsonObject cookie) {
-        requireCookieString(cookie, "name", true);
-        requireCookieString(cookie, "value", true);
-        requireCookieString(cookie, "domain", false);
-        requireCookieString(cookie, "path", false);
+        requireCookieString(cookie, "name");
+        requireCookieString(cookie, "value");
+        optionalCookieString(cookie, "domain");
+        optionalCookieString(cookie, "path");
         requireCookieBoolean(cookie, "secure");
         requireCookieBoolean(cookie, "httpOnly");
         validateCookieSameSite(cookie);
         validateCookieExpiry(cookie);
     }
 
-    private static void requireCookieString(JsonObject cookie, String name, boolean required) {
-        JsonElement value = cookie.get(name);
-        if (value == null && !required) return;
-        if (value == null || !value.isPrimitive() || !value.asPrimitive().isString()) {
+    private static void requireCookieString(JsonObject cookie, String name) {
+        if (cookie.get(name)
+                .filter(value -> value.isPrimitive() && value.asPrimitive().isString())
+                .isEmpty()) {
             throw failure(WebDriverError.INVALID_ARGUMENT, "cookie " + name + " must be a string");
         }
     }
 
+    /** A cookie member that is optional, but has to be a string when it is there. */
+    private static void optionalCookieString(JsonObject cookie, String name) {
+        if (!cookie.has(name)) return;
+        requireCookieString(cookie, name);
+    }
+
     private static void requireCookieBoolean(JsonObject cookie, String name) {
-        JsonElement value = cookie.get(name);
-        if (value != null && (!value.isPrimitive() || !value.asPrimitive().isBoolean())) {
-            throw failure(WebDriverError.INVALID_ARGUMENT, "cookie " + name + " must be a boolean");
-        }
+        cookie.get(name).ifPresent(value -> {
+            if (!value.isPrimitive() || !value.asPrimitive().isBoolean()) {
+                throw failure(WebDriverError.INVALID_ARGUMENT, "cookie " + name + " must be a boolean");
+            }
+        });
     }
 
     private static void validateCookieSameSite(JsonObject cookie) {
-        JsonElement value = cookie.get("sameSite");
-        if (value == null) return;
-        if (!value.isPrimitive() || !value.asPrimitive().isString()) {
-            throw failure(WebDriverError.INVALID_ARGUMENT, "cookie sameSite must be a string");
-        }
-        String sameSite = value.string();
-        if (!sameSite.equals("Strict") && !sameSite.equals("Lax") && !sameSite.equals("None")) {
-            throw failure(WebDriverError.INVALID_ARGUMENT, "invalid cookie sameSite: " + sameSite);
-        }
+        cookie.get("sameSite").ifPresent(value -> {
+            if (!value.isPrimitive() || !value.asPrimitive().isString()) {
+                throw failure(WebDriverError.INVALID_ARGUMENT, "cookie sameSite must be a string");
+            }
+            final String sameSite = value.string();
+            if (!sameSite.equals("Strict") && !sameSite.equals("Lax") && !sameSite.equals("None")) {
+                throw failure(WebDriverError.INVALID_ARGUMENT, "invalid cookie sameSite: " + sameSite);
+            }
+        });
     }
 
     private static void validateCookieExpiry(JsonObject cookie) {
-        JsonElement value = cookie.get("expiry");
-        if (value == null) return;
-        if (!value.isPrimitive() || !value.asPrimitive().isNumber()) {
-            throw failure(WebDriverError.INVALID_ARGUMENT, "cookie expiry must be a non-negative integer");
-        }
-        try {
-            if (new java.math.BigDecimal(value.string()).longValueExact() < 0) throw new ArithmeticException();
-        } catch (ArithmeticException | NumberFormatException invalid) {
-            throw new WebDriverException(
-                    WebDriverError.INVALID_ARGUMENT, "cookie expiry must be a non-negative integer", invalid);
-        }
+        cookie.get("expiry").ifPresent(value -> {
+            if (!value.isPrimitive() || !value.asPrimitive().isNumber()) {
+                throw failure(WebDriverError.INVALID_ARGUMENT, "cookie expiry must be a non-negative integer");
+            }
+            try {
+                if (new java.math.BigDecimal(value.string()).longValueExact() < 0) throw new ArithmeticException();
+            } catch (ArithmeticException | NumberFormatException invalid) {
+                throw new WebDriverException(
+                        WebDriverError.INVALID_ARGUMENT, "cookie expiry must be a non-negative integer", invalid);
+            }
+        });
     }
 
     private static JsonElement member(JsonObject source, String name) {
-        return Objects.requireNonNull(source.get(name), name);
+        return source.get(name).orElseThrow(() -> new NullPointerException(name));
     }
 
     private static Optional<String> optionalString(JsonObject source, String name) {
-        return Optional.ofNullable(source.get(name)).map(JsonElement::string);
+        return source.get(name).map(JsonElement::string);
     }
 
     private static Optional<Boolean> optionalBoolean(JsonObject source, String name) {
-        return Optional.ofNullable(source.get(name)).map(JsonElement::booleanValue);
+        return source.get(name).map(JsonElement::booleanValue);
     }
 
     private static Optional<Network.CookieSameSite> optionalSameSite(JsonObject source) {
-        return Optional.ofNullable(source.get("sameSite")).map(value -> Network.CookieSameSite.of(value.string()));
+        return source.get("sameSite").map(value -> Network.CookieSameSite.of(value.string()));
     }
 
     private static Optional<Network.TimeSinceEpoch> optionalExpiry(JsonObject source) {
-        return Optional.ofNullable(source.get("expiry")).map(value -> new Network.TimeSinceEpoch(value.doubleValue()));
+        return source.get("expiry").map(value -> new Network.TimeSinceEpoch(value.doubleValue()));
     }
 
     @Override
     public CompletableFuture<Void> deleteCookie(String name) {
         return currentUrl()
                 .thenCompose(url -> {
-                    Map<String, Object> params = new LinkedHashMap<>();
+                    final Map<String, Object> params = new LinkedHashMap<>();
                     params.put("name", CdpObject.json(name));
                     params.put("url", CdpObject.json(url));
                     return client.call("Network.deleteCookies", params);
@@ -514,16 +543,16 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     private CompletableFuture<Void> focusElement(String elementId) {
-        DOM.BackendNodeId backendNodeId = requireElementId(elementId);
+        final DOM.BackendNodeId backendNodeId = requireElementId(elementId);
         return resolveElement(elementId)
-                .thenCompose(objectId -> dom.focus(Optional.empty(), Optional.of(backendNodeId), Optional.empty())
+                .thenCompose(objectId -> dom.focus(null, backendNodeId, null)
                         .whenComplete((ignored, failure) -> releaseObject(objectId)))
                 .thenApply(ignored -> null);
     }
 
     private CompletableFuture<Void> dispatchMouse(
             String type, double x, double y, String button, int clickCount, int buttons) {
-        Map<String, Object> params = new LinkedHashMap<>();
+        final Map<String, Object> params = new LinkedHashMap<>();
         params.put("type", CdpObject.json(type));
         params.put("x", x);
         params.put("y", y);
@@ -534,20 +563,19 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     private DOM.BackendNodeId requireElementId(String id) {
-        DOM.BackendNodeId backendNodeId = elements.get(id);
+        final DOM.BackendNodeId backendNodeId = elements.get(id);
         if (backendNodeId == null) throw failure(WebDriverError.STALE_ELEMENT_REFERENCE, "unknown element: " + id);
         return backendNodeId;
     }
 
     private CompletableFuture<List<String>> readElementArray(String arrayObjectId) {
-        Map<String, Object> params = new LinkedHashMap<>();
+        final Map<String, Object> params = new LinkedHashMap<>();
         params.put("objectId", CdpObject.json(arrayObjectId));
         params.put("ownProperties", true);
-        return client.<Runtime.GetPropertiesResult>call(
-                        "Runtime.getProperties", params, Runtime.GetPropertiesResult::fromMap)
+        return client.call("Runtime.getProperties", params, Runtime.GetPropertiesResult::fromMap)
                 .thenCompose(properties -> {
-                    List<Runtime.PropertyDescriptor> entries = new ArrayList<>();
-                    for (Runtime.PropertyDescriptor property : properties.result()) {
+                    final List<Runtime.PropertyDescriptor> entries = new ArrayList<>();
+                    for (final Runtime.PropertyDescriptor property : properties.result()) {
                         if (property.value().isPresent()
                                 && property.value().get().objectId().isPresent()
                                 && isArrayIndex(property.name())) {
@@ -556,8 +584,12 @@ public final class CdpAutomationBackend implements AutomationBackend {
                     }
                     entries.sort(Comparator.comparingInt(property -> Integer.parseInt(property.name())));
                     CompletableFuture<List<String>> result = CompletableFuture.completedFuture(new ArrayList<>());
-                    for (Runtime.PropertyDescriptor entry : entries) {
-                        String objectId = entry.value().get().objectId().get().value();
+                    for (final Runtime.PropertyDescriptor entry : entries) {
+                        final String objectId = entry.value()
+                                .orElseThrow(() -> new IllegalStateException("property value missing"))
+                                .objectId()
+                                .orElseThrow(() -> new IllegalStateException("object id missing"))
+                                .value();
                         result = result.thenCombine(registerObject(objectId), (ids, id) -> {
                             ids.add(id);
                             return ids;
@@ -582,15 +614,10 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     private CompletableFuture<String> registerObject(String objectId) {
-        return dom.describeNode(
-                        Optional.empty(),
-                        Optional.empty(),
-                        Optional.of(new Runtime.RemoteObjectId(objectId)),
-                        OptionalLong.empty(),
-                        Optional.empty())
+        return dom.describeNode(null, null, new Runtime.RemoteObjectId(objectId), null, null)
                 .thenApply(description -> {
-                    DOM.BackendNodeId backendNodeId = description.backendNodeId();
-                    String id = UUID.randomUUID().toString();
+                    final DOM.BackendNodeId backendNodeId = description.backendNodeId();
+                    final String id = UUID.randomUUID().toString();
                     elements.put(id, backendNodeId);
                     return id;
                 })
@@ -600,77 +627,81 @@ public final class CdpAutomationBackend implements AutomationBackend {
 
     @SuppressWarnings("FutureReturnValueIgnored")
     private CompletableFuture<String> resolveElement(String id) {
-        DOM.BackendNodeId backendNodeId = elements.get(id);
+        final DOM.BackendNodeId backendNodeId = elements.get(id);
         if (backendNodeId == null) {
             return CompletableFuture.failedFuture(
                     failure(WebDriverError.STALE_ELEMENT_REFERENCE, "unknown element: " + id));
         }
-        CompletableFuture<String> result = new CompletableFuture<>();
-        dom.resolveNode(Optional.empty(), Optional.of(backendNodeId), Optional.empty(), Optional.empty())
-                .whenComplete((remoteObject, problem) -> {
-                    if (problem != null) {
-                        elements.remove(id);
-                        result.completeExceptionally(failure(
-                                WebDriverError.STALE_ELEMENT_REFERENCE, "element is no longer attached to the DOM"));
-                        return;
-                    }
-                    Optional<Runtime.RemoteObjectId> objectId = remoteObject.objectId();
-                    if (objectId.isEmpty()) {
-                        elements.remove(id);
-                        result.completeExceptionally(failure(
-                                WebDriverError.STALE_ELEMENT_REFERENCE, "element is no longer attached to the DOM"));
-                        return;
-                    }
-                    String resolved = objectId.get().value();
-                    callFunctionOn(resolved, "function(){return this.isConnected;}", List.of(), true)
-                            .whenComplete((connected, checkFailure) -> {
-                                boolean attached;
-                                try {
-                                    attached = checkFailure == null
-                                            && readEvaluationResult(connected.result(), connected.exceptionDetails())
-                                                    .booleanValue();
-                                } catch (RuntimeException unreadable) {
-                                    attached = false;
-                                }
-                                if (attached) {
-                                    result.complete(resolved);
-                                } else {
-                                    elements.remove(id);
-                                    releaseObject(resolved);
-                                    result.completeExceptionally(failure(
-                                            WebDriverError.STALE_ELEMENT_REFERENCE,
-                                            "element is no longer attached to the DOM"));
-                                }
-                            });
-                });
+        final CompletableFuture<String> result = new CompletableFuture<>();
+        dom.resolveNode(null, backendNodeId, null, null).whenComplete((remoteObject, problem) -> {
+            if (problem != null) {
+                failStaleElement(id, result);
+                return;
+            }
+            final Optional<Runtime.RemoteObjectId> objectId = remoteObject.objectId();
+            if (objectId.isEmpty()) {
+                failStaleElement(id, result);
+                return;
+            }
+            final String resolved = objectId.get().value();
+            callFunctionOnValue(resolved, "function(){return this.isConnected;}", List.of())
+                    .whenComplete((connected, checkFailure) -> {
+                        boolean attached;
+                        try {
+                            attached = checkFailure == null
+                                    && readEvaluationResult(
+                                                    connected.result(),
+                                                    connected.exceptionDetails().orElse(null))
+                                            .booleanValue();
+                        } catch (RuntimeException ignored) {
+                            // A result that cannot be read is a value the element does not have, so the
+                            // element is not attached rather than the check failing the command.
+                            attached = false;
+                        }
+                        if (attached) {
+                            result.complete(resolved);
+                        } else {
+                            elements.remove(id);
+                            releaseObject(resolved);
+                            result.completeExceptionally(failure(
+                                    WebDriverError.STALE_ELEMENT_REFERENCE,
+                                    "element is no longer attached to the DOM"));
+                        }
+                    });
+        });
         return result;
+    }
+
+    private void failStaleElement(String id, CompletableFuture<String> result) {
+        elements.remove(id);
+        result.completeExceptionally(
+                failure(WebDriverError.STALE_ELEMENT_REFERENCE, "element is no longer attached to the DOM"));
     }
 
     private CompletableFuture<JsonElement> callElementValue(
             String id, String function, List<Runtime.CallArgument> args) {
         return resolveElement(id)
-                .thenCompose(objectId -> callFunctionOn(objectId, function, args, true)
+                .thenCompose(objectId -> callFunctionOnValue(objectId, function, args)
                         .whenComplete((ignored, failure) -> releaseObject(objectId)))
                 .thenApply(this::readEvaluationResult);
     }
 
     private CompletableFuture<String> remoteObject(String expression) {
-        return evaluate(expression, false, false).thenCompose(CdpAutomationBackend::remoteObjectId);
+        return evaluateReference(expression).thenCompose(CdpAutomationBackend::remoteObjectId);
     }
 
     private static CompletableFuture<String> remoteObjectId(Runtime.EvaluateResult response) {
-        return remoteObjectId(response.result(), response.exceptionDetails());
+        return remoteObjectId(response.result(), response.exceptionDetails().orElse(null));
     }
 
     private static CompletableFuture<String> remoteObjectId(Runtime.CallFunctionOnResult response) {
-        return remoteObjectId(response.result(), response.exceptionDetails());
+        return remoteObjectId(response.result(), response.exceptionDetails().orElse(null));
     }
 
     private static CompletableFuture<String> remoteObjectId(
-            Runtime.RemoteObject result, Optional<Runtime.ExceptionDetails> exceptionDetails) {
-        if (exceptionDetails.isPresent()) {
-            return CompletableFuture.failedFuture(failure(
-                    WebDriverError.INVALID_SELECTOR, exceptionDetails.get().text()));
+            Runtime.RemoteObject result, Runtime.@Nullable ExceptionDetails exceptionDetails) {
+        if (exceptionDetails != null) {
+            return CompletableFuture.failedFuture(failure(WebDriverError.INVALID_SELECTOR, exceptionDetails.text()));
         }
         if (result.objectId().isEmpty()) {
             return CompletableFuture.failedFuture(
@@ -680,7 +711,7 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     private static List<Runtime.CallArgument> callArguments(String... values) {
-        List<Runtime.CallArgument> result = new ArrayList<>();
+        final List<Runtime.CallArgument> result = new ArrayList<>();
         for (String value : values) result.add(new Runtime.CallArgument().value(value));
         return result;
     }
@@ -724,33 +755,48 @@ public final class CdpAutomationBackend implements AutomationBackend {
             + "this.dispatchEvent(new Event('change',{bubbles:true}));}";
 
     private CompletableFuture<JsonElement> evaluateValue(String expression) {
-        return evaluate(expression, true, true).thenApply(this::readEvaluationResult);
+        return evaluate(expression, ResultMode.VALUE).thenApply(this::readEvaluationResult);
     }
 
-    private CompletableFuture<Runtime.EvaluateResult> evaluate(
-            String expression, boolean returnByValue, boolean awaitPromise) {
-        Map<String, Object> params = new LinkedHashMap<>();
+    /** Evaluates an expression to the reference of its value, which the caller releases. */
+    private CompletableFuture<Runtime.EvaluateResult> evaluateReference(String expression) {
+        return evaluate(expression, ResultMode.REFERENCE);
+    }
+
+    private CompletableFuture<Runtime.EvaluateResult> evaluate(String expression, ResultMode mode) {
+        final boolean value = mode == ResultMode.VALUE;
+        final Map<String, Object> params = new LinkedHashMap<>();
         params.put("expression", CdpObject.json(expression));
-        params.put("returnByValue", returnByValue);
-        params.put("awaitPromise", awaitPromise);
+        params.put("returnByValue", value);
+        params.put("awaitPromise", value);
         return client.call("Runtime.evaluate", params, Runtime.EvaluateResult::fromMap)
                 .toCompletableFuture();
     }
 
+    private CompletableFuture<Runtime.CallFunctionOnResult> callFunctionOnValue(
+            String objectId, String function, List<Runtime.CallArgument> arguments) {
+        return callFunctionOn(objectId, function, arguments, ResultMode.VALUE);
+    }
+
+    private CompletableFuture<Runtime.CallFunctionOnResult> callFunctionOnReference(
+            String objectId, String function, List<Runtime.CallArgument> arguments) {
+        return callFunctionOn(objectId, function, arguments, ResultMode.REFERENCE);
+    }
+
     private CompletableFuture<Runtime.CallFunctionOnResult> callFunctionOn(
-            String objectId, String function, List<Runtime.CallArgument> arguments, boolean returnByValue) {
-        Map<String, Object> params = new LinkedHashMap<>();
+            String objectId, String function, List<Runtime.CallArgument> arguments, ResultMode mode) {
+        final Map<String, Object> params = new LinkedHashMap<>();
         params.put("functionDeclaration", CdpObject.json(function));
         params.put("objectId", CdpObject.json(objectId));
         params.put("arguments", CdpObject.json(arguments));
-        params.put("returnByValue", returnByValue);
+        params.put("returnByValue", mode == ResultMode.VALUE);
         params.put("awaitPromise", true);
         return client.call("Runtime.callFunctionOn", params, Runtime.CallFunctionOnResult::fromMap)
                 .toCompletableFuture();
     }
 
     private CompletableFuture<Void> awaitNotLoading() {
-        CompletableFuture<Void> result = new CompletableFuture<>();
+        final CompletableFuture<Void> result = new CompletableFuture<>();
         pollLoading(result);
         return result;
     }
@@ -769,29 +815,29 @@ public final class CdpAutomationBackend implements AutomationBackend {
     }
 
     private JsonElement readEvaluationResult(Runtime.EvaluateResult response) {
-        return readEvaluationResult(response.result(), response.exceptionDetails());
+        return readEvaluationResult(
+                response.result(), response.exceptionDetails().orElse(null));
     }
 
     private JsonElement readEvaluationResult(Runtime.CallFunctionOnResult response) {
-        return readEvaluationResult(response.result(), response.exceptionDetails());
+        return readEvaluationResult(
+                response.result(), response.exceptionDetails().orElse(null));
     }
 
     private JsonElement readEvaluationResult(
-            Runtime.RemoteObject result, Optional<Runtime.ExceptionDetails> exceptionDetails) {
-        if (exceptionDetails.isPresent()) {
-            Runtime.ExceptionDetails details = exceptionDetails.get();
-            String text = details.text();
-            if (details.exception().isPresent()) {
-                Optional<String> description = details.exception().get().description();
-                if (description.isPresent()) text = description.get();
-            }
+            Runtime.RemoteObject result, Runtime.@Nullable ExceptionDetails exceptionDetails) {
+        if (exceptionDetails != null) {
+            final String text = exceptionDetails
+                    .exception()
+                    .flatMap(Runtime.RemoteObject::description)
+                    .orElseGet(exceptionDetails::text);
             throw failure(WebDriverError.JAVASCRIPT_ERROR, text);
         }
-        Optional<Object> value = result.value();
-        if (value.isPresent()) return WebDriverJsonCodec.toJsonElement(value.get());
+        final Optional<Object> value = result.value();
+        if (value.isPresent()) return WebDriverJsonCodec.toJsonElement(value.orElseThrow());
         if ("undefined".equals(result.type().value())) return JsonNull.INSTANCE;
-        Optional<String> description = result.description();
-        return description.isEmpty() ? JsonNull.INSTANCE : cdp.jsonCodec().decode(description.get());
+        final Optional<String> description = result.description();
+        return description.map(cdp.jsonCodec()::decode).orElse(JsonNull.INSTANCE);
     }
 
     @Override

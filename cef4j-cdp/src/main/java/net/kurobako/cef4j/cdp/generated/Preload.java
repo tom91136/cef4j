@@ -1,11 +1,8 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
@@ -13,6 +10,7 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Chrome DevTools Protocol Preload domain.
@@ -21,6 +19,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Preload {
     private Preload() {}
     /**
@@ -29,7 +28,7 @@ public final class Preload {
     public static final class RuleSetId implements CdpValue<String> {
         public final String value;
         public RuleSetId(String value) { this.value = java.util.Objects.requireNonNull(value); }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof RuleSetId)) return false;
@@ -75,32 +74,28 @@ public final class Preload {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            Object value = raw("backendNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Returns the url field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            Object value = raw("url");
-            return Optional.ofNullable((String) value);
+            return raw("url").map(value -> (String) value);
         }
         /**
          * Returns the requestId field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.RequestId> requestId() {
-            Object value = raw("requestId");
-            return Optional.ofNullable(value == null ? null : new Network.RequestId((String) value));
+            return raw("requestId").map(value -> new Network.RequestId((String) value));
         }
         /**
          * Error information {@code errorMessage} is null iff {@code errorType} is null.
          * @return the protocol field value, empty when absent
          */
         public Optional<Preload.RuleSetErrorType> errorType() {
-            Object value = raw("errorType");
-            return Optional.ofNullable(value == null ? null : Preload.RuleSetErrorType.of((String) value));
+            return raw("errorType").map(value -> Preload.RuleSetErrorType.of((String) value));
         }
         /**
          * TODO(https://crbug.com/1425354): Replace this property with structured error.
@@ -109,16 +104,14 @@ public final class Preload {
          */
         @Deprecated
         public Optional<String> errorMessage() {
-            Object value = raw("errorMessage");
-            return Optional.ofNullable((String) value);
+            return raw("errorMessage").map(value -> (String) value);
         }
         /**
          * For more details, see: https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md
          * @return the protocol field value, empty when absent
          */
         public Optional<String> tag() {
-            Object value = raw("tag");
-            return Optional.ofNullable((String) value);
+            return raw("tag").map(value -> (String) value);
         }
         /**
          * Sets the id field.
@@ -151,17 +144,7 @@ public final class Preload {
         /**
          * A speculation rule set is either added through an inline {@code &lt;script&gt;} tag or through an external resource via the &#x27;Speculation-Rules&#x27; HTTP header. For the first case, we include the BackendNodeId of the relevant {@code &lt;script&gt;} tag. For the second case, we include the external URL where the rule set was loaded from, and also RequestId if Network domain is enabled.
          * <p>See also: - https://wicg.github.io/nav-speculation/speculation-rules.html#speculation-rules-script - https://wicg.github.io/nav-speculation/speculation-rules.html#speculation-rules-header
-         * @param backendNodeId field value; empty omits the value
-         * @return this model
-         */
-        public RuleSet backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
-            set("backendNodeId", backendNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * A speculation rule set is either added through an inline {@code &lt;script&gt;} tag or through an external resource via the &#x27;Speculation-Rules&#x27; HTTP header. For the first case, we include the BackendNodeId of the relevant {@code &lt;script&gt;} tag. For the second case, we include the external URL where the rule set was loaded from, and also RequestId if Network domain is enabled.
-         * <p>See also: - https://wicg.github.io/nav-speculation/speculation-rules.html#speculation-rules-script - https://wicg.github.io/nav-speculation/speculation-rules.html#speculation-rules-header
-         * @param backendNodeId field value; null removes the value
+         * @param backendNodeId field value
          * @return this model
          */
         public RuleSet backendNodeId(DOM.BackendNodeId backendNodeId) {
@@ -170,16 +153,7 @@ public final class Preload {
         }
         /**
          * Sets the url field.
-         * @param url field value; empty omits the value
-         * @return this model
-         */
-        public RuleSet url(Optional<String> url) {
-            set("url", url.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the url field.
-         * @param url field value; null removes the value
+         * @param url field value
          * @return this model
          */
         public RuleSet url(String url) {
@@ -188,16 +162,7 @@ public final class Preload {
         }
         /**
          * Sets the requestId field.
-         * @param requestId field value; empty omits the value
-         * @return this model
-         */
-        public RuleSet requestId(Optional<Network.RequestId> requestId) {
-            set("requestId", requestId.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the requestId field.
-         * @param requestId field value; null removes the value
+         * @param requestId field value
          * @return this model
          */
         public RuleSet requestId(Network.RequestId requestId) {
@@ -206,16 +171,7 @@ public final class Preload {
         }
         /**
          * Error information {@code errorMessage} is null iff {@code errorType} is null.
-         * @param errorType field value; empty omits the value
-         * @return this model
-         */
-        public RuleSet errorType(Optional<Preload.RuleSetErrorType> errorType) {
-            set("errorType", errorType.orElse(null));
-            return this;
-        }
-        /**
-         * Error information {@code errorMessage} is null iff {@code errorType} is null.
-         * @param errorType field value; null removes the value
+         * @param errorType field value
          * @return this model
          */
         public RuleSet errorType(Preload.RuleSetErrorType errorType) {
@@ -224,18 +180,7 @@ public final class Preload {
         }
         /**
          * TODO(https://crbug.com/1425354): Replace this property with structured error.
-         * @param errorMessage field value; empty omits the value
-         * @return this model
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public RuleSet errorMessage(Optional<String> errorMessage) {
-            set("errorMessage", errorMessage.orElse(null));
-            return this;
-        }
-        /**
-         * TODO(https://crbug.com/1425354): Replace this property with structured error.
-         * @param errorMessage field value; null removes the value
+         * @param errorMessage field value
          * @return this model
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
@@ -246,16 +191,7 @@ public final class Preload {
         }
         /**
          * For more details, see: https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md
-         * @param tag field value; empty omits the value
-         * @return this model
-         */
-        public RuleSet tag(Optional<String> tag) {
-            set("tag", tag.orElse(null));
-            return this;
-        }
-        /**
-         * For more details, see: https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md
-         * @param tag field value; null removes the value
+         * @param tag field value
          * @return this model
          */
         public RuleSet tag(String tag) {
@@ -272,7 +208,7 @@ public final class Preload {
         INVALIDRULESETLEVELTAG("InvalidRulesetLevelTag");
         public final String value;
         RuleSetErrorType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static RuleSetErrorType of(String value) {
             for (RuleSetErrorType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -289,7 +225,7 @@ public final class Preload {
         PRERENDERUNTILSCRIPT("PrerenderUntilScript");
         public final String value;
         SpeculationAction(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static SpeculationAction of(String value) {
             for (SpeculationAction constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -305,7 +241,7 @@ public final class Preload {
         SELF("Self");
         public final String value;
         SpeculationTargetHint(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static SpeculationTargetHint of(String value) {
             for (SpeculationTargetHint constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -349,16 +285,14 @@ public final class Preload {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> formSubmission() {
-            Object value = raw("formSubmission");
-            return Optional.ofNullable((Boolean) value);
+            return raw("formSubmission").map(value -> (Boolean) value);
         }
         /**
          * Returns the targetHint field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Preload.SpeculationTargetHint> targetHint() {
-            Object value = raw("targetHint");
-            return Optional.ofNullable(value == null ? null : Preload.SpeculationTargetHint.of((String) value));
+            return raw("targetHint").map(value -> Preload.SpeculationTargetHint.of((String) value));
         }
         /**
          * Sets the loaderId field.
@@ -389,34 +323,16 @@ public final class Preload {
         }
         /**
          * Sets the formSubmission field.
-         * @param formSubmission field value; empty omits the value
+         * @param formSubmission field value
          * @return this model
          */
-        public PreloadingAttemptKey formSubmission(Optional<Boolean> formSubmission) {
-            set("formSubmission", formSubmission.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the formSubmission field.
-         * @param formSubmission field value; null removes the value
-         * @return this model
-         */
-        public PreloadingAttemptKey formSubmission(Boolean formSubmission) {
+        public PreloadingAttemptKey formSubmission(boolean formSubmission) {
             set("formSubmission", formSubmission);
             return this;
         }
         /**
          * Sets the targetHint field.
-         * @param targetHint field value; empty omits the value
-         * @return this model
-         */
-        public PreloadingAttemptKey targetHint(Optional<Preload.SpeculationTargetHint> targetHint) {
-            set("targetHint", targetHint.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the targetHint field.
-         * @param targetHint field value; null removes the value
+         * @param targetHint field value
          * @return this model
          */
         public PreloadingAttemptKey targetHint(Preload.SpeculationTargetHint targetHint) {
@@ -438,7 +354,7 @@ public final class Preload {
          * @return the protocol field value
          */
         public Preload.PreloadingAttemptKey key() {
-            return java.util.Objects.requireNonNull(Preload.PreloadingAttemptKey.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("key")))));
+            return java.util.Objects.requireNonNull(Preload.PreloadingAttemptKey.fromMap(CdpObject.requireObjectMap(require("key"))));
         }
         /**
          * Returns the ruleSetIds field.
@@ -489,7 +405,7 @@ public final class Preload {
     public static final class PreloadPipelineId implements CdpValue<String> {
         public final String value;
         public PreloadPipelineId(String value) { this.value = java.util.Objects.requireNonNull(value); }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof PreloadPipelineId)) return false;
@@ -580,7 +496,7 @@ public final class Preload {
         CROSSDOCUMENTRESTART("CrossDocumentRestart");
         public final String value;
         PrerenderFinalStatus(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static PrerenderFinalStatus of(String value) {
             for (PrerenderFinalStatus constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -600,7 +516,7 @@ public final class Preload {
         NOTSUPPORTED("NotSupported");
         public final String value;
         PreloadingStatus(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static PreloadingStatus of(String value) {
             for (PreloadingStatus constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -649,7 +565,7 @@ public final class Preload {
         PREFETCHCANCELLEDONUSERNAVIGATION("PrefetchCancelledOnUserNavigation");
         public final String value;
         PrefetchStatus(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static PrefetchStatus of(String value) {
             for (PrefetchStatus constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -678,16 +594,14 @@ public final class Preload {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> initialValue() {
-            Object value = raw("initialValue");
-            return Optional.ofNullable((String) value);
+            return raw("initialValue").map(value -> (String) value);
         }
         /**
          * Returns the activationValue field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> activationValue() {
-            Object value = raw("activationValue");
-            return Optional.ofNullable((String) value);
+            return raw("activationValue").map(value -> (String) value);
         }
         /**
          * Sets the headerName field.
@@ -700,16 +614,7 @@ public final class Preload {
         }
         /**
          * Sets the initialValue field.
-         * @param initialValue field value; empty omits the value
-         * @return this model
-         */
-        public PrerenderMismatchedHeaders initialValue(Optional<String> initialValue) {
-            set("initialValue", initialValue.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the initialValue field.
-         * @param initialValue field value; null removes the value
+         * @param initialValue field value
          * @return this model
          */
         public PrerenderMismatchedHeaders initialValue(String initialValue) {
@@ -718,16 +623,7 @@ public final class Preload {
         }
         /**
          * Sets the activationValue field.
-         * @param activationValue field value; empty omits the value
-         * @return this model
-         */
-        public PrerenderMismatchedHeaders activationValue(Optional<String> activationValue) {
-            set("activationValue", activationValue.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the activationValue field.
-         * @param activationValue field value; null removes the value
+         * @param activationValue field value
          * @return this model
          */
         public PrerenderMismatchedHeaders activationValue(String activationValue) {
@@ -749,7 +645,7 @@ public final class Preload {
          * @return the protocol field value
          */
         public Preload.RuleSet ruleSet() {
-            return java.util.Objects.requireNonNull(Preload.RuleSet.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("ruleSet")))));
+            return java.util.Objects.requireNonNull(Preload.RuleSet.fromMap(CdpObject.requireObjectMap(require("ruleSet"))));
         }
         /**
          * Sets the ruleSet field.
@@ -891,7 +787,7 @@ public final class Preload {
          * @return the protocol field value
          */
         public Preload.PreloadingAttemptKey key() {
-            return java.util.Objects.requireNonNull(Preload.PreloadingAttemptKey.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("key")))));
+            return java.util.Objects.requireNonNull(Preload.PreloadingAttemptKey.fromMap(CdpObject.requireObjectMap(require("key"))));
         }
         /**
          * Returns the pipelineId field.
@@ -1013,7 +909,7 @@ public final class Preload {
          * @return the protocol field value
          */
         public Preload.PreloadingAttemptKey key() {
-            return java.util.Objects.requireNonNull(Preload.PreloadingAttemptKey.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("key")))));
+            return java.util.Objects.requireNonNull(Preload.PreloadingAttemptKey.fromMap(CdpObject.requireObjectMap(require("key"))));
         }
         /**
          * Returns the pipelineId field.
@@ -1034,24 +930,21 @@ public final class Preload {
          * @return the protocol field value, empty when absent
          */
         public Optional<Preload.PrerenderFinalStatus> prerenderStatus() {
-            Object value = raw("prerenderStatus");
-            return Optional.ofNullable(value == null ? null : Preload.PrerenderFinalStatus.of((String) value));
+            return raw("prerenderStatus").map(value -> Preload.PrerenderFinalStatus.of((String) value));
         }
         /**
          * This is used to give users more information about the name of Mojo interface that is incompatible with prerender and has caused the cancellation of the attempt.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> disallowedMojoInterface() {
-            Object value = raw("disallowedMojoInterface");
-            return Optional.ofNullable((String) value);
+            return raw("disallowedMojoInterface").map(value -> (String) value);
         }
         /**
          * Returns the mismatchedHeaders field.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Preload.PrerenderMismatchedHeaders>> mismatchedHeaders() {
-            Object value = raw("mismatchedHeaders");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Preload.PrerenderMismatchedHeaders.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("mismatchedHeaders").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Preload.PrerenderMismatchedHeaders.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Sets the key field.
@@ -1082,16 +975,7 @@ public final class Preload {
         }
         /**
          * Sets the prerenderStatus field.
-         * @param prerenderStatus field value; empty omits the value
-         * @return this model
-         */
-        public PrerenderStatusUpdatedEvent prerenderStatus(Optional<Preload.PrerenderFinalStatus> prerenderStatus) {
-            set("prerenderStatus", prerenderStatus.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the prerenderStatus field.
-         * @param prerenderStatus field value; null removes the value
+         * @param prerenderStatus field value
          * @return this model
          */
         public PrerenderStatusUpdatedEvent prerenderStatus(Preload.PrerenderFinalStatus prerenderStatus) {
@@ -1100,16 +984,7 @@ public final class Preload {
         }
         /**
          * This is used to give users more information about the name of Mojo interface that is incompatible with prerender and has caused the cancellation of the attempt.
-         * @param disallowedMojoInterface field value; empty omits the value
-         * @return this model
-         */
-        public PrerenderStatusUpdatedEvent disallowedMojoInterface(Optional<String> disallowedMojoInterface) {
-            set("disallowedMojoInterface", disallowedMojoInterface.orElse(null));
-            return this;
-        }
-        /**
-         * This is used to give users more information about the name of Mojo interface that is incompatible with prerender and has caused the cancellation of the attempt.
-         * @param disallowedMojoInterface field value; null removes the value
+         * @param disallowedMojoInterface field value
          * @return this model
          */
         public PrerenderStatusUpdatedEvent disallowedMojoInterface(String disallowedMojoInterface) {
@@ -1118,16 +993,7 @@ public final class Preload {
         }
         /**
          * Sets the mismatchedHeaders field.
-         * @param mismatchedHeaders field value; empty omits the value
-         * @return this model
-         */
-        public PrerenderStatusUpdatedEvent mismatchedHeaders(Optional<java.util.List<Preload.PrerenderMismatchedHeaders>> mismatchedHeaders) {
-            set("mismatchedHeaders", mismatchedHeaders.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the mismatchedHeaders field.
-         * @param mismatchedHeaders field value; null removes the value
+         * @param mismatchedHeaders field value
          * @return this model
          */
         public PrerenderStatusUpdatedEvent mismatchedHeaders(java.util.List<Preload.PrerenderMismatchedHeaders> mismatchedHeaders) {
@@ -1156,7 +1022,7 @@ public final class Preload {
          * @return the protocol field value
          */
         public java.util.List<Preload.PreloadingAttemptSource> preloadingAttemptSources() {
-            return CdpObject.requireList(require("preloadingAttemptSources"), element0 -> java.util.Objects.requireNonNull(Preload.PreloadingAttemptSource.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("preloadingAttemptSources"), element0 -> java.util.Objects.requireNonNull(Preload.PreloadingAttemptSource.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Sets the loaderId field.

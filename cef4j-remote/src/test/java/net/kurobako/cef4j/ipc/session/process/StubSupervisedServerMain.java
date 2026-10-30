@@ -31,17 +31,15 @@ public final class StubSupervisedServerMain {
             socket.send(readyResponse);
             String exit = System.getenv("CEF4J_STUB_EXIT_AFTER_MS");
             if (exit != null) {
-                new java.util.concurrent.CountDownLatch(1)
-                        .await(Long.parseLong(exit), java.util.concurrent.TimeUnit.MILLISECONDS);
+                java.util.concurrent.TimeUnit.MILLISECONDS.sleep(Long.parseLong(exit));
                 return;
             }
             String drop = System.getenv("CEF4J_STUB_DROP_AFTER_MS");
             if (drop != null) {
-                new java.util.concurrent.CountDownLatch(1)
-                        .await(Long.parseLong(drop), java.util.concurrent.TimeUnit.MILLISECONDS);
+                java.util.concurrent.TimeUnit.MILLISECONDS.sleep(Long.parseLong(drop));
                 socket.close();
                 // Stays alive until the supervisor sends its shutdown command or closes stdin.
-                System.in.read();
+                int ignored = System.in.read();
             } else {
                 while (!Thread.currentThread().isInterrupted()) socket.recv(0);
             }

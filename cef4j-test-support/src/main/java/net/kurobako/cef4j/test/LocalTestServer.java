@@ -23,7 +23,7 @@ public final class LocalTestServer implements AutoCloseable {
 
     /** Serves each route's HTML body. */
     public static LocalTestServer startServer(Map<String, String> routes) throws IOException {
-        Map<String, ResponseSpec> specs = new LinkedHashMap<>();
+        final Map<String, ResponseSpec> specs = new LinkedHashMap<>();
         for (Map.Entry<String, String> entry : routes.entrySet()) {
             specs.put(entry.getKey(), ResponseSpec.html(entry.getValue()));
         }
@@ -31,7 +31,7 @@ public final class LocalTestServer implements AutoCloseable {
     }
 
     public static LocalTestServer startServerWithResponses(Map<String, ResponseSpec> routes) throws IOException {
-        HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
+        final HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
         for (Map.Entry<String, ResponseSpec> entry : routes.entrySet()) {
             server.createContext(entry.getKey(), exchange -> respond(exchange, entry.getValue()));
         }
@@ -52,7 +52,7 @@ public final class LocalTestServer implements AutoCloseable {
         if (response.requestStarted != null) response.requestStarted.countDown();
         if (response.delayMillis > 0) {
             try {
-                new CountDownLatch(1).await(response.delayMillis, TimeUnit.MILLISECONDS);
+                TimeUnit.MILLISECONDS.sleep(response.delayMillis);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new IOException("Interrupted while delaying response", e);
@@ -61,7 +61,7 @@ public final class LocalTestServer implements AutoCloseable {
         for (Map.Entry<String, String> header : response.headers.entrySet()) {
             exchange.getResponseHeaders().set(header.getKey(), header.getValue());
         }
-        byte[] bytes = response.body.getBytes(StandardCharsets.UTF_8);
+        final byte[] bytes = response.body.getBytes(StandardCharsets.UTF_8);
         exchange.sendResponseHeaders(response.statusCode, bytes.length);
         try (OutputStream out = exchange.getResponseBody()) {
             out.write(bytes);

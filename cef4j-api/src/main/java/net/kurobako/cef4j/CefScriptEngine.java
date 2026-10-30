@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * <p>Call {@link #cancelPending(String)} when the target frame navigates so requests and callbacks belonging to the old
  * renderer context cannot leak into the next page.
  */
-@SuppressWarnings({"resource", "unused"})
+@SuppressWarnings("unused")
 public final class CefScriptEngine implements AutoCloseable {
 
     private static final Logger log = LoggerFactory.getLogger(CefScriptEngine.class);
@@ -165,7 +165,7 @@ public final class CefScriptEngine implements AutoCloseable {
     private final ConcurrentHashMap<Integer, CompletableFuture<Result>> pending = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Integer, CallbackHandler> callbacks = new ConcurrentHashMap<>();
     private final Object lifecycleLock = new Object();
-    private volatile boolean disposed;
+    private volatile boolean disposed = false;
 
     /**
      * Creates a new engine that obtains the target frame from the given supplier on each operation.
@@ -178,7 +178,7 @@ public final class CefScriptEngine implements AutoCloseable {
     }
 
     private CefFrame frame() {
-        CefFrame f = frameSupplier.get();
+        final CefFrame f = frameSupplier.get();
         if (f == null) throw new IllegalStateException("No frame available");
         return f;
     }
@@ -226,12 +226,7 @@ public final class CefScriptEngine implements AutoCloseable {
      */
     public CompletableFuture<Result> getProperty(int handleId, String key, boolean asHandle) {
         Objects.requireNonNull(key, "key");
-        return sendRequest(MSG_GET, 4, null, (args, reqId) -> {
-            args.setInt(0, reqId);
-            args.setInt(1, handleId);
-            args.setString(2, key);
-            args.setInt(3, asHandle ? MODE_HANDLE : MODE_JSON);
-        });
+        return sendRequest(MSG_GET, 4, null, (args, reqId) -> writeTargetAndMode(args, reqId, handleId, key, asHandle));
     }
 
     /**
@@ -247,9 +242,7 @@ public final class CefScriptEngine implements AutoCloseable {
         Objects.requireNonNull(valueJson, "valueJson");
         return transform(
                         sendRequest(MSG_SET, 4, null, (args, reqId) -> {
-                            args.setInt(0, reqId);
-                            args.setInt(1, handleId);
-                            args.setString(2, key);
+                            writeTarget(args, reqId, handleId, key);
                             args.setString(3, valueJson);
                         }),
                         result -> {
@@ -273,9 +266,7 @@ public final class CefScriptEngine implements AutoCloseable {
         Objects.requireNonNull(method, "method");
         Objects.requireNonNull(argsJson, "argsJson");
         return sendRequest(MSG_CALL, 5, null, (args, reqId) -> {
-            args.setInt(0, reqId);
-            args.setInt(1, handleId);
-            args.setString(2, method);
+            writeTarget(args, reqId, handleId, method);
             args.setString(3, argsJson);
             args.setInt(4, asHandle ? MODE_HANDLE : MODE_JSON);
         });
@@ -291,12 +282,8 @@ public final class CefScriptEngine implements AutoCloseable {
      */
     public CompletableFuture<Result> invoke(int handleId, String argsJson, boolean asHandle) {
         Objects.requireNonNull(argsJson, "argsJson");
-        return sendRequest(MSG_INVOKE, 4, null, (args, reqId) -> {
-            args.setInt(0, reqId);
-            args.setInt(1, handleId);
-            args.setString(2, argsJson);
-            args.setInt(3, asHandle ? MODE_HANDLE : MODE_JSON);
-        });
+        return sendRequest(
+                MSG_INVOKE, 4, null, (args, reqId) -> writeTargetAndMode(args, reqId, handleId, argsJson, asHandle));
     }
 
     /**
@@ -305,15 +292,15 @@ public final class CefScriptEngine implements AutoCloseable {
      * @param handleId the handle ID to release
      */
     public void release(int handleId) {
-        CefFrame f = frameSupplier.get();
+        final CefFrame f = frameSupplier.get();
         if (f == null) return;
-        CefProcessMessage msg = CefProcessMessage.create(MSG_RELEASE).orElse(null);
+        final CefProcessMessage msg = CefProcessMessage.create(MSG_RELEASE).orElse(null);
         if (msg == null) {
             log.warn("Failed to create CefProcessMessage for release");
             return;
         }
         try (msg) {
-            CefListValue args = msg.getArgumentList().orElse(null);
+            final CefListValue args = msg.getArgumentList().orElse(null);
             if (args == null) {
                 log.warn("Failed to get argument list for release message");
                 return;
@@ -341,7 +328,7 @@ public final class CefScriptEngine implements AutoCloseable {
     @SuppressWarnings("FutureReturnValueIgnored")
     public CompletableFuture<Integer> createCallback(CallbackHandler handler) {
         Objects.requireNonNull(handler, "handler");
-        int callbackId = nextCallbackId.getAndIncrement();
+        final int callbackId = nextCallbackId.getAndIncrement();
         CompletableFuture<Integer> result;
         synchronized (lifecycleLock) {
             callbacks.put(callbackId, handler);
@@ -378,22 +365,22 @@ public final class CefScriptEngine implements AutoCloseable {
             @Nullable CefProcessId sourceProcess,
             @Nullable CefProcessMessage message) {
         if (message == null) return false;
-        String name = message.getName().orElse(null);
+        final String name = message.getName().orElse(null);
 
         if (MSG_CALLBACK.equals(name)) {
-            CefListValue args = message.getArgumentList().orElse(null);
+            final CefListValue args = message.getArgumentList().orElse(null);
             if (args == null) {
                 log.warn("cef4j:cb message with no argument list");
                 return true;
             }
             try (args) {
-                int callbackId = args.getInt(0);
-                int numArgs = args.getInt(1);
-                int[] argHandles = new int[numArgs];
+                final int callbackId = args.getInt(0);
+                final int numArgs = args.getInt(1);
+                final int[] argHandles = new int[numArgs];
                 for (int i = 0; i < numArgs; i++) {
                     argHandles[i] = args.getInt(2 + i);
                 }
-                CallbackHandler handler = callbacks.get(callbackId);
+                final CallbackHandler handler = callbacks.get(callbackId);
                 if (handler != null) {
                     handler.onCallback(argHandles);
                 } else {
@@ -405,7 +392,7 @@ public final class CefScriptEngine implements AutoCloseable {
 
         if (!MSG_RESULT.equals(name)) return false;
 
-        CefListValue args = message.getArgumentList().orElse(null);
+        final CefListValue args = message.getArgumentList().orElse(null);
         if (args == null) {
             log.warn("cef4j:result message with no argument list");
             return true;
@@ -421,7 +408,7 @@ public final class CefScriptEngine implements AutoCloseable {
             ok = args.getBool(1);
             type = args.getInt(2);
             if (type == TYPE_JSON || type == TYPE_ERROR) {
-                CefValue val = args.getValue(3).orElse(null);
+                final CefValue val = args.getValue(3).orElse(null);
                 if (val != null) {
                     try (val) {
                         stringPayload = val.getString().orElse(null);
@@ -455,7 +442,7 @@ public final class CefScriptEngine implements AutoCloseable {
             }
         }
 
-        CompletableFuture<Result> future = pending.remove(reqId);
+        final CompletableFuture<Result> future = pending.remove(reqId);
         if (future != null) {
             future.complete(result);
         } else {
@@ -490,7 +477,7 @@ public final class CefScriptEngine implements AutoCloseable {
     }
 
     private void cancelPendingLocked(String reason) {
-        CefScriptException failure = new CefScriptException(reason);
+        final CefScriptException failure = new CefScriptException(reason);
         pending.forEach((id, future) -> future.completeExceptionally(failure));
         pending.clear();
         callbacks.clear();
@@ -522,17 +509,18 @@ public final class CefScriptEngine implements AutoCloseable {
                 if (onFailure != null) onFailure.run();
                 return CompletableFuture.failedFuture(failure);
             }
-            int reqId = nextId.getAndIncrement();
-            CompletableFuture<Result> future = new CompletableFuture<>();
+            final int reqId = nextId.getAndIncrement();
+            final CompletableFuture<Result> future = new CompletableFuture<>();
             pending.put(reqId, future);
             future.whenComplete((ignored, error) -> pending.remove(reqId, future));
 
-            CefProcessMessage message = CefProcessMessage.create(messageName).orElse(null);
+            final CefProcessMessage message =
+                    CefProcessMessage.create(messageName).orElse(null);
             if (message == null) {
                 return failRequest(reqId, future, onFailure, "Failed to create CefProcessMessage");
             }
             try (message) {
-                CefListValue args = message.getArgumentList().orElse(null);
+                final CefListValue args = message.getArgumentList().orElse(null);
                 if (args == null) {
                     return failRequest(reqId, future, onFailure, "Failed to get argument list");
                 }
@@ -546,10 +534,23 @@ public final class CefScriptEngine implements AutoCloseable {
         }
     }
 
+    /** Writes the request id, the handle and the value the request works on. */
+    private static void writeTarget(CefListValue args, int reqId, int handleId, String value) {
+        args.setInt(0, reqId);
+        args.setInt(1, handleId);
+        args.setString(2, value);
+    }
+
+    /** Writes the request id, the handle, the value and the mode of the result of the request. */
+    private static void writeTargetAndMode(CefListValue args, int reqId, int handleId, String value, boolean asHandle) {
+        writeTarget(args, reqId, handleId, value);
+        args.setInt(3, asHandle ? MODE_HANDLE : MODE_JSON);
+    }
+
     @SuppressWarnings("FutureReturnValueIgnored")
     private static <T extends @Nullable Object> CompletableFuture<T> transform(
             CompletableFuture<Result> source, Function<Result, T> mapper) {
-        CompletableFuture<T> transformed = source.thenApply(mapper);
+        final CompletableFuture<T> transformed = source.thenApply(mapper);
         transformed.whenComplete((ignored, error) -> {
             if (error != null) source.completeExceptionally(error);
         });
@@ -574,16 +575,16 @@ public final class CefScriptEngine implements AutoCloseable {
 
     private static void sendProcessMessageViaFrameOrBrowser(Object frame, Object processId, Object message) {
         try {
-            var m = findMethod(frame.getClass(), "sendProcessMessage", processId, message);
+            final var m = findMethod(frame.getClass(), "sendProcessMessage", processId, message);
             invoke(m, frame, processId, message);
             return;
-        } catch (NoSuchMethodException missingFrameMethod) {
+        } catch (NoSuchMethodException ignored) {
             // CEF versions before the frame-level API expose process messaging on CefBrowser instead.
         }
         final Object browser;
         try {
-            var getBrowser = frame.getClass().getMethod("getBrowser");
-            Object candidate = getBrowser.invoke(frame);
+            final var getBrowser = frame.getClass().getMethod("getBrowser");
+            final Object candidate = getBrowser.invoke(frame);
             browser = candidate instanceof java.util.Optional
                     ? ((java.util.Optional<?>) candidate).orElse(null)
                     : candidate;
@@ -592,18 +593,18 @@ public final class CefScriptEngine implements AutoCloseable {
         }
         if (browser == null) throw new IllegalStateException("CEF frame has no browser");
         try {
-            var m = findMethod(browser.getClass(), "sendProcessMessage", processId, message);
+            final var m = findMethod(browser.getClass(), "sendProcessMessage", processId, message);
             invoke(m, browser, processId, message);
         } catch (NoSuchMethodException failure) {
             throw new IllegalStateException("CEF process-message API is unavailable", failure);
         }
     }
 
-    private static java.lang.reflect.Method findMethod(Class<?> clazz, String name, Object... args)
+    private static java.lang.reflect.Method findMethod(Class<?> clazz, String name, @Nullable Object... args)
             throws NoSuchMethodException {
         for (var m : clazz.getMethods()) {
             if (!m.getName().equals(name) || m.getParameterCount() != args.length) continue;
-            Class<?>[] parameterTypes = m.getParameterTypes();
+            final Class<?>[] parameterTypes = m.getParameterTypes();
             boolean compatible = true;
             for (int i = 0; i < args.length; i++) {
                 if (args[i] == null || !parameterTypes[i].isAssignableFrom(args[i].getClass())) {
@@ -620,7 +621,7 @@ public final class CefScriptEngine implements AutoCloseable {
         try {
             method.invoke(receiver, args);
         } catch (java.lang.reflect.InvocationTargetException failure) {
-            Throwable cause = failure.getCause();
+            final Throwable cause = failure.getCause();
             throw new IllegalStateException("CEF process-message invocation failed", cause != null ? cause : failure);
         } catch (ReflectiveOperationException failure) {
             throw new IllegalStateException("CEF process-message invocation failed", failure);

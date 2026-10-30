@@ -27,7 +27,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:2111</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefTouchEvent {
 
@@ -87,24 +86,14 @@ public final class CefTouchEvent {
 
     /** Create a mutable copy of this instance. */
     public Mutable toMutable() {
-        return new Mutable(
-                this.id,
-                this.x,
-                this.y,
-                this.radiusX,
-                this.radiusY,
-                this.rotationAngle,
-                this.pressure,
-                this.type,
-                this.modifiers,
-                this.pointerType);
+        return new Mutable(id, x, y, radiusX, radiusY, rotationAngle, pressure, type, modifiers, pointerType);
     }
 
     @Override
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefTouchEvent)) return false;
-        CefTouchEvent other = (CefTouchEvent) obj;
+        final CefTouchEvent other = (CefTouchEvent) obj;
         return this.id == other.id
                 && this.x == other.x
                 && this.y == other.y
@@ -197,24 +186,14 @@ public final class CefTouchEvent {
 
         /** Create an immutable snapshot of this instance. */
         public CefTouchEvent toImmutable() {
-            return new CefTouchEvent(
-                    this.id,
-                    this.x,
-                    this.y,
-                    this.radiusX,
-                    this.radiusY,
-                    this.rotationAngle,
-                    this.pressure,
-                    this.type,
-                    this.modifiers,
-                    this.pointerType);
+            return new CefTouchEvent(id, x, y, radiusX, radiusY, rotationAngle, pressure, type, modifiers, pointerType);
         }
 
         @Override
         public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
-            Mutable other = (Mutable) obj;
+            final Mutable other = (Mutable) obj;
             return this.id == other.id
                     && this.x == other.x
                     && this.y == other.y

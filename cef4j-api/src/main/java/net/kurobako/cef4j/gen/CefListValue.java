@@ -20,7 +20,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:537</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefListValue extends CefLibraryObject {
 
@@ -104,6 +103,7 @@ public interface CefListValue extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:592</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setSize(long size);
 
     /**
@@ -245,6 +245,7 @@ public interface CefListValue extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:680</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setValue(long index, @Nullable CefValue value);
 
     /**
@@ -256,6 +257,7 @@ public interface CefListValue extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:691</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setNull(long index);
 
     /**
@@ -267,6 +269,7 @@ public interface CefListValue extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:698</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setBool(long index, boolean value);
 
     /**
@@ -278,6 +281,7 @@ public interface CefListValue extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:705</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setInt(long index, int value);
 
     /**
@@ -289,6 +293,7 @@ public interface CefListValue extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:712</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setDouble(long index, double value);
 
     /**
@@ -302,6 +307,7 @@ public interface CefListValue extends CefLibraryObject {
      * @param value may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:719</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setString(long index, @Nullable String value);
 
     /**
@@ -318,6 +324,7 @@ public interface CefListValue extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:726</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setBinary(long index, @Nullable CefBinaryValue value);
 
     /**
@@ -334,6 +341,7 @@ public interface CefListValue extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:736</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setDictionary(long index, @Nullable CefDictionaryValue value);
 
     /**
@@ -349,6 +357,7 @@ public interface CefListValue extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:747</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setList(long index, @Nullable CefListValue value);
     /**
      * Creates a new object that is not owned by any other object.

@@ -23,7 +23,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__button__delegate_8h.html">views/cef_menu_button_delegate.h:51</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefMenuButtonDelegate extends CefClientHandler {
 
@@ -49,8 +48,8 @@ public interface CefMenuButtonDelegate extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefMenuButtonDelegate {
         private final java.util.List<CefMenuButtonDelegate> delegates;
@@ -64,7 +63,8 @@ public interface CefMenuButtonDelegate extends CefClientHandler {
                 @Nullable CefMenuButton menuButton,
                 CefPoint screenPoint,
                 @Nullable CefMenuButtonPressedLock buttonPressedLock) {
-            for (CefMenuButtonDelegate d : delegates) d.onMenuButtonPressed(menuButton, screenPoint, buttonPressedLock);
+            for (final CefMenuButtonDelegate d : delegates)
+                d.onMenuButtonPressed(menuButton, screenPoint, buttonPressedLock);
         }
     }
 }

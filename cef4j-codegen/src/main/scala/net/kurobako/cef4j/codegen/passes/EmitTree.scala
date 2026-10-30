@@ -1,5 +1,7 @@
 package net.kurobako.cef4j.codegen.passes
 
+import scala.annotation.tailrec
+
 import net.kurobako.cef4j.codegen.Banners
 import net.kurobako.cef4j.codegen.CType
 import net.kurobako.cef4j.codegen.CefDecl
@@ -24,7 +26,7 @@ object EmitTree {
         case CType.ByValueOut(name) => name
       }
       def byValueMatch(p: Param): Option[String] = p match {
-        case Param(_, t, _, _)
+        case Param(typ = t)
             if byValueName.isDefinedAt(t) && parseState.platformSpecificTypes.contains(byValueName(t)) =>
           Some(byValueName(t))
         case _ => None
@@ -49,16 +51,16 @@ object EmitTree {
             s + name
           case (s, Param(_, CType.Ptr(name), _, _)) =>
             val normalized = name.stripPrefix("_")
-            if parseState.platformSpecificTypes.contains(normalized) then s + normalized else s
+            if (parseState.platformSpecificTypes.contains(normalized)) s + normalized else s
           case (s, p) => byValueMatch(p).fold(s)(s + _)
         }
       } ++
         // cef_main_args_t is opaque but platform-shaped on Windows.
-        Set("cef_main_args_t").filter(parseState.platformSpecificTypes.contains)
+        Set("cef_main_args_t").intersect(parseState.platformSpecificTypes)
     }
     given Naming.Context = parseState.namingContext.copy(platformInterfaceTypes = sharedPlatformInterfaceStructs)
 
-    val jniCodeGen = new JniCppCodeGen(
+    val jniCodeGen = JniCppCodeGen(
       refined.dataStructMap,
       parseState.handlerNames,
       refined.scopedNames,
@@ -95,7 +97,7 @@ object EmitTree {
       decl: CefDecl.ObjectStruct,
       allDecls: Map[String, CefDecl.ObjectStruct]
   ): List[CefDecl.ObjectStruct] = {
-    @scala.annotation.tailrec
+    @tailrec
     def loop(current: CefDecl.ObjectStruct, acc: List[CefDecl.ObjectStruct]): List[CefDecl.ObjectStruct] =
       current.parentStruct.flatMap(allDecls.get) match {
         case None         => acc.reverse
@@ -181,6 +183,6 @@ object EmitTree {
         if (cfg.emitJava && (!cfg.emitJavaPlatformOnly || isPlatformSpecific)) {
           JavaEnumCodeGen.emit(d, cfg.outJavaPackageDir, sourceHeader = "cef_types.h")
         }
-      case _: CefDecl.FreeFunction =>
+      case CefDecl.FreeFunction(_, _, _, _, _, _, _) =>
     }
 }

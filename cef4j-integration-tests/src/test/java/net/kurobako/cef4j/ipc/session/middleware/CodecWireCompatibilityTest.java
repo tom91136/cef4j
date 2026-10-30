@@ -20,7 +20,7 @@ class CodecWireCompatibilityTest {
         SessionTrace.Recording fromGson = SessionTrace.read(gsonTrace, JacksonNdjsonSessionTraceCodec.INSTANCE);
         assertThat(fromGson.entries())
                 .singleElement()
-                .satisfies(entry -> assertThat(entry.payload()).containsExactly(1, 2, 3));
+                .satisfies(entry -> assertThat(entry.payload().orElseThrow()).containsExactly(1, 2, 3));
 
         Path jacksonTrace = directory.resolve("jackson.jsonl");
         try (SessionTraceWriter writer = SessionTrace.writer(
@@ -30,6 +30,6 @@ class CodecWireCompatibilityTest {
         SessionTrace.Recording fromJackson = SessionTrace.read(jacksonTrace, GsonNdjsonSessionTraceCodec.INSTANCE);
         assertThat(fromJackson.entries())
                 .singleElement()
-                .satisfies(entry -> assertThat(entry.payload()).containsExactly(4, 5));
+                .satisfies(entry -> assertThat(entry.payload().orElseThrow()).containsExactly(4, 5));
     }
 }

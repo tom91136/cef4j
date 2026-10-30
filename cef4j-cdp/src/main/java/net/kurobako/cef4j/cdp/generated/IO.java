@@ -4,15 +4,14 @@ package net.kurobako.cef4j.cdp.generated;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
-import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Input/Output operations for streams produced by DevTools.
@@ -20,6 +19,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class IO {
     private IO() {}
     /**
@@ -28,7 +28,7 @@ public final class IO {
     public static final class StreamHandle implements CdpValue<String> {
         public final String value;
         public StreamHandle(String value) { this.value = java.util.Objects.requireNonNull(value); }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof StreamHandle)) return false;
@@ -47,10 +47,10 @@ public final class IO {
          * @param handle protocol value
          */
         public CloseRequest(IO.StreamHandle handle) {
-            set("handle", handle);
+            handle(handle);
         }
         public static CloseRequest fromMap(Map<String, Object> values) {
-            CloseRequest instance_ = new CloseRequest();
+            final CloseRequest instance_ = new CloseRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -81,10 +81,10 @@ public final class IO {
          * @param handle protocol value
          */
         public ReadRequest(IO.StreamHandle handle) {
-            set("handle", handle);
+            handle(handle);
         }
         public static ReadRequest fromMap(Map<String, Object> values) {
-            ReadRequest instance_ = new ReadRequest();
+            final ReadRequest instance_ = new ReadRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -100,16 +100,14 @@ public final class IO {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong offset() {
-            Long value = CdpObject.numberAsLong(raw("offset"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("offset").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Maximum number of bytes to read (left upon the agent discretion if not specified).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong size() {
-            Long value = CdpObject.numberAsLong(raw("size"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("size").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Handle of the stream to read.
@@ -122,37 +120,19 @@ public final class IO {
         }
         /**
          * Seek to the specified offset before reading (if not specified, proceed with offset following the last read). Some types of streams may only support sequential reads.
-         * @param offset field value; empty omits the value
+         * @param offset field value
          * @return this model
          */
-        public ReadRequest offset(OptionalLong offset) {
-            set("offset", offset.isPresent() ? offset.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Seek to the specified offset before reading (if not specified, proceed with offset following the last read). Some types of streams may only support sequential reads.
-         * @param offset field value; null removes the value
-         * @return this model
-         */
-        public ReadRequest offset(Long offset) {
+        public ReadRequest offset(long offset) {
             set("offset", offset);
             return this;
         }
         /**
          * Maximum number of bytes to read (left upon the agent discretion if not specified).
-         * @param size field value; empty omits the value
+         * @param size field value
          * @return this model
          */
-        public ReadRequest size(OptionalLong size) {
-            set("size", size.isPresent() ? size.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Maximum number of bytes to read (left upon the agent discretion if not specified).
-         * @param size field value; null removes the value
-         * @return this model
-         */
-        public ReadRequest size(Long size) {
+        public ReadRequest size(long size) {
             set("size", size);
             return this;
         }
@@ -167,10 +147,10 @@ public final class IO {
          * @param objectId protocol value
          */
         public ResolveBlobRequest(Runtime.RemoteObjectId objectId) {
-            set("objectId", objectId);
+            objectId(objectId);
         }
         public static ResolveBlobRequest fromMap(Map<String, Object> values) {
-            ResolveBlobRequest instance_ = new ResolveBlobRequest();
+            final ResolveBlobRequest instance_ = new ResolveBlobRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -205,8 +185,7 @@ public final class IO {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> base64Encoded() {
-            Object value = raw("base64Encoded");
-            return Optional.ofNullable((Boolean) value);
+            return raw("base64Encoded").map(value -> (Boolean) value);
         }
         /**
          * Data that were read.
@@ -224,19 +203,10 @@ public final class IO {
         }
         /**
          * Set if the data is base64-encoded
-         * @param base64Encoded field value; empty omits the value
+         * @param base64Encoded field value
          * @return this model
          */
-        public ReadResult base64Encoded(Optional<Boolean> base64Encoded) {
-            set("base64Encoded", base64Encoded.orElse(null));
-            return this;
-        }
-        /**
-         * Set if the data is base64-encoded
-         * @param base64Encoded field value; null removes the value
-         * @return this model
-         */
-        public ReadResult base64Encoded(Boolean base64Encoded) {
+        public ReadResult base64Encoded(boolean base64Encoded) {
             set("base64Encoded", base64Encoded);
             return this;
         }
@@ -268,7 +238,7 @@ public final class IO {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> close(IO.StreamHandle handle) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("handle", CdpObject.json(handle));
             return client.call("IO.close", params);
         }
@@ -287,11 +257,11 @@ public final class IO {
          * @param size protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<ReadResult> read(IO.StreamHandle handle, OptionalLong offset, OptionalLong size) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<ReadResult> read(IO.StreamHandle handle, @Nullable Long offset, @Nullable Long size) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("handle", CdpObject.json(handle));
-            offset.ifPresent(value_ -> params.put("offset", value_));
-            size.ifPresent(value_ -> params.put("size", value_));
+            if (offset != null) params.put("offset", CdpObject.json(offset));
+            if (size != null) params.put("size", CdpObject.json(size));
             return client.call("IO.read", params, result_ -> new ReadResult(result_));
         }
         /**
@@ -300,7 +270,9 @@ public final class IO {
          * @return a stage completing with the command result
          */
         public CompletionStage<ReadResult> read(IO.StreamHandle handle) {
-            return read(handle, OptionalLong.empty(), OptionalLong.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("handle", CdpObject.json(handle));
+            return client.call("IO.read", params, result_ -> new ReadResult(result_));
         }
         /**
          * Read a chunk of the stream
@@ -316,7 +288,7 @@ public final class IO {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> resolveBlob(Runtime.RemoteObjectId objectId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("objectId", CdpObject.json(objectId));
             return client.call("IO.resolveBlob", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("uuid")));
         }

@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class ResponseSetHeaderByNameRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 1719180070;
@@ -58,7 +60,7 @@ public final class ResponseSetHeaderByNameRequest implements CefMessageView, Cef
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
@@ -73,20 +75,12 @@ public final class ResponseSetHeaderByNameRequest implements CefMessageView, Cef
     }
 
     public static final CefMessageDecoder<ResponseSetHeaderByNameRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int nameLen = WireDecoder.length(__buf, "name");
-        byte[] nameBuf = new byte[nameLen];
-        __buf.get(nameBuf);
-        String name = new String(nameBuf, StandardCharsets.UTF_8);
-        int valueLen = WireDecoder.length(__buf, "value");
-        byte[] valueBuf = new byte[valueLen];
-        __buf.get(valueBuf);
-        String value = new String(valueBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "overwrite");
-        int overwrite = __buf.getInt();
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final String name = WireDecoder.utf8(__buf, "name");
+        final String value = WireDecoder.utf8(__buf, "value");
+        final int overwrite = WireDecoder.int32(__buf, "overwrite");
         WireDecoder.requireFullyConsumed(__buf, "ResponseSetHeaderByNameRequest");
         return new ResponseSetHeaderByNameRequest(self, name, value, overwrite);
     };

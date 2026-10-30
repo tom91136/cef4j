@@ -14,19 +14,20 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import java.time.Duration
-import java.util.Base64
 import scala.annotation.tailrec
 
 import net.kurobako.cef4j.codegen.FileSystem
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
 
 /** Acquires the exact Chromium and V8 protocol schemas associated with a CEF build. */
 object SchemaFetcher {
-  final case class Schema(browser: Path, javascript: Path, metadata: Path)
+  private val SchemaOutputs = Set("browser_protocol.pdl", "js_protocol.pdl", "domains", "schema.properties")
+  case class Schema(browser: Path, javascript: Path, metadata: Path)
 
   private val V8Revision  = """'v8_revision':\s*'([^']+)'""".r
-  private val RetryDelays = List(1L, 2L, 4L, 8L, 16L, 30L).map(Duration.ofSeconds)
+  private val RetryDelays = List(1L, 2L, 4L, 8L, 16L, 30L).map(Duration.ofSeconds(_))
   private val client      = HttpClient.newBuilder()
     .connectTimeout(Duration.ofSeconds(30))
     .followRedirects(HttpClient.Redirect.ALWAYS)
@@ -84,7 +85,7 @@ object SchemaFetcher {
     }
   }
 
-  private[cdp] def chromiumVersionOf(cefVersion: String): String = {
+  def chromiumVersionOf(cefVersion: String): String = {
     val marker = "chromium-"
     val index  = cefVersion.lastIndexOf(marker)
     if (index < 0 || index + marker.length == cefVersion.length)
@@ -92,10 +93,10 @@ object SchemaFetcher {
     cefVersion.substring(index + marker.length)
   }
 
-  private[cdp] def usesLegacyBrowserSchema(chromiumVersion: String): Boolean =
+  def usesLegacyBrowserSchema(chromiumVersion: String): Boolean =
     chromiumVersion.takeWhile(_ != '.').toInt < 80
 
-  private[cdp] def usesLegacyV8Schema(chromiumVersion: String): Boolean =
+  def usesLegacyV8Schema(chromiumVersion: String): Boolean =
     chromiumVersion.takeWhile(_ != '.').toInt < 78
 
   private def paths(directory: Path): Schema = Schema(
@@ -111,45 +112,47 @@ object SchemaFetcher {
 
   private def fetchBase64(url: String, destination: Path, rawFallback: Option[String] = None): Unit = {
     val contents = rawFallback match {
-      case None           => Base64.getMimeDecoder.decode(fetch(s"$url?format=TEXT"))
+      case None           => java.util.Base64.getMimeDecoder.decode(fetch(s"$url?format=TEXT"))
       case Some(fallback) =>
         retry(
           () =>
             fetchOnce(s"$url?format=TEXT") match {
-              case Right(encoded)     => Right(Base64.getMimeDecoder.decode(encoded))
+              case Right(encoded)     => Right(java.util.Base64.getMimeDecoder.decode(encoded))
               case Left(primaryError) => fetchOnce(fallback) match {
                   case Right(raw) => Right(raw)
                   case Left(_)    => Left(primaryError)
                 }
             },
-          sleep
+          sleep(_)
         )
     }
     val _ = Files.write(destination, contents)
   }
 
   private def extractTarGzip(url: String, destination: Path): Unit = {
-    val gzip = new GzipCompressorInputStream(new ByteArrayInputStream(fetch(url)))
-    val tar  = new TarArchiveInputStream(gzip)
+    val gzip = GzipCompressorInputStream(ByteArrayInputStream(fetch(url)))
+    val tar  = TarArchiveInputStream(gzip)
     try {
       @tailrec
-      def extract(entry: org.apache.commons.compress.archivers.tar.TarArchiveEntry): Unit =
-        if (entry != null) {
-          val output = destination.resolve(entry.getName).normalize()
-          if (!output.startsWith(destination))
-            throw IOException(s"Archive entry escapes destination: ${entry.getName}")
-          if (entry.isDirectory) FileSystem.createDirectories(output)
-          else {
-            FileSystem.createDirectories(output.getParent)
-            val _ = Files.copy(tar, output)
-          }
-          extract(tar.getNextEntry)
+      def extract(entry: Option[TarArchiveEntry]): Unit =
+        entry match {
+          case Some(current) =>
+            val output = destination.resolve(current.getName).normalize()
+            if (!output.startsWith(destination))
+              throw IOException(s"Archive entry escapes destination: ${current.getName}")
+            if (current.isDirectory) FileSystem.createDirectories(output)
+            else {
+              FileSystem.createDirectories(output.getParent)
+              val _ = Files.copy(tar, output)
+            }
+            extract(Option(tar.getNextEntry))
+          case None => ()
         }
-      extract(tar.getNextEntry)
+      extract(Option(tar.getNextEntry))
     } finally tar.close()
   }
 
-  private def fetch(url: String): Array[Byte] = retry(() => fetchOnce(url), sleep)
+  private def fetch(url: String): Array[Byte] = retry(() => fetchOnce(url), sleep(_))
 
   private def fetchOnce(url: String): Either[IOException, Array[Byte]] =
     try {
@@ -162,7 +165,7 @@ object SchemaFetcher {
       case error: InterruptedException => Thread.currentThread().interrupt(); throw error
     }
 
-  private[cdp] def retry[A](operation: () => Either[IOException, A], pause: Duration => Unit): A = {
+  def retry[A](operation: () => Either[IOException, A], pause: Duration => Unit): A = {
     @tailrec
     def attempt(delays: List[Duration]): A =
       operation() match {
@@ -198,10 +201,8 @@ object SchemaFetcher {
       case _: FileAlreadyExistsException | _: DirectoryNotEmptyException => ()
     }
 
-  private def retainSchemaOutputs(directory: Path): Unit = {
-    val keep = Set("browser_protocol.pdl", "js_protocol.pdl", "domains", "schema.properties")
-    FileSystem.children(directory).filterNot(path => keep(path.getFileName.toString)).foreach(path =>
+  private def retainSchemaOutputs(directory: Path): Unit =
+    FileSystem.children(directory).filterNot(path => SchemaOutputs(path.getFileName.toString)).foreach(path =>
       if (Files.isDirectory(path)) FileSystem.deleteTree(path) else Files.delete(path)
     )
-  }
 }

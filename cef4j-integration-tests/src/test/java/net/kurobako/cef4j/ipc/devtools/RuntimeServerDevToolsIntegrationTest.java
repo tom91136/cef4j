@@ -210,7 +210,7 @@ class RuntimeServerDevToolsIntegrationTest {
             evaluate(runtime, "setTimeout(()=>window.throwFixtureError(), 0); 'scheduled'", true, false);
             Runtime.ExceptionThrownEvent thrown =
                     exceptions.await(event -> event.exceptionDetails().text().contains("Uncaught"), EVENT_TIMEOUT);
-            assertThat(thrown.exceptionDetails().exception().isPresent()).isTrue();
+            assertThat(thrown.exceptionDetails().exception()).isPresent();
 
             String screenshot = get(page.captureScreenshot());
             assertThat(Base64.getDecoder().decode(screenshot)).startsWith(0x89, 0x50, 0x4e, 0x47);
@@ -266,10 +266,10 @@ class RuntimeServerDevToolsIntegrationTest {
             callbackActions.add(observed);
         })) {
             get(fetch.enable(
-                    Optional.of(List.of(new Fetch.RequestPattern()
+                    List.of(new Fetch.RequestPattern()
                             .urlPattern(site.origin() + "/cdp/api/*")
-                            .requestStage(Fetch.RequestStage.REQUEST))),
-                    Optional.empty()));
+                            .requestStage(Fetch.RequestStage.REQUEST)),
+                    null));
 
             Object continued = remoteValue(evaluate(runtime, "window.loadContinuedResource()", true, true));
             paused.await(
@@ -354,8 +354,7 @@ class RuntimeServerDevToolsIntegrationTest {
     }
 
     private static boolean consoleContains(Runtime.ConsoleAPICalledEvent event, Object value) {
-        return event.args().stream()
-                .anyMatch(arg -> arg.value().map(v -> Objects.equals(v, value)).orElse(false));
+        return event.args().stream().anyMatch(arg -> Objects.equals(arg.value().orElse(null), value));
     }
 
     private static String requestUrl(Network.RequestWillBeSentEvent event) {
@@ -456,24 +455,31 @@ class RuntimeServerDevToolsIntegrationTest {
         private void handle(HttpExchange exchange) throws IOException {
             requests.add(exchange.getRequestURI());
             String path = exchange.getRequestURI().getPath();
-            if (path.equals("/cdp/automation.html")) {
-                respond(exchange, 200, "text/html; charset=utf-8", resource("/cdp/automation.html"));
-            } else if (path.equals("/cdp/automation.js")) {
-                respond(exchange, 200, "text/javascript; charset=utf-8", resource("/cdp/automation.js"));
-            } else if (path.equals("/cdp/pixel.png")) {
-                respond(exchange, 200, "image/png", PIXEL);
-            } else if (path.equals("/cdp/api/click")) {
-                String count = queryValue(exchange.getRequestURI(), "count");
-                respondJson(exchange, "{\"message\":\"clicked-" + count + "\",\"source\":\"fixture-server\"}");
-            } else if (path.equals("/cdp/api/continued")) {
-                respondJson(
-                        exchange,
-                        "{\"source\":\"fixture-server\",\"run\":\"" + queryValue(exchange.getRequestURI(), "run")
-                                + "\"}");
-            } else if (path.equals("/cdp/api/mock")) {
-                respondJson(exchange, "{\"source\":\"unexpected-server-hit\"}");
-            } else {
-                respond(exchange, 404, "text/plain; charset=utf-8", "not found".getBytes(StandardCharsets.UTF_8));
+            switch (path) {
+                case "/cdp/automation.html":
+                    respond(exchange, 200, "text/html; charset=utf-8", resource("/cdp/automation.html"));
+                    break;
+                case "/cdp/automation.js":
+                    respond(exchange, 200, "text/javascript; charset=utf-8", resource("/cdp/automation.js"));
+                    break;
+                case "/cdp/pixel.png":
+                    respond(exchange, 200, "image/png", PIXEL);
+                    break;
+                case "/cdp/api/click":
+                    String count = queryValue(exchange.getRequestURI(), "count");
+                    respondJson(exchange, "{\"message\":\"clicked-" + count + "\",\"source\":\"fixture-server\"}");
+                    break;
+                case "/cdp/api/continued":
+                    respondJson(
+                            exchange,
+                            "{\"source\":\"fixture-server\",\"run\":\"" + queryValue(exchange.getRequestURI(), "run")
+                                    + "\"}");
+                    break;
+                case "/cdp/api/mock":
+                    respondJson(exchange, "{\"source\":\"unexpected-server-hit\"}");
+                    break;
+                default:
+                    respond(exchange, 404, "text/plain; charset=utf-8", "not found".getBytes(StandardCharsets.UTF_8));
             }
         }
 

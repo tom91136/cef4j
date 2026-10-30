@@ -21,7 +21,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:59</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefJsDialogHandler extends CefClientHandler {
 
@@ -114,8 +113,8 @@ public interface CefJsDialogHandler extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefJsDialogHandler {
         private final java.util.List<CefJsDialogHandler> delegates;
@@ -133,7 +132,7 @@ public interface CefJsDialogHandler extends CefClientHandler {
                 @Nullable String defaultPromptText,
                 @Nullable CefJsDialogCallback callback,
                 int[] suppressMessage) {
-            for (CefJsDialogHandler d : delegates) {
+            for (final CefJsDialogHandler d : delegates) {
                 if (d.onJsDialog(
                         browser, originUrl, dialogType, messageText, defaultPromptText, callback, suppressMessage))
                     return true;
@@ -148,7 +147,7 @@ public interface CefJsDialogHandler extends CefClientHandler {
                 @Nullable String messageText,
                 boolean isReload,
                 @Nullable CefJsDialogCallback callback) {
-            for (CefJsDialogHandler d : delegates) {
+            for (final CefJsDialogHandler d : delegates) {
                 if (d.onBeforeUnloadDialog(browser, messageText, isReload, callback)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -157,12 +156,12 @@ public interface CefJsDialogHandler extends CefClientHandler {
 
         @Override
         public void onResetDialogState(@Nullable CefBrowser browser) {
-            for (CefJsDialogHandler d : delegates) d.onResetDialogState(browser);
+            for (final CefJsDialogHandler d : delegates) d.onResetDialogState(browser);
         }
 
         @Override
         public void onDialogClosed(@Nullable CefBrowser browser) {
-            for (CefJsDialogHandler d : delegates) d.onDialogClosed(browser);
+            for (final CefJsDialogHandler d : delegates) d.onDialogClosed(browser);
         }
     }
 }

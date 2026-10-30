@@ -29,7 +29,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:48</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefBrowserViewDelegate extends CefClientHandler {
 
@@ -130,8 +129,8 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:111</a>
      */
-    default @Nullable CefChromeToolbarType getChromeToolbarType(@Nullable CefBrowserView browserView) {
-        return CefChromeToolbarType.of(net.kurobako.cef4j.gen.CefChromeToolbarType.Kind.NONE);
+    default Optional<CefChromeToolbarType> getChromeToolbarType(@Nullable CefBrowserView browserView) {
+        return Optional.empty();
     }
 
     /**
@@ -182,8 +181,8 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__view__delegate_8h.html">views/cef_browser_view_delegate.h:169</a>
      */
-    default @Nullable CefRuntimeStyle getBrowserRuntimeStyle() {
-        return CefRuntimeStyle.of(net.kurobako.cef4j.gen.CefRuntimeStyle.Kind.DEFAULT);
+    default Optional<CefRuntimeStyle> getBrowserRuntimeStyle() {
+        return Optional.empty();
     }
 
     /**
@@ -226,8 +225,8 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefBrowserViewDelegate {
         private final java.util.List<CefBrowserViewDelegate> delegates;
@@ -238,12 +237,12 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
 
         @Override
         public void onBrowserCreated(@Nullable CefBrowserView browserView, @Nullable CefBrowser browser) {
-            for (CefBrowserViewDelegate d : delegates) d.onBrowserCreated(browserView, browser);
+            for (final CefBrowserViewDelegate d : delegates) d.onBrowserCreated(browserView, browser);
         }
 
         @Override
         public void onBrowserDestroyed(@Nullable CefBrowserView browserView, @Nullable CefBrowser browser) {
-            for (CefBrowserViewDelegate d : delegates) d.onBrowserDestroyed(browserView, browser);
+            for (final CefBrowserViewDelegate d : delegates) d.onBrowserDestroyed(browserView, browser);
         }
 
         @Override
@@ -252,8 +251,8 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
                 CefBrowserSettings settings,
                 @Nullable CefClient client,
                 boolean isDevtools) {
-            java.util.ArrayList<CefBrowserViewDelegate> collected = new java.util.ArrayList<>();
-            for (CefBrowserViewDelegate d : delegates)
+            final java.util.ArrayList<CefBrowserViewDelegate> collected = new java.util.ArrayList<>();
+            for (final CefBrowserViewDelegate d : delegates)
                 d.getDelegateForPopupBrowserView(browserView, settings, client, isDevtools)
                         .ifPresent(collected::add);
             return collected.isEmpty()
@@ -264,7 +263,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
         @Override
         public boolean onPopupBrowserViewCreated(
                 @Nullable CefBrowserView browserView, @Nullable CefBrowserView popupBrowserView, boolean isDevtools) {
-            for (CefBrowserViewDelegate d : delegates) {
+            for (final CefBrowserViewDelegate d : delegates) {
                 if (d.onPopupBrowserViewCreated(browserView, popupBrowserView, isDevtools)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -272,14 +271,14 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
         }
 
         @Override
-        public @Nullable CefChromeToolbarType getChromeToolbarType(@Nullable CefBrowserView browserView) {
+        public Optional<CefChromeToolbarType> getChromeToolbarType(@Nullable CefBrowserView browserView) {
             if (!delegates.isEmpty()) return delegates.get(0).getChromeToolbarType(browserView);
-            return CefChromeToolbarType.of(net.kurobako.cef4j.gen.CefChromeToolbarType.Kind.NONE);
+            return Optional.empty();
         }
 
         @Override
         public boolean useFramelessWindowForPictureInPicture(@Nullable CefBrowserView browserView) {
-            for (CefBrowserViewDelegate d : delegates) {
+            for (final CefBrowserViewDelegate d : delegates) {
                 if (d.useFramelessWindowForPictureInPicture(browserView)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -288,7 +287,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
 
         @Override
         public boolean onGestureCommand(@Nullable CefBrowserView browserView, CefGestureCommand gestureCommand) {
-            for (CefBrowserViewDelegate d : delegates) {
+            for (final CefBrowserViewDelegate d : delegates) {
                 if (d.onGestureCommand(browserView, gestureCommand)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -296,14 +295,14 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
         }
 
         @Override
-        public @Nullable CefRuntimeStyle getBrowserRuntimeStyle() {
+        public Optional<CefRuntimeStyle> getBrowserRuntimeStyle() {
             if (!delegates.isEmpty()) return delegates.get(0).getBrowserRuntimeStyle();
-            return CefRuntimeStyle.of(net.kurobako.cef4j.gen.CefRuntimeStyle.Kind.DEFAULT);
+            return Optional.empty();
         }
 
         @Override
         public boolean allowMoveForPictureInPicture(@Nullable CefBrowserView browserView) {
-            for (CefBrowserViewDelegate d : delegates) {
+            for (final CefBrowserViewDelegate d : delegates) {
                 if (d.allowMoveForPictureInPicture(browserView)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -312,7 +311,7 @@ public interface CefBrowserViewDelegate extends CefClientHandler {
 
         @Override
         public boolean allowPictureInPictureWithoutUserActivation(@Nullable CefBrowserView browserView) {
-            for (CefBrowserViewDelegate d : delegates) {
+            for (final CefBrowserViewDelegate d : delegates) {
                 if (d.allowPictureInPictureWithoutUserActivation(browserView)) return true;
             }
             if (!delegates.isEmpty()) return false;

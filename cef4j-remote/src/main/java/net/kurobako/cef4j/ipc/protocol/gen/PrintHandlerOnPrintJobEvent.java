@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class PrintHandlerOnPrintJobEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 580858005;
@@ -58,7 +60,7 @@ public final class PrintHandlerOnPrintJobEvent implements CefMessageView, CefMes
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(browser.id());
@@ -73,20 +75,12 @@ public final class PrintHandlerOnPrintJobEvent implements CefMessageView, CefMes
     }
 
     public static final CefMessageDecoder<PrintHandlerOnPrintJobEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
-        RemoteHandle browser = new RemoteHandle(__buf.getInt());
-        int documentNameLen = WireDecoder.length(__buf, "documentName");
-        byte[] documentNameBuf = new byte[documentNameLen];
-        __buf.get(documentNameBuf);
-        String documentName = new String(documentNameBuf, StandardCharsets.UTF_8);
-        int pdfFilePathLen = WireDecoder.length(__buf, "pdfFilePath");
-        byte[] pdfFilePathBuf = new byte[pdfFilePathLen];
-        __buf.get(pdfFilePathBuf);
-        String pdfFilePath = new String(pdfFilePathBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "callback");
-        RemoteHandle callback = new RemoteHandle(__buf.getInt());
+        final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
+        final String documentName = WireDecoder.utf8(__buf, "documentName");
+        final String pdfFilePath = WireDecoder.utf8(__buf, "pdfFilePath");
+        final RemoteHandle callback = WireDecoder.handle(__buf, "callback");
         WireDecoder.requireFullyConsumed(__buf, "PrintHandlerOnPrintJobEvent");
         return new PrintHandlerOnPrintJobEvent(browser, documentName, pdfFilePath, callback);
     };

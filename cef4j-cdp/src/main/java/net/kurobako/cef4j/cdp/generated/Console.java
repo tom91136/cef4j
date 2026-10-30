@@ -1,10 +1,8 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
@@ -13,6 +11,7 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * This domain is deprecated - use Runtime or Log instead.
@@ -22,6 +21,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
 @Deprecated
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Console {
     private Console() {}
     /**
@@ -50,7 +50,7 @@ public final class Console {
             WORKER("worker");
             public final String value;
             SourceValues(String value) { this.value = value; }
-            public String value() { return value; }
+            @Override public String value() { return value; }
             public static SourceValues of(String value) {
                 for (SourceValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
@@ -69,7 +69,7 @@ public final class Console {
             INFO("info");
             public final String value;
             LevelValues(String value) { this.value = value; }
-            public String value() { return value; }
+            @Override public String value() { return value; }
             public static LevelValues of(String value) {
                 for (LevelValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
@@ -103,24 +103,21 @@ public final class Console {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            Object value = raw("url");
-            return Optional.ofNullable((String) value);
+            return raw("url").map(value -> (String) value);
         }
         /**
          * Line number in the resource that generated this message (1-based).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong line() {
-            Long value = CdpObject.numberAsLong(raw("line"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("line").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Column number in the resource that generated this message (1-based).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong column() {
-            Long value = CdpObject.numberAsLong(raw("column"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("column").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Message source.
@@ -151,16 +148,7 @@ public final class Console {
         }
         /**
          * URL of the message origin.
-         * @param url field value; empty omits the value
-         * @return this model
-         */
-        public ConsoleMessage url(Optional<String> url) {
-            set("url", url.orElse(null));
-            return this;
-        }
-        /**
-         * URL of the message origin.
-         * @param url field value; null removes the value
+         * @param url field value
          * @return this model
          */
         public ConsoleMessage url(String url) {
@@ -169,37 +157,19 @@ public final class Console {
         }
         /**
          * Line number in the resource that generated this message (1-based).
-         * @param line field value; empty omits the value
+         * @param line field value
          * @return this model
          */
-        public ConsoleMessage line(OptionalLong line) {
-            set("line", line.isPresent() ? line.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Line number in the resource that generated this message (1-based).
-         * @param line field value; null removes the value
-         * @return this model
-         */
-        public ConsoleMessage line(Long line) {
+        public ConsoleMessage line(long line) {
             set("line", line);
             return this;
         }
         /**
          * Column number in the resource that generated this message (1-based).
-         * @param column field value; empty omits the value
+         * @param column field value
          * @return this model
          */
-        public ConsoleMessage column(OptionalLong column) {
-            set("column", column.isPresent() ? column.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Column number in the resource that generated this message (1-based).
-         * @param column field value; null removes the value
-         * @return this model
-         */
-        public ConsoleMessage column(Long column) {
+        public ConsoleMessage column(long column) {
             set("column", column);
             return this;
         }
@@ -218,7 +188,7 @@ public final class Console {
          * @return the protocol field value
          */
         public Console.ConsoleMessage message() {
-            return java.util.Objects.requireNonNull(Console.ConsoleMessage.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("message")))));
+            return java.util.Objects.requireNonNull(Console.ConsoleMessage.fromMap(CdpObject.requireObjectMap(require("message"))));
         }
         /**
          * Console message that has been added.

@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class DisplayHandlerOnFaviconUrlchangeEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 559564827;
@@ -42,13 +44,13 @@ public final class DisplayHandlerOnFaviconUrlchangeEvent implements CefMessageVi
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(browser.id());
             __dst.putInt(iconUrls.length);
-            for (String __s : iconUrls) {
-                byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
+            for (final String __s : iconUrls) {
+                final byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
                 __dst.putInt(__b.length);
                 __dst.put(__b);
             }
@@ -58,18 +60,10 @@ public final class DisplayHandlerOnFaviconUrlchangeEvent implements CefMessageVi
     }
 
     public static final CefMessageDecoder<DisplayHandlerOnFaviconUrlchangeEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
-        RemoteHandle browser = new RemoteHandle(__buf.getInt());
-        int iconUrlsCount = WireDecoder.count(__buf, "iconUrls");
-        String[] iconUrls = new String[iconUrlsCount];
-        for (int __i = 0; __i < iconUrlsCount; __i++) {
-            int __slen = WireDecoder.length(__buf, "iconUrls[" + __i + "]");
-            byte[] __sb = new byte[__slen];
-            __buf.get(__sb);
-            iconUrls[__i] = new String(__sb, StandardCharsets.UTF_8);
-        }
+        final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
+        final String[] iconUrls = WireDecoder.utf8List(__buf, "iconUrls");
         WireDecoder.requireFullyConsumed(__buf, "DisplayHandlerOnFaviconUrlchangeEvent");
         return new DisplayHandlerOnFaviconUrlchangeEvent(browser, iconUrls);
     };

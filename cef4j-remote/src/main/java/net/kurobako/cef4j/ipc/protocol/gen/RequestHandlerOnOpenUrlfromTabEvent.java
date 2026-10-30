@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class RequestHandlerOnOpenUrlfromTabEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 686384909;
@@ -62,7 +64,7 @@ public final class RequestHandlerOnOpenUrlfromTabEvent implements CefMessageView
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(browser.id());
@@ -77,20 +79,13 @@ public final class RequestHandlerOnOpenUrlfromTabEvent implements CefMessageView
     }
 
     public static final CefMessageDecoder<RequestHandlerOnOpenUrlfromTabEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
-        RemoteHandle browser = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "frame");
-        RemoteHandle frame = new RemoteHandle(__buf.getInt());
-        int targetUrlLen = WireDecoder.length(__buf, "targetUrl");
-        byte[] targetUrlBuf = new byte[targetUrlLen];
-        __buf.get(targetUrlBuf);
-        String targetUrl = new String(targetUrlBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "targetDisposition");
-        int targetDisposition = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "userGesture");
-        int userGesture = __buf.getInt();
+        final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
+        final RemoteHandle frame = WireDecoder.handle(__buf, "frame");
+        final String targetUrl = WireDecoder.utf8(__buf, "targetUrl");
+        final int targetDisposition = WireDecoder.int32(__buf, "targetDisposition");
+        final int userGesture = WireDecoder.int32(__buf, "userGesture");
         WireDecoder.requireFullyConsumed(__buf, "RequestHandlerOnOpenUrlfromTabEvent");
         return new RequestHandlerOnOpenUrlfromTabEvent(browser, frame, targetUrl, targetDisposition, userGesture);
     };

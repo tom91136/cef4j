@@ -11,9 +11,9 @@ object EmitPackageInfos {
   def apply(packageDir: Path, javaPackage: String, banner: String): Unit =
     FileSystem.descendants(packageDir)
       .filter(Files.isDirectory(_))
-      .filter(dir => FileSystem.children(dir).exists(isJavaType))
+      .filter(dir => FileSystem.children(dir).exists(isJavaType(_)))
       .foreach { dir =>
-        val segments = packageDir.relativize(dir).iterator().asScala.map(_.toString).filter(_.nonEmpty)
+        val segments = packageDir.relativize(dir).asScala.view.map(_.toString).filter(_.nonEmpty)
         val pkg      = (javaPackage +: segments.toSeq).mkString(".")
         AtomicFiles.writeString(
           dir.resolve("package-info.java"),

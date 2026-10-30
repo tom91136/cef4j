@@ -56,7 +56,7 @@ import org.junit.jupiter.api.Assumptions;
 import org.opentest4j.TestAbortedException;
 
 final class FxWebViewRuntimeTestSupport {
-    private static volatile boolean started;
+    private static volatile boolean started = false;
 
     @SuppressWarnings("NullAway.Init")
     private static volatile Path cefCachePath;

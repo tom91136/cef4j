@@ -9,17 +9,18 @@ object JavaNativeCodeGen {
       ancestorDecls: List[CefDecl.ObjectStruct] = Nil
   )(using Naming.Context): String = {
     val javaName = Naming.structToJavaName(decl.name)
-    renderBody(javaName, decl.fns, extraNativeDecls, handlerNames, ancestorDecls)
+    renderBody(Naming.InterfaceContext(javaName, decl.fns, handlerNames), extraNativeDecls, ancestorDecls)
   }
 
   private def renderBody(
-      javaName: String,
-      fns: List[FnPtr],
+      intf: Naming.InterfaceContext,
       extraNativeDecls: List[String],
-      handlerNames: Set[String],
       ancestorDecls: List[CefDecl.ObjectStruct]
   )(using Naming.Context): String = {
-    val overrides =
+    val javaName     = intf.javaName
+    val fns          = intf.fns
+    val handlerNames = intf.handlerNames
+    val overrides    =
       fns.map(fn => renderOverride(fn, handlerNames, javaName => s"${Naming.nativeMethodName(fn)}($javaName)"))
         .mkString("\n\n")
 
@@ -34,7 +35,7 @@ object JavaNativeCodeGen {
       )
     }.mkString("\n\n")
 
-    val nativeDecls = fns.map(renderNativeDecl).mkString("\n\n")
+    val nativeDecls = fns.map(renderNativeDecl(_)).mkString("\n\n")
 
     s"""    final class NativePeer implements $javaName, AutoCloseable {
         private final long nativePtr;
@@ -83,7 +84,9 @@ $overrides
 ${if (ancestorOverrides.nonEmpty) "\n" + ancestorOverrides else ""}
 
 $nativeDecls
-${if (extraNativeDecls.nonEmpty) "\n" + extraNativeDecls.mkString("\n") else ""}
+${
+        if (extraNativeDecls.nonEmpty) "\n" + extraNativeDecls.mkString("\n") else ""
+      }
 
         @Override
         public boolean equals(@org.jspecify.annotations.Nullable Object obj) {

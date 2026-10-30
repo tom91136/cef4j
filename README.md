@@ -60,7 +60,7 @@ distribution cannot use CEF's sandbox, so child processes run unsandboxed.
 CefSettings.Mutable settings = new CefSettings.Mutable();
 settings.noSandbox = 1;
 settings.cachePath = Files.createTempDirectory("cef4j-").toAbsolutePath().toString();
-CefWebView.initialise(settings, List.of(), Optional.empty());
+CefWebView.initialise(settings, List.of());
 
 CefWebView view = new CefWebView();
 view.getEngine().load("https://example.com");
@@ -218,6 +218,25 @@ Build against another CEF release with `-Dcef.version=<version> -Dcef.api.versio
 C++ is formatted with a pinned clang-format 20.1.0 that the build downloads into `.cache/`; `.github/ci/clang-tidy.sh`
 checks native naming. Check API compatibility against a release with `-Djapicmp.baseline=<version>`, adding
 `-Djapicmp.break=true` to fail on incompatible changes.
+
+### Baumkuchen
+
+The Scala modules are checked by [baumkuchen](https://github.com/kurobako/baumkuchen), which finds the bugs a compiler
+cannot: a compiler plugin that checks the code as it is compiled, an analysis that reads the compiled output of the
+build, and scalafix rules that read the SemanticDB the compiler writes. The configuration is `.baumkuchen.conf`,
+which leaves out the checks the code does not satisfy yet and names the baseline that holds the findings the analysis
+already has.
+
+The tools have no published release, so they are built from source and installed into the Maven repository, and the
+Maven plugin that runs them is installed beside them:
+
+    (cd ../baumkuchen && ./scripts/publish-local.sh && ./scripts/publish-maven-local.sh)
+    (cd ../baumkuchen/maven-plugin && mvn install)
+
+A build without them runs without their checks, which is what a build server that has not installed them does. With
+them, a workstation reports the findings without failing the build, and a CI server fails on the ones the build does not
+have yet. `BAUMKUCHEN_MODE=ci` or `dev` names the mode, and `BAUMKUCHEN_WRITE_BASELINE=<file>` records the findings of
+the run in the file, which is how the baseline is rewritten.
 
 [DEBUG.md](DEBUG.md) covers native crashes, the runtime server, IPC, and test isolation; [PLAN.md](PLAN.md) tracks
 open work.

@@ -40,6 +40,9 @@
         <runtime.server.executable>cef4j-runtime-server</runtime.server.executable>
         <!-- Dependency versions -->
         <scala.version>3.10.0</scala.version>
+        <!-- The baumkuchen tools have no published release; the plugin that runs them is installed into the Maven
+             repository by the scripts of the baumkuchen build, and a build without it runs without their checks. -->
+        <baumkuchen.version>0.1.0-SNAPSHOT</baumkuchen.version>
         <cats.version>2.13.0</cats.version>
         <munit.version>1.3.6</munit.version>
         <jspecify.version>1.0.1</jspecify.version>
@@ -633,6 +636,70 @@
                                 </configuration>
                             </execution>
                         </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- The baumkuchen tools, which have no published release and are installed into the Maven repository by
+             the scripts of the baumkuchen build. A build without them runs without their checks, which is what a
+             CI server that has not installed them does. -->
+        <profile>
+            <id>baumkuchen</id>
+            <activation>
+                <file>
+                    <!-- The plugin is found in the local repository, and its presence there says that the tools are
+                         installed, as the presence of the sbt plugin says in a build of sbt. -->
+                    <exists>${user.home}/.m2/repository/net/kurobako/baumkuchen-maven-plugin</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>net.kurobako</groupId>
+                        <artifactId>baumkuchen-maven-plugin</artifactId>
+                        <version>${baumkuchen.version}</version>
+                        <configuration>
+                            <version>${baumkuchen.version}</version>
+                        </configuration>
+                        <executions>
+                            <!-- The model of the Java code is collected while the compiler compiles it. -->
+                            <execution>
+                                <id>java</id>
+                                <goals>
+                                    <goal>java</goal>
+                                    <goal>java-test</goal>
+                                </goals>
+                            </execution>
+                            <!-- Every module writes a fragment of the manifest, and the last of them reads the build. -->
+                            <execution>
+                                <id>analyse</id>
+                                <goals>
+                                    <goal>analyse</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- The compiler takes the javac plugin from the path of the processor, beside the plugins of the
+                         build (the error-prone one among them), which the compiler finds there alike. -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <annotationProcessorPaths combine.children="append">
+                                <path>
+                                    <groupId>net.kurobako</groupId>
+                                    <artifactId>baumkuchen-java-plugin_3</artifactId>
+                                    <version>${baumkuchen.version}</version>
+                                </path>
+                            </annotationProcessorPaths>
+                            <!-- The plugin names the file of the model itself, so that the modules of a parallel build
+                                 do not share a property of the process. -->
+                            <compilerArgs combine.children="append">
+                                <arg>-Xplugin:baumkuchen ${baumkuchen.model}</arg>
+                            </compilerArgs>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

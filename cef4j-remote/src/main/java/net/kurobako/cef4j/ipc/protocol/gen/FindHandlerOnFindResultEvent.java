@@ -3,12 +3,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class FindHandlerOnFindResultEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 121797999;
@@ -65,7 +67,7 @@ public final class FindHandlerOnFindResultEvent implements CefMessageView, CefMe
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(browser.id());
@@ -80,19 +82,14 @@ public final class FindHandlerOnFindResultEvent implements CefMessageView, CefMe
     }
 
     public static final CefMessageDecoder<FindHandlerOnFindResultEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
-        RemoteHandle browser = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "identifier");
-        int identifier = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "count");
-        int count = __buf.getInt();
-        Rect selectionRect = Rect.decode(__buf);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "activeMatchOrdinal");
-        int activeMatchOrdinal = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "finalUpdate");
-        int finalUpdate = __buf.getInt();
+        final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
+        final int identifier = WireDecoder.int32(__buf, "identifier");
+        final int count = WireDecoder.int32(__buf, "count");
+        final Rect selectionRect = Rect.decode(__buf);
+        final int activeMatchOrdinal = WireDecoder.int32(__buf, "activeMatchOrdinal");
+        final int finalUpdate = WireDecoder.int32(__buf, "finalUpdate");
         WireDecoder.requireFullyConsumed(__buf, "FindHandlerOnFindResultEvent");
         return new FindHandlerOnFindResultEvent(browser, identifier, count, selectionRect, activeMatchOrdinal, finalUpdate);
     };

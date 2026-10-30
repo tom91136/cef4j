@@ -24,7 +24,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:209</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefServerHandler extends CefClientHandler {
 
@@ -173,8 +172,8 @@ public interface CefServerHandler extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefServerHandler {
         private final java.util.List<CefServerHandler> delegates;
@@ -185,22 +184,22 @@ public interface CefServerHandler extends CefClientHandler {
 
         @Override
         public void onServerCreated(@Nullable CefServer server) {
-            for (CefServerHandler d : delegates) d.onServerCreated(server);
+            for (final CefServerHandler d : delegates) d.onServerCreated(server);
         }
 
         @Override
         public void onServerDestroyed(@Nullable CefServer server) {
-            for (CefServerHandler d : delegates) d.onServerDestroyed(server);
+            for (final CefServerHandler d : delegates) d.onServerDestroyed(server);
         }
 
         @Override
         public void onClientConnected(@Nullable CefServer server, int connectionId) {
-            for (CefServerHandler d : delegates) d.onClientConnected(server, connectionId);
+            for (final CefServerHandler d : delegates) d.onClientConnected(server, connectionId);
         }
 
         @Override
         public void onClientDisconnected(@Nullable CefServer server, int connectionId) {
-            for (CefServerHandler d : delegates) d.onClientDisconnected(server, connectionId);
+            for (final CefServerHandler d : delegates) d.onClientDisconnected(server, connectionId);
         }
 
         @Override
@@ -209,7 +208,7 @@ public interface CefServerHandler extends CefClientHandler {
                 int connectionId,
                 @Nullable String clientAddress,
                 @Nullable CefRequest request) {
-            for (CefServerHandler d : delegates) d.onHttpRequest(server, connectionId, clientAddress, request);
+            for (final CefServerHandler d : delegates) d.onHttpRequest(server, connectionId, clientAddress, request);
         }
 
         @Override
@@ -219,18 +218,18 @@ public interface CefServerHandler extends CefClientHandler {
                 @Nullable String clientAddress,
                 @Nullable CefRequest request,
                 @Nullable CefCallback callback) {
-            for (CefServerHandler d : delegates)
+            for (final CefServerHandler d : delegates)
                 d.onWebSocketRequest(server, connectionId, clientAddress, request, callback);
         }
 
         @Override
         public void onWebSocketConnected(@Nullable CefServer server, int connectionId) {
-            for (CefServerHandler d : delegates) d.onWebSocketConnected(server, connectionId);
+            for (final CefServerHandler d : delegates) d.onWebSocketConnected(server, connectionId);
         }
 
         @Override
         public void onWebSocketMessage(@Nullable CefServer server, int connectionId, ByteBuffer data) {
-            for (CefServerHandler d : delegates) d.onWebSocketMessage(server, connectionId, data);
+            for (final CefServerHandler d : delegates) d.onWebSocketMessage(server, connectionId, data);
         }
     }
 }

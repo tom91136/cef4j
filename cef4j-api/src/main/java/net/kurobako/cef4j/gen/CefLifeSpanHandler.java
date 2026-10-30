@@ -22,7 +22,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:46</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefLifeSpanHandler extends CefClientHandler {
 
@@ -263,8 +262,8 @@ public interface CefLifeSpanHandler extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefLifeSpanHandler {
         private final java.util.List<CefLifeSpanHandler> delegates;
@@ -288,7 +287,7 @@ public interface CefLifeSpanHandler extends CefClientHandler {
                 CefBrowserSettings.Mutable settings,
                 @Nullable AtomicReference<CefDictionaryValue> extraInfo,
                 int[] noJavascriptAccess) {
-            for (CefLifeSpanHandler d : delegates) {
+            for (final CefLifeSpanHandler d : delegates) {
                 if (d.onBeforePopup(
                         browser,
                         frame,
@@ -310,7 +309,7 @@ public interface CefLifeSpanHandler extends CefClientHandler {
 
         @Override
         public void onBeforePopupAborted(@Nullable CefBrowser browser, int popupId) {
-            for (CefLifeSpanHandler d : delegates) d.onBeforePopupAborted(browser, popupId);
+            for (final CefLifeSpanHandler d : delegates) d.onBeforePopupAborted(browser, popupId);
         }
 
         @Override
@@ -321,18 +320,18 @@ public interface CefLifeSpanHandler extends CefClientHandler {
                 CefBrowserSettings.Mutable settings,
                 @Nullable AtomicReference<CefDictionaryValue> extraInfo,
                 int[] useDefaultWindow) {
-            for (CefLifeSpanHandler d : delegates)
+            for (final CefLifeSpanHandler d : delegates)
                 d.onBeforeDevToolsPopup(browser, windowInfo, client, settings, extraInfo, useDefaultWindow);
         }
 
         @Override
         public void onAfterCreated(@Nullable CefBrowser browser) {
-            for (CefLifeSpanHandler d : delegates) d.onAfterCreated(browser);
+            for (final CefLifeSpanHandler d : delegates) d.onAfterCreated(browser);
         }
 
         @Override
         public boolean doClose(@Nullable CefBrowser browser) {
-            for (CefLifeSpanHandler d : delegates) {
+            for (final CefLifeSpanHandler d : delegates) {
                 if (d.doClose(browser)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -341,7 +340,7 @@ public interface CefLifeSpanHandler extends CefClientHandler {
 
         @Override
         public void onBeforeClose(@Nullable CefBrowser browser) {
-            for (CefLifeSpanHandler d : delegates) d.onBeforeClose(browser);
+            for (final CefLifeSpanHandler d : delegates) d.onBeforeClose(browser);
         }
     }
 }

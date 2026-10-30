@@ -20,7 +20,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__load__handler_8h.html">cef_load_handler.h:45</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefLoadHandler extends CefClientHandler {
 
@@ -101,8 +100,8 @@ public interface CefLoadHandler extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefLoadHandler {
         private final java.util.List<CefLoadHandler> delegates;
@@ -114,18 +113,19 @@ public interface CefLoadHandler extends CefClientHandler {
         @Override
         public void onLoadingStateChange(
                 @Nullable CefBrowser browser, boolean isLoading, boolean canGoBack, boolean canGoForward) {
-            for (CefLoadHandler d : delegates) d.onLoadingStateChange(browser, isLoading, canGoBack, canGoForward);
+            for (final CefLoadHandler d : delegates)
+                d.onLoadingStateChange(browser, isLoading, canGoBack, canGoForward);
         }
 
         @Override
         public void onLoadStart(
                 @Nullable CefBrowser browser, @Nullable CefFrame frame, CefTransitionType transitionType) {
-            for (CefLoadHandler d : delegates) d.onLoadStart(browser, frame, transitionType);
+            for (final CefLoadHandler d : delegates) d.onLoadStart(browser, frame, transitionType);
         }
 
         @Override
         public void onLoadEnd(@Nullable CefBrowser browser, @Nullable CefFrame frame, int httpStatusCode) {
-            for (CefLoadHandler d : delegates) d.onLoadEnd(browser, frame, httpStatusCode);
+            for (final CefLoadHandler d : delegates) d.onLoadEnd(browser, frame, httpStatusCode);
         }
 
         @Override
@@ -135,7 +135,7 @@ public interface CefLoadHandler extends CefClientHandler {
                 CefErrorCode errorCode,
                 @Nullable String errorText,
                 @Nullable String failedUrl) {
-            for (CefLoadHandler d : delegates) d.onLoadError(browser, frame, errorCode, errorText, failedUrl);
+            for (final CefLoadHandler d : delegates) d.onLoadError(browser, frame, errorCode, errorText, failedUrl);
         }
     }
 }

@@ -4,11 +4,13 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class XmlReaderGetXmlLangResponse implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 2047430350;
@@ -37,7 +39,7 @@ public final class XmlReaderGetXmlLangResponse implements CefMessageView, CefMes
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(resultBytes.length);
@@ -48,12 +50,9 @@ public final class XmlReaderGetXmlLangResponse implements CefMessageView, CefMes
     }
 
     public static final CefMessageDecoder<XmlReaderGetXmlLangResponse> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        int resultLen = WireDecoder.length(__buf, "result");
-        byte[] resultBuf = new byte[resultLen];
-        __buf.get(resultBuf);
-        String result = new String(resultBuf, StandardCharsets.UTF_8);
+        final String result = WireDecoder.utf8(__buf, "result");
         WireDecoder.requireFullyConsumed(__buf, "XmlReaderGetXmlLangResponse");
         return new XmlReaderGetXmlLangResponse(result);
     };

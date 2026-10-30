@@ -80,7 +80,7 @@ class SharedFileFrameTransportTest {
         Thread caller = Thread.currentThread();
         CompletableFuture<byte[]> observed = new CompletableFuture<>();
         AtomicReference<@Nullable Thread> callbackThread = new AtomicReference<>();
-        try (FrameTransport transport = SharedFileFrameTransport.bindAll(new LatestEventSession(latest))) {
+        try (SharedFileFrameTransport transport = SharedFileFrameTransport.bindAll(new LatestEventSession(latest))) {
             transport.onRawFrame(value -> {
                 byte[] pixels = new byte[value.pixels().remaining()];
                 value.pixels().get(pixels);
@@ -89,7 +89,7 @@ class SharedFileFrameTransportTest {
             });
             assertThat(observed.get(5, TimeUnit.SECONDS)).containsExactly(new byte[] {1, 2, 3, 4, 5, 6, 7, 8});
             assertThat(callbackThread.get()).isNotSameAs(caller);
-            assertThat(((SharedFileFrameTransport) transport).diagnosticSummary())
+            assertThat(transport.diagnosticSummary())
                     .contains(
                             "events=1",
                             "mappingAttempts=1",

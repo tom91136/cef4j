@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import net.kurobako.cef4j.ipc.session.middleware.SessionTrace;
 import net.kurobako.cef4j.ipc.session.middleware.SessionTraceCodec;
 import net.kurobako.cef4j.ipc.session.middleware.SessionTraceWriter;
@@ -59,17 +60,17 @@ public final class JacksonNdjsonSessionTraceCodec implements SessionTraceCodec {
     @Override
     public SessionTrace.Recording read(InputStream source) throws IOException {
         Objects.requireNonNull(source, "source");
-        BufferedReader input = new BufferedReader(new InputStreamReader(source, StandardCharsets.UTF_8));
-        String headerLine = readCompleteLine(input);
-        if (headerLine == null) throw new IOException("cef4j API trace has no complete header record");
-        Map<String, String> metadata = parseHeader(headerLine);
-        List<SessionTrace.Entry> entries = new ArrayList<>();
+        final BufferedReader input = new BufferedReader(new InputStreamReader(source, StandardCharsets.UTF_8));
+        final String headerLine = readCompleteLine(input)
+                .orElseThrow(() -> new IOException("cef4j API trace has no complete header record"));
+        final Map<String, String> metadata = parseHeader(headerLine);
+        final List<SessionTrace.Entry> entries = new ArrayList<>();
         long expectedSequence = 1;
         long lastElapsedNanos = 0;
         String line;
-        while ((line = readCompleteLine(input)) != null) {
+        while ((line = readCompleteLine(input).orElse(null)) != null) {
             if (line.isBlank()) continue;
-            SessionTrace.Entry entry = parseEntry(line);
+            final SessionTrace.Entry entry = parseEntry(line);
             if (entry.sequence != expectedSequence) {
                 throw new IOException("invalid trace sequence " + entry.sequence + ", expected " + expectedSequence);
             }
@@ -87,20 +88,19 @@ public final class JacksonNdjsonSessionTraceCodec implements SessionTraceCodec {
      * Returns only newline-terminated records. The writer terminates and then flushes each recovery boundary, so an
      * unterminated final fragment is safely treated as a crash-torn record rather than guessed at.
      */
-    @Nullable
-    private static String readCompleteLine(BufferedReader input) throws IOException {
-        StringBuilder line = new StringBuilder();
-        while (true) {
-            int value = input.read();
-            if (value < 0) return null;
+    private static Optional<String> readCompleteLine(BufferedReader input) throws IOException {
+        final StringBuilder line = new StringBuilder();
+        int value;
+        while ((value = input.read()) >= 0) {
             if (value == '\n') {
-                int length = line.length();
+                final int length = line.length();
                 if (length > 0 && line.charAt(length - 1) == '\r') line.setLength(length - 1);
-                return line.toString();
+                return Optional.of(line.toString());
             }
             if (line.length() >= MAX_LINE_CHARACTERS) throw new IOException("NDJSON trace record is too large");
             line.append((char) value);
         }
+        return Optional.empty();
     }
 
     private static Map<String, String> parseHeader(String line) throws IOException {
@@ -108,12 +108,12 @@ public final class JacksonNdjsonSessionTraceCodec implements SessionTraceCodec {
         String format = null;
         Integer version = null;
         String createdEpochMillis = null;
-        Map<String, String> metadata = new LinkedHashMap<>();
+        final Map<String, String> metadata = new LinkedHashMap<>();
         try (JsonParser parser = JSON.createParser(line)) {
             require(parser.nextToken(), JsonToken.START_OBJECT, "trace header must be a JSON object");
             while (parser.nextToken() != JsonToken.END_OBJECT) {
-                String field = parser.currentName();
-                JsonToken value = parser.nextToken();
+                final String field = parser.currentName();
+                final JsonToken value = parser.nextToken();
                 switch (field) {
                     case "type":
                         type = requireText(parser, value, field);
@@ -139,22 +139,19 @@ public final class JacksonNdjsonSessionTraceCodec implements SessionTraceCodec {
         }
         if (!"header".equals(type)) throw invalid("first record is not a header");
         if (!SessionTrace.FORMAT.equals(format)) throw invalid("unsupported trace format " + format);
-        if (version == null || version.intValue() != SessionTrace.VERSION) {
+        if (version == null || version != SessionTrace.VERSION) {
             throw invalid("unsupported trace version " + version);
         }
         if (createdEpochMillis == null) throw invalid("header has no createdEpochMillis");
-        metadata.put("format", SessionTrace.FORMAT);
-        metadata.put("formatVersion", Integer.toString(SessionTrace.VERSION));
-        metadata.put("createdEpochMillis", createdEpochMillis);
-        return metadata;
+        return SessionTrace.headerMetadata(metadata, createdEpochMillis);
     }
 
     private static void readMetadata(JsonParser parser, JsonToken token, Map<String, String> metadata)
             throws IOException {
         if (token != JsonToken.START_OBJECT) throw invalid("metadata must be an object");
         while (parser.nextToken() != JsonToken.END_OBJECT) {
-            String key = parser.currentName();
-            JsonToken value = parser.nextToken();
+            final String key = parser.currentName();
+            final JsonToken value = parser.nextToken();
             metadata.put(key, requireText(parser, value, "metadata." + key));
         }
     }
@@ -171,8 +168,8 @@ public final class JacksonNdjsonSessionTraceCodec implements SessionTraceCodec {
         try (JsonParser parser = JSON.createParser(line)) {
             require(parser.nextToken(), JsonToken.START_OBJECT, "trace entry must be a JSON object");
             while (parser.nextToken() != JsonToken.END_OBJECT) {
-                String field = parser.currentName();
-                JsonToken value = parser.nextToken();
+                final String field = parser.currentName();
+                final JsonToken value = parser.nextToken();
                 switch (field) {
                     case "type":
                         type = requireText(parser, value, field);
@@ -217,14 +214,7 @@ public final class JacksonNdjsonSessionTraceCodec implements SessionTraceCodec {
         }
         try {
             return new SessionTrace.Entry(
-                    sequence.longValue(),
-                    elapsedNanos.longValue(),
-                    kind,
-                    operationId.longValue(),
-                    messageId.intValue(),
-                    payload,
-                    detailType,
-                    detailMessage);
+                    sequence, elapsedNanos, kind, operationId, messageId, payload, detailType, detailMessage);
         } catch (IllegalArgumentException failure) {
             throw invalid("invalid trace entry " + sequence, failure);
         }
@@ -236,7 +226,7 @@ public final class JacksonNdjsonSessionTraceCodec implements SessionTraceCodec {
     }
 
     private static String requireDecimalString(JsonParser parser, JsonToken token, String field) throws IOException {
-        String value = requireText(parser, token, field);
+        final String value = requireText(parser, token, field);
         if (!value.matches("-?[0-9]+")) throw invalid(field + " must be a decimal integer string");
         return value;
     }

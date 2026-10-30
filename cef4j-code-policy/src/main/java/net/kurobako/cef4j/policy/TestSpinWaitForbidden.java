@@ -15,13 +15,16 @@ import com.google.errorprone.util.ASTHelpers;
 import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.MethodInvocationTree;
+import java.io.Serial;
 
 @AutoService(BugChecker.class)
 @BugPattern(
         summary = "Tests must use bounded synchronization instead of spin-waiting or sleeping",
         severity = SeverityLevel.ERROR)
 public final class TestSpinWaitForbidden extends BugChecker implements MethodInvocationTreeMatcher {
+    @Serial
     private static final long serialVersionUID = 1L;
+
     private static final Matcher<ExpressionTree> SPIN_WAIT =
             staticMethod().onClass("java.lang.Thread").named("onSpinWait");
     private static final Matcher<ExpressionTree> SLEEP =
@@ -29,7 +32,7 @@ public final class TestSpinWaitForbidden extends BugChecker implements MethodInv
 
     @Override
     public Description matchMethodInvocation(MethodInvocationTree tree, VisitorState state) {
-        ClassTree enclosingClass = ASTHelpers.findEnclosingNode(state.getPath(), ClassTree.class);
+        final ClassTree enclosingClass = ASTHelpers.findEnclosingNode(state.getPath(), ClassTree.class);
         if (enclosingClass == null || !enclosingClass.getSimpleName().toString().endsWith("Test")) return NO_MATCH;
         if (!SPIN_WAIT.matches(tree, state) && !SLEEP.matches(tree, state)) return NO_MATCH;
         return buildDescription(tree)

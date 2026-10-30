@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.ByteBuffer;
+import java.util.Optional;
 import net.kurobako.cef4j.gen.CefCallback;
 import net.kurobako.cef4j.gen.CefRequest;
 import net.kurobako.cef4j.gen.CefResourceHandler;
@@ -38,16 +39,16 @@ public final class UrlResourceHandler implements CefResourceHandler, AutoCloseab
         this.connectionFactory = connectionFactory;
     }
 
+    @Override
     @NullableBoundary("CEF resource callbacks are nullable across supported ABI versions")
-    @SuppressWarnings("MissingOverride")
     public boolean processRequest(@Nullable CefRequest request, @Nullable CefCallback callback) {
-        boolean handled = open(request, new int[] {0}, callback);
+        final boolean handled = open(request, new int[] {0}, callback);
         if (handled && callback != null) callback.cont();
         return handled;
     }
 
+    @Override
     @NullableBoundary("CEF resource callbacks are nullable across supported ABI versions")
-    @SuppressWarnings("MissingOverride")
     public boolean open(@Nullable CefRequest request, int[] handleRequest, @Nullable CefCallback callback) {
         closeStream();
         failed = false;
@@ -58,18 +59,17 @@ public final class UrlResourceHandler implements CefResourceHandler, AutoCloseab
             failed = true;
             return true;
         }
-        String url = request.getUrl().orElse(null);
+        final String url = request.getUrl().orElse(null);
         if (url == null) {
             failed = true;
             return true;
         }
         try {
-            URLConnection conn = connectionFactory.open(url);
+            final URLConnection conn = connectionFactory.open(url);
             conn.connect();
-            mimeType = stripMimeParams(conn.getContentType());
-            if (mimeType == null || mimeType.isEmpty() || "content/unknown".equals(mimeType)) {
-                mimeType = guessMimeType(url);
-            }
+            mimeType = stripMimeParams(conn.getContentType())
+                    .filter(type -> !type.isEmpty() && !"content/unknown".equals(type))
+                    .orElseGet(() -> guessMimeType(url));
             contentLength = conn.getContentLengthLong();
             inputStream = conn.getInputStream();
         } catch (IOException e) {
@@ -97,19 +97,20 @@ public final class UrlResourceHandler implements CefResourceHandler, AutoCloseab
     }
 
     @Override
-    public boolean readResponse(ByteBuffer dataOut, int[] bytesRead, @Nullable CefCallback callback) {
+    @NullableBoundary("CEF resource callbacks are nullable across supported ABI versions")
+    public boolean readResponse(@Nullable ByteBuffer dataOut, int[] bytesRead, @Nullable CefCallback callback) {
         if (dataOut == null || inputStream == null) {
             bytesRead[0] = 0;
             return false;
         }
         try {
-            int bytesToRead = Math.max(0, dataOut.capacity());
+            final int bytesToRead = Math.max(0, dataOut.capacity());
             if (bytesToRead == 0) {
                 bytesRead[0] = 0;
                 return false;
             }
-            byte[] buf = new byte[bytesToRead];
-            int n = inputStream.read(buf);
+            final byte[] buf = new byte[bytesToRead];
+            final int n = inputStream.read(buf);
             if (n <= 0) {
                 bytesRead[0] = 0;
                 closeStream();
@@ -148,14 +149,15 @@ public final class UrlResourceHandler implements CefResourceHandler, AutoCloseab
         }
     }
 
-    private static @Nullable String stripMimeParams(@Nullable String contentType) {
-        if (contentType == null) return null;
-        int semi = contentType.indexOf(';');
-        return semi >= 0 ? contentType.substring(0, semi).trim() : contentType.trim();
+    private static Optional<String> stripMimeParams(@Nullable String contentType) {
+        return Optional.ofNullable(contentType).map(type -> {
+            final int semi = type.indexOf(';');
+            return semi >= 0 ? type.substring(0, semi).trim() : type.trim();
+        });
     }
 
     private static String guessMimeType(String url) {
-        String lower = url.toLowerCase(java.util.Locale.ROOT);
+        final String lower = url.toLowerCase(java.util.Locale.ROOT);
         if (lower.endsWith(".js") || lower.endsWith(".mjs")) return "text/javascript";
         if (lower.endsWith(".html") || lower.endsWith(".htm")) return "text/html";
         if (lower.endsWith(".css")) return "text/css";

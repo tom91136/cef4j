@@ -22,7 +22,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__handler_8h.html">cef_resource_handler.h:82</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefResourceHandler extends CefClientHandler {
 
@@ -185,8 +184,8 @@ public interface CefResourceHandler extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefResourceHandler {
         private final java.util.List<CefResourceHandler> delegates;
@@ -197,7 +196,7 @@ public interface CefResourceHandler extends CefClientHandler {
 
         @Override
         public boolean open(@Nullable CefRequest request, int[] handleRequest, @Nullable CefCallback callback) {
-            for (CefResourceHandler d : delegates) {
+            for (final CefResourceHandler d : delegates) {
                 if (d.open(request, handleRequest, callback)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -206,7 +205,7 @@ public interface CefResourceHandler extends CefClientHandler {
 
         @Override
         public boolean processRequest(@Nullable CefRequest request, @Nullable CefCallback callback) {
-            for (CefResourceHandler d : delegates) {
+            for (final CefResourceHandler d : delegates) {
                 if (d.processRequest(request, callback)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -216,12 +215,12 @@ public interface CefResourceHandler extends CefClientHandler {
         @Override
         public void getResponseHeaders(
                 @Nullable CefResponse response, long[] responseLength, @Nullable String redirectUrl) {
-            for (CefResourceHandler d : delegates) d.getResponseHeaders(response, responseLength, redirectUrl);
+            for (final CefResourceHandler d : delegates) d.getResponseHeaders(response, responseLength, redirectUrl);
         }
 
         @Override
         public boolean skip(long bytesToSkip, long[] bytesSkipped, @Nullable CefResourceSkipCallback callback) {
-            for (CefResourceHandler d : delegates) {
+            for (final CefResourceHandler d : delegates) {
                 if (d.skip(bytesToSkip, bytesSkipped, callback)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -230,7 +229,7 @@ public interface CefResourceHandler extends CefClientHandler {
 
         @Override
         public boolean read(ByteBuffer dataOut, int[] bytesRead, @Nullable CefResourceReadCallback callback) {
-            for (CefResourceHandler d : delegates) {
+            for (final CefResourceHandler d : delegates) {
                 if (d.read(dataOut, bytesRead, callback)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -240,7 +239,7 @@ public interface CefResourceHandler extends CefClientHandler {
 
         @Override
         public boolean readResponse(ByteBuffer dataOut, int[] bytesRead, @Nullable CefCallback callback) {
-            for (CefResourceHandler d : delegates) {
+            for (final CefResourceHandler d : delegates) {
                 if (d.readResponse(dataOut, bytesRead, callback)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -249,7 +248,7 @@ public interface CefResourceHandler extends CefClientHandler {
 
         @Override
         public void cancel() {
-            for (CefResourceHandler d : delegates) d.cancel();
+            for (final CefResourceHandler d : delegates) d.cancel();
         }
     }
 }

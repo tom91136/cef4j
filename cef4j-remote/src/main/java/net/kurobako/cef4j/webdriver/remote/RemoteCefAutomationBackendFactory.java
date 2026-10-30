@@ -44,9 +44,9 @@ public final class RemoteCefAutomationBackendFactory implements AutomationBacken
     @Override
     public CompletableFuture<? extends AutomationBackend> create(JsonObject requestedCapabilities) {
         return CefFutures.flatMap(runtimeFactory.create(), runtime -> {
-            Browser browser = new Browser(runtime.session(), runtime.browser());
-            AtomicBoolean adapterOwnsRuntime = new AtomicBoolean();
-            CompletableFuture<AutomationBackend> creation = CefFutures.flatMap(
+            final Browser browser = new Browser(runtime.session(), runtime.browser());
+            final AtomicBoolean adapterOwnsRuntime = new AtomicBoolean();
+            final CompletableFuture<AutomationBackend> creation = CefFutures.flatMap(
                     browser.getHost(),
                     host -> CefFutures.flatMap(
                             DevToolsSession.attach(runtime.session(), runtime.browser(), host, jsonCodec.cdpCodec()),
@@ -60,10 +60,10 @@ public final class RemoteCefAutomationBackendFactory implements AutomationBacken
 
     private CompletableFuture<AutomationBackend> createBackend(
             RemoteBrowserRuntime runtime, Browser browser, CdpTransport devTools, AtomicBoolean adapterOwnsRuntime) {
-        RemoteCdpBrowser adapter = new RemoteCdpBrowser(runtime, browser, devTools, jsonCodec);
+        final RemoteCdpBrowser adapter = new RemoteCdpBrowser(runtime, browser, devTools, jsonCodec);
         adapterOwnsRuntime.set(true);
         try {
-            CompletableFuture<AutomationBackend> backend =
+            final CompletableFuture<AutomationBackend> backend =
                     CefFutures.map(CdpAutomationBackend.create(adapter), value -> value);
             CefFutures.observeFailure(backend, failure -> adapter.close());
             return backend;
@@ -158,15 +158,13 @@ public final class RemoteCefAutomationBackendFactory implements AutomationBacken
 
     static void closeDevToolsThenRuntime(
             CdpTransport devTools, RemoteBrowserRuntime runtime, Duration timeout, Consumer<Throwable> failureHandler) {
-        try {
+        try (runtime) {
             devTools.closeAsync().toCompletableFuture().get(timeout.toNanos(), TimeUnit.NANOSECONDS);
         } catch (InterruptedException failure) {
             Thread.currentThread().interrupt();
             failureHandler.accept(failure);
         } catch (ExecutionException | TimeoutException failure) {
             failureHandler.accept(failure);
-        } finally {
-            runtime.close();
         }
     }
 }

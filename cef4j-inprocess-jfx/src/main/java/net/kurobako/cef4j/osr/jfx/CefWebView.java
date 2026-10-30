@@ -4,6 +4,7 @@ import java.lang.ref.Cleaner;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,18 +16,37 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.value.ChangeListener;
+import javafx.css.CssMetaData;
+import javafx.css.Styleable;
+import javafx.css.StyleableBooleanProperty;
+import javafx.css.StyleableDoubleProperty;
+import javafx.css.StyleableObjectProperty;
+import javafx.css.StyleableProperty;
+import javafx.css.converter.BooleanConverter;
+import javafx.css.converter.EnumConverter;
+import javafx.css.converter.SizeConverter;
 import javafx.geometry.Bounds;
+import javafx.geometry.NodeOrientation;
 import javafx.geometry.Rectangle2D;
+import javafx.print.PageLayout;
+import javafx.print.PrinterJob;
 import javafx.scene.Cursor;
+import javafx.scene.Parent;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelBuffer;
 import javafx.scene.image.PixelFormat;
@@ -36,7 +56,9 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.FontSmoothingType;
 import javafx.stage.Screen;
 import javafx.stage.Window;
 import javafx.util.Duration;
@@ -70,9 +92,27 @@ import net.kurobako.cef4j.gen.CefWindowInfo;
 import net.kurobako.cef4j.policy.NullableBoundary;
 import org.jspecify.annotations.Nullable;
 
-/** JavaFX off-screen rendering view backed by a CEF browser. */
-@SuppressWarnings({"this-escape", "resource"})
-public class CefWebView extends Region implements AutoCloseable {
+/**
+ * JavaFX off-screen rendering view backed by a CEF browser.
+ *
+ * <p>The public surface mirrors {@code javafx.scene.web.WebView}: the view is a final {@link Parent} that sizes itself
+ * through the {@code min}, {@code pref} and {@code max} size properties (800 by 600 preferred by default) and exposes
+ * the same CSS properties.
+ */
+@SuppressWarnings("this-escape")
+public final class CefWebView extends Parent implements AutoCloseable {
+    private static final boolean DEFAULT_CONTEXT_MENU_ENABLED = true;
+    private static final FontSmoothingType DEFAULT_FONT_SMOOTHING_TYPE = FontSmoothingType.LCD;
+    private static final double DEFAULT_ZOOM = 1.0;
+    private static final double DEFAULT_FONT_SCALE = 1.0;
+    private static final double DEFAULT_MIN_WIDTH = 0;
+    private static final double DEFAULT_MIN_HEIGHT = 0;
+    private static final double DEFAULT_PREF_WIDTH = 800;
+    private static final double DEFAULT_PREF_HEIGHT = 600;
+    private static final double DEFAULT_MAX_WIDTH = Double.MAX_VALUE;
+    private static final double DEFAULT_MAX_HEIGHT = Double.MAX_VALUE;
+    private static final double HEADLESS_WIDTH = 800;
+    private static final double HEADLESS_HEIGHT = 600;
     private static final Cleaner CLEANER = Cleaner.create();
     private static final Object INITIALISE_LOCK = new Object();
     private static final CefKeyEventType KEY_RAWKEYDOWN = CefKeyEventType.of(CefKeyEventType.Kind.RAWKEYDOWN);
@@ -82,17 +122,17 @@ public class CefWebView extends Region implements AutoCloseable {
     private static final CefThreadId CEF_UI_THREAD = CefThreadId.of(CefThreadId.Kind.UI);
     private static final long FX_CALLBACK_TIMEOUT_SECONDS = 10;
     private static final java.util.concurrent.Executor CREATED_BROWSER_CLOSER = Executors.newSingleThreadExecutor(r -> {
-        Thread thread = new Thread(r, "cef4j-created-browser-closer");
+        final Thread thread = new Thread(r, "cef4j-created-browser-closer");
         thread.setDaemon(true);
         return thread;
     });
     private final ImageView imageView = new ImageView();
+    private final Rectangle surface = new Rectangle();
     private final CefFrameBuffer<int[]> frameBuffer;
-    final CefWebEngine engine = new CefWebEngine(this);
-    final CefScriptEngine scriptEngine = new CefScriptEngine(() -> {
-        CefBrowser b = getBrowser();
-        return b != null ? b.getMainFrame().orElse(null) : null;
-    });
+    final CefWebEngine engine;
+    private final boolean headless;
+    final CefScriptEngine scriptEngine = new CefScriptEngine(
+            () -> getBrowser().flatMap(CefBrowser::getMainFrame).orElse(null));
     private volatile String scrollbarScript = ScrollbarTheme.injectScript(ScrollbarTheme.generateCss(null));
     private final CefClient client = new CefWebViewClient(this);
     private final CompletableFuture<Void> browserClosed = new CompletableFuture<>();
@@ -123,17 +163,71 @@ public class CefWebView extends Region implements AutoCloseable {
             ifHostPresent(h -> h.setFocus(false));
         }
     };
-    private final DoubleProperty zoom = new SimpleDoubleProperty(this, "zoom", 1.0) {
+    private final ReadOnlyDoubleWrapper width = new ReadOnlyDoubleWrapper(this, "width");
+    private final ReadOnlyDoubleWrapper height = new ReadOnlyDoubleWrapper(this, "height");
+    private final DoubleProperty zoom =
+            new StyledDouble(this, "zoom", DEFAULT_ZOOM, StyleableProperties.ZOOM, this::applyZoom);
+    private final DoubleProperty fontScale =
+            new StyledDouble(this, "fontScale", DEFAULT_FONT_SCALE, StyleableProperties.FONT_SCALE, this::applyZoom);
+    private final DoubleProperty minWidth =
+            new StyledDouble(this, "minWidth", DEFAULT_MIN_WIDTH, StyleableProperties.MIN_WIDTH, this::layoutParent);
+    private final DoubleProperty minHeight =
+            new StyledDouble(this, "minHeight", DEFAULT_MIN_HEIGHT, StyleableProperties.MIN_HEIGHT, this::layoutParent);
+    private final DoubleProperty prefWidth =
+            new StyledDouble(this, "prefWidth", DEFAULT_PREF_WIDTH, StyleableProperties.PREF_WIDTH, this::layoutParent);
+    private final DoubleProperty prefHeight = new StyledDouble(
+            this, "prefHeight", DEFAULT_PREF_HEIGHT, StyleableProperties.PREF_HEIGHT, this::layoutParent);
+    private final DoubleProperty maxWidth =
+            new StyledDouble(this, "maxWidth", DEFAULT_MAX_WIDTH, StyleableProperties.MAX_WIDTH, this::layoutParent);
+    private final DoubleProperty maxHeight =
+            new StyledDouble(this, "maxHeight", DEFAULT_MAX_HEIGHT, StyleableProperties.MAX_HEIGHT, this::layoutParent);
+    private final ObjectProperty<FontSmoothingType> fontSmoothingType =
+            new StyleableObjectProperty<>(DEFAULT_FONT_SMOOTHING_TYPE) {
+                @Override
+                public CssMetaData<CefWebView, FontSmoothingType> getCssMetaData() {
+                    return StyleableProperties.FONT_SMOOTHING_TYPE;
+                }
+
+                @Override
+                public Object getBean() {
+                    return CefWebView.this;
+                }
+
+                @Override
+                public String getName() {
+                    return "fontSmoothingType";
+                }
+            };
+    private final BooleanProperty contextMenuEnabled = new StyleableBooleanProperty(DEFAULT_CONTEXT_MENU_ENABLED) {
         @Override
         protected void invalidated() {
-            applyZoom(get());
+            contextMenuAllowed = get();
+        }
+
+        @Override
+        public CssMetaData<CefWebView, Boolean> getCssMetaData() {
+            return StyleableProperties.CONTEXT_MENU_ENABLED;
+        }
+
+        @Override
+        public Object getBean() {
+            return CefWebView.this;
+        }
+
+        @Override
+        public String getName() {
+            return "contextMenuEnabled";
         }
     };
+    volatile boolean contextMenuAllowed = DEFAULT_CONTEXT_MENU_ENABLED;
+
+    @Nullable
+    volatile BiConsumer<Integer, Integer> paintObserver;
 
     @Nullable
     private volatile BrowserHandle browser;
 
-    private volatile boolean releaseRequested;
+    private volatile boolean releaseRequested = false;
 
     private final BrowserCleanupAction browserCleanup = new BrowserCleanupAction();
     private final Cleaner.Cleanable cleanable;
@@ -155,9 +249,9 @@ public class CefWebView extends Region implements AutoCloseable {
     @Nullable
     volatile CefRect popupRect;
 
-    private volatile boolean browserCreationPosted;
-    private volatile boolean browserCreated;
-    volatile boolean popupBrowser;
+    private volatile boolean browserCreationPosted = false;
+    private volatile boolean browserCreated = false;
+    volatile boolean popupBrowser = false;
     volatile Rectangle2D detachedBounds = new Rectangle2D(0, 0, 1, 1);
     private volatile ViewportSnapshot viewportSnapshot = ViewportSnapshot.detached();
     private final Queue<Consumer<BrowserHandle>> pendingBrowserActions = new ConcurrentLinkedQueue<>();
@@ -178,11 +272,26 @@ public class CefWebView extends Region implements AutoCloseable {
      *
      * @param settings caller-provided settings; OSR fields will be overwritten
      * @param extraArgs additional CEF command-line args; OSR defaults are prepended
-     * @param appHandler optional {@link CefApp} handler; if present it is registered via
-     *     {@link Cef#addAppHandler(CefApp)} before initialisation
      * @throws IllegalStateException if CEF has been terminated
      */
-    public static void initialise(CefSettings.Mutable settings, List<String> extraArgs, Optional<CefApp> appHandler) {
+    public static void initialise(CefSettings.Mutable settings, List<String> extraArgs) {
+        initialiseImpl(settings, extraArgs, null);
+    }
+
+    /**
+     * Initialise CEF for off-screen rendering with an application handler.
+     *
+     * @param settings caller-provided settings; OSR fields will be overwritten
+     * @param extraArgs additional CEF command-line args; OSR defaults are prepended
+     * @param appHandler {@link CefApp} handler registered via {@link Cef#addAppHandler(CefApp)} before initialisation
+     * @throws IllegalStateException if CEF has been terminated
+     */
+    public static void initialise(CefSettings.Mutable settings, List<String> extraArgs, CefApp appHandler) {
+        initialiseImpl(settings, extraArgs, Objects.requireNonNull(appHandler, "appHandler"));
+    }
+
+    private static void initialiseImpl(
+            CefSettings.Mutable settings, List<String> extraArgs, @Nullable CefApp appHandler) {
         synchronized (INITIALISE_LOCK) {
             Objects.requireNonNull(settings, "settings");
             Objects.requireNonNull(extraArgs, "extraArgs");
@@ -195,11 +304,8 @@ public class CefWebView extends Region implements AutoCloseable {
                 return;
             }
             SystemBootstrap.load();
-            Cef.LaunchArgs defaults = Cef.osrLaunchArgs();
-            CefSettings.Mutable osrDefaults = defaults.settings();
-            settings.windowlessRenderingEnabled = osrDefaults.windowlessRenderingEnabled;
-            settings.externalMessagePump = osrDefaults.externalMessagePump;
-            settings.multiThreadedMessageLoop = osrDefaults.multiThreadedMessageLoop;
+            final Cef.LaunchArgs defaults = Cef.osrLaunchArgs();
+            defaults.applyTo(settings);
             if (net.kurobako.cef4j.OS.isLinux()
                     && SystemBootstrap.runtimeCefMajor().orElse(Integer.MAX_VALUE) <= 85) {
                 if (!Platform.isFxApplicationThread()) {
@@ -219,13 +325,10 @@ public class CefWebView extends Region implements AutoCloseable {
                     }
                 });
             }
-            List<String> combinedArgs = new ArrayList<>(defaults.args().size() + extraArgs.size());
-            combinedArgs.addAll(defaults.args());
-            combinedArgs.addAll(extraArgs);
-            if (appHandler.isPresent()) {
-                Cef.INSTANCE.addAppHandler(appHandler.get());
+            if (appHandler != null) {
+                Cef.INSTANCE.addAppHandler(appHandler);
             }
-            Cef.INSTANCE.initialise(settings, combinedArgs);
+            Cef.INSTANCE.initialise(settings, defaults.argsWith(extraArgs));
         }
     }
 
@@ -236,12 +339,12 @@ public class CefWebView extends Region implements AutoCloseable {
     }
 
     private static void requireOsrInitialised() {
-        Cef.State state = Cef.INSTANCE.state();
+        final Cef.State state = Cef.INSTANCE.state();
         if (state != Cef.State.INITIALISED) {
             throw new IllegalStateException(
                     "CEF must be initialised for off-screen rendering before creating a CefWebView.\n"
                             + "Call this from Application.start(...) before creating the view:\n\n"
-                            + "    CefWebView.initialise(settings, List.of(), Optional.empty());\n");
+                            + "    CefWebView.initialise(settings, List.of());\n");
         }
         Cef.INSTANCE
                 .activeSettings()
@@ -253,27 +356,40 @@ public class CefWebView extends Region implements AutoCloseable {
                 });
     }
 
+    /** Creates a view that creates its browser once it is shown in a window. */
     public CefWebView() {
+        this(null);
+    }
+
+    CefWebView(@Nullable CefWebEngine owner) {
         requireOsrInitialised();
+        headless = owner != null;
+        engine = owner != null ? owner : new CefWebEngine(this);
         int maxW = 1;
         int maxH = 1;
         for (Screen screen : Screen.getScreens()) {
-            Rectangle2D bounds = screen.getBounds();
-            double scale = Math.max(screen.getOutputScaleX(), screen.getOutputScaleY());
-            int pw = (int) Math.ceil(bounds.getWidth() * scale);
-            int ph = (int) Math.ceil(bounds.getHeight() * scale);
+            final Rectangle2D bounds = screen.getBounds();
+            final double scale = Math.max(screen.getOutputScaleX(), screen.getOutputScaleY());
+            final int pw = (int) Math.ceil(bounds.getWidth() * scale);
+            final int ph = (int) Math.ceil(bounds.getHeight() * scale);
             if (pw > maxW) maxW = pw;
             if (ph > maxH) maxH = ph;
         }
         frameBuffer = new CefFrameBuffer<>(maxW, maxH, (prev, pixels, w, h, dirty) -> {
             // XXX: CefFrameBuffer reuses pixels after consume re-arms production; remove this copy only when the image
             // handoff transfers immutable pixel ownership to the JavaFX application thread.
-            int[] image = prev.filter(p -> p.length >= w * h).orElseGet(() -> new int[w * h]);
+            final int[] image = prev != null && prev.length >= w * h ? prev : new int[w * h];
             System.arraycopy(pixels, 0, image, 0, w * h);
             return image;
         });
 
-        getChildren().add(imageView);
+        setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
+        getStyleClass().add("web-view");
+        setPickOnBounds(true);
+        surface.setManaged(false);
+        surface.setFill(Color.TRANSPARENT);
+        surface.setMouseTransparent(true);
+        getChildren().addAll(surface, imageView);
         imageView.setManaged(false);
         imageView.setPreserveRatio(false);
         imageView.setSmooth(false);
@@ -298,6 +414,12 @@ public class CefWebView extends Region implements AutoCloseable {
                 popupSurface.hide();
             }
         });
+        if (headless) {
+            width.set(HEADLESS_WIDTH);
+            height.set(HEADLESS_HEIGHT);
+            detachedBounds = new Rectangle2D(0, 0, HEADLESS_WIDTH, HEADLESS_HEIGHT);
+            refreshViewportSnapshot();
+        }
         widthProperty().addListener((obs, oldV, newV) -> onResize());
         heightProperty().addListener((obs, oldV, newV) -> onResize());
         localToSceneTransformProperty().addListener((obs, oldTransform, newTransform) -> refreshViewportSnapshot());
@@ -315,6 +437,7 @@ public class CefWebView extends Region implements AutoCloseable {
         cleanable = CLEANER.register(this, browserCleanup);
     }
 
+    /** Returns the engine of this view. */
     public CefWebEngine getEngine() {
         return engine;
     }
@@ -327,20 +450,34 @@ public class CefWebView extends Region implements AutoCloseable {
         return scriptEngine;
     }
 
-    /** Returns the underlying browser instance, or {@code null} if it does not exist yet. */
-    @NullableBoundary("JavaFX-compatible accessor returns null before browser creation")
-    @Nullable
-    public CefBrowser getBrowser() {
-        BrowserHandle current = browser;
-        return current != null ? current.getBrowser() : null;
+    /** Returns the underlying browser instance, or empty if it does not exist yet. */
+    public Optional<CefBrowser> getBrowser() {
+        return Optional.ofNullable(browser).map(BrowserHandle::getBrowser);
     }
 
-    /** Returns the underlying browser host, or {@code null} if it does not exist yet. */
-    @NullableBoundary("JavaFX-compatible accessor returns null before browser creation")
-    @Nullable
-    public CefBrowserHost getBrowserHost() {
-        BrowserHandle current = browser;
-        return current != null ? current.getHost() : null;
+    /** Returns the underlying browser host, or empty if it does not exist yet. */
+    public Optional<CefBrowserHost> getBrowserHost() {
+        return Optional.ofNullable(browser).flatMap(BrowserHandle::getHost);
+    }
+
+    /** Returns the width of this view. */
+    public double getWidth() {
+        return width.get();
+    }
+
+    /** Returns the width property of this view. */
+    public ReadOnlyDoubleProperty widthProperty() {
+        return width.getReadOnlyProperty();
+    }
+
+    /** Returns the height of this view. */
+    public double getHeight() {
+        return height.get();
+    }
+
+    /** Returns the height property of this view. */
+    public ReadOnlyDoubleProperty heightProperty() {
+        return height.getReadOnlyProperty();
     }
 
     /** Returns the current zoom factor. */
@@ -352,8 +489,222 @@ public class CefWebView extends Region implements AutoCloseable {
         zoom.set(value);
     }
 
+    /** Returns the zoom factor applied to the entire page contents. */
     public final DoubleProperty zoomProperty() {
         return zoom;
+    }
+
+    /**
+     * Returns the font scale.
+     *
+     * <p>CEF has no text-only zoom, so the scale multiplies the zoom factor and also scales images and fixed-size
+     * elements.
+     */
+    public double getFontScale() {
+        return fontScale.get();
+    }
+
+    public void setFontScale(double value) {
+        fontScale.set(value);
+    }
+
+    /** Returns the font scale property, which defaults to 1. */
+    public DoubleProperty fontScaleProperty() {
+        return fontScale;
+    }
+
+    /** Returns the requested font smoothing type. Rendering ignores it because CEF cannot change it per browser. */
+    public FontSmoothingType getFontSmoothingType() {
+        return fontSmoothingType.get();
+    }
+
+    public void setFontSmoothingType(FontSmoothingType value) {
+        fontSmoothingType.set(value);
+    }
+
+    /** Returns the font smoothing type property, which defaults to {@link FontSmoothingType#LCD}. */
+    public ObjectProperty<FontSmoothingType> fontSmoothingTypeProperty() {
+        return fontSmoothingType;
+    }
+
+    /** Returns whether the page context menu is shown. */
+    public boolean isContextMenuEnabled() {
+        return contextMenuEnabled.get();
+    }
+
+    public void setContextMenuEnabled(boolean value) {
+        contextMenuEnabled.set(value);
+    }
+
+    /**
+     * Returns the context menu property, which defaults to {@code true}.
+     *
+     * <p>While it is {@code false} the CEF context menu is cancelled; the page still receives its {@code contextmenu}
+     * DOM event.
+     */
+    public BooleanProperty contextMenuEnabledProperty() {
+        return contextMenuEnabled;
+    }
+
+    @Override
+    public boolean isResizable() {
+        return true;
+    }
+
+    @Override
+    public void resize(double newWidth, double newHeight) {
+        if (newWidth != width.get() || newHeight != height.get()) {
+            width.set(newWidth);
+            height.set(newHeight);
+            requestLayout();
+        }
+    }
+
+    @Override
+    public double minWidth(double ignoredHeight) {
+        return nonNegative(getMinWidth());
+    }
+
+    @Override
+    public double minHeight(double ignoredWidth) {
+        return nonNegative(getMinHeight());
+    }
+
+    @Override
+    public double prefWidth(double ignoredHeight) {
+        return nonNegative(getPrefWidth());
+    }
+
+    @Override
+    public double prefHeight(double ignoredWidth) {
+        return nonNegative(getPrefHeight());
+    }
+
+    @Override
+    public double maxWidth(double ignoredHeight) {
+        return nonNegative(getMaxWidth());
+    }
+
+    @Override
+    public double maxHeight(double ignoredWidth) {
+        return nonNegative(getMaxHeight());
+    }
+
+    public DoubleProperty minWidthProperty() {
+        return minWidth;
+    }
+
+    public void setMinWidth(double value) {
+        minWidth.set(value);
+    }
+
+    public double getMinWidth() {
+        return minWidth.get();
+    }
+
+    public DoubleProperty minHeightProperty() {
+        return minHeight;
+    }
+
+    public void setMinHeight(double value) {
+        minHeight.set(value);
+    }
+
+    public double getMinHeight() {
+        return minHeight.get();
+    }
+
+    public void setMinSize(double newMinWidth, double newMinHeight) {
+        setMinWidth(newMinWidth);
+        setMinHeight(newMinHeight);
+    }
+
+    public DoubleProperty prefWidthProperty() {
+        return prefWidth;
+    }
+
+    public void setPrefWidth(double value) {
+        prefWidth.set(value);
+    }
+
+    public double getPrefWidth() {
+        return prefWidth.get();
+    }
+
+    public DoubleProperty prefHeightProperty() {
+        return prefHeight;
+    }
+
+    public void setPrefHeight(double value) {
+        prefHeight.set(value);
+    }
+
+    public double getPrefHeight() {
+        return prefHeight.get();
+    }
+
+    public void setPrefSize(double newPrefWidth, double newPrefHeight) {
+        setPrefWidth(newPrefWidth);
+        setPrefHeight(newPrefHeight);
+    }
+
+    public DoubleProperty maxWidthProperty() {
+        return maxWidth;
+    }
+
+    public void setMaxWidth(double value) {
+        maxWidth.set(value);
+    }
+
+    public double getMaxWidth() {
+        return maxWidth.get();
+    }
+
+    public DoubleProperty maxHeightProperty() {
+        return maxHeight;
+    }
+
+    public void setMaxHeight(double value) {
+        maxHeight.set(value);
+    }
+
+    public double getMaxHeight() {
+        return maxHeight.get();
+    }
+
+    public void setMaxSize(double newMaxWidth, double newMaxHeight) {
+        setMaxWidth(newMaxWidth);
+        setMaxHeight(newMaxHeight);
+    }
+
+    /** Returns the CSS metadata of this class, which includes the metadata of its superclasses. */
+    public static List<CssMetaData<? extends Styleable, ?>> getClassCssMetaData() {
+        return StyleableProperties.STYLEABLES;
+    }
+
+    @Override
+    public List<CssMetaData<? extends Styleable, ?>> getCssMetaData() {
+        return getClassCssMetaData();
+    }
+
+    private static double nonNegative(double value) {
+        return Double.isNaN(value) || value < 0 ? 0 : value;
+    }
+
+    private void layoutParent() {
+        final Parent parent = getParent();
+        if (parent != null) parent.requestLayout();
+    }
+
+    void print(PrinterJob job) {
+        final Image page = imageView.getImage();
+        if (page == null) return;
+        final PageLayout layout = job.getJobSettings().getPageLayout();
+        final ImageView printable = new ImageView(page);
+        printable.setPreserveRatio(true);
+        printable.setFitWidth(layout.getPrintableWidth());
+        printable.setFitHeight(layout.getPrintableHeight());
+        job.printPage(layout, printable);
     }
 
     /** Navigates to the given URL. */
@@ -398,7 +749,8 @@ public class CefWebView extends Region implements AutoCloseable {
     }
 
     /** Executes JavaScript in the main frame if JavaScript is enabled. */
-    public void executeScript(String script) {
+    @NullableBoundary("JavaFX WebEngine.executeScript accepts a null script")
+    public void executeScript(@Nullable String script) {
         if (!engine.isJavaScriptEnabled()) return;
         runWithBrowser(
                 false,
@@ -427,10 +779,10 @@ public class CefWebView extends Region implements AutoCloseable {
     @SuppressWarnings("FutureReturnValueIgnored")
     public CompletableFuture<Void> releaseAsync() {
         if (!releaseStarted.compareAndSet(false, true)) return browserReleased.copy();
-        boolean creationPending = browserCreationPosted;
+        final boolean creationPending = browserCreationPosted;
         releaseRequested = true;
         popupSurface.hide();
-        BrowserHandle h = browser;
+        final BrowserHandle h = browser;
         browser = null;
         browserCleanup.browser = null;
         browserCreated = false;
@@ -439,10 +791,10 @@ public class CefWebView extends Region implements AutoCloseable {
         imageView.setImage(null);
         pixelBuf = null;
         pixelBuffer = null;
-        var scene = getScene();
+        final var scene = getScene();
         if (scene != null) {
             scene.windowProperty().removeListener(sceneWindowListener);
-            Window window = scene.getWindow();
+            final Window window = scene.getWindow();
             if (window != null) detachWindowListeners(window);
         }
         scriptEngine.dispose();
@@ -461,7 +813,7 @@ public class CefWebView extends Region implements AutoCloseable {
     @SuppressWarnings("FutureReturnValueIgnored")
     private void releaseBrowserAfterClose(BrowserHandle handle) {
         browserClosed.whenComplete((ignored, failure) -> {
-            boolean posted = CefGlobals.postTask(CEF_UI_THREAD, new CefTask() {
+            final boolean posted = CefGlobals.postTask(CEF_UI_THREAD, new CefTask() {
                 @Override
                 public void execute() {
                     handle.release();
@@ -478,6 +830,8 @@ public class CefWebView extends Region implements AutoCloseable {
 
     @Override
     protected void layoutChildren() {
+        surface.setWidth(getWidth());
+        surface.setHeight(getHeight());
         imageView.setFitWidth(getWidth());
         imageView.setFitHeight(getHeight());
         refreshViewportSnapshot();
@@ -488,7 +842,7 @@ public class CefWebView extends Region implements AutoCloseable {
         return new CefRenderHandler() {
             @Override
             public boolean getRootScreenRect(@Nullable CefBrowser b, CefRect.Mutable rect) {
-                Rectangle2D resolved = viewportSnapshot.rootBounds;
+                final Rectangle2D resolved = viewportSnapshot.rootBounds;
                 rect.x = (int) Math.round(resolved.getMinX());
                 rect.y = (int) Math.round(resolved.getMinY());
                 rect.width = Math.max(1, (int) Math.round(resolved.getWidth()));
@@ -498,7 +852,7 @@ public class CefWebView extends Region implements AutoCloseable {
 
             @Override
             public void getViewRect(@Nullable CefBrowser b, CefRect.Mutable rect) {
-                ViewportSnapshot snapshot = viewportSnapshot;
+                final ViewportSnapshot snapshot = viewportSnapshot;
                 rect.x = 0;
                 rect.y = 0;
                 rect.width = snapshot.viewWidth;
@@ -507,7 +861,7 @@ public class CefWebView extends Region implements AutoCloseable {
 
             @Override
             public boolean getScreenInfo(@Nullable CefBrowser b, CefScreenInfo.Mutable screenInfo) {
-                ViewportSnapshot snapshot = viewportSnapshot;
+                final ViewportSnapshot snapshot = viewportSnapshot;
                 screenInfo.deviceScaleFactor = (float) snapshot.scale;
                 screenInfo.depth = 32;
                 screenInfo.depthPerComponent = 8;
@@ -518,7 +872,7 @@ public class CefWebView extends Region implements AutoCloseable {
 
             @Override
             public boolean getScreenPoint(@Nullable CefBrowser b, int viewX, int viewY, int[] screenX, int[] screenY) {
-                ViewportSnapshot snapshot = viewportSnapshot;
+                final ViewportSnapshot snapshot = viewportSnapshot;
                 screenX[0] = (int) Math.round(snapshot.originX + snapshot.xx * viewX + snapshot.xy * viewY);
                 screenY[0] = (int) Math.round(snapshot.originY + snapshot.yx * viewX + snapshot.yy * viewY);
                 return true;
@@ -549,7 +903,8 @@ public class CefWebView extends Region implements AutoCloseable {
                     ByteBuffer buffer,
                     int width,
                     int height) {
-                boolean isPopup = type.kind().orElse(CefPaintElementType.Kind.VIEW) == CefPaintElementType.Kind.POPUP;
+                final boolean isPopup =
+                        type.kind().orElse(CefPaintElementType.Kind.VIEW) == CefPaintElementType.Kind.POPUP;
                 if (isPopup) {
                     CefFrameBuffer.copyBgraPixels(buffer, width, height)
                             .ifPresent(px -> Platform.runLater(() -> popupSurface.blit(px, width, height)));
@@ -578,7 +933,7 @@ public class CefWebView extends Region implements AutoCloseable {
         return new CefLoadHandler() {
             @Override
             public void onLoadEnd(@Nullable CefBrowser browser, @Nullable CefFrame frame, int httpStatusCode) {
-                BrowserHandle br = CefWebView.this.browser;
+                final BrowserHandle br = CefWebView.this.browser;
                 if (br != null) {
                     br.getBrowser()
                             .getMainFrame()
@@ -604,9 +959,9 @@ public class CefWebView extends Region implements AutoCloseable {
         if (browser != null || browserCreationPosted || browserCreated) return;
         browserCreationPosted = true;
         try {
-            CefWindowInfo windowInfo = Cef.createWindowlessInfo(
+            final CefWindowInfo windowInfo = Cef.createWindowlessInfo(
                     new CefRect(0, 0, Math.max(1, (int) getWidth()), Math.max(1, (int) getHeight())));
-            CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
+            final CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
             browserSettings.windowlessFrameRate = 60;
             if (!Cef.createBrowserAsync(windowInfo, client, "", browserSettings.toImmutable())) {
                 throw new IllegalStateException("CEF failed to create windowless browser");
@@ -617,19 +972,16 @@ public class CefWebView extends Region implements AutoCloseable {
         }
     }
 
-    @Nullable
-    private CefBrowserHost host() {
-        BrowserHandle current = browser;
-        return current != null ? current.getHost() : null;
+    private Optional<CefBrowserHost> host() {
+        return Optional.ofNullable(browser).flatMap(BrowserHandle::getHost);
     }
 
     private void ifHostPresent(Consumer<CefBrowserHost> action) {
-        CefBrowserHost h = host();
-        if (h != null) action.accept(h);
+        host().ifPresent(action);
     }
 
     private void blitFrame(int width, int height) {
-        int[] pixels = frameBuffer.consume().orElse(null);
+        final int[] pixels = frameBuffer.consume().orElse(null);
         if (pixels == null) return;
 
         IntBuffer buf = pixelBuf;
@@ -645,16 +997,16 @@ public class CefWebView extends Region implements AutoCloseable {
         }
         System.arraycopy(pixels, 0, buf.array(), 0, width * height);
         pb.updateBuffer(ignored -> null);
-        var scale = currentScaleFactor(currentScreen());
-        int expectedW = (int) Math.max(1, Math.round(getWidth() * scale));
-        int expectedH = (int) Math.max(1, Math.round(getHeight() * scale));
+        final var scale = currentScaleFactor(currentScreen());
+        final int expectedW = (int) Math.max(1, Math.round(getWidth() * scale));
+        final int expectedH = (int) Math.max(1, Math.round(getHeight() * scale));
         if (width != expectedW || height != expectedH) {
             requestViewRefresh(true);
         }
     }
 
     private void onResize() {
-        Rectangle2D current = detachedBounds;
+        final Rectangle2D current = detachedBounds;
         detachedBounds = new Rectangle2D(current.getMinX(), current.getMinY(), getWidth(), getHeight());
         refreshViewportSnapshot();
         frameBuffer.resetBackPressure();
@@ -662,7 +1014,7 @@ public class CefWebView extends Region implements AutoCloseable {
         requestViewRefresh(true);
     }
 
-    private void onWindowChanged(Window window) {
+    private void onWindowChanged(@Nullable Window window) {
         if (window != null) {
             attachWindowListeners(window);
             if (window.isShowing()) {
@@ -678,10 +1030,7 @@ public class CefWebView extends Region implements AutoCloseable {
         window.showingProperty().addListener(windowShowingListener);
         window.focusedProperty().removeListener(windowFocusedListener);
         window.focusedProperty().addListener(windowFocusedListener);
-        window.xProperty().removeListener(windowBoundsListener);
-        window.yProperty().removeListener(windowBoundsListener);
-        window.widthProperty().removeListener(windowBoundsListener);
-        window.heightProperty().removeListener(windowBoundsListener);
+        removeWindowBoundsListeners(window);
         window.xProperty().addListener(windowBoundsListener);
         window.yProperty().addListener(windowBoundsListener);
         window.widthProperty().addListener(windowBoundsListener);
@@ -691,6 +1040,10 @@ public class CefWebView extends Region implements AutoCloseable {
     private void detachWindowListeners(Window window) {
         window.showingProperty().removeListener(windowShowingListener);
         window.focusedProperty().removeListener(windowFocusedListener);
+        removeWindowBoundsListeners(window);
+    }
+
+    private void removeWindowBoundsListeners(Window window) {
         window.xProperty().removeListener(windowBoundsListener);
         window.yProperty().removeListener(windowBoundsListener);
         window.widthProperty().removeListener(windowBoundsListener);
@@ -698,15 +1051,17 @@ public class CefWebView extends Region implements AutoCloseable {
     }
 
     private boolean canCreateBrowserNow() {
+        if (headless) return !releaseStarted.get();
         if (getScene() == null) return false;
-        Window window = getScene().getWindow();
+        final Window window = getScene().getWindow();
         if (window == null || !window.isShowing()) return false;
         return getWidth() > 0 && getHeight() > 0;
     }
 
-    void applyZoom(double zoomFactor) {
+    private void applyZoom() {
+        final double zoomFactor = getZoom() * getFontScale();
         runWithBrowserHost(false, host -> {
-            double effectiveZoom = Math.max(zoomFactor, 0.01);
+            final double effectiveZoom = Math.max(zoomFactor, 0.01);
             host.setZoomLevel(Math.log(effectiveZoom) / Math.log(1.2));
             host.invalidate(PAINT_VIEW);
         });
@@ -723,7 +1078,10 @@ public class CefWebView extends Region implements AutoCloseable {
         });
     }
 
-    protected void onViewPainted(int width, int height) {}
+    private void onViewPainted(int paintedWidth, int paintedHeight) {
+        final BiConsumer<Integer, Integer> observer = paintObserver;
+        if (observer != null) observer.accept(paintedWidth, paintedHeight);
+    }
 
     void updateDetachedBounds(@Nullable CefRect bounds, boolean notify) {
         if (bounds == null) return;
@@ -773,9 +1131,9 @@ public class CefWebView extends Region implements AutoCloseable {
     }
 
     Screen currentScreen() {
-        Bounds bounds = localToScreen(getBoundsInLocal());
+        final Bounds bounds = localToScreen(getBoundsInLocal());
         if (bounds != null) {
-            List<Screen> screens = Screen.getScreensForRectangle(
+            final List<Screen> screens = Screen.getScreensForRectangle(
                     bounds.getMinX(),
                     bounds.getMinY(),
                     Math.max(1.0, bounds.getWidth()),
@@ -784,10 +1142,10 @@ public class CefWebView extends Region implements AutoCloseable {
                 return screens.get(0);
             }
         }
-        var scene = getScene();
-        Window window = scene != null ? scene.getWindow() : null;
+        final var scene = getScene();
+        final Window window = scene != null ? scene.getWindow() : null;
         if (window != null) {
-            List<Screen> screens = Screen.getScreensForRectangle(
+            final List<Screen> screens = Screen.getScreensForRectangle(
                     window.getX(), window.getY(), Math.max(1.0, window.getWidth()), Math.max(1.0, window.getHeight()));
             if (!screens.isEmpty()) {
                 return screens.get(0);
@@ -797,14 +1155,14 @@ public class CefWebView extends Region implements AutoCloseable {
     }
 
     double currentScaleFactor(Screen screen) {
-        var scene = getScene();
-        var window = scene != null ? scene.getWindow() : null;
+        final var scene = getScene();
+        final var window = scene != null ? scene.getWindow() : null;
         if (window != null) {
-            double outputScale = Math.max(window.getOutputScaleX(), window.getOutputScaleY());
+            final double outputScale = Math.max(window.getOutputScaleX(), window.getOutputScaleY());
             if (outputScale > 0.0) {
                 return outputScale;
             }
-            double renderScale = Math.max(window.getRenderScaleX(), window.getRenderScaleY());
+            final double renderScale = Math.max(window.getRenderScaleX(), window.getRenderScaleY());
             if (renderScale > 0.0) {
                 return renderScale;
             }
@@ -821,9 +1179,9 @@ public class CefWebView extends Region implements AutoCloseable {
             Platform.runLater(this::refreshViewportSnapshot);
             return;
         }
-        Rectangle2D fallback = detachedBounds;
-        Bounds bounds = localToScreen(getBoundsInLocal());
-        Rectangle2D root = bounds == null
+        final Rectangle2D fallback = detachedBounds;
+        final Bounds bounds = localToScreen(getBoundsInLocal());
+        final Rectangle2D root = bounds == null
                 ? fallback
                 : new Rectangle2D(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());
         javafx.geometry.Point2D origin = localToScreen(0, 0);
@@ -834,8 +1192,8 @@ public class CefWebView extends Region implements AutoCloseable {
             xUnit = origin.add(1, 0);
             yUnit = origin.add(0, 1);
         }
-        Screen screen = currentScreen();
-        double scale = currentScaleFactor(screen);
+        final Screen screen = currentScreen();
+        final double scale = currentScaleFactor(screen);
         viewportSnapshot = new ViewportSnapshot(
                 root,
                 Math.max(1, (int) Math.round(getWidth() > 0 ? getWidth() : fallback.getWidth())),
@@ -857,6 +1215,126 @@ public class CefWebView extends Region implements AutoCloseable {
                 (int) Math.round(bounds.getMinY() * scale),
                 Math.max(1, (int) Math.round(bounds.getWidth() * scale)),
                 Math.max(1, (int) Math.round(bounds.getHeight() * scale)));
+    }
+
+    private static final class StyledDouble extends StyleableDoubleProperty {
+        private final CefWebView bean;
+        private final String name;
+        private final CssMetaData<CefWebView, Number> metaData;
+        private final Runnable onInvalidated;
+
+        private StyledDouble(
+                CefWebView bean,
+                String name,
+                double initial,
+                CssMetaData<CefWebView, Number> metaData,
+                Runnable onInvalidated) {
+            super(initial);
+            this.bean = bean;
+            this.name = name;
+            this.metaData = metaData;
+            this.onInvalidated = onInvalidated;
+        }
+
+        @Override
+        protected void invalidated() {
+            onInvalidated.run();
+        }
+
+        @Override
+        public CssMetaData<CefWebView, Number> getCssMetaData() {
+            return metaData;
+        }
+
+        @Override
+        public Object getBean() {
+            return bean;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+    }
+
+    private static final class StyleableProperties {
+        private static final CssMetaData<CefWebView, Boolean> CONTEXT_MENU_ENABLED =
+                new CssMetaData<>(
+                        "-fx-context-menu-enabled", BooleanConverter.getInstance(), DEFAULT_CONTEXT_MENU_ENABLED) {
+                    @Override
+                    public boolean isSettable(CefWebView view) {
+                        return !view.contextMenuEnabled.isBound();
+                    }
+
+                    @Override
+                    public StyleableProperty<Boolean> getStyleableProperty(CefWebView view) {
+                        return (StyleableProperty<Boolean>) view.contextMenuEnabled;
+                    }
+                };
+
+        private static final CssMetaData<CefWebView, FontSmoothingType> FONT_SMOOTHING_TYPE =
+                new CssMetaData<>(
+                        "-fx-font-smoothing-type",
+                        new EnumConverter<>(FontSmoothingType.class),
+                        DEFAULT_FONT_SMOOTHING_TYPE) {
+                    @Override
+                    public boolean isSettable(CefWebView view) {
+                        return !view.fontSmoothingType.isBound();
+                    }
+
+                    @Override
+                    public StyleableProperty<FontSmoothingType> getStyleableProperty(CefWebView view) {
+                        return (StyleableProperty<FontSmoothingType>) view.fontSmoothingType;
+                    }
+                };
+
+        private static final CssMetaData<CefWebView, Number> ZOOM = size("-fx-zoom", DEFAULT_ZOOM, v -> v.zoom);
+        private static final CssMetaData<CefWebView, Number> FONT_SCALE =
+                size("-fx-font-scale", DEFAULT_FONT_SCALE, v -> v.fontScale);
+        private static final CssMetaData<CefWebView, Number> MIN_WIDTH =
+                size("-fx-min-width", DEFAULT_MIN_WIDTH, v -> v.minWidth);
+        private static final CssMetaData<CefWebView, Number> MIN_HEIGHT =
+                size("-fx-min-height", DEFAULT_MIN_HEIGHT, v -> v.minHeight);
+        private static final CssMetaData<CefWebView, Number> MAX_WIDTH =
+                size("-fx-max-width", DEFAULT_MAX_WIDTH, v -> v.maxWidth);
+        private static final CssMetaData<CefWebView, Number> MAX_HEIGHT =
+                size("-fx-max-height", DEFAULT_MAX_HEIGHT, v -> v.maxHeight);
+        private static final CssMetaData<CefWebView, Number> PREF_WIDTH =
+                size("-fx-pref-width", DEFAULT_PREF_WIDTH, v -> v.prefWidth);
+        private static final CssMetaData<CefWebView, Number> PREF_HEIGHT =
+                size("-fx-pref-height", DEFAULT_PREF_HEIGHT, v -> v.prefHeight);
+
+        private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES;
+
+        static {
+            final List<CssMetaData<? extends Styleable, ?>> styleables = new ArrayList<>(Parent.getClassCssMetaData());
+            styleables.add(CONTEXT_MENU_ENABLED);
+            styleables.add(FONT_SMOOTHING_TYPE);
+            styleables.add(ZOOM);
+            styleables.add(FONT_SCALE);
+            styleables.add(MIN_WIDTH);
+            styleables.add(PREF_WIDTH);
+            styleables.add(MAX_WIDTH);
+            styleables.add(MIN_HEIGHT);
+            styleables.add(PREF_HEIGHT);
+            styleables.add(MAX_HEIGHT);
+            STYLEABLES = Collections.unmodifiableList(styleables);
+        }
+
+        private static CssMetaData<CefWebView, Number> size(
+                String property, double initial, Function<CefWebView, DoubleProperty> accessor) {
+            return new CssMetaData<>(property, SizeConverter.getInstance(), initial) {
+                @Override
+                public boolean isSettable(CefWebView view) {
+                    return !accessor.apply(view).isBound();
+                }
+
+                @Override
+                public StyleableProperty<Number> getStyleableProperty(CefWebView view) {
+                    return (StyleableProperty<Number>) accessor.apply(view);
+                }
+            };
+        }
     }
 
     private static final class ViewportSnapshot {
@@ -901,8 +1379,8 @@ public class CefWebView extends Region implements AutoCloseable {
         }
 
         private static ViewportSnapshot detached() {
-            Rectangle2D unit = new Rectangle2D(0, 0, 1, 1);
-            CefRect rect = new CefRect(0, 0, 1, 1);
+            final Rectangle2D unit = new Rectangle2D(0, 0, 1, 1);
+            final CefRect rect = new CefRect(0, 0, 1, 1);
             return new ViewportSnapshot(unit, 1, 1, 0, 0, 1, 0, 0, 1, 1, rect, rect);
         }
     }
@@ -943,13 +1421,13 @@ public class CefWebView extends Region implements AutoCloseable {
 
     private void handleScroll(ScrollEvent e) {
         if (e.isControlDown()) {
-            double delta = e.getDeltaY() > 0 ? 0.1 : -0.1;
+            final double delta = e.getDeltaY() > 0 ? 0.1 : -0.1;
             setZoom(Math.max(0.25, Math.min(5.0, getZoom() + delta)));
             e.consume();
             return;
         }
         runWithBrowserHost(false, host -> {
-            CefMouseEvent mouse = new CefMouseEvent(
+            final CefMouseEvent mouse = new CefMouseEvent(
                     (int) e.getX(),
                     (int) e.getY(),
                     baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown()));
@@ -974,8 +1452,8 @@ public class CefWebView extends Region implements AutoCloseable {
                 return;
             }
         }
-        int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
-        int keyCode = e.getCode().getCode();
+        final int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
+        final int keyCode = e.getCode().getCode();
         pressedKeyCode = keyCode;
         runWithBrowserHost(
                 false,
@@ -984,18 +1462,18 @@ public class CefWebView extends Region implements AutoCloseable {
     }
 
     private void handleKeyTyped(KeyEvent e) {
-        String text = e.getCharacter();
+        final String text = e.getCharacter();
         if (text == null || text.isEmpty() || KeyEvent.CHAR_UNDEFINED.equals(text)) return;
-        char c = text.charAt(0);
-        int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
-        int keyCode = pressedKeyCode != 0 ? pressedKeyCode : c;
+        final char c = text.charAt(0);
+        final int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
+        final int keyCode = pressedKeyCode != 0 ? pressedKeyCode : c;
         runWithBrowserHost(
                 false, host -> host.sendKeyEvent(new CefKeyEvent(KEY_CHAR, mods, keyCode, keyCode, 0, c, c, 0)));
     }
 
     private void handleKeyReleased(KeyEvent e) {
-        int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
-        int keyCode = e.getCode().getCode();
+        final int mods = baseModifiers(e.isShiftDown(), e.isControlDown(), e.isAltDown(), e.isMetaDown());
+        final int keyCode = e.getCode().getCode();
         if (pressedKeyCode == keyCode) pressedKeyCode = 0;
         runWithBrowserHost(
                 false,
@@ -1025,10 +1503,7 @@ public class CefWebView extends Region implements AutoCloseable {
     }
 
     void runWithBrowserHost(boolean failIfUnavailable, Consumer<CefBrowserHost> action) {
-        runWhenBrowserReady(failIfUnavailable, current -> {
-            CefBrowserHost host = current.getHost();
-            if (host != null) action.accept(host);
-        });
+        runWhenBrowserReady(failIfUnavailable, current -> current.getHost().ifPresent(action));
     }
 
     void runWithBrowser(boolean failIfUnavailable, Consumer<CefBrowser> action) {
@@ -1070,7 +1545,7 @@ public class CefWebView extends Region implements AutoCloseable {
 
     void onBrowserCreated(@Nullable CefBrowser browser) {
         if (browser == null) return;
-        BrowserHandle created = new BrowserHandle(browser);
+        final BrowserHandle created = new BrowserHandle(browser);
         if (releaseRequested) {
             releaseBrowserAfterClose(created);
             // Closing from onAfterCreated can invalidate CEF's popup delegate before the surrounding CreateBrowser /
@@ -1100,7 +1575,7 @@ public class CefWebView extends Region implements AutoCloseable {
             browser.getHost().ifPresent(h -> h.setFocus(true));
             browserCreated = true;
             browserCreationPosted = false;
-            applyZoom(getZoom());
+            applyZoom();
             engine.fireVisibilityChanged(true);
             requestViewRefresh(true);
             // XXX: CEF <= 75 software OSR skips onPaint for a compositor draw that lands after the renderer stops
@@ -1114,23 +1589,25 @@ public class CefWebView extends Region implements AutoCloseable {
 
     boolean handleBeforePopup(CefWindowInfo.Mutable windowInfo, @Nullable AtomicReference<CefClient> clientRef) {
         if (clientRef == null) return true;
-        javafx.util.Callback<CefPopupFeatures, CefWebEngine> handler = engine.getCreatePopupHandler();
-        if (handler == null) return true;
-        final AtomicReference<@Nullable CefWebEngine> popupEngine = new AtomicReference<>();
-        runOnFxAndWait(() -> {
-            CefWebEngine created = handler.call(new CefPopupFeatures(false, false, false, true));
-            if (created != null) {
-                created.getView().browserCreationPosted = true;
-            }
-            popupEngine.set(created);
-        });
-        CefWebEngine createdEngine = popupEngine.get();
-        if (createdEngine == null) return true;
-        CefRect popupBounds = Cef.configureWindowlessPopup(windowInfo, new CefRect(0, 0, 800, 600));
-        createdEngine.getView().popupBrowser = true;
-        createdEngine.getView().updateDetachedBounds(popupBounds, true);
-        clientRef.set(createdEngine.getView().getCefClient());
-        return false;
+        return Optional.ofNullable(engine.getCreatePopupHandler())
+                .map(handler -> {
+                    final AtomicReference<@Nullable CefWebEngine> popupEngine = new AtomicReference<>();
+                    runOnFxAndWait(() -> {
+                        final CefWebEngine created = handler.call(new CefPopupFeatures(false, false, false, true));
+                        if (created != null) {
+                            created.getView().browserCreationPosted = true;
+                        }
+                        popupEngine.set(created);
+                    });
+                    final CefWebEngine createdEngine = popupEngine.get();
+                    if (createdEngine == null) return true;
+                    final CefRect popupBounds = Cef.configureWindowlessPopup(windowInfo, new CefRect(0, 0, 800, 600));
+                    createdEngine.getView().popupBrowser = true;
+                    createdEngine.getView().updateDetachedBounds(popupBounds, true);
+                    clientRef.set(createdEngine.getView().getCefClient());
+                    return false;
+                })
+                .orElse(true);
     }
 
     void onBeforeBrowserClose() {
@@ -1144,8 +1621,8 @@ public class CefWebView extends Region implements AutoCloseable {
             runnable.run();
             return;
         }
-        CountDownLatch latch = new CountDownLatch(1);
-        AtomicReference<@Nullable Throwable> failure = new AtomicReference<>();
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicReference<@Nullable Throwable> failure = new AtomicReference<>();
         try {
             Platform.runLater(() -> {
                 try {
@@ -1168,7 +1645,7 @@ public class CefWebView extends Region implements AutoCloseable {
             Thread.currentThread().interrupt();
             throw new IllegalStateException("interrupted while waiting for JavaFX callback", interrupted);
         }
-        Throwable thrown = failure.get();
+        final Throwable thrown = failure.get();
         if (thrown instanceof RuntimeException) throw (RuntimeException) thrown;
         if (thrown instanceof Error) throw (Error) thrown;
     }
@@ -1179,7 +1656,7 @@ public class CefWebView extends Region implements AutoCloseable {
 
         @Override
         public void run() {
-            BrowserHandle h = browser;
+            final BrowserHandle h = browser;
             browser = null;
             if (h != null) h.close(true);
         }
@@ -1198,15 +1675,14 @@ public class CefWebView extends Region implements AutoCloseable {
             return browser;
         }
 
-        @Nullable
-        private CefBrowserHost getHost() {
-            if (released.get()) return null;
+        private Optional<CefBrowserHost> getHost() {
+            if (released.get()) return Optional.empty();
             try {
-                return browser.getHost().orElse(null);
+                return browser.getHost();
             } catch (IllegalStateException alreadyReleased) {
                 // A queued close may race the browser-closed callback, which releases the Java peer on the same
                 // CEF UI thread. Treat only that completed lifecycle transition as an idempotent close.
-                if (released.get()) return null;
+                if (released.get()) return Optional.empty();
                 throw alreadyReleased;
             }
         }
@@ -1214,7 +1690,7 @@ public class CefWebView extends Region implements AutoCloseable {
         private void close(boolean force) {
             if (!closeRequested.compareAndSet(false, true)) return;
             if (CefGlobals.currentlyOn(CEF_UI_THREAD) == 0) {
-                boolean posted = CefGlobals.postTask(CEF_UI_THREAD, new CefTask() {
+                final boolean posted = CefGlobals.postTask(CEF_UI_THREAD, new CefTask() {
                     @Override
                     public void execute() {
                         closeOnCefUi(force);
@@ -1226,10 +1702,11 @@ public class CefWebView extends Region implements AutoCloseable {
         }
 
         private void closeOnCefUi(boolean force) {
-            try (CefBrowserHost host = getHost()) {
-                if (host == null) return;
-                host.closeBrowser(force);
-            }
+            getHost().ifPresent(host -> {
+                try (host) {
+                    host.closeBrowser(force);
+                }
+            });
         }
 
         private void release() {

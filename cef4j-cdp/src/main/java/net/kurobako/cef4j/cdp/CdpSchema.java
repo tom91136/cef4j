@@ -29,7 +29,7 @@ public final class CdpSchema {
     public static CompletionStage<Browser.GetVersionResult> requireExactVersion(CdpClient client) {
         Objects.requireNonNull(client, "client");
         return client.domains().browser().getVersion().thenApply(result -> {
-            String product = result.product();
+            final String product = result.product();
             if (!product.endsWith("/" + chromiumVersion())) {
                 throw new CdpVersionMismatchException(chromiumVersion(), product);
             }
@@ -38,7 +38,7 @@ public final class CdpSchema {
     }
 
     private static Properties load() {
-        Properties properties = new Properties();
+        final Properties properties = new Properties();
         try (InputStream stream = CdpSchema.class.getClassLoader().getResourceAsStream(RESOURCE)) {
             if (stream == null) throw new IllegalStateException("Missing bundled CDP schema metadata");
             properties.load(stream);

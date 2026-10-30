@@ -13,6 +13,8 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This domain emulates different environments for the page.
@@ -20,6 +22,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Emulation {
     private Emulation() {}
     /**
@@ -36,206 +39,126 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong top() {
-            Long value = CdpObject.numberAsLong(raw("top"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("top").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Overrides safe-area-max-inset-top.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong topMax() {
-            Long value = CdpObject.numberAsLong(raw("topMax"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("topMax").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Overrides safe-area-inset-left.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong left() {
-            Long value = CdpObject.numberAsLong(raw("left"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("left").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Overrides safe-area-max-inset-left.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong leftMax() {
-            Long value = CdpObject.numberAsLong(raw("leftMax"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("leftMax").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Overrides safe-area-inset-bottom.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong bottom() {
-            Long value = CdpObject.numberAsLong(raw("bottom"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("bottom").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Overrides safe-area-max-inset-bottom.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong bottomMax() {
-            Long value = CdpObject.numberAsLong(raw("bottomMax"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("bottomMax").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Overrides safe-area-inset-right.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong right() {
-            Long value = CdpObject.numberAsLong(raw("right"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("right").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Overrides safe-area-max-inset-right.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong rightMax() {
-            Long value = CdpObject.numberAsLong(raw("rightMax"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("rightMax").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Overrides safe-area-inset-top.
-         * @param top field value; empty omits the value
+         * @param top field value
          * @return this model
          */
-        public SafeAreaInsets top(OptionalLong top) {
-            set("top", top.isPresent() ? top.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Overrides safe-area-inset-top.
-         * @param top field value; null removes the value
-         * @return this model
-         */
-        public SafeAreaInsets top(Long top) {
+        public SafeAreaInsets top(long top) {
             set("top", top);
             return this;
         }
         /**
          * Overrides safe-area-max-inset-top.
-         * @param topMax field value; empty omits the value
+         * @param topMax field value
          * @return this model
          */
-        public SafeAreaInsets topMax(OptionalLong topMax) {
-            set("topMax", topMax.isPresent() ? topMax.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Overrides safe-area-max-inset-top.
-         * @param topMax field value; null removes the value
-         * @return this model
-         */
-        public SafeAreaInsets topMax(Long topMax) {
+        public SafeAreaInsets topMax(long topMax) {
             set("topMax", topMax);
             return this;
         }
         /**
          * Overrides safe-area-inset-left.
-         * @param left field value; empty omits the value
+         * @param left field value
          * @return this model
          */
-        public SafeAreaInsets left(OptionalLong left) {
-            set("left", left.isPresent() ? left.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Overrides safe-area-inset-left.
-         * @param left field value; null removes the value
-         * @return this model
-         */
-        public SafeAreaInsets left(Long left) {
+        public SafeAreaInsets left(long left) {
             set("left", left);
             return this;
         }
         /**
          * Overrides safe-area-max-inset-left.
-         * @param leftMax field value; empty omits the value
+         * @param leftMax field value
          * @return this model
          */
-        public SafeAreaInsets leftMax(OptionalLong leftMax) {
-            set("leftMax", leftMax.isPresent() ? leftMax.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Overrides safe-area-max-inset-left.
-         * @param leftMax field value; null removes the value
-         * @return this model
-         */
-        public SafeAreaInsets leftMax(Long leftMax) {
+        public SafeAreaInsets leftMax(long leftMax) {
             set("leftMax", leftMax);
             return this;
         }
         /**
          * Overrides safe-area-inset-bottom.
-         * @param bottom field value; empty omits the value
+         * @param bottom field value
          * @return this model
          */
-        public SafeAreaInsets bottom(OptionalLong bottom) {
-            set("bottom", bottom.isPresent() ? bottom.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Overrides safe-area-inset-bottom.
-         * @param bottom field value; null removes the value
-         * @return this model
-         */
-        public SafeAreaInsets bottom(Long bottom) {
+        public SafeAreaInsets bottom(long bottom) {
             set("bottom", bottom);
             return this;
         }
         /**
          * Overrides safe-area-max-inset-bottom.
-         * @param bottomMax field value; empty omits the value
+         * @param bottomMax field value
          * @return this model
          */
-        public SafeAreaInsets bottomMax(OptionalLong bottomMax) {
-            set("bottomMax", bottomMax.isPresent() ? bottomMax.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Overrides safe-area-max-inset-bottom.
-         * @param bottomMax field value; null removes the value
-         * @return this model
-         */
-        public SafeAreaInsets bottomMax(Long bottomMax) {
+        public SafeAreaInsets bottomMax(long bottomMax) {
             set("bottomMax", bottomMax);
             return this;
         }
         /**
          * Overrides safe-area-inset-right.
-         * @param right field value; empty omits the value
+         * @param right field value
          * @return this model
          */
-        public SafeAreaInsets right(OptionalLong right) {
-            set("right", right.isPresent() ? right.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Overrides safe-area-inset-right.
-         * @param right field value; null removes the value
-         * @return this model
-         */
-        public SafeAreaInsets right(Long right) {
+        public SafeAreaInsets right(long right) {
             set("right", right);
             return this;
         }
         /**
          * Overrides safe-area-max-inset-right.
-         * @param rightMax field value; empty omits the value
+         * @param rightMax field value
          * @return this model
          */
-        public SafeAreaInsets rightMax(OptionalLong rightMax) {
-            set("rightMax", rightMax.isPresent() ? rightMax.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Overrides safe-area-max-inset-right.
-         * @param rightMax field value; null removes the value
-         * @return this model
-         */
-        public SafeAreaInsets rightMax(Long rightMax) {
+        public SafeAreaInsets rightMax(long rightMax) {
             set("rightMax", rightMax);
             return this;
         }
@@ -259,7 +182,7 @@ public final class Emulation {
             LANDSCAPESECONDARY("landscapeSecondary");
             public final String value;
             TypeValues(String value) { this.value = value; }
-            public String value() { return value; }
+            @Override public String value() { return value; }
             public static TypeValues of(String value) {
                 for (TypeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
@@ -316,7 +239,7 @@ public final class Emulation {
             HORIZONTAL("horizontal");
             public final String value;
             OrientationValues(String value) { this.value = value; }
-            public String value() { return value; }
+            @Override public String value() { return value; }
             public static OrientationValues of(String value) {
                 for (OrientationValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
@@ -389,7 +312,7 @@ public final class Emulation {
             FOLDED("folded");
             public final String value;
             TypeValues(String value) { this.value = value; }
-            public String value() { return value; }
+            @Override public String value() { return value; }
             public static TypeValues of(String value) {
                 for (TypeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
@@ -465,7 +388,7 @@ public final class Emulation {
         PAUSEIFNETWORKFETCHESPENDING("pauseIfNetworkFetchesPending");
         public final String value;
         VirtualTimePolicy(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static VirtualTimePolicy of(String value) {
             for (VirtualTimePolicy constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -531,16 +454,14 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Emulation.UserAgentBrandVersion>> brands() {
-            Object value = raw("brands");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Emulation.UserAgentBrandVersion.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("brands").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Emulation.UserAgentBrandVersion.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Brands appearing in Sec-CH-UA-Full-Version-List.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Emulation.UserAgentBrandVersion>> fullVersionList() {
-            Object value = raw("fullVersionList");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Emulation.UserAgentBrandVersion.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("fullVersionList").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Emulation.UserAgentBrandVersion.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Returns the fullVersion field.
@@ -549,8 +470,7 @@ public final class Emulation {
          */
         @Deprecated
         public Optional<String> fullVersion() {
-            Object value = raw("fullVersion");
-            return Optional.ofNullable((String) value);
+            return raw("fullVersion").map(value -> (String) value);
         }
         /**
          * Returns the platform field.
@@ -592,37 +512,25 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> bitness() {
-            Object value = raw("bitness");
-            return Optional.ofNullable((String) value);
+            return raw("bitness").map(value -> (String) value);
         }
         /**
          * Returns the wow64 field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> wow64() {
-            Object value = raw("wow64");
-            return Optional.ofNullable((Boolean) value);
+            return raw("wow64").map(value -> (Boolean) value);
         }
         /**
          * Used to specify User Agent form-factor values. See https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factors
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> formFactors() {
-            Object value = raw("formFactors");
-            return Optional.ofNullable(list(value, element0 -> (String) element0));
+            return raw("formFactors").flatMap(value -> list(value, element0 -> (String) element0));
         }
         /**
          * Brands appearing in Sec-CH-UA.
-         * @param brands field value; empty omits the value
-         * @return this model
-         */
-        public UserAgentMetadata brands(Optional<java.util.List<Emulation.UserAgentBrandVersion>> brands) {
-            set("brands", brands.orElse(null));
-            return this;
-        }
-        /**
-         * Brands appearing in Sec-CH-UA.
-         * @param brands field value; null removes the value
+         * @param brands field value
          * @return this model
          */
         public UserAgentMetadata brands(java.util.List<Emulation.UserAgentBrandVersion> brands) {
@@ -631,16 +539,7 @@ public final class Emulation {
         }
         /**
          * Brands appearing in Sec-CH-UA-Full-Version-List.
-         * @param fullVersionList field value; empty omits the value
-         * @return this model
-         */
-        public UserAgentMetadata fullVersionList(Optional<java.util.List<Emulation.UserAgentBrandVersion>> fullVersionList) {
-            set("fullVersionList", fullVersionList.orElse(null));
-            return this;
-        }
-        /**
-         * Brands appearing in Sec-CH-UA-Full-Version-List.
-         * @param fullVersionList field value; null removes the value
+         * @param fullVersionList field value
          * @return this model
          */
         public UserAgentMetadata fullVersionList(java.util.List<Emulation.UserAgentBrandVersion> fullVersionList) {
@@ -649,18 +548,7 @@ public final class Emulation {
         }
         /**
          * Sets the fullVersion field.
-         * @param fullVersion field value; empty omits the value
-         * @return this model
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public UserAgentMetadata fullVersion(Optional<String> fullVersion) {
-            set("fullVersion", fullVersion.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the fullVersion field.
-         * @param fullVersion field value; null removes the value
+         * @param fullVersion field value
          * @return this model
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
@@ -716,16 +604,7 @@ public final class Emulation {
         }
         /**
          * Sets the bitness field.
-         * @param bitness field value; empty omits the value
-         * @return this model
-         */
-        public UserAgentMetadata bitness(Optional<String> bitness) {
-            set("bitness", bitness.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the bitness field.
-         * @param bitness field value; null removes the value
+         * @param bitness field value
          * @return this model
          */
         public UserAgentMetadata bitness(String bitness) {
@@ -734,34 +613,16 @@ public final class Emulation {
         }
         /**
          * Sets the wow64 field.
-         * @param wow64 field value; empty omits the value
+         * @param wow64 field value
          * @return this model
          */
-        public UserAgentMetadata wow64(Optional<Boolean> wow64) {
-            set("wow64", wow64.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the wow64 field.
-         * @param wow64 field value; null removes the value
-         * @return this model
-         */
-        public UserAgentMetadata wow64(Boolean wow64) {
+        public UserAgentMetadata wow64(boolean wow64) {
             set("wow64", wow64);
             return this;
         }
         /**
          * Used to specify User Agent form-factor values. See https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factors
-         * @param formFactors field value; empty omits the value
-         * @return this model
-         */
-        public UserAgentMetadata formFactors(Optional<java.util.List<String>> formFactors) {
-            set("formFactors", formFactors.orElse(null));
-            return this;
-        }
-        /**
-         * Used to specify User Agent form-factor values. See https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factors
-         * @param formFactors field value; null removes the value
+         * @param formFactors field value
          * @return this model
          */
         public UserAgentMetadata formFactors(java.util.List<String> formFactors) {
@@ -784,7 +645,7 @@ public final class Emulation {
         RELATIVE_ORIENTATION("relative-orientation");
         public final String value;
         SensorType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static SensorType of(String value) {
             for (SensorType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -806,76 +667,46 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> available() {
-            Object value = raw("available");
-            return Optional.ofNullable((Boolean) value);
+            return raw("available").map(value -> (Boolean) value);
         }
         /**
          * Returns the minimumFrequency field.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble minimumFrequency() {
-            Double value = CdpObject.numberAsDouble(raw("minimumFrequency"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("minimumFrequency").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Returns the maximumFrequency field.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble maximumFrequency() {
-            Double value = CdpObject.numberAsDouble(raw("maximumFrequency"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("maximumFrequency").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Sets the available field.
-         * @param available field value; empty omits the value
+         * @param available field value
          * @return this model
          */
-        public SensorMetadata available(Optional<Boolean> available) {
-            set("available", available.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the available field.
-         * @param available field value; null removes the value
-         * @return this model
-         */
-        public SensorMetadata available(Boolean available) {
+        public SensorMetadata available(boolean available) {
             set("available", available);
             return this;
         }
         /**
          * Sets the minimumFrequency field.
-         * @param minimumFrequency field value; empty omits the value
+         * @param minimumFrequency field value
          * @return this model
          */
-        public SensorMetadata minimumFrequency(OptionalDouble minimumFrequency) {
-            set("minimumFrequency", minimumFrequency.isPresent() ? minimumFrequency.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Sets the minimumFrequency field.
-         * @param minimumFrequency field value; null removes the value
-         * @return this model
-         */
-        public SensorMetadata minimumFrequency(Double minimumFrequency) {
+        public SensorMetadata minimumFrequency(double minimumFrequency) {
             set("minimumFrequency", minimumFrequency);
             return this;
         }
         /**
          * Sets the maximumFrequency field.
-         * @param maximumFrequency field value; empty omits the value
+         * @param maximumFrequency field value
          * @return this model
          */
-        public SensorMetadata maximumFrequency(OptionalDouble maximumFrequency) {
-            set("maximumFrequency", maximumFrequency.isPresent() ? maximumFrequency.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Sets the maximumFrequency field.
-         * @param maximumFrequency field value; null removes the value
-         * @return this model
-         */
-        public SensorMetadata maximumFrequency(Double maximumFrequency) {
+        public SensorMetadata maximumFrequency(double maximumFrequency) {
             set("maximumFrequency", maximumFrequency);
             return this;
         }
@@ -1052,37 +883,25 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<Emulation.SensorReadingSingle> single() {
-            Object value = raw("single");
-            return Optional.ofNullable(value == null ? null : Emulation.SensorReadingSingle.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("single").flatMap(CdpObject::objectMap).map(Emulation.SensorReadingSingle::fromMap);
         }
         /**
          * Returns the xyz field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Emulation.SensorReadingXYZ> xyz() {
-            Object value = raw("xyz");
-            return Optional.ofNullable(value == null ? null : Emulation.SensorReadingXYZ.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("xyz").flatMap(CdpObject::objectMap).map(Emulation.SensorReadingXYZ::fromMap);
         }
         /**
          * Returns the quaternion field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Emulation.SensorReadingQuaternion> quaternion() {
-            Object value = raw("quaternion");
-            return Optional.ofNullable(value == null ? null : Emulation.SensorReadingQuaternion.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("quaternion").flatMap(CdpObject::objectMap).map(Emulation.SensorReadingQuaternion::fromMap);
         }
         /**
          * Sets the single field.
-         * @param single field value; empty omits the value
-         * @return this model
-         */
-        public SensorReading single(Optional<Emulation.SensorReadingSingle> single) {
-            set("single", single.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the single field.
-         * @param single field value; null removes the value
+         * @param single field value
          * @return this model
          */
         public SensorReading single(Emulation.SensorReadingSingle single) {
@@ -1091,16 +910,7 @@ public final class Emulation {
         }
         /**
          * Sets the xyz field.
-         * @param xyz field value; empty omits the value
-         * @return this model
-         */
-        public SensorReading xyz(Optional<Emulation.SensorReadingXYZ> xyz) {
-            set("xyz", xyz.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the xyz field.
-         * @param xyz field value; null removes the value
+         * @param xyz field value
          * @return this model
          */
         public SensorReading xyz(Emulation.SensorReadingXYZ xyz) {
@@ -1109,16 +919,7 @@ public final class Emulation {
         }
         /**
          * Sets the quaternion field.
-         * @param quaternion field value; empty omits the value
-         * @return this model
-         */
-        public SensorReading quaternion(Optional<Emulation.SensorReadingQuaternion> quaternion) {
-            set("quaternion", quaternion.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the quaternion field.
-         * @param quaternion field value; null removes the value
+         * @param quaternion field value
          * @return this model
          */
         public SensorReading quaternion(Emulation.SensorReadingQuaternion quaternion) {
@@ -1134,7 +935,7 @@ public final class Emulation {
         CPU("cpu");
         public final String value;
         PressureSource(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static PressureSource of(String value) {
             for (PressureSource constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -1153,7 +954,7 @@ public final class Emulation {
         CRITICAL("critical");
         public final String value;
         PressureState(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static PressureState of(String value) {
             for (PressureState constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -1175,24 +976,14 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> available() {
-            Object value = raw("available");
-            return Optional.ofNullable((Boolean) value);
+            return raw("available").map(value -> (Boolean) value);
         }
         /**
          * Sets the available field.
-         * @param available field value; empty omits the value
+         * @param available field value
          * @return this model
          */
-        public PressureMetadata available(Optional<Boolean> available) {
-            set("available", available.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the available field.
-         * @param available field value; null removes the value
-         * @return this model
-         */
-        public PressureMetadata available(Boolean available) {
+        public PressureMetadata available(boolean available) {
             set("available", available);
             return this;
         }
@@ -1211,102 +1002,62 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong top() {
-            Long value = CdpObject.numberAsLong(raw("top"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("top").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Work area left inset in pixels. Default is 0;
          * @return the protocol field value, empty when absent
          */
         public OptionalLong left() {
-            Long value = CdpObject.numberAsLong(raw("left"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("left").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Work area bottom inset in pixels. Default is 0;
          * @return the protocol field value, empty when absent
          */
         public OptionalLong bottom() {
-            Long value = CdpObject.numberAsLong(raw("bottom"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("bottom").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Work area right inset in pixels. Default is 0;
          * @return the protocol field value, empty when absent
          */
         public OptionalLong right() {
-            Long value = CdpObject.numberAsLong(raw("right"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("right").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Work area top inset in pixels. Default is 0;
-         * @param top field value; empty omits the value
+         * @param top field value
          * @return this model
          */
-        public WorkAreaInsets top(OptionalLong top) {
-            set("top", top.isPresent() ? top.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Work area top inset in pixels. Default is 0;
-         * @param top field value; null removes the value
-         * @return this model
-         */
-        public WorkAreaInsets top(Long top) {
+        public WorkAreaInsets top(long top) {
             set("top", top);
             return this;
         }
         /**
          * Work area left inset in pixels. Default is 0;
-         * @param left field value; empty omits the value
+         * @param left field value
          * @return this model
          */
-        public WorkAreaInsets left(OptionalLong left) {
-            set("left", left.isPresent() ? left.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Work area left inset in pixels. Default is 0;
-         * @param left field value; null removes the value
-         * @return this model
-         */
-        public WorkAreaInsets left(Long left) {
+        public WorkAreaInsets left(long left) {
             set("left", left);
             return this;
         }
         /**
          * Work area bottom inset in pixels. Default is 0;
-         * @param bottom field value; empty omits the value
+         * @param bottom field value
          * @return this model
          */
-        public WorkAreaInsets bottom(OptionalLong bottom) {
-            set("bottom", bottom.isPresent() ? bottom.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Work area bottom inset in pixels. Default is 0;
-         * @param bottom field value; null removes the value
-         * @return this model
-         */
-        public WorkAreaInsets bottom(Long bottom) {
+        public WorkAreaInsets bottom(long bottom) {
             set("bottom", bottom);
             return this;
         }
         /**
          * Work area right inset in pixels. Default is 0;
-         * @param right field value; empty omits the value
+         * @param right field value
          * @return this model
          */
-        public WorkAreaInsets right(OptionalLong right) {
-            set("right", right.isPresent() ? right.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Work area right inset in pixels. Default is 0;
-         * @param right field value; null removes the value
-         * @return this model
-         */
-        public WorkAreaInsets right(Long right) {
+        public WorkAreaInsets right(long right) {
             set("right", right);
             return this;
         }
@@ -1318,7 +1069,7 @@ public final class Emulation {
     public static final class ScreenId implements CdpValue<String> {
         public final String value;
         public ScreenId(String value) { this.value = java.util.Objects.requireNonNull(value); }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof ScreenId)) return false;
@@ -1405,7 +1156,7 @@ public final class Emulation {
          * @return the protocol field value
          */
         public Emulation.ScreenOrientation orientation() {
-            return java.util.Objects.requireNonNull(Emulation.ScreenOrientation.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("orientation")))));
+            return java.util.Objects.requireNonNull(Emulation.ScreenOrientation.fromMap(CdpObject.requireObjectMap(require("orientation"))));
         }
         /**
          * Specifies the screen&#x27;s color depth in bits.
@@ -1604,7 +1355,7 @@ public final class Emulation {
         WEBP("webp");
         public final String value;
         DisabledImageType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static DisabledImageType of(String value) {
             for (DisabledImageType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -1624,10 +1375,10 @@ public final class Emulation {
          * @param enabled protocol value
          */
         public SetFocusEmulationEnabledRequest(boolean enabled) {
-            set("enabled", enabled);
+            enabled(enabled);
         }
         public static SetFocusEmulationEnabledRequest fromMap(Map<String, Object> values) {
-            SetFocusEmulationEnabledRequest instance_ = new SetFocusEmulationEnabledRequest();
+            final SetFocusEmulationEnabledRequest instance_ = new SetFocusEmulationEnabledRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1655,7 +1406,7 @@ public final class Emulation {
     public static final class SetAutoDarkModeOverrideRequest extends CdpObject {
         public SetAutoDarkModeOverrideRequest() {}
         public static SetAutoDarkModeOverrideRequest fromMap(Map<String, Object> values) {
-            SetAutoDarkModeOverrideRequest instance_ = new SetAutoDarkModeOverrideRequest();
+            final SetAutoDarkModeOverrideRequest instance_ = new SetAutoDarkModeOverrideRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1664,24 +1415,14 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> enabled() {
-            Object value = raw("enabled");
-            return Optional.ofNullable((Boolean) value);
+            return raw("enabled").map(value -> (Boolean) value);
         }
         /**
          * Whether to enable or disable automatic dark mode. If not specified, any existing override will be cleared.
-         * @param enabled field value; empty omits the value
+         * @param enabled field value
          * @return this model
          */
-        public SetAutoDarkModeOverrideRequest enabled(Optional<Boolean> enabled) {
-            set("enabled", enabled.orElse(null));
-            return this;
-        }
-        /**
-         * Whether to enable or disable automatic dark mode. If not specified, any existing override will be cleared.
-         * @param enabled field value; null removes the value
-         * @return this model
-         */
-        public SetAutoDarkModeOverrideRequest enabled(Boolean enabled) {
+        public SetAutoDarkModeOverrideRequest enabled(boolean enabled) {
             set("enabled", enabled);
             return this;
         }
@@ -1696,10 +1437,10 @@ public final class Emulation {
          * @param rate protocol value
          */
         public SetCPUThrottlingRateRequest(double rate) {
-            set("rate", rate);
+            rate(rate);
         }
         public static SetCPUThrottlingRateRequest fromMap(Map<String, Object> values) {
-            SetCPUThrottlingRateRequest instance_ = new SetCPUThrottlingRateRequest();
+            final SetCPUThrottlingRateRequest instance_ = new SetCPUThrottlingRateRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1726,7 +1467,7 @@ public final class Emulation {
     public static final class SetDefaultBackgroundColorOverrideRequest extends CdpObject {
         public SetDefaultBackgroundColorOverrideRequest() {}
         public static SetDefaultBackgroundColorOverrideRequest fromMap(Map<String, Object> values) {
-            SetDefaultBackgroundColorOverrideRequest instance_ = new SetDefaultBackgroundColorOverrideRequest();
+            final SetDefaultBackgroundColorOverrideRequest instance_ = new SetDefaultBackgroundColorOverrideRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1735,21 +1476,11 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.RGBA> color() {
-            Object value = raw("color");
-            return Optional.ofNullable(value == null ? null : DOM.RGBA.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("color").flatMap(CdpObject::objectMap).map(DOM.RGBA::fromMap);
         }
         /**
          * RGBA of the default background color. If not specified, any existing override will be cleared.
-         * @param color field value; empty omits the value
-         * @return this model
-         */
-        public SetDefaultBackgroundColorOverrideRequest color(Optional<DOM.RGBA> color) {
-            set("color", color.orElse(null));
-            return this;
-        }
-        /**
-         * RGBA of the default background color. If not specified, any existing override will be cleared.
-         * @param color field value; null removes the value
+         * @param color field value
          * @return this model
          */
         public SetDefaultBackgroundColorOverrideRequest color(DOM.RGBA color) {
@@ -1769,10 +1500,10 @@ public final class Emulation {
          * @param insets protocol value
          */
         public SetSafeAreaInsetsOverrideRequest(Emulation.SafeAreaInsets insets) {
-            set("insets", insets);
+            insets(insets);
         }
         public static SetSafeAreaInsetsOverrideRequest fromMap(Map<String, Object> values) {
-            SetSafeAreaInsetsOverrideRequest instance_ = new SetSafeAreaInsetsOverrideRequest();
+            final SetSafeAreaInsetsOverrideRequest instance_ = new SetSafeAreaInsetsOverrideRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1781,7 +1512,7 @@ public final class Emulation {
          * @return the protocol field value
          */
         public Emulation.SafeAreaInsets insets() {
-            return java.util.Objects.requireNonNull(Emulation.SafeAreaInsets.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("insets")))));
+            return java.util.Objects.requireNonNull(Emulation.SafeAreaInsets.fromMap(CdpObject.requireObjectMap(require("insets"))));
         }
         /**
          * Sets the insets field.
@@ -1806,13 +1537,10 @@ public final class Emulation {
          * @param mobile protocol value
          */
         public SetDeviceMetricsOverrideRequest(long width, long height, double deviceScaleFactor, boolean mobile) {
-            set("width", width);
-            set("height", height);
-            set("deviceScaleFactor", deviceScaleFactor);
-            set("mobile", mobile);
+            width(width).height(height).deviceScaleFactor(deviceScaleFactor).mobile(mobile);
         }
         public static SetDeviceMetricsOverrideRequest fromMap(Map<String, Object> values) {
-            SetDeviceMetricsOverrideRequest instance_ = new SetDeviceMetricsOverrideRequest();
+            final SetDeviceMetricsOverrideRequest instance_ = new SetDeviceMetricsOverrideRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1850,8 +1578,7 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble scale() {
-            Double value = CdpObject.numberAsDouble(raw("scale"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("scale").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Overriding screen width value in pixels (minimum 0, maximum 10000000).
@@ -1859,8 +1586,7 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong screenWidth() {
-            Long value = CdpObject.numberAsLong(raw("screenWidth"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("screenWidth").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Overriding screen height value in pixels (minimum 0, maximum 10000000).
@@ -1868,8 +1594,7 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong screenHeight() {
-            Long value = CdpObject.numberAsLong(raw("screenHeight"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("screenHeight").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Overriding view X position on screen in pixels (minimum 0, maximum 10000000).
@@ -1877,8 +1602,7 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong positionX() {
-            Long value = CdpObject.numberAsLong(raw("positionX"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("positionX").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Overriding view Y position on screen in pixels (minimum 0, maximum 10000000).
@@ -1886,8 +1610,7 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong positionY() {
-            Long value = CdpObject.numberAsLong(raw("positionY"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("positionY").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Do not set visible view size, rely upon explicit setVisibleSize call.
@@ -1895,16 +1618,14 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> dontSetVisibleSize() {
-            Object value = raw("dontSetVisibleSize");
-            return Optional.ofNullable((Boolean) value);
+            return raw("dontSetVisibleSize").map(value -> (Boolean) value);
         }
         /**
          * Screen orientation override.
          * @return the protocol field value, empty when absent
          */
         public Optional<Emulation.ScreenOrientation> screenOrientation() {
-            Object value = raw("screenOrientation");
-            return Optional.ofNullable(value == null ? null : Emulation.ScreenOrientation.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("screenOrientation").flatMap(CdpObject::objectMap).map(Emulation.ScreenOrientation::fromMap);
         }
         /**
          * If set, the visible area of the page will be overridden to this viewport. This viewport change is not observed by the page, e.g. viewport-relative elements do not change positions.
@@ -1912,8 +1633,7 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.Viewport> viewport() {
-            Object value = raw("viewport");
-            return Optional.ofNullable(value == null ? null : Page.Viewport.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("viewport").flatMap(CdpObject::objectMap).map(Page.Viewport::fromMap);
         }
         /**
          * If set, the display feature of a multi-segment screen. If not set, multi-segment support is turned-off. Deprecated, use Emulation.setDisplayFeaturesOverride.
@@ -1923,8 +1643,7 @@ public final class Emulation {
          */
         @Deprecated
         public Optional<Emulation.DisplayFeature> displayFeature() {
-            Object value = raw("displayFeature");
-            return Optional.ofNullable(value == null ? null : Emulation.DisplayFeature.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("displayFeature").flatMap(CdpObject::objectMap).map(Emulation.DisplayFeature::fromMap);
         }
         /**
          * If set, the posture of a foldable device. If not set the posture is set to continuous. Deprecated, use Emulation.setDevicePostureOverride.
@@ -1934,8 +1653,7 @@ public final class Emulation {
          */
         @Deprecated
         public Optional<Emulation.DevicePosture> devicePosture() {
-            Object value = raw("devicePosture");
-            return Optional.ofNullable(value == null ? null : Emulation.DevicePosture.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("devicePosture").flatMap(CdpObject::objectMap).map(Emulation.DevicePosture::fromMap);
         }
         /**
          * Scrollbar type. Default: {@code default}.
@@ -1943,8 +1661,7 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<SetDeviceMetricsOverrideScrollbarTypeValues> scrollbarType() {
-            Object value = raw("scrollbarType");
-            return Optional.ofNullable(value == null ? null : SetDeviceMetricsOverrideScrollbarTypeValues.of((String) value));
+            return raw("scrollbarType").map(value -> SetDeviceMetricsOverrideScrollbarTypeValues.of((String) value));
         }
         /**
          * If set to true, enables screen orientation lock emulation, which intercepts screen.orientation.lock() calls from the page and reports orientation changes via screenOrientationLockChanged events. This is useful for emulating mobile device orientation lock behavior in responsive design mode.
@@ -1952,8 +1669,7 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> screenOrientationLockEmulation() {
-            Object value = raw("screenOrientationLockEmulation");
-            return Optional.ofNullable((Boolean) value);
+            return raw("screenOrientationLockEmulation").map(value -> (Boolean) value);
         }
         /**
          * Overriding width value in pixels (minimum 0, maximum 10000000). 0 disables the override.
@@ -1994,135 +1710,66 @@ public final class Emulation {
         /**
          * Scale to apply to resulting view image.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param scale field value; empty omits the value
+         * @param scale field value
          * @return this model
          */
-        public SetDeviceMetricsOverrideRequest scale(OptionalDouble scale) {
-            set("scale", scale.isPresent() ? scale.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Scale to apply to resulting view image.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param scale field value; null removes the value
-         * @return this model
-         */
-        public SetDeviceMetricsOverrideRequest scale(Double scale) {
+        public SetDeviceMetricsOverrideRequest scale(double scale) {
             set("scale", scale);
             return this;
         }
         /**
          * Overriding screen width value in pixels (minimum 0, maximum 10000000).
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param screenWidth field value; empty omits the value
+         * @param screenWidth field value
          * @return this model
          */
-        public SetDeviceMetricsOverrideRequest screenWidth(OptionalLong screenWidth) {
-            set("screenWidth", screenWidth.isPresent() ? screenWidth.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Overriding screen width value in pixels (minimum 0, maximum 10000000).
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param screenWidth field value; null removes the value
-         * @return this model
-         */
-        public SetDeviceMetricsOverrideRequest screenWidth(Long screenWidth) {
+        public SetDeviceMetricsOverrideRequest screenWidth(long screenWidth) {
             set("screenWidth", screenWidth);
             return this;
         }
         /**
          * Overriding screen height value in pixels (minimum 0, maximum 10000000).
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param screenHeight field value; empty omits the value
+         * @param screenHeight field value
          * @return this model
          */
-        public SetDeviceMetricsOverrideRequest screenHeight(OptionalLong screenHeight) {
-            set("screenHeight", screenHeight.isPresent() ? screenHeight.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Overriding screen height value in pixels (minimum 0, maximum 10000000).
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param screenHeight field value; null removes the value
-         * @return this model
-         */
-        public SetDeviceMetricsOverrideRequest screenHeight(Long screenHeight) {
+        public SetDeviceMetricsOverrideRequest screenHeight(long screenHeight) {
             set("screenHeight", screenHeight);
             return this;
         }
         /**
          * Overriding view X position on screen in pixels (minimum 0, maximum 10000000).
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param positionX field value; empty omits the value
+         * @param positionX field value
          * @return this model
          */
-        public SetDeviceMetricsOverrideRequest positionX(OptionalLong positionX) {
-            set("positionX", positionX.isPresent() ? positionX.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Overriding view X position on screen in pixels (minimum 0, maximum 10000000).
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param positionX field value; null removes the value
-         * @return this model
-         */
-        public SetDeviceMetricsOverrideRequest positionX(Long positionX) {
+        public SetDeviceMetricsOverrideRequest positionX(long positionX) {
             set("positionX", positionX);
             return this;
         }
         /**
          * Overriding view Y position on screen in pixels (minimum 0, maximum 10000000).
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param positionY field value; empty omits the value
+         * @param positionY field value
          * @return this model
          */
-        public SetDeviceMetricsOverrideRequest positionY(OptionalLong positionY) {
-            set("positionY", positionY.isPresent() ? positionY.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Overriding view Y position on screen in pixels (minimum 0, maximum 10000000).
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param positionY field value; null removes the value
-         * @return this model
-         */
-        public SetDeviceMetricsOverrideRequest positionY(Long positionY) {
+        public SetDeviceMetricsOverrideRequest positionY(long positionY) {
             set("positionY", positionY);
             return this;
         }
         /**
          * Do not set visible view size, rely upon explicit setVisibleSize call.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param dontSetVisibleSize field value; empty omits the value
+         * @param dontSetVisibleSize field value
          * @return this model
          */
-        public SetDeviceMetricsOverrideRequest dontSetVisibleSize(Optional<Boolean> dontSetVisibleSize) {
-            set("dontSetVisibleSize", dontSetVisibleSize.orElse(null));
-            return this;
-        }
-        /**
-         * Do not set visible view size, rely upon explicit setVisibleSize call.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param dontSetVisibleSize field value; null removes the value
-         * @return this model
-         */
-        public SetDeviceMetricsOverrideRequest dontSetVisibleSize(Boolean dontSetVisibleSize) {
+        public SetDeviceMetricsOverrideRequest dontSetVisibleSize(boolean dontSetVisibleSize) {
             set("dontSetVisibleSize", dontSetVisibleSize);
             return this;
         }
         /**
          * Screen orientation override.
-         * @param screenOrientation field value; empty omits the value
-         * @return this model
-         */
-        public SetDeviceMetricsOverrideRequest screenOrientation(Optional<Emulation.ScreenOrientation> screenOrientation) {
-            set("screenOrientation", screenOrientation.orElse(null));
-            return this;
-        }
-        /**
-         * Screen orientation override.
-         * @param screenOrientation field value; null removes the value
+         * @param screenOrientation field value
          * @return this model
          */
         public SetDeviceMetricsOverrideRequest screenOrientation(Emulation.ScreenOrientation screenOrientation) {
@@ -2132,17 +1779,7 @@ public final class Emulation {
         /**
          * If set, the visible area of the page will be overridden to this viewport. This viewport change is not observed by the page, e.g. viewport-relative elements do not change positions.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param viewport field value; empty omits the value
-         * @return this model
-         */
-        public SetDeviceMetricsOverrideRequest viewport(Optional<Page.Viewport> viewport) {
-            set("viewport", viewport.orElse(null));
-            return this;
-        }
-        /**
-         * If set, the visible area of the page will be overridden to this viewport. This viewport change is not observed by the page, e.g. viewport-relative elements do not change positions.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param viewport field value; null removes the value
+         * @param viewport field value
          * @return this model
          */
         public SetDeviceMetricsOverrideRequest viewport(Page.Viewport viewport) {
@@ -2152,19 +1789,7 @@ public final class Emulation {
         /**
          * If set, the display feature of a multi-segment screen. If not set, multi-segment support is turned-off. Deprecated, use Emulation.setDisplayFeaturesOverride.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param displayFeature field value; empty omits the value
-         * @return this model
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public SetDeviceMetricsOverrideRequest displayFeature(Optional<Emulation.DisplayFeature> displayFeature) {
-            set("displayFeature", displayFeature.orElse(null));
-            return this;
-        }
-        /**
-         * If set, the display feature of a multi-segment screen. If not set, multi-segment support is turned-off. Deprecated, use Emulation.setDisplayFeaturesOverride.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param displayFeature field value; null removes the value
+         * @param displayFeature field value
          * @return this model
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
@@ -2176,19 +1801,7 @@ public final class Emulation {
         /**
          * If set, the posture of a foldable device. If not set the posture is set to continuous. Deprecated, use Emulation.setDevicePostureOverride.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param devicePosture field value; empty omits the value
-         * @return this model
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public SetDeviceMetricsOverrideRequest devicePosture(Optional<Emulation.DevicePosture> devicePosture) {
-            set("devicePosture", devicePosture.orElse(null));
-            return this;
-        }
-        /**
-         * If set, the posture of a foldable device. If not set the posture is set to continuous. Deprecated, use Emulation.setDevicePostureOverride.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param devicePosture field value; null removes the value
+         * @param devicePosture field value
          * @return this model
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
@@ -2200,17 +1813,7 @@ public final class Emulation {
         /**
          * Scrollbar type. Default: {@code default}.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param scrollbarType field value; empty omits the value
-         * @return this model
-         */
-        public SetDeviceMetricsOverrideRequest scrollbarType(Optional<SetDeviceMetricsOverrideScrollbarTypeValues> scrollbarType) {
-            set("scrollbarType", scrollbarType.orElse(null));
-            return this;
-        }
-        /**
-         * Scrollbar type. Default: {@code default}.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param scrollbarType field value; null removes the value
+         * @param scrollbarType field value
          * @return this model
          */
         public SetDeviceMetricsOverrideRequest scrollbarType(SetDeviceMetricsOverrideScrollbarTypeValues scrollbarType) {
@@ -2220,20 +1823,10 @@ public final class Emulation {
         /**
          * If set to true, enables screen orientation lock emulation, which intercepts screen.orientation.lock() calls from the page and reports orientation changes via screenOrientationLockChanged events. This is useful for emulating mobile device orientation lock behavior in responsive design mode.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param screenOrientationLockEmulation field value; empty omits the value
+         * @param screenOrientationLockEmulation field value
          * @return this model
          */
-        public SetDeviceMetricsOverrideRequest screenOrientationLockEmulation(Optional<Boolean> screenOrientationLockEmulation) {
-            set("screenOrientationLockEmulation", screenOrientationLockEmulation.orElse(null));
-            return this;
-        }
-        /**
-         * If set to true, enables screen orientation lock emulation, which intercepts screen.orientation.lock() calls from the page and reports orientation changes via screenOrientationLockChanged events. This is useful for emulating mobile device orientation lock behavior in responsive design mode.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param screenOrientationLockEmulation field value; null removes the value
-         * @return this model
-         */
-        public SetDeviceMetricsOverrideRequest screenOrientationLockEmulation(Boolean screenOrientationLockEmulation) {
+        public SetDeviceMetricsOverrideRequest screenOrientationLockEmulation(boolean screenOrientationLockEmulation) {
             set("screenOrientationLockEmulation", screenOrientationLockEmulation);
             return this;
         }
@@ -2250,10 +1843,10 @@ public final class Emulation {
          * @param posture protocol value
          */
         public SetDevicePostureOverrideRequest(Emulation.DevicePosture posture) {
-            set("posture", posture);
+            posture(posture);
         }
         public static SetDevicePostureOverrideRequest fromMap(Map<String, Object> values) {
-            SetDevicePostureOverrideRequest instance_ = new SetDevicePostureOverrideRequest();
+            final SetDevicePostureOverrideRequest instance_ = new SetDevicePostureOverrideRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2262,7 +1855,7 @@ public final class Emulation {
          * @return the protocol field value
          */
         public Emulation.DevicePosture posture() {
-            return java.util.Objects.requireNonNull(Emulation.DevicePosture.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("posture")))));
+            return java.util.Objects.requireNonNull(Emulation.DevicePosture.fromMap(CdpObject.requireObjectMap(require("posture"))));
         }
         /**
          * Sets the posture field.
@@ -2286,10 +1879,10 @@ public final class Emulation {
          * @param features protocol value
          */
         public SetDisplayFeaturesOverrideRequest(java.util.List<Emulation.DisplayFeature> features) {
-            set("features", features);
+            features(features);
         }
         public static SetDisplayFeaturesOverrideRequest fromMap(Map<String, Object> values) {
-            SetDisplayFeaturesOverrideRequest instance_ = new SetDisplayFeaturesOverrideRequest();
+            final SetDisplayFeaturesOverrideRequest instance_ = new SetDisplayFeaturesOverrideRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2298,7 +1891,7 @@ public final class Emulation {
          * @return the protocol field value
          */
         public java.util.List<Emulation.DisplayFeature> features() {
-            return CdpObject.requireList(require("features"), element0 -> java.util.Objects.requireNonNull(Emulation.DisplayFeature.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("features"), element0 -> java.util.Objects.requireNonNull(Emulation.DisplayFeature.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Sets the features field.
@@ -2322,10 +1915,10 @@ public final class Emulation {
          * @param hidden protocol value
          */
         public SetScrollbarsHiddenRequest(boolean hidden) {
-            set("hidden", hidden);
+            hidden(hidden);
         }
         public static SetScrollbarsHiddenRequest fromMap(Map<String, Object> values) {
-            SetScrollbarsHiddenRequest instance_ = new SetScrollbarsHiddenRequest();
+            final SetScrollbarsHiddenRequest instance_ = new SetScrollbarsHiddenRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2358,10 +1951,10 @@ public final class Emulation {
          * @param disabled protocol value
          */
         public SetDocumentCookieDisabledRequest(boolean disabled) {
-            set("disabled", disabled);
+            disabled(disabled);
         }
         public static SetDocumentCookieDisabledRequest fromMap(Map<String, Object> values) {
-            SetDocumentCookieDisabledRequest instance_ = new SetDocumentCookieDisabledRequest();
+            final SetDocumentCookieDisabledRequest instance_ = new SetDocumentCookieDisabledRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2394,10 +1987,10 @@ public final class Emulation {
          * @param enabled protocol value
          */
         public SetEmitTouchEventsForMouseRequest(boolean enabled) {
-            set("enabled", enabled);
+            enabled(enabled);
         }
         public static SetEmitTouchEventsForMouseRequest fromMap(Map<String, Object> values) {
-            SetEmitTouchEventsForMouseRequest instance_ = new SetEmitTouchEventsForMouseRequest();
+            final SetEmitTouchEventsForMouseRequest instance_ = new SetEmitTouchEventsForMouseRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2413,8 +2006,7 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<SetEmitTouchEventsForMouseConfigurationValues> configuration() {
-            Object value = raw("configuration");
-            return Optional.ofNullable(value == null ? null : SetEmitTouchEventsForMouseConfigurationValues.of((String) value));
+            return raw("configuration").map(value -> SetEmitTouchEventsForMouseConfigurationValues.of((String) value));
         }
         /**
          * Whether touch emulation based on mouse input should be enabled.
@@ -2427,16 +2019,7 @@ public final class Emulation {
         }
         /**
          * Touch/gesture events configuration. Default: current platform.
-         * @param configuration field value; empty omits the value
-         * @return this model
-         */
-        public SetEmitTouchEventsForMouseRequest configuration(Optional<SetEmitTouchEventsForMouseConfigurationValues> configuration) {
-            set("configuration", configuration.orElse(null));
-            return this;
-        }
-        /**
-         * Touch/gesture events configuration. Default: current platform.
-         * @param configuration field value; null removes the value
+         * @param configuration field value
          * @return this model
          */
         public SetEmitTouchEventsForMouseRequest configuration(SetEmitTouchEventsForMouseConfigurationValues configuration) {
@@ -2450,7 +2033,7 @@ public final class Emulation {
     public static final class SetEmulatedMediaRequest extends CdpObject {
         public SetEmulatedMediaRequest() {}
         public static SetEmulatedMediaRequest fromMap(Map<String, Object> values) {
-            SetEmulatedMediaRequest instance_ = new SetEmulatedMediaRequest();
+            final SetEmulatedMediaRequest instance_ = new SetEmulatedMediaRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2459,29 +2042,18 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> media() {
-            Object value = raw("media");
-            return Optional.ofNullable((String) value);
+            return raw("media").map(value -> (String) value);
         }
         /**
          * Media features to emulate.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Emulation.MediaFeature>> features() {
-            Object value = raw("features");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Emulation.MediaFeature.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("features").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Emulation.MediaFeature.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Media type to emulate. Empty string disables the override.
-         * @param media field value; empty omits the value
-         * @return this model
-         */
-        public SetEmulatedMediaRequest media(Optional<String> media) {
-            set("media", media.orElse(null));
-            return this;
-        }
-        /**
-         * Media type to emulate. Empty string disables the override.
-         * @param media field value; null removes the value
+         * @param media field value
          * @return this model
          */
         public SetEmulatedMediaRequest media(String media) {
@@ -2490,16 +2062,7 @@ public final class Emulation {
         }
         /**
          * Media features to emulate.
-         * @param features field value; empty omits the value
-         * @return this model
-         */
-        public SetEmulatedMediaRequest features(Optional<java.util.List<Emulation.MediaFeature>> features) {
-            set("features", features.orElse(null));
-            return this;
-        }
-        /**
-         * Media features to emulate.
-         * @param features field value; null removes the value
+         * @param features field value
          * @return this model
          */
         public SetEmulatedMediaRequest features(java.util.List<Emulation.MediaFeature> features) {
@@ -2517,10 +2080,10 @@ public final class Emulation {
          * @param type protocol value
          */
         public SetEmulatedVisionDeficiencyRequest(SetEmulatedVisionDeficiencyTypeValues type) {
-            set("type", type);
+            type(type);
         }
         public static SetEmulatedVisionDeficiencyRequest fromMap(Map<String, Object> values) {
-            SetEmulatedVisionDeficiencyRequest instance_ = new SetEmulatedVisionDeficiencyRequest();
+            final SetEmulatedVisionDeficiencyRequest instance_ = new SetEmulatedVisionDeficiencyRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2547,7 +2110,7 @@ public final class Emulation {
     public static final class SetEmulatedOSTextScaleRequest extends CdpObject {
         public SetEmulatedOSTextScaleRequest() {}
         public static SetEmulatedOSTextScaleRequest fromMap(Map<String, Object> values) {
-            SetEmulatedOSTextScaleRequest instance_ = new SetEmulatedOSTextScaleRequest();
+            final SetEmulatedOSTextScaleRequest instance_ = new SetEmulatedOSTextScaleRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2556,24 +2119,14 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble scale() {
-            Double value = CdpObject.numberAsDouble(raw("scale"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("scale").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Sets the scale field.
-         * @param scale field value; empty omits the value
+         * @param scale field value
          * @return this model
          */
-        public SetEmulatedOSTextScaleRequest scale(OptionalDouble scale) {
-            set("scale", scale.isPresent() ? scale.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Sets the scale field.
-         * @param scale field value; null removes the value
-         * @return this model
-         */
-        public SetEmulatedOSTextScaleRequest scale(Double scale) {
+        public SetEmulatedOSTextScaleRequest scale(double scale) {
             set("scale", scale);
             return this;
         }
@@ -2584,7 +2137,7 @@ public final class Emulation {
     public static final class SetGeolocationOverrideRequest extends CdpObject {
         public SetGeolocationOverrideRequest() {}
         public static SetGeolocationOverrideRequest fromMap(Map<String, Object> values) {
-            SetGeolocationOverrideRequest instance_ = new SetGeolocationOverrideRequest();
+            final SetGeolocationOverrideRequest instance_ = new SetGeolocationOverrideRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2593,180 +2146,110 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble latitude() {
-            Double value = CdpObject.numberAsDouble(raw("latitude"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("latitude").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Mock longitude
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble longitude() {
-            Double value = CdpObject.numberAsDouble(raw("longitude"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("longitude").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Mock accuracy
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble accuracy() {
-            Double value = CdpObject.numberAsDouble(raw("accuracy"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("accuracy").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Mock altitude
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble altitude() {
-            Double value = CdpObject.numberAsDouble(raw("altitude"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("altitude").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Mock altitudeAccuracy
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble altitudeAccuracy() {
-            Double value = CdpObject.numberAsDouble(raw("altitudeAccuracy"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("altitudeAccuracy").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Mock heading
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble heading() {
-            Double value = CdpObject.numberAsDouble(raw("heading"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("heading").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Mock speed
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble speed() {
-            Double value = CdpObject.numberAsDouble(raw("speed"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("speed").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Mock latitude
-         * @param latitude field value; empty omits the value
+         * @param latitude field value
          * @return this model
          */
-        public SetGeolocationOverrideRequest latitude(OptionalDouble latitude) {
-            set("latitude", latitude.isPresent() ? latitude.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Mock latitude
-         * @param latitude field value; null removes the value
-         * @return this model
-         */
-        public SetGeolocationOverrideRequest latitude(Double latitude) {
+        public SetGeolocationOverrideRequest latitude(double latitude) {
             set("latitude", latitude);
             return this;
         }
         /**
          * Mock longitude
-         * @param longitude field value; empty omits the value
+         * @param longitude field value
          * @return this model
          */
-        public SetGeolocationOverrideRequest longitude(OptionalDouble longitude) {
-            set("longitude", longitude.isPresent() ? longitude.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Mock longitude
-         * @param longitude field value; null removes the value
-         * @return this model
-         */
-        public SetGeolocationOverrideRequest longitude(Double longitude) {
+        public SetGeolocationOverrideRequest longitude(double longitude) {
             set("longitude", longitude);
             return this;
         }
         /**
          * Mock accuracy
-         * @param accuracy field value; empty omits the value
+         * @param accuracy field value
          * @return this model
          */
-        public SetGeolocationOverrideRequest accuracy(OptionalDouble accuracy) {
-            set("accuracy", accuracy.isPresent() ? accuracy.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Mock accuracy
-         * @param accuracy field value; null removes the value
-         * @return this model
-         */
-        public SetGeolocationOverrideRequest accuracy(Double accuracy) {
+        public SetGeolocationOverrideRequest accuracy(double accuracy) {
             set("accuracy", accuracy);
             return this;
         }
         /**
          * Mock altitude
-         * @param altitude field value; empty omits the value
+         * @param altitude field value
          * @return this model
          */
-        public SetGeolocationOverrideRequest altitude(OptionalDouble altitude) {
-            set("altitude", altitude.isPresent() ? altitude.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Mock altitude
-         * @param altitude field value; null removes the value
-         * @return this model
-         */
-        public SetGeolocationOverrideRequest altitude(Double altitude) {
+        public SetGeolocationOverrideRequest altitude(double altitude) {
             set("altitude", altitude);
             return this;
         }
         /**
          * Mock altitudeAccuracy
-         * @param altitudeAccuracy field value; empty omits the value
+         * @param altitudeAccuracy field value
          * @return this model
          */
-        public SetGeolocationOverrideRequest altitudeAccuracy(OptionalDouble altitudeAccuracy) {
-            set("altitudeAccuracy", altitudeAccuracy.isPresent() ? altitudeAccuracy.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Mock altitudeAccuracy
-         * @param altitudeAccuracy field value; null removes the value
-         * @return this model
-         */
-        public SetGeolocationOverrideRequest altitudeAccuracy(Double altitudeAccuracy) {
+        public SetGeolocationOverrideRequest altitudeAccuracy(double altitudeAccuracy) {
             set("altitudeAccuracy", altitudeAccuracy);
             return this;
         }
         /**
          * Mock heading
-         * @param heading field value; empty omits the value
+         * @param heading field value
          * @return this model
          */
-        public SetGeolocationOverrideRequest heading(OptionalDouble heading) {
-            set("heading", heading.isPresent() ? heading.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Mock heading
-         * @param heading field value; null removes the value
-         * @return this model
-         */
-        public SetGeolocationOverrideRequest heading(Double heading) {
+        public SetGeolocationOverrideRequest heading(double heading) {
             set("heading", heading);
             return this;
         }
         /**
          * Mock speed
-         * @param speed field value; empty omits the value
+         * @param speed field value
          * @return this model
          */
-        public SetGeolocationOverrideRequest speed(OptionalDouble speed) {
-            set("speed", speed.isPresent() ? speed.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Mock speed
-         * @param speed field value; null removes the value
-         * @return this model
-         */
-        public SetGeolocationOverrideRequest speed(Double speed) {
+        public SetGeolocationOverrideRequest speed(double speed) {
             set("speed", speed);
             return this;
         }
@@ -2783,10 +2266,10 @@ public final class Emulation {
          * @param type protocol value
          */
         public GetOverriddenSensorInformationRequest(Emulation.SensorType type) {
-            set("type", type);
+            type(type);
         }
         public static GetOverriddenSensorInformationRequest fromMap(Map<String, Object> values) {
-            GetOverriddenSensorInformationRequest instance_ = new GetOverriddenSensorInformationRequest();
+            final GetOverriddenSensorInformationRequest instance_ = new GetOverriddenSensorInformationRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2820,11 +2303,10 @@ public final class Emulation {
          * @param type protocol value
          */
         public SetSensorOverrideEnabledRequest(boolean enabled, Emulation.SensorType type) {
-            set("enabled", enabled);
-            set("type", type);
+            enabled(enabled).type(type);
         }
         public static SetSensorOverrideEnabledRequest fromMap(Map<String, Object> values) {
-            SetSensorOverrideEnabledRequest instance_ = new SetSensorOverrideEnabledRequest();
+            final SetSensorOverrideEnabledRequest instance_ = new SetSensorOverrideEnabledRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2847,8 +2329,7 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<Emulation.SensorMetadata> metadata() {
-            Object value = raw("metadata");
-            return Optional.ofNullable(value == null ? null : Emulation.SensorMetadata.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("metadata").flatMap(CdpObject::objectMap).map(Emulation.SensorMetadata::fromMap);
         }
         /**
          * Sets the enabled field.
@@ -2870,16 +2351,7 @@ public final class Emulation {
         }
         /**
          * Sets the metadata field.
-         * @param metadata field value; empty omits the value
-         * @return this model
-         */
-        public SetSensorOverrideEnabledRequest metadata(Optional<Emulation.SensorMetadata> metadata) {
-            set("metadata", metadata.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the metadata field.
-         * @param metadata field value; null removes the value
+         * @param metadata field value
          * @return this model
          */
         public SetSensorOverrideEnabledRequest metadata(Emulation.SensorMetadata metadata) {
@@ -2900,11 +2372,10 @@ public final class Emulation {
          * @param reading protocol value
          */
         public SetSensorOverrideReadingsRequest(Emulation.SensorType type, Emulation.SensorReading reading) {
-            set("type", type);
-            set("reading", reading);
+            type(type).reading(reading);
         }
         public static SetSensorOverrideReadingsRequest fromMap(Map<String, Object> values) {
-            SetSensorOverrideReadingsRequest instance_ = new SetSensorOverrideReadingsRequest();
+            final SetSensorOverrideReadingsRequest instance_ = new SetSensorOverrideReadingsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2920,7 +2391,7 @@ public final class Emulation {
          * @return the protocol field value
          */
         public Emulation.SensorReading reading() {
-            return java.util.Objects.requireNonNull(Emulation.SensorReading.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("reading")))));
+            return java.util.Objects.requireNonNull(Emulation.SensorReading.fromMap(CdpObject.requireObjectMap(require("reading"))));
         }
         /**
          * Sets the type field.
@@ -2954,11 +2425,10 @@ public final class Emulation {
          * @param source protocol value
          */
         public SetPressureSourceOverrideEnabledRequest(boolean enabled, Emulation.PressureSource source) {
-            set("enabled", enabled);
-            set("source", source);
+            enabled(enabled).source(source);
         }
         public static SetPressureSourceOverrideEnabledRequest fromMap(Map<String, Object> values) {
-            SetPressureSourceOverrideEnabledRequest instance_ = new SetPressureSourceOverrideEnabledRequest();
+            final SetPressureSourceOverrideEnabledRequest instance_ = new SetPressureSourceOverrideEnabledRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -2981,8 +2451,7 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<Emulation.PressureMetadata> metadata() {
-            Object value = raw("metadata");
-            return Optional.ofNullable(value == null ? null : Emulation.PressureMetadata.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("metadata").flatMap(CdpObject::objectMap).map(Emulation.PressureMetadata::fromMap);
         }
         /**
          * Sets the enabled field.
@@ -3004,16 +2473,7 @@ public final class Emulation {
         }
         /**
          * Sets the metadata field.
-         * @param metadata field value; empty omits the value
-         * @return this model
-         */
-        public SetPressureSourceOverrideEnabledRequest metadata(Optional<Emulation.PressureMetadata> metadata) {
-            set("metadata", metadata.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the metadata field.
-         * @param metadata field value; null removes the value
+         * @param metadata field value
          * @return this model
          */
         public SetPressureSourceOverrideEnabledRequest metadata(Emulation.PressureMetadata metadata) {
@@ -3034,11 +2494,10 @@ public final class Emulation {
          * @param state protocol value
          */
         public SetPressureStateOverrideRequest(Emulation.PressureSource source, Emulation.PressureState state) {
-            set("source", source);
-            set("state", state);
+            source(source).state(state);
         }
         public static SetPressureStateOverrideRequest fromMap(Map<String, Object> values) {
-            SetPressureStateOverrideRequest instance_ = new SetPressureStateOverrideRequest();
+            final SetPressureStateOverrideRequest instance_ = new SetPressureStateOverrideRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3086,11 +2545,10 @@ public final class Emulation {
          * @param isScreenUnlocked protocol value
          */
         public SetIdleOverrideRequest(boolean isUserActive, boolean isScreenUnlocked) {
-            set("isUserActive", isUserActive);
-            set("isScreenUnlocked", isScreenUnlocked);
+            isUserActive(isUserActive).isScreenUnlocked(isScreenUnlocked);
         }
         public static SetIdleOverrideRequest fromMap(Map<String, Object> values) {
-            SetIdleOverrideRequest instance_ = new SetIdleOverrideRequest();
+            final SetIdleOverrideRequest instance_ = new SetIdleOverrideRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3143,10 +2601,10 @@ public final class Emulation {
          */
         @Deprecated
         public SetNavigatorOverridesRequest(String platform) {
-            set("platform", platform);
+            platform(platform);
         }
         public static SetNavigatorOverridesRequest fromMap(Map<String, Object> values) {
-            SetNavigatorOverridesRequest instance_ = new SetNavigatorOverridesRequest();
+            final SetNavigatorOverridesRequest instance_ = new SetNavigatorOverridesRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3179,10 +2637,10 @@ public final class Emulation {
          * @param pageScaleFactor protocol value
          */
         public SetPageScaleFactorRequest(double pageScaleFactor) {
-            set("pageScaleFactor", pageScaleFactor);
+            pageScaleFactor(pageScaleFactor);
         }
         public static SetPageScaleFactorRequest fromMap(Map<String, Object> values) {
-            SetPageScaleFactorRequest instance_ = new SetPageScaleFactorRequest();
+            final SetPageScaleFactorRequest instance_ = new SetPageScaleFactorRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3213,10 +2671,10 @@ public final class Emulation {
          * @param value protocol value
          */
         public SetScriptExecutionDisabledRequest(boolean value) {
-            set("value", value);
+            value(value);
         }
         public static SetScriptExecutionDisabledRequest fromMap(Map<String, Object> values) {
-            SetScriptExecutionDisabledRequest instance_ = new SetScriptExecutionDisabledRequest();
+            final SetScriptExecutionDisabledRequest instance_ = new SetScriptExecutionDisabledRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3247,10 +2705,10 @@ public final class Emulation {
          * @param enabled protocol value
          */
         public SetTouchEmulationEnabledRequest(boolean enabled) {
-            set("enabled", enabled);
+            enabled(enabled);
         }
         public static SetTouchEmulationEnabledRequest fromMap(Map<String, Object> values) {
-            SetTouchEmulationEnabledRequest instance_ = new SetTouchEmulationEnabledRequest();
+            final SetTouchEmulationEnabledRequest instance_ = new SetTouchEmulationEnabledRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3266,8 +2724,7 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong maxTouchPoints() {
-            Long value = CdpObject.numberAsLong(raw("maxTouchPoints"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("maxTouchPoints").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Whether the touch event emulation should be enabled.
@@ -3280,19 +2737,10 @@ public final class Emulation {
         }
         /**
          * Maximum touch points supported. Defaults to one.
-         * @param maxTouchPoints field value; empty omits the value
+         * @param maxTouchPoints field value
          * @return this model
          */
-        public SetTouchEmulationEnabledRequest maxTouchPoints(OptionalLong maxTouchPoints) {
-            set("maxTouchPoints", maxTouchPoints.isPresent() ? maxTouchPoints.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Maximum touch points supported. Defaults to one.
-         * @param maxTouchPoints field value; null removes the value
-         * @return this model
-         */
-        public SetTouchEmulationEnabledRequest maxTouchPoints(Long maxTouchPoints) {
+        public SetTouchEmulationEnabledRequest maxTouchPoints(long maxTouchPoints) {
             set("maxTouchPoints", maxTouchPoints);
             return this;
         }
@@ -3309,10 +2757,10 @@ public final class Emulation {
          * @param policy protocol value
          */
         public SetVirtualTimePolicyRequest(Emulation.VirtualTimePolicy policy) {
-            set("policy", policy);
+            policy(policy);
         }
         public static SetVirtualTimePolicyRequest fromMap(Map<String, Object> values) {
-            SetVirtualTimePolicyRequest instance_ = new SetVirtualTimePolicyRequest();
+            final SetVirtualTimePolicyRequest instance_ = new SetVirtualTimePolicyRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3328,24 +2776,21 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble budget() {
-            Double value = CdpObject.numberAsDouble(raw("budget"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("budget").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * If set this specifies the maximum number of tasks that can be run before virtual is forced forwards to prevent deadlock.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong maxVirtualTimeTaskStarvationCount() {
-            Long value = CdpObject.numberAsLong(raw("maxVirtualTimeTaskStarvationCount"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("maxVirtualTimeTaskStarvationCount").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * If set, base::Time::Now will be overridden to initially return this value.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.TimeSinceEpoch> initialVirtualTime() {
-            Object value = raw("initialVirtualTime");
-            return Optional.ofNullable(value == null ? null : new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+            return raw("initialVirtualTime").map(value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
         }
         /**
          * Sets the policy field.
@@ -3358,52 +2803,25 @@ public final class Emulation {
         }
         /**
          * If set, after this many virtual milliseconds have elapsed virtual time will be paused and a virtualTimeBudgetExpired event is sent.
-         * @param budget field value; empty omits the value
+         * @param budget field value
          * @return this model
          */
-        public SetVirtualTimePolicyRequest budget(OptionalDouble budget) {
-            set("budget", budget.isPresent() ? budget.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * If set, after this many virtual milliseconds have elapsed virtual time will be paused and a virtualTimeBudgetExpired event is sent.
-         * @param budget field value; null removes the value
-         * @return this model
-         */
-        public SetVirtualTimePolicyRequest budget(Double budget) {
+        public SetVirtualTimePolicyRequest budget(double budget) {
             set("budget", budget);
             return this;
         }
         /**
          * If set this specifies the maximum number of tasks that can be run before virtual is forced forwards to prevent deadlock.
-         * @param maxVirtualTimeTaskStarvationCount field value; empty omits the value
+         * @param maxVirtualTimeTaskStarvationCount field value
          * @return this model
          */
-        public SetVirtualTimePolicyRequest maxVirtualTimeTaskStarvationCount(OptionalLong maxVirtualTimeTaskStarvationCount) {
-            set("maxVirtualTimeTaskStarvationCount", maxVirtualTimeTaskStarvationCount.isPresent() ? maxVirtualTimeTaskStarvationCount.getAsLong() : null);
-            return this;
-        }
-        /**
-         * If set this specifies the maximum number of tasks that can be run before virtual is forced forwards to prevent deadlock.
-         * @param maxVirtualTimeTaskStarvationCount field value; null removes the value
-         * @return this model
-         */
-        public SetVirtualTimePolicyRequest maxVirtualTimeTaskStarvationCount(Long maxVirtualTimeTaskStarvationCount) {
+        public SetVirtualTimePolicyRequest maxVirtualTimeTaskStarvationCount(long maxVirtualTimeTaskStarvationCount) {
             set("maxVirtualTimeTaskStarvationCount", maxVirtualTimeTaskStarvationCount);
             return this;
         }
         /**
          * If set, base::Time::Now will be overridden to initially return this value.
-         * @param initialVirtualTime field value; empty omits the value
-         * @return this model
-         */
-        public SetVirtualTimePolicyRequest initialVirtualTime(Optional<Network.TimeSinceEpoch> initialVirtualTime) {
-            set("initialVirtualTime", initialVirtualTime.orElse(null));
-            return this;
-        }
-        /**
-         * If set, base::Time::Now will be overridden to initially return this value.
-         * @param initialVirtualTime field value; null removes the value
+         * @param initialVirtualTime field value
          * @return this model
          */
         public SetVirtualTimePolicyRequest initialVirtualTime(Network.TimeSinceEpoch initialVirtualTime) {
@@ -3418,7 +2836,7 @@ public final class Emulation {
     public static final class SetLocaleOverrideRequest extends CdpObject {
         public SetLocaleOverrideRequest() {}
         public static SetLocaleOverrideRequest fromMap(Map<String, Object> values) {
-            SetLocaleOverrideRequest instance_ = new SetLocaleOverrideRequest();
+            final SetLocaleOverrideRequest instance_ = new SetLocaleOverrideRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3427,21 +2845,11 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> locale() {
-            Object value = raw("locale");
-            return Optional.ofNullable((String) value);
+            return raw("locale").map(value -> (String) value);
         }
         /**
          * ICU style C locale (e.g. &quot;en_US&quot;). If not specified or empty, disables the override and restores default host system locale.
-         * @param locale field value; empty omits the value
-         * @return this model
-         */
-        public SetLocaleOverrideRequest locale(Optional<String> locale) {
-            set("locale", locale.orElse(null));
-            return this;
-        }
-        /**
-         * ICU style C locale (e.g. &quot;en_US&quot;). If not specified or empty, disables the override and restores default host system locale.
-         * @param locale field value; null removes the value
+         * @param locale field value
          * @return this model
          */
         public SetLocaleOverrideRequest locale(String locale) {
@@ -3459,10 +2867,10 @@ public final class Emulation {
          * @param timezoneId protocol value
          */
         public SetTimezoneOverrideRequest(String timezoneId) {
-            set("timezoneId", timezoneId);
+            timezoneId(timezoneId);
         }
         public static SetTimezoneOverrideRequest fromMap(Map<String, Object> values) {
-            SetTimezoneOverrideRequest instance_ = new SetTimezoneOverrideRequest();
+            final SetTimezoneOverrideRequest instance_ = new SetTimezoneOverrideRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3500,11 +2908,10 @@ public final class Emulation {
          */
         @Deprecated
         public SetVisibleSizeRequest(long width, long height) {
-            set("width", width);
-            set("height", height);
+            width(width).height(height);
         }
         public static SetVisibleSizeRequest fromMap(Map<String, Object> values) {
-            SetVisibleSizeRequest instance_ = new SetVisibleSizeRequest();
+            final SetVisibleSizeRequest instance_ = new SetVisibleSizeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3553,10 +2960,10 @@ public final class Emulation {
          * @param imageTypes protocol value
          */
         public SetDisabledImageTypesRequest(java.util.List<Emulation.DisabledImageType> imageTypes) {
-            set("imageTypes", imageTypes);
+            imageTypes(imageTypes);
         }
         public static SetDisabledImageTypesRequest fromMap(Map<String, Object> values) {
-            SetDisabledImageTypesRequest instance_ = new SetDisabledImageTypesRequest();
+            final SetDisabledImageTypesRequest instance_ = new SetDisabledImageTypesRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3584,7 +2991,7 @@ public final class Emulation {
     public static final class SetDataSaverOverrideRequest extends CdpObject {
         public SetDataSaverOverrideRequest() {}
         public static SetDataSaverOverrideRequest fromMap(Map<String, Object> values) {
-            SetDataSaverOverrideRequest instance_ = new SetDataSaverOverrideRequest();
+            final SetDataSaverOverrideRequest instance_ = new SetDataSaverOverrideRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3593,24 +3000,14 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> dataSaverEnabled() {
-            Object value = raw("dataSaverEnabled");
-            return Optional.ofNullable((Boolean) value);
+            return raw("dataSaverEnabled").map(value -> (Boolean) value);
         }
         /**
          * Override value. Omitting the parameter disables the override.
-         * @param dataSaverEnabled field value; empty omits the value
+         * @param dataSaverEnabled field value
          * @return this model
          */
-        public SetDataSaverOverrideRequest dataSaverEnabled(Optional<Boolean> dataSaverEnabled) {
-            set("dataSaverEnabled", dataSaverEnabled.orElse(null));
-            return this;
-        }
-        /**
-         * Override value. Omitting the parameter disables the override.
-         * @param dataSaverEnabled field value; null removes the value
-         * @return this model
-         */
-        public SetDataSaverOverrideRequest dataSaverEnabled(Boolean dataSaverEnabled) {
+        public SetDataSaverOverrideRequest dataSaverEnabled(boolean dataSaverEnabled) {
             set("dataSaverEnabled", dataSaverEnabled);
             return this;
         }
@@ -3627,10 +3024,10 @@ public final class Emulation {
          * @param hardwareConcurrency protocol value
          */
         public SetHardwareConcurrencyOverrideRequest(long hardwareConcurrency) {
-            set("hardwareConcurrency", hardwareConcurrency);
+            hardwareConcurrency(hardwareConcurrency);
         }
         public static SetHardwareConcurrencyOverrideRequest fromMap(Map<String, Object> values) {
-            SetHardwareConcurrencyOverrideRequest instance_ = new SetHardwareConcurrencyOverrideRequest();
+            final SetHardwareConcurrencyOverrideRequest instance_ = new SetHardwareConcurrencyOverrideRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3661,10 +3058,10 @@ public final class Emulation {
          * @param userAgent protocol value
          */
         public SetUserAgentOverrideRequest(String userAgent) {
-            set("userAgent", userAgent);
+            userAgent(userAgent);
         }
         public static SetUserAgentOverrideRequest fromMap(Map<String, Object> values) {
-            SetUserAgentOverrideRequest instance_ = new SetUserAgentOverrideRequest();
+            final SetUserAgentOverrideRequest instance_ = new SetUserAgentOverrideRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3680,16 +3077,14 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> acceptLanguage() {
-            Object value = raw("acceptLanguage");
-            return Optional.ofNullable((String) value);
+            return raw("acceptLanguage").map(value -> (String) value);
         }
         /**
          * The platform navigator.platform should return.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> platform() {
-            Object value = raw("platform");
-            return Optional.ofNullable((String) value);
+            return raw("platform").map(value -> (String) value);
         }
         /**
          * To be sent in Sec-CH-UA-* headers and returned in navigator.userAgentData
@@ -3697,8 +3092,7 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<Emulation.UserAgentMetadata> userAgentMetadata() {
-            Object value = raw("userAgentMetadata");
-            return Optional.ofNullable(value == null ? null : Emulation.UserAgentMetadata.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("userAgentMetadata").flatMap(CdpObject::objectMap).map(Emulation.UserAgentMetadata::fromMap);
         }
         /**
          * User agent to use.
@@ -3711,16 +3105,7 @@ public final class Emulation {
         }
         /**
          * Browser language to emulate.
-         * @param acceptLanguage field value; empty omits the value
-         * @return this model
-         */
-        public SetUserAgentOverrideRequest acceptLanguage(Optional<String> acceptLanguage) {
-            set("acceptLanguage", acceptLanguage.orElse(null));
-            return this;
-        }
-        /**
-         * Browser language to emulate.
-         * @param acceptLanguage field value; null removes the value
+         * @param acceptLanguage field value
          * @return this model
          */
         public SetUserAgentOverrideRequest acceptLanguage(String acceptLanguage) {
@@ -3729,16 +3114,7 @@ public final class Emulation {
         }
         /**
          * The platform navigator.platform should return.
-         * @param platform field value; empty omits the value
-         * @return this model
-         */
-        public SetUserAgentOverrideRequest platform(Optional<String> platform) {
-            set("platform", platform.orElse(null));
-            return this;
-        }
-        /**
-         * The platform navigator.platform should return.
-         * @param platform field value; null removes the value
+         * @param platform field value
          * @return this model
          */
         public SetUserAgentOverrideRequest platform(String platform) {
@@ -3748,17 +3124,7 @@ public final class Emulation {
         /**
          * To be sent in Sec-CH-UA-* headers and returned in navigator.userAgentData
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param userAgentMetadata field value; empty omits the value
-         * @return this model
-         */
-        public SetUserAgentOverrideRequest userAgentMetadata(Optional<Emulation.UserAgentMetadata> userAgentMetadata) {
-            set("userAgentMetadata", userAgentMetadata.orElse(null));
-            return this;
-        }
-        /**
-         * To be sent in Sec-CH-UA-* headers and returned in navigator.userAgentData
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param userAgentMetadata field value; null removes the value
+         * @param userAgentMetadata field value
          * @return this model
          */
         public SetUserAgentOverrideRequest userAgentMetadata(Emulation.UserAgentMetadata userAgentMetadata) {
@@ -3778,10 +3144,10 @@ public final class Emulation {
          * @param enabled protocol value
          */
         public SetAutomationOverrideRequest(boolean enabled) {
-            set("enabled", enabled);
+            enabled(enabled);
         }
         public static SetAutomationOverrideRequest fromMap(Map<String, Object> values) {
-            SetAutomationOverrideRequest instance_ = new SetAutomationOverrideRequest();
+            final SetAutomationOverrideRequest instance_ = new SetAutomationOverrideRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3814,10 +3180,10 @@ public final class Emulation {
          * @param difference protocol value
          */
         public SetSmallViewportHeightDifferenceOverrideRequest(long difference) {
-            set("difference", difference);
+            difference(difference);
         }
         public static SetSmallViewportHeightDifferenceOverrideRequest fromMap(Map<String, Object> values) {
-            SetSmallViewportHeightDifferenceOverrideRequest instance_ = new SetSmallViewportHeightDifferenceOverrideRequest();
+            final SetSmallViewportHeightDifferenceOverrideRequest instance_ = new SetSmallViewportHeightDifferenceOverrideRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3853,13 +3219,10 @@ public final class Emulation {
          * @param height protocol value
          */
         public AddScreenRequest(long left, long top, long width, long height) {
-            set("left", left);
-            set("top", top);
-            set("width", width);
-            set("height", height);
+            left(left).top(top).width(width).height(height);
         }
         public static AddScreenRequest fromMap(Map<String, Object> values) {
-            AddScreenRequest instance_ = new AddScreenRequest();
+            final AddScreenRequest instance_ = new AddScreenRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -3896,48 +3259,42 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<Emulation.WorkAreaInsets> workAreaInsets() {
-            Object value = raw("workAreaInsets");
-            return Optional.ofNullable(value == null ? null : Emulation.WorkAreaInsets.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("workAreaInsets").flatMap(CdpObject::objectMap).map(Emulation.WorkAreaInsets::fromMap);
         }
         /**
          * Specifies the screen&#x27;s device pixel ratio. Default is 1.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble devicePixelRatio() {
-            Double value = CdpObject.numberAsDouble(raw("devicePixelRatio"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("devicePixelRatio").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Specifies the screen&#x27;s rotation angle. Available values are 0, 90, 180 and 270. Default is 0.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong rotation() {
-            Long value = CdpObject.numberAsLong(raw("rotation"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("rotation").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Specifies the screen&#x27;s color depth in bits. Default is 24.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong colorDepth() {
-            Long value = CdpObject.numberAsLong(raw("colorDepth"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("colorDepth").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Specifies the descriptive label for the screen. Default is none.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> label() {
-            Object value = raw("label");
-            return Optional.ofNullable((String) value);
+            return raw("label").map(value -> (String) value);
         }
         /**
          * Indicates whether the screen is internal to the device or external, attached to the device. Default is false.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isInternal() {
-            Object value = raw("isInternal");
-            return Optional.ofNullable((Boolean) value);
+            return raw("isInternal").map(value -> (Boolean) value);
         }
         /**
          * Offset of the left edge of the screen in pixels.
@@ -3977,16 +3334,7 @@ public final class Emulation {
         }
         /**
          * Specifies the screen&#x27;s work area. Default is entire screen.
-         * @param workAreaInsets field value; empty omits the value
-         * @return this model
-         */
-        public AddScreenRequest workAreaInsets(Optional<Emulation.WorkAreaInsets> workAreaInsets) {
-            set("workAreaInsets", workAreaInsets.orElse(null));
-            return this;
-        }
-        /**
-         * Specifies the screen&#x27;s work area. Default is entire screen.
-         * @param workAreaInsets field value; null removes the value
+         * @param workAreaInsets field value
          * @return this model
          */
         public AddScreenRequest workAreaInsets(Emulation.WorkAreaInsets workAreaInsets) {
@@ -3995,70 +3343,34 @@ public final class Emulation {
         }
         /**
          * Specifies the screen&#x27;s device pixel ratio. Default is 1.
-         * @param devicePixelRatio field value; empty omits the value
+         * @param devicePixelRatio field value
          * @return this model
          */
-        public AddScreenRequest devicePixelRatio(OptionalDouble devicePixelRatio) {
-            set("devicePixelRatio", devicePixelRatio.isPresent() ? devicePixelRatio.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Specifies the screen&#x27;s device pixel ratio. Default is 1.
-         * @param devicePixelRatio field value; null removes the value
-         * @return this model
-         */
-        public AddScreenRequest devicePixelRatio(Double devicePixelRatio) {
+        public AddScreenRequest devicePixelRatio(double devicePixelRatio) {
             set("devicePixelRatio", devicePixelRatio);
             return this;
         }
         /**
          * Specifies the screen&#x27;s rotation angle. Available values are 0, 90, 180 and 270. Default is 0.
-         * @param rotation field value; empty omits the value
+         * @param rotation field value
          * @return this model
          */
-        public AddScreenRequest rotation(OptionalLong rotation) {
-            set("rotation", rotation.isPresent() ? rotation.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Specifies the screen&#x27;s rotation angle. Available values are 0, 90, 180 and 270. Default is 0.
-         * @param rotation field value; null removes the value
-         * @return this model
-         */
-        public AddScreenRequest rotation(Long rotation) {
+        public AddScreenRequest rotation(long rotation) {
             set("rotation", rotation);
             return this;
         }
         /**
          * Specifies the screen&#x27;s color depth in bits. Default is 24.
-         * @param colorDepth field value; empty omits the value
+         * @param colorDepth field value
          * @return this model
          */
-        public AddScreenRequest colorDepth(OptionalLong colorDepth) {
-            set("colorDepth", colorDepth.isPresent() ? colorDepth.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Specifies the screen&#x27;s color depth in bits. Default is 24.
-         * @param colorDepth field value; null removes the value
-         * @return this model
-         */
-        public AddScreenRequest colorDepth(Long colorDepth) {
+        public AddScreenRequest colorDepth(long colorDepth) {
             set("colorDepth", colorDepth);
             return this;
         }
         /**
          * Specifies the descriptive label for the screen. Default is none.
-         * @param label field value; empty omits the value
-         * @return this model
-         */
-        public AddScreenRequest label(Optional<String> label) {
-            set("label", label.orElse(null));
-            return this;
-        }
-        /**
-         * Specifies the descriptive label for the screen. Default is none.
-         * @param label field value; null removes the value
+         * @param label field value
          * @return this model
          */
         public AddScreenRequest label(String label) {
@@ -4067,19 +3379,10 @@ public final class Emulation {
         }
         /**
          * Indicates whether the screen is internal to the device or external, attached to the device. Default is false.
-         * @param isInternal field value; empty omits the value
+         * @param isInternal field value
          * @return this model
          */
-        public AddScreenRequest isInternal(Optional<Boolean> isInternal) {
-            set("isInternal", isInternal.orElse(null));
-            return this;
-        }
-        /**
-         * Indicates whether the screen is internal to the device or external, attached to the device. Default is false.
-         * @param isInternal field value; null removes the value
-         * @return this model
-         */
-        public AddScreenRequest isInternal(Boolean isInternal) {
+        public AddScreenRequest isInternal(boolean isInternal) {
             set("isInternal", isInternal);
             return this;
         }
@@ -4096,10 +3399,10 @@ public final class Emulation {
          * @param screenId protocol value
          */
         public UpdateScreenRequest(Emulation.ScreenId screenId) {
-            set("screenId", screenId);
+            screenId(screenId);
         }
         public static UpdateScreenRequest fromMap(Map<String, Object> values) {
-            UpdateScreenRequest instance_ = new UpdateScreenRequest();
+            final UpdateScreenRequest instance_ = new UpdateScreenRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4115,80 +3418,70 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong left() {
-            Long value = CdpObject.numberAsLong(raw("left"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("left").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Offset of the top edge of the screen in pixels.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong top() {
-            Long value = CdpObject.numberAsLong(raw("top"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("top").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * The width of the screen in pixels.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong width() {
-            Long value = CdpObject.numberAsLong(raw("width"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("width").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * The height of the screen in pixels.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong height() {
-            Long value = CdpObject.numberAsLong(raw("height"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("height").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Specifies the screen&#x27;s work area.
          * @return the protocol field value, empty when absent
          */
         public Optional<Emulation.WorkAreaInsets> workAreaInsets() {
-            Object value = raw("workAreaInsets");
-            return Optional.ofNullable(value == null ? null : Emulation.WorkAreaInsets.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("workAreaInsets").flatMap(CdpObject::objectMap).map(Emulation.WorkAreaInsets::fromMap);
         }
         /**
          * Specifies the screen&#x27;s device pixel ratio.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble devicePixelRatio() {
-            Double value = CdpObject.numberAsDouble(raw("devicePixelRatio"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("devicePixelRatio").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Specifies the screen&#x27;s rotation angle. Available values are 0, 90, 180 and 270.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong rotation() {
-            Long value = CdpObject.numberAsLong(raw("rotation"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("rotation").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Specifies the screen&#x27;s color depth in bits.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong colorDepth() {
-            Long value = CdpObject.numberAsLong(raw("colorDepth"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("colorDepth").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Specifies the descriptive label for the screen.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> label() {
-            Object value = raw("label");
-            return Optional.ofNullable((String) value);
+            return raw("label").map(value -> (String) value);
         }
         /**
          * Indicates whether the screen is internal to the device or external, attached to the device. Default is false.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isInternal() {
-            Object value = raw("isInternal");
-            return Optional.ofNullable((Boolean) value);
+            return raw("isInternal").map(value -> (Boolean) value);
         }
         /**
          * Target screen identifier.
@@ -4201,88 +3494,43 @@ public final class Emulation {
         }
         /**
          * Offset of the left edge of the screen in pixels.
-         * @param left field value; empty omits the value
+         * @param left field value
          * @return this model
          */
-        public UpdateScreenRequest left(OptionalLong left) {
-            set("left", left.isPresent() ? left.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Offset of the left edge of the screen in pixels.
-         * @param left field value; null removes the value
-         * @return this model
-         */
-        public UpdateScreenRequest left(Long left) {
+        public UpdateScreenRequest left(long left) {
             set("left", left);
             return this;
         }
         /**
          * Offset of the top edge of the screen in pixels.
-         * @param top field value; empty omits the value
+         * @param top field value
          * @return this model
          */
-        public UpdateScreenRequest top(OptionalLong top) {
-            set("top", top.isPresent() ? top.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Offset of the top edge of the screen in pixels.
-         * @param top field value; null removes the value
-         * @return this model
-         */
-        public UpdateScreenRequest top(Long top) {
+        public UpdateScreenRequest top(long top) {
             set("top", top);
             return this;
         }
         /**
          * The width of the screen in pixels.
-         * @param width field value; empty omits the value
+         * @param width field value
          * @return this model
          */
-        public UpdateScreenRequest width(OptionalLong width) {
-            set("width", width.isPresent() ? width.getAsLong() : null);
-            return this;
-        }
-        /**
-         * The width of the screen in pixels.
-         * @param width field value; null removes the value
-         * @return this model
-         */
-        public UpdateScreenRequest width(Long width) {
+        public UpdateScreenRequest width(long width) {
             set("width", width);
             return this;
         }
         /**
          * The height of the screen in pixels.
-         * @param height field value; empty omits the value
+         * @param height field value
          * @return this model
          */
-        public UpdateScreenRequest height(OptionalLong height) {
-            set("height", height.isPresent() ? height.getAsLong() : null);
-            return this;
-        }
-        /**
-         * The height of the screen in pixels.
-         * @param height field value; null removes the value
-         * @return this model
-         */
-        public UpdateScreenRequest height(Long height) {
+        public UpdateScreenRequest height(long height) {
             set("height", height);
             return this;
         }
         /**
          * Specifies the screen&#x27;s work area.
-         * @param workAreaInsets field value; empty omits the value
-         * @return this model
-         */
-        public UpdateScreenRequest workAreaInsets(Optional<Emulation.WorkAreaInsets> workAreaInsets) {
-            set("workAreaInsets", workAreaInsets.orElse(null));
-            return this;
-        }
-        /**
-         * Specifies the screen&#x27;s work area.
-         * @param workAreaInsets field value; null removes the value
+         * @param workAreaInsets field value
          * @return this model
          */
         public UpdateScreenRequest workAreaInsets(Emulation.WorkAreaInsets workAreaInsets) {
@@ -4291,70 +3539,34 @@ public final class Emulation {
         }
         /**
          * Specifies the screen&#x27;s device pixel ratio.
-         * @param devicePixelRatio field value; empty omits the value
+         * @param devicePixelRatio field value
          * @return this model
          */
-        public UpdateScreenRequest devicePixelRatio(OptionalDouble devicePixelRatio) {
-            set("devicePixelRatio", devicePixelRatio.isPresent() ? devicePixelRatio.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Specifies the screen&#x27;s device pixel ratio.
-         * @param devicePixelRatio field value; null removes the value
-         * @return this model
-         */
-        public UpdateScreenRequest devicePixelRatio(Double devicePixelRatio) {
+        public UpdateScreenRequest devicePixelRatio(double devicePixelRatio) {
             set("devicePixelRatio", devicePixelRatio);
             return this;
         }
         /**
          * Specifies the screen&#x27;s rotation angle. Available values are 0, 90, 180 and 270.
-         * @param rotation field value; empty omits the value
+         * @param rotation field value
          * @return this model
          */
-        public UpdateScreenRequest rotation(OptionalLong rotation) {
-            set("rotation", rotation.isPresent() ? rotation.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Specifies the screen&#x27;s rotation angle. Available values are 0, 90, 180 and 270.
-         * @param rotation field value; null removes the value
-         * @return this model
-         */
-        public UpdateScreenRequest rotation(Long rotation) {
+        public UpdateScreenRequest rotation(long rotation) {
             set("rotation", rotation);
             return this;
         }
         /**
          * Specifies the screen&#x27;s color depth in bits.
-         * @param colorDepth field value; empty omits the value
+         * @param colorDepth field value
          * @return this model
          */
-        public UpdateScreenRequest colorDepth(OptionalLong colorDepth) {
-            set("colorDepth", colorDepth.isPresent() ? colorDepth.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Specifies the screen&#x27;s color depth in bits.
-         * @param colorDepth field value; null removes the value
-         * @return this model
-         */
-        public UpdateScreenRequest colorDepth(Long colorDepth) {
+        public UpdateScreenRequest colorDepth(long colorDepth) {
             set("colorDepth", colorDepth);
             return this;
         }
         /**
          * Specifies the descriptive label for the screen.
-         * @param label field value; empty omits the value
-         * @return this model
-         */
-        public UpdateScreenRequest label(Optional<String> label) {
-            set("label", label.orElse(null));
-            return this;
-        }
-        /**
-         * Specifies the descriptive label for the screen.
-         * @param label field value; null removes the value
+         * @param label field value
          * @return this model
          */
         public UpdateScreenRequest label(String label) {
@@ -4363,19 +3575,10 @@ public final class Emulation {
         }
         /**
          * Indicates whether the screen is internal to the device or external, attached to the device. Default is false.
-         * @param isInternal field value; empty omits the value
+         * @param isInternal field value
          * @return this model
          */
-        public UpdateScreenRequest isInternal(Optional<Boolean> isInternal) {
-            set("isInternal", isInternal.orElse(null));
-            return this;
-        }
-        /**
-         * Indicates whether the screen is internal to the device or external, attached to the device. Default is false.
-         * @param isInternal field value; null removes the value
-         * @return this model
-         */
-        public UpdateScreenRequest isInternal(Boolean isInternal) {
+        public UpdateScreenRequest isInternal(boolean isInternal) {
             set("isInternal", isInternal);
             return this;
         }
@@ -4392,10 +3595,10 @@ public final class Emulation {
          * @param screenId protocol value
          */
         public RemoveScreenRequest(Emulation.ScreenId screenId) {
-            set("screenId", screenId);
+            screenId(screenId);
         }
         public static RemoveScreenRequest fromMap(Map<String, Object> values) {
-            RemoveScreenRequest instance_ = new RemoveScreenRequest();
+            final RemoveScreenRequest instance_ = new RemoveScreenRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4428,10 +3631,10 @@ public final class Emulation {
          * @param screenId protocol value
          */
         public SetPrimaryScreenRequest(Emulation.ScreenId screenId) {
-            set("screenId", screenId);
+            screenId(screenId);
         }
         public static SetPrimaryScreenRequest fromMap(Map<String, Object> values) {
-            SetPrimaryScreenRequest instance_ = new SetPrimaryScreenRequest();
+            final SetPrimaryScreenRequest instance_ = new SetPrimaryScreenRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4485,8 +3688,7 @@ public final class Emulation {
          * @return the protocol field value, empty when absent
          */
         public Optional<Emulation.ScreenOrientation> orientation() {
-            Object value = raw("orientation");
-            return Optional.ofNullable(value == null ? null : Emulation.ScreenOrientation.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("orientation").flatMap(CdpObject::objectMap).map(Emulation.ScreenOrientation::fromMap);
         }
         /**
          * Whether the screen orientation is currently locked.
@@ -4499,16 +3701,7 @@ public final class Emulation {
         }
         /**
          * The orientation lock type requested by the page. Only set when locked is true.
-         * @param orientation field value; empty omits the value
-         * @return this model
-         */
-        public ScreenOrientationLockChangedEvent orientation(Optional<Emulation.ScreenOrientation> orientation) {
-            set("orientation", orientation.orElse(null));
-            return this;
-        }
-        /**
-         * The orientation lock type requested by the page. Only set when locked is true.
-         * @param orientation field value; null removes the value
+         * @param orientation field value
          * @return this model
          */
         public ScreenOrientationLockChangedEvent orientation(Emulation.ScreenOrientation orientation) {
@@ -4525,7 +3718,7 @@ public final class Emulation {
         DEFAULT("default");
         public final String value;
         SetDeviceMetricsOverrideScrollbarTypeValues(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static SetDeviceMetricsOverrideScrollbarTypeValues of(String value) {
             for (SetDeviceMetricsOverrideScrollbarTypeValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -4541,7 +3734,7 @@ public final class Emulation {
         DESKTOP("desktop");
         public final String value;
         SetEmitTouchEventsForMouseConfigurationValues(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static SetEmitTouchEventsForMouseConfigurationValues of(String value) {
             for (SetEmitTouchEventsForMouseConfigurationValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -4562,7 +3755,7 @@ public final class Emulation {
         TRITANOPIA("tritanopia");
         public final String value;
         SetEmulatedVisionDeficiencyTypeValues(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static SetEmulatedVisionDeficiencyTypeValues of(String value) {
             for (SetEmulatedVisionDeficiencyTypeValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -4611,7 +3804,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setFocusEmulationEnabled(boolean enabled) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("enabled", CdpObject.json(enabled));
             return client.call("Emulation.setFocusEmulationEnabled", params);
         }
@@ -4630,9 +3823,9 @@ public final class Emulation {
          * @param enabled protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setAutoDarkModeOverride(Optional<Boolean> enabled) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            enabled.ifPresent(value_ -> params.put("enabled", value_));
+        public CompletionStage<Void> setAutoDarkModeOverride(boolean enabled) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("enabled", CdpObject.json(enabled));
             return client.call("Emulation.setAutoDarkModeOverride", params);
         }
         /**
@@ -4641,7 +3834,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAutoDarkModeOverride() {
-            return setAutoDarkModeOverride(Optional.empty());
+            return client.call("Emulation.setAutoDarkModeOverride", null);
         }
         /**
          * Automatically render all web contents using a dark theme.
@@ -4658,7 +3851,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setCPUThrottlingRate(double rate) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("rate", CdpObject.json(rate));
             return client.call("Emulation.setCPUThrottlingRate", params);
         }
@@ -4675,9 +3868,9 @@ public final class Emulation {
          * @param color protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setDefaultBackgroundColorOverride(Optional<DOM.RGBA> color) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            color.ifPresent(value_ -> params.put("color", CdpObject.json(value_)));
+        public CompletionStage<Void> setDefaultBackgroundColorOverride(DOM.RGBA color) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("color", CdpObject.json(color));
             return client.call("Emulation.setDefaultBackgroundColorOverride", params);
         }
         /**
@@ -4685,7 +3878,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDefaultBackgroundColorOverride() {
-            return setDefaultBackgroundColorOverride(Optional.empty());
+            return client.call("Emulation.setDefaultBackgroundColorOverride", null);
         }
         /**
          * Sets or clears an override of the default background color of the frame. This override is used if the content does not specify one.
@@ -4702,7 +3895,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSafeAreaInsetsOverride(Emulation.SafeAreaInsets insets) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("insets", CdpObject.json(insets));
             return client.call("Emulation.setSafeAreaInsetsOverride", params);
         }
@@ -4735,24 +3928,24 @@ public final class Emulation {
          * @param screenOrientationLockEmulation protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setDeviceMetricsOverride(long width, long height, double deviceScaleFactor, boolean mobile, OptionalDouble scale, OptionalLong screenWidth, OptionalLong screenHeight, OptionalLong positionX, OptionalLong positionY, Optional<Boolean> dontSetVisibleSize, Optional<Emulation.ScreenOrientation> screenOrientation, Optional<Page.Viewport> viewport, Optional<Emulation.DisplayFeature> displayFeature, Optional<Emulation.DevicePosture> devicePosture, Optional<SetDeviceMetricsOverrideScrollbarTypeValues> scrollbarType, Optional<Boolean> screenOrientationLockEmulation) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> setDeviceMetricsOverride(long width, long height, double deviceScaleFactor, boolean mobile, @Nullable Double scale, @Nullable Long screenWidth, @Nullable Long screenHeight, @Nullable Long positionX, @Nullable Long positionY, @Nullable Boolean dontSetVisibleSize, Emulation.@Nullable ScreenOrientation screenOrientation, Page.@Nullable Viewport viewport, Emulation.@Nullable DisplayFeature displayFeature, Emulation.@Nullable DevicePosture devicePosture, @Nullable SetDeviceMetricsOverrideScrollbarTypeValues scrollbarType, @Nullable Boolean screenOrientationLockEmulation) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("width", CdpObject.json(width));
             params.put("height", CdpObject.json(height));
             params.put("deviceScaleFactor", CdpObject.json(deviceScaleFactor));
             params.put("mobile", CdpObject.json(mobile));
-            scale.ifPresent(value_ -> params.put("scale", value_));
-            screenWidth.ifPresent(value_ -> params.put("screenWidth", value_));
-            screenHeight.ifPresent(value_ -> params.put("screenHeight", value_));
-            positionX.ifPresent(value_ -> params.put("positionX", value_));
-            positionY.ifPresent(value_ -> params.put("positionY", value_));
-            dontSetVisibleSize.ifPresent(value_ -> params.put("dontSetVisibleSize", value_));
-            screenOrientation.ifPresent(value_ -> params.put("screenOrientation", CdpObject.json(value_)));
-            viewport.ifPresent(value_ -> params.put("viewport", CdpObject.json(value_)));
-            displayFeature.ifPresent(value_ -> params.put("displayFeature", CdpObject.json(value_)));
-            devicePosture.ifPresent(value_ -> params.put("devicePosture", CdpObject.json(value_)));
-            scrollbarType.ifPresent(value_ -> params.put("scrollbarType", CdpObject.json(value_)));
-            screenOrientationLockEmulation.ifPresent(value_ -> params.put("screenOrientationLockEmulation", value_));
+            if (scale != null) params.put("scale", CdpObject.json(scale));
+            if (screenWidth != null) params.put("screenWidth", CdpObject.json(screenWidth));
+            if (screenHeight != null) params.put("screenHeight", CdpObject.json(screenHeight));
+            if (positionX != null) params.put("positionX", CdpObject.json(positionX));
+            if (positionY != null) params.put("positionY", CdpObject.json(positionY));
+            if (dontSetVisibleSize != null) params.put("dontSetVisibleSize", CdpObject.json(dontSetVisibleSize));
+            if (screenOrientation != null) params.put("screenOrientation", CdpObject.json(screenOrientation));
+            if (viewport != null) params.put("viewport", CdpObject.json(viewport));
+            if (displayFeature != null) params.put("displayFeature", CdpObject.json(displayFeature));
+            if (devicePosture != null) params.put("devicePosture", CdpObject.json(devicePosture));
+            if (scrollbarType != null) params.put("scrollbarType", CdpObject.json(scrollbarType));
+            if (screenOrientationLockEmulation != null) params.put("screenOrientationLockEmulation", CdpObject.json(screenOrientationLockEmulation));
             return client.call("Emulation.setDeviceMetricsOverride", params);
         }
         /**
@@ -4764,7 +3957,12 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDeviceMetricsOverride(long width, long height, double deviceScaleFactor, boolean mobile) {
-            return setDeviceMetricsOverride(width, height, deviceScaleFactor, mobile, OptionalDouble.empty(), OptionalLong.empty(), OptionalLong.empty(), OptionalLong.empty(), OptionalLong.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("width", CdpObject.json(width));
+            params.put("height", CdpObject.json(height));
+            params.put("deviceScaleFactor", CdpObject.json(deviceScaleFactor));
+            params.put("mobile", CdpObject.json(mobile));
+            return client.call("Emulation.setDeviceMetricsOverride", params);
         }
         /**
          * Overrides the values of device screen dimensions (window.screen.width, window.screen.height, window.innerWidth, window.innerHeight, and &quot;device-width&quot;/&quot;device-height&quot;-related CSS media query results).
@@ -4781,7 +3979,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDevicePostureOverride(Emulation.DevicePosture posture) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("posture", CdpObject.json(posture));
             return client.call("Emulation.setDevicePostureOverride", params);
         }
@@ -4809,7 +4007,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDisplayFeaturesOverride(java.util.List<Emulation.DisplayFeature> features) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("features", CdpObject.json(features));
             return client.call("Emulation.setDisplayFeaturesOverride", params);
         }
@@ -4837,7 +4035,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setScrollbarsHidden(boolean hidden) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("hidden", CdpObject.json(hidden));
             return client.call("Emulation.setScrollbarsHidden", params);
         }
@@ -4857,7 +4055,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDocumentCookieDisabled(boolean disabled) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("disabled", CdpObject.json(disabled));
             return client.call("Emulation.setDocumentCookieDisabled", params);
         }
@@ -4877,10 +4075,10 @@ public final class Emulation {
          * @param configuration protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setEmitTouchEventsForMouse(boolean enabled, Optional<SetEmitTouchEventsForMouseConfigurationValues> configuration) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> setEmitTouchEventsForMouse(boolean enabled, SetEmitTouchEventsForMouseConfigurationValues configuration) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("enabled", CdpObject.json(enabled));
-            configuration.ifPresent(value_ -> params.put("configuration", CdpObject.json(value_)));
+            params.put("configuration", CdpObject.json(configuration));
             return client.call("Emulation.setEmitTouchEventsForMouse", params);
         }
         /**
@@ -4890,7 +4088,9 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setEmitTouchEventsForMouse(boolean enabled) {
-            return setEmitTouchEventsForMouse(enabled, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("enabled", CdpObject.json(enabled));
+            return client.call("Emulation.setEmitTouchEventsForMouse", params);
         }
         /**
          * Invokes Emulation.setEmitTouchEventsForMouse with a request object.
@@ -4907,10 +4107,10 @@ public final class Emulation {
          * @param features protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setEmulatedMedia(Optional<String> media, Optional<java.util.List<Emulation.MediaFeature>> features) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            media.ifPresent(value_ -> params.put("media", CdpObject.json(value_)));
-            features.ifPresent(value_ -> params.put("features", CdpObject.json(value_)));
+        public CompletionStage<Void> setEmulatedMedia(@Nullable String media, java.util.@Nullable List<Emulation.MediaFeature> features) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (media != null) params.put("media", CdpObject.json(media));
+            if (features != null) params.put("features", CdpObject.json(features));
             return client.call("Emulation.setEmulatedMedia", params);
         }
         /**
@@ -4918,7 +4118,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setEmulatedMedia() {
-            return setEmulatedMedia(Optional.empty(), Optional.empty());
+            return client.call("Emulation.setEmulatedMedia", null);
         }
         /**
          * Emulates the given media type or media feature for CSS media queries.
@@ -4934,7 +4134,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setEmulatedVisionDeficiency(SetEmulatedVisionDeficiencyTypeValues type) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("type", CdpObject.json(type));
             return client.call("Emulation.setEmulatedVisionDeficiency", params);
         }
@@ -4951,9 +4151,9 @@ public final class Emulation {
          * @param scale protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setEmulatedOSTextScale(OptionalDouble scale) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            scale.ifPresent(value_ -> params.put("scale", value_));
+        public CompletionStage<Void> setEmulatedOSTextScale(double scale) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("scale", CdpObject.json(scale));
             return client.call("Emulation.setEmulatedOSTextScale", params);
         }
         /**
@@ -4961,7 +4161,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setEmulatedOSTextScale() {
-            return setEmulatedOSTextScale(OptionalDouble.empty());
+            return client.call("Emulation.setEmulatedOSTextScale", null);
         }
         /**
          * Emulates the given OS text scale.
@@ -4982,15 +4182,15 @@ public final class Emulation {
          * @param speed protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setGeolocationOverride(OptionalDouble latitude, OptionalDouble longitude, OptionalDouble accuracy, OptionalDouble altitude, OptionalDouble altitudeAccuracy, OptionalDouble heading, OptionalDouble speed) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            latitude.ifPresent(value_ -> params.put("latitude", value_));
-            longitude.ifPresent(value_ -> params.put("longitude", value_));
-            accuracy.ifPresent(value_ -> params.put("accuracy", value_));
-            altitude.ifPresent(value_ -> params.put("altitude", value_));
-            altitudeAccuracy.ifPresent(value_ -> params.put("altitudeAccuracy", value_));
-            heading.ifPresent(value_ -> params.put("heading", value_));
-            speed.ifPresent(value_ -> params.put("speed", value_));
+        public CompletionStage<Void> setGeolocationOverride(@Nullable Double latitude, @Nullable Double longitude, @Nullable Double accuracy, @Nullable Double altitude, @Nullable Double altitudeAccuracy, @Nullable Double heading, @Nullable Double speed) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (latitude != null) params.put("latitude", CdpObject.json(latitude));
+            if (longitude != null) params.put("longitude", CdpObject.json(longitude));
+            if (accuracy != null) params.put("accuracy", CdpObject.json(accuracy));
+            if (altitude != null) params.put("altitude", CdpObject.json(altitude));
+            if (altitudeAccuracy != null) params.put("altitudeAccuracy", CdpObject.json(altitudeAccuracy));
+            if (heading != null) params.put("heading", CdpObject.json(heading));
+            if (speed != null) params.put("speed", CdpObject.json(speed));
             return client.call("Emulation.setGeolocationOverride", params);
         }
         /**
@@ -4998,7 +4198,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setGeolocationOverride() {
-            return setGeolocationOverride(OptionalDouble.empty(), OptionalDouble.empty(), OptionalDouble.empty(), OptionalDouble.empty(), OptionalDouble.empty(), OptionalDouble.empty(), OptionalDouble.empty());
+            return client.call("Emulation.setGeolocationOverride", null);
         }
         /**
          * Overrides the Geolocation Position or Error. Omitting latitude, longitude or accuracy emulates position unavailable.
@@ -5015,7 +4215,7 @@ public final class Emulation {
          * @return a stage completing with the command result
          */
         public CompletionStage<Double> getOverriddenSensorInformation(Emulation.SensorType type) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("type", CdpObject.json(type));
             return client.call("Emulation.getOverriddenSensorInformation", params, result_ -> ((Number) java.util.Objects.requireNonNull(result_.get("requestedSamplingFrequency"))).doubleValue());
         }
@@ -5036,11 +4236,11 @@ public final class Emulation {
          * @param metadata protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setSensorOverrideEnabled(boolean enabled, Emulation.SensorType type, Optional<Emulation.SensorMetadata> metadata) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> setSensorOverrideEnabled(boolean enabled, Emulation.SensorType type, Emulation.SensorMetadata metadata) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("enabled", CdpObject.json(enabled));
             params.put("type", CdpObject.json(type));
-            metadata.ifPresent(value_ -> params.put("metadata", CdpObject.json(value_)));
+            params.put("metadata", CdpObject.json(metadata));
             return client.call("Emulation.setSensorOverrideEnabled", params);
         }
         /**
@@ -5051,7 +4251,10 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSensorOverrideEnabled(boolean enabled, Emulation.SensorType type) {
-            return setSensorOverrideEnabled(enabled, type, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("enabled", CdpObject.json(enabled));
+            params.put("type", CdpObject.json(type));
+            return client.call("Emulation.setSensorOverrideEnabled", params);
         }
         /**
          * Overrides a platform sensor of a given type. If |enabled| is true, calls to Sensor.start() will use a virtual sensor as backend rather than fetching data from a real hardware sensor. Otherwise, existing virtual sensor-backend Sensor objects will fire an error event and new calls to Sensor.start() will attempt to use a real sensor instead.
@@ -5070,7 +4273,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSensorOverrideReadings(Emulation.SensorType type, Emulation.SensorReading reading) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("type", CdpObject.json(type));
             params.put("reading", CdpObject.json(reading));
             return client.call("Emulation.setSensorOverrideReadings", params);
@@ -5092,11 +4295,11 @@ public final class Emulation {
          * @param metadata protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setPressureSourceOverrideEnabled(boolean enabled, Emulation.PressureSource source, Optional<Emulation.PressureMetadata> metadata) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> setPressureSourceOverrideEnabled(boolean enabled, Emulation.PressureSource source, Emulation.PressureMetadata metadata) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("enabled", CdpObject.json(enabled));
             params.put("source", CdpObject.json(source));
-            metadata.ifPresent(value_ -> params.put("metadata", CdpObject.json(value_)));
+            params.put("metadata", CdpObject.json(metadata));
             return client.call("Emulation.setPressureSourceOverrideEnabled", params);
         }
         /**
@@ -5107,7 +4310,10 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPressureSourceOverrideEnabled(boolean enabled, Emulation.PressureSource source) {
-            return setPressureSourceOverrideEnabled(enabled, source, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("enabled", CdpObject.json(enabled));
+            params.put("source", CdpObject.json(source));
+            return client.call("Emulation.setPressureSourceOverrideEnabled", params);
         }
         /**
          * Overrides a pressure source of a given type, as used by the Compute Pressure API, so that updates to PressureObserver.observe() are provided via setPressureStateOverride instead of being retrieved from platform-provided telemetry data.
@@ -5126,7 +4332,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPressureStateOverride(Emulation.PressureSource source, Emulation.PressureState state) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("source", CdpObject.json(source));
             params.put("state", CdpObject.json(state));
             return client.call("Emulation.setPressureStateOverride", params);
@@ -5147,7 +4353,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setIdleOverride(boolean isUserActive, boolean isScreenUnlocked) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("isUserActive", CdpObject.json(isUserActive));
             params.put("isScreenUnlocked", CdpObject.json(isScreenUnlocked));
             return client.call("Emulation.setIdleOverride", params);
@@ -5176,7 +4382,7 @@ public final class Emulation {
          */
         @Deprecated
         public CompletionStage<Void> setNavigatorOverrides(String platform) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("platform", CdpObject.json(platform));
             return client.call("Emulation.setNavigatorOverrides", params);
         }
@@ -5198,7 +4404,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPageScaleFactor(double pageScaleFactor) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("pageScaleFactor", CdpObject.json(pageScaleFactor));
             return client.call("Emulation.setPageScaleFactor", params);
         }
@@ -5217,7 +4423,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setScriptExecutionDisabled(boolean value) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("value", CdpObject.json(value));
             return client.call("Emulation.setScriptExecutionDisabled", params);
         }
@@ -5235,10 +4441,10 @@ public final class Emulation {
          * @param maxTouchPoints protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setTouchEmulationEnabled(boolean enabled, OptionalLong maxTouchPoints) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> setTouchEmulationEnabled(boolean enabled, long maxTouchPoints) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("enabled", CdpObject.json(enabled));
-            maxTouchPoints.ifPresent(value_ -> params.put("maxTouchPoints", value_));
+            params.put("maxTouchPoints", CdpObject.json(maxTouchPoints));
             return client.call("Emulation.setTouchEmulationEnabled", params);
         }
         /**
@@ -5247,7 +4453,9 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setTouchEmulationEnabled(boolean enabled) {
-            return setTouchEmulationEnabled(enabled, OptionalLong.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("enabled", CdpObject.json(enabled));
+            return client.call("Emulation.setTouchEmulationEnabled", params);
         }
         /**
          * Enables touch on platforms which do not support them.
@@ -5266,12 +4474,12 @@ public final class Emulation {
          * @param initialVirtualTime protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<Double> setVirtualTimePolicy(Emulation.VirtualTimePolicy policy, OptionalDouble budget, OptionalLong maxVirtualTimeTaskStarvationCount, Optional<Network.TimeSinceEpoch> initialVirtualTime) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Double> setVirtualTimePolicy(Emulation.VirtualTimePolicy policy, @Nullable Double budget, @Nullable Long maxVirtualTimeTaskStarvationCount, Network.@Nullable TimeSinceEpoch initialVirtualTime) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("policy", CdpObject.json(policy));
-            budget.ifPresent(value_ -> params.put("budget", value_));
-            maxVirtualTimeTaskStarvationCount.ifPresent(value_ -> params.put("maxVirtualTimeTaskStarvationCount", value_));
-            initialVirtualTime.ifPresent(value_ -> params.put("initialVirtualTime", CdpObject.json(value_)));
+            if (budget != null) params.put("budget", CdpObject.json(budget));
+            if (maxVirtualTimeTaskStarvationCount != null) params.put("maxVirtualTimeTaskStarvationCount", CdpObject.json(maxVirtualTimeTaskStarvationCount));
+            if (initialVirtualTime != null) params.put("initialVirtualTime", CdpObject.json(initialVirtualTime));
             return client.call("Emulation.setVirtualTimePolicy", params, result_ -> ((Number) java.util.Objects.requireNonNull(result_.get("virtualTimeTicksBase"))).doubleValue());
         }
         /**
@@ -5281,7 +4489,9 @@ public final class Emulation {
          * @return a stage completing with the command result
          */
         public CompletionStage<Double> setVirtualTimePolicy(Emulation.VirtualTimePolicy policy) {
-            return setVirtualTimePolicy(policy, OptionalDouble.empty(), OptionalLong.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("policy", CdpObject.json(policy));
+            return client.call("Emulation.setVirtualTimePolicy", params, result_ -> ((Number) java.util.Objects.requireNonNull(result_.get("virtualTimeTicksBase"))).doubleValue());
         }
         /**
          * Turns on virtual time for all frames (replacing real-time with a synthetic time source) and sets the current virtual time policy. Note this supersedes any previous time budget.
@@ -5298,9 +4508,9 @@ public final class Emulation {
          * @param locale protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setLocaleOverride(Optional<String> locale) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            locale.ifPresent(value_ -> params.put("locale", CdpObject.json(value_)));
+        public CompletionStage<Void> setLocaleOverride(String locale) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("locale", CdpObject.json(locale));
             return client.call("Emulation.setLocaleOverride", params);
         }
         /**
@@ -5309,7 +4519,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setLocaleOverride() {
-            return setLocaleOverride(Optional.empty());
+            return client.call("Emulation.setLocaleOverride", null);
         }
         /**
          * Overrides default host system locale with the specified one.
@@ -5326,7 +4536,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setTimezoneOverride(String timezoneId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("timezoneId", CdpObject.json(timezoneId));
             return client.call("Emulation.setTimezoneOverride", params);
         }
@@ -5348,7 +4558,7 @@ public final class Emulation {
          */
         @Deprecated
         public CompletionStage<Void> setVisibleSize(long width, long height) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("width", CdpObject.json(width));
             params.put("height", CdpObject.json(height));
             return client.call("Emulation.setVisibleSize", params);
@@ -5371,7 +4581,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDisabledImageTypes(java.util.List<Emulation.DisabledImageType> imageTypes) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("imageTypes", CdpObject.json(imageTypes));
             return client.call("Emulation.setDisabledImageTypes", params);
         }
@@ -5390,9 +4600,9 @@ public final class Emulation {
          * @param dataSaverEnabled protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setDataSaverOverride(Optional<Boolean> dataSaverEnabled) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            dataSaverEnabled.ifPresent(value_ -> params.put("dataSaverEnabled", value_));
+        public CompletionStage<Void> setDataSaverOverride(boolean dataSaverEnabled) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("dataSaverEnabled", CdpObject.json(dataSaverEnabled));
             return client.call("Emulation.setDataSaverOverride", params);
         }
         /**
@@ -5401,7 +4611,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDataSaverOverride() {
-            return setDataSaverOverride(Optional.empty());
+            return client.call("Emulation.setDataSaverOverride", null);
         }
         /**
          * Override the value of navigator.connection.saveData
@@ -5419,7 +4629,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setHardwareConcurrencyOverride(long hardwareConcurrency) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("hardwareConcurrency", CdpObject.json(hardwareConcurrency));
             return client.call("Emulation.setHardwareConcurrencyOverride", params);
         }
@@ -5440,12 +4650,12 @@ public final class Emulation {
          * @param userAgentMetadata protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setUserAgentOverride(String userAgent, Optional<String> acceptLanguage, Optional<String> platform, Optional<Emulation.UserAgentMetadata> userAgentMetadata) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> setUserAgentOverride(String userAgent, @Nullable String acceptLanguage, @Nullable String platform, Emulation.@Nullable UserAgentMetadata userAgentMetadata) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("userAgent", CdpObject.json(userAgent));
-            acceptLanguage.ifPresent(value_ -> params.put("acceptLanguage", CdpObject.json(value_)));
-            platform.ifPresent(value_ -> params.put("platform", CdpObject.json(value_)));
-            userAgentMetadata.ifPresent(value_ -> params.put("userAgentMetadata", CdpObject.json(value_)));
+            if (acceptLanguage != null) params.put("acceptLanguage", CdpObject.json(acceptLanguage));
+            if (platform != null) params.put("platform", CdpObject.json(platform));
+            if (userAgentMetadata != null) params.put("userAgentMetadata", CdpObject.json(userAgentMetadata));
             return client.call("Emulation.setUserAgentOverride", params);
         }
         /**
@@ -5454,7 +4664,9 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setUserAgentOverride(String userAgent) {
-            return setUserAgentOverride(userAgent, Optional.empty(), Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("userAgent", CdpObject.json(userAgent));
+            return client.call("Emulation.setUserAgentOverride", params);
         }
         /**
          * Allows overriding user agent with the given string. {@code userAgentMetadata} must be set for Client Hint headers to be sent.
@@ -5471,7 +4683,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAutomationOverride(boolean enabled) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("enabled", CdpObject.json(enabled));
             return client.call("Emulation.setAutomationOverride", params);
         }
@@ -5491,7 +4703,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSmallViewportHeightDifferenceOverride(long difference) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("difference", CdpObject.json(difference));
             return client.call("Emulation.setSmallViewportHeightDifferenceOverride", params);
         }
@@ -5510,7 +4722,7 @@ public final class Emulation {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Emulation.ScreenInfo>> getScreenInfos() {
-            return client.call("Emulation.getScreenInfos", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("screenInfos")), element0 -> java.util.Objects.requireNonNull(Emulation.ScreenInfo.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("Emulation.getScreenInfos", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("screenInfos")), element0 -> java.util.Objects.requireNonNull(Emulation.ScreenInfo.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Add a new screen to the device. Only supported in headless mode.
@@ -5527,19 +4739,19 @@ public final class Emulation {
          * @param isInternal protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<Emulation.ScreenInfo> addScreen(long left, long top, long width, long height, Optional<Emulation.WorkAreaInsets> workAreaInsets, OptionalDouble devicePixelRatio, OptionalLong rotation, OptionalLong colorDepth, Optional<String> label, Optional<Boolean> isInternal) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Emulation.ScreenInfo> addScreen(long left, long top, long width, long height, Emulation.@Nullable WorkAreaInsets workAreaInsets, @Nullable Double devicePixelRatio, @Nullable Long rotation, @Nullable Long colorDepth, @Nullable String label, @Nullable Boolean isInternal) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("left", CdpObject.json(left));
             params.put("top", CdpObject.json(top));
             params.put("width", CdpObject.json(width));
             params.put("height", CdpObject.json(height));
-            workAreaInsets.ifPresent(value_ -> params.put("workAreaInsets", CdpObject.json(value_)));
-            devicePixelRatio.ifPresent(value_ -> params.put("devicePixelRatio", value_));
-            rotation.ifPresent(value_ -> params.put("rotation", value_));
-            colorDepth.ifPresent(value_ -> params.put("colorDepth", value_));
-            label.ifPresent(value_ -> params.put("label", CdpObject.json(value_)));
-            isInternal.ifPresent(value_ -> params.put("isInternal", value_));
-            return client.call("Emulation.addScreen", params, result_ -> java.util.Objects.requireNonNull(Emulation.ScreenInfo.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("screenInfo")))))));
+            if (workAreaInsets != null) params.put("workAreaInsets", CdpObject.json(workAreaInsets));
+            if (devicePixelRatio != null) params.put("devicePixelRatio", CdpObject.json(devicePixelRatio));
+            if (rotation != null) params.put("rotation", CdpObject.json(rotation));
+            if (colorDepth != null) params.put("colorDepth", CdpObject.json(colorDepth));
+            if (label != null) params.put("label", CdpObject.json(label));
+            if (isInternal != null) params.put("isInternal", CdpObject.json(isInternal));
+            return client.call("Emulation.addScreen", params, result_ -> java.util.Objects.requireNonNull(Emulation.ScreenInfo.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("screenInfo"))))));
         }
         /**
          * Add a new screen to the device. Only supported in headless mode.
@@ -5551,7 +4763,12 @@ public final class Emulation {
          * @return a stage completing with the command result
          */
         public CompletionStage<Emulation.ScreenInfo> addScreen(long left, long top, long width, long height) {
-            return addScreen(left, top, width, height, Optional.empty(), OptionalDouble.empty(), OptionalLong.empty(), OptionalLong.empty(), Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("left", CdpObject.json(left));
+            params.put("top", CdpObject.json(top));
+            params.put("width", CdpObject.json(width));
+            params.put("height", CdpObject.json(height));
+            return client.call("Emulation.addScreen", params, result_ -> java.util.Objects.requireNonNull(Emulation.ScreenInfo.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("screenInfo"))))));
         }
         /**
          * Add a new screen to the device. Only supported in headless mode.
@@ -5560,7 +4777,7 @@ public final class Emulation {
          * @return a stage completing with the command result
          */
         public CompletionStage<Emulation.ScreenInfo> addScreen(AddScreenRequest request) {
-            return client.call("Emulation.addScreen", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Emulation.ScreenInfo.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("screenInfo")))))));
+            return client.call("Emulation.addScreen", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Emulation.ScreenInfo.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("screenInfo"))))));
         }
         /**
          * Updates specified screen parameters. Only supported in headless mode.
@@ -5578,20 +4795,20 @@ public final class Emulation {
          * @param isInternal protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<Emulation.ScreenInfo> updateScreen(Emulation.ScreenId screenId, OptionalLong left, OptionalLong top, OptionalLong width, OptionalLong height, Optional<Emulation.WorkAreaInsets> workAreaInsets, OptionalDouble devicePixelRatio, OptionalLong rotation, OptionalLong colorDepth, Optional<String> label, Optional<Boolean> isInternal) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Emulation.ScreenInfo> updateScreen(Emulation.ScreenId screenId, @Nullable Long left, @Nullable Long top, @Nullable Long width, @Nullable Long height, Emulation.@Nullable WorkAreaInsets workAreaInsets, @Nullable Double devicePixelRatio, @Nullable Long rotation, @Nullable Long colorDepth, @Nullable String label, @Nullable Boolean isInternal) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("screenId", CdpObject.json(screenId));
-            left.ifPresent(value_ -> params.put("left", value_));
-            top.ifPresent(value_ -> params.put("top", value_));
-            width.ifPresent(value_ -> params.put("width", value_));
-            height.ifPresent(value_ -> params.put("height", value_));
-            workAreaInsets.ifPresent(value_ -> params.put("workAreaInsets", CdpObject.json(value_)));
-            devicePixelRatio.ifPresent(value_ -> params.put("devicePixelRatio", value_));
-            rotation.ifPresent(value_ -> params.put("rotation", value_));
-            colorDepth.ifPresent(value_ -> params.put("colorDepth", value_));
-            label.ifPresent(value_ -> params.put("label", CdpObject.json(value_)));
-            isInternal.ifPresent(value_ -> params.put("isInternal", value_));
-            return client.call("Emulation.updateScreen", params, result_ -> java.util.Objects.requireNonNull(Emulation.ScreenInfo.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("screenInfo")))))));
+            if (left != null) params.put("left", CdpObject.json(left));
+            if (top != null) params.put("top", CdpObject.json(top));
+            if (width != null) params.put("width", CdpObject.json(width));
+            if (height != null) params.put("height", CdpObject.json(height));
+            if (workAreaInsets != null) params.put("workAreaInsets", CdpObject.json(workAreaInsets));
+            if (devicePixelRatio != null) params.put("devicePixelRatio", CdpObject.json(devicePixelRatio));
+            if (rotation != null) params.put("rotation", CdpObject.json(rotation));
+            if (colorDepth != null) params.put("colorDepth", CdpObject.json(colorDepth));
+            if (label != null) params.put("label", CdpObject.json(label));
+            if (isInternal != null) params.put("isInternal", CdpObject.json(isInternal));
+            return client.call("Emulation.updateScreen", params, result_ -> java.util.Objects.requireNonNull(Emulation.ScreenInfo.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("screenInfo"))))));
         }
         /**
          * Updates specified screen parameters. Only supported in headless mode.
@@ -5600,7 +4817,9 @@ public final class Emulation {
          * @return a stage completing with the command result
          */
         public CompletionStage<Emulation.ScreenInfo> updateScreen(Emulation.ScreenId screenId) {
-            return updateScreen(screenId, OptionalLong.empty(), OptionalLong.empty(), OptionalLong.empty(), OptionalLong.empty(), Optional.empty(), OptionalDouble.empty(), OptionalLong.empty(), OptionalLong.empty(), Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("screenId", CdpObject.json(screenId));
+            return client.call("Emulation.updateScreen", params, result_ -> java.util.Objects.requireNonNull(Emulation.ScreenInfo.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("screenInfo"))))));
         }
         /**
          * Updates specified screen parameters. Only supported in headless mode.
@@ -5609,7 +4828,7 @@ public final class Emulation {
          * @return a stage completing with the command result
          */
         public CompletionStage<Emulation.ScreenInfo> updateScreen(UpdateScreenRequest request) {
-            return client.call("Emulation.updateScreen", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Emulation.ScreenInfo.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("screenInfo")))))));
+            return client.call("Emulation.updateScreen", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Emulation.ScreenInfo.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("screenInfo"))))));
         }
         /**
          * Remove screen from the device. Only supported in headless mode.
@@ -5618,7 +4837,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeScreen(Emulation.ScreenId screenId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("screenId", CdpObject.json(screenId));
             return client.call("Emulation.removeScreen", params);
         }
@@ -5638,7 +4857,7 @@ public final class Emulation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPrimaryScreen(Emulation.ScreenId screenId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("screenId", CdpObject.json(screenId));
             return client.call("Emulation.setPrimaryScreen", params);
         }

@@ -19,7 +19,6 @@ import net.kurobako.cef4j.policy.NullableBoundary;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:2069</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefMouseEvent {
 
@@ -38,14 +37,14 @@ public final class CefMouseEvent {
 
     /** Create a mutable copy of this instance. */
     public Mutable toMutable() {
-        return new Mutable(this.x, this.y, this.modifiers);
+        return new Mutable(x, y, modifiers);
     }
 
     @Override
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefMouseEvent)) return false;
-        CefMouseEvent other = (CefMouseEvent) obj;
+        final CefMouseEvent other = (CefMouseEvent) obj;
         return this.x == other.x && this.y == other.y && this.modifiers == other.modifiers;
     }
 
@@ -85,14 +84,14 @@ public final class CefMouseEvent {
 
         /** Create an immutable snapshot of this instance. */
         public CefMouseEvent toImmutable() {
-            return new CefMouseEvent(this.x, this.y, this.modifiers);
+            return new CefMouseEvent(x, y, modifiers);
         }
 
         @Override
         public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
-            Mutable other = (Mutable) obj;
+            final Mutable other = (Mutable) obj;
             return this.x == other.x && this.y == other.y && this.modifiers == other.modifiers;
         }
 

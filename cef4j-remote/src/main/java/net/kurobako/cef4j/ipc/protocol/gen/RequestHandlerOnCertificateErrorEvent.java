@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class RequestHandlerOnCertificateErrorEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 1204168645;
@@ -62,7 +64,7 @@ public final class RequestHandlerOnCertificateErrorEvent implements CefMessageVi
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(browser.id());
@@ -77,20 +79,13 @@ public final class RequestHandlerOnCertificateErrorEvent implements CefMessageVi
     }
 
     public static final CefMessageDecoder<RequestHandlerOnCertificateErrorEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
-        RemoteHandle browser = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "certError");
-        int certError = __buf.getInt();
-        int requestUrlLen = WireDecoder.length(__buf, "requestUrl");
-        byte[] requestUrlBuf = new byte[requestUrlLen];
-        __buf.get(requestUrlBuf);
-        String requestUrl = new String(requestUrlBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "sslInfo");
-        RemoteHandle sslInfo = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "callback");
-        RemoteHandle callback = new RemoteHandle(__buf.getInt());
+        final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
+        final int certError = WireDecoder.int32(__buf, "certError");
+        final String requestUrl = WireDecoder.utf8(__buf, "requestUrl");
+        final RemoteHandle sslInfo = WireDecoder.handle(__buf, "sslInfo");
+        final RemoteHandle callback = WireDecoder.handle(__buf, "callback");
         WireDecoder.requireFullyConsumed(__buf, "RequestHandlerOnCertificateErrorEvent");
         return new RequestHandlerOnCertificateErrorEvent(browser, certError, requestUrl, sslInfo, callback);
     };

@@ -27,7 +27,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:3132</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefBoxLayoutSettings {
 
@@ -83,22 +82,22 @@ public final class CefBoxLayoutSettings {
     /** Create a mutable copy of this instance. */
     public Mutable toMutable() {
         return new Mutable(
-                this.horizontal,
-                this.insideBorderHorizontalSpacing,
-                this.insideBorderVerticalSpacing,
-                this.insideBorderInsets,
-                this.betweenChildSpacing,
-                this.mainAxisAlignment,
-                this.crossAxisAlignment,
-                this.minimumCrossAxisSize,
-                this.defaultFlex);
+                horizontal,
+                insideBorderHorizontalSpacing,
+                insideBorderVerticalSpacing,
+                insideBorderInsets,
+                betweenChildSpacing,
+                mainAxisAlignment,
+                crossAxisAlignment,
+                minimumCrossAxisSize,
+                defaultFlex);
     }
 
     @Override
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefBoxLayoutSettings)) return false;
-        CefBoxLayoutSettings other = (CefBoxLayoutSettings) obj;
+        final CefBoxLayoutSettings other = (CefBoxLayoutSettings) obj;
         return this.horizontal == other.horizontal
                 && this.insideBorderHorizontalSpacing == other.insideBorderHorizontalSpacing
                 && this.insideBorderVerticalSpacing == other.insideBorderVerticalSpacing
@@ -197,22 +196,22 @@ public final class CefBoxLayoutSettings {
         /** Create an immutable snapshot of this instance. */
         public CefBoxLayoutSettings toImmutable() {
             return new CefBoxLayoutSettings(
-                    this.horizontal,
-                    this.insideBorderHorizontalSpacing,
-                    this.insideBorderVerticalSpacing,
-                    this.insideBorderInsets,
-                    this.betweenChildSpacing,
-                    this.mainAxisAlignment,
-                    this.crossAxisAlignment,
-                    this.minimumCrossAxisSize,
-                    this.defaultFlex);
+                    horizontal,
+                    insideBorderHorizontalSpacing,
+                    insideBorderVerticalSpacing,
+                    insideBorderInsets,
+                    betweenChildSpacing,
+                    mainAxisAlignment,
+                    crossAxisAlignment,
+                    minimumCrossAxisSize,
+                    defaultFlex);
         }
 
         @Override
         public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
-            Mutable other = (Mutable) obj;
+            final Mutable other = (Mutable) obj;
             return this.horizontal == other.horizontal
                     && this.insideBorderHorizontalSpacing == other.insideBorderHorizontalSpacing
                     && this.insideBorderVerticalSpacing == other.insideBorderVerticalSpacing

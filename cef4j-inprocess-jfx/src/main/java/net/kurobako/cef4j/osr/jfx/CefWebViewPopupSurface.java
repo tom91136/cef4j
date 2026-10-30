@@ -63,10 +63,10 @@ final class CefWebViewPopupSurface {
     }
 
     void blit(int[] pixels, int width, int height) {
-        javafx.stage.Popup currentPopup = popup;
-        ImageView currentImageView = imageView;
+        final javafx.stage.Popup currentPopup = popup;
+        final ImageView currentImageView = imageView;
         if (currentPopup == null || currentImageView == null) return;
-        var rect = view.popupRect;
+        final var rect = view.popupRect;
         if (rect == null) return;
         IntBuffer buf = pixelBuf;
         PixelBuffer<IntBuffer> pb = pixelBuffer;
@@ -81,11 +81,11 @@ final class CefWebViewPopupSurface {
         }
         System.arraycopy(pixels, 0, buf.array(), 0, width * height);
         pb.updateBuffer(ignored -> null);
-        double scale = view.currentScaleFactor(view.currentScreen());
+        final double scale = view.currentScaleFactor(view.currentScreen());
         currentImageView.setFitWidth(width / scale);
         currentImageView.setFitHeight(height / scale);
-        Point2D screen = view.localToScreen(rect.x, rect.y);
-        Window window = view.getScene() != null ? view.getScene().getWindow() : null;
+        final Point2D screen = view.localToScreen(rect.x, rect.y);
+        final Window window = view.getScene() != null ? view.getScene().getWindow() : null;
         if (screen != null && window != null) {
             if (!currentPopup.isShowing()) {
                 currentPopup.show(window, screen.getX(), screen.getY());
@@ -98,15 +98,15 @@ final class CefWebViewPopupSurface {
 
     boolean containsScreenPoint(double screenX, double screenY) {
         if (popup == null || !popup.isShowing() || imageView == null) return false;
-        var bounds = imageView.localToScreen(imageView.getBoundsInLocal());
+        final var bounds = imageView.localToScreen(imageView.getBoundsInLocal());
         return bounds != null && bounds.contains(screenX, screenY);
     }
 
     private void forwardMouseClick(MouseEvent e, boolean mouseUp) {
-        var rect = view.popupRect;
+        final var rect = view.popupRect;
         if (rect == null) return;
-        int viewX = (int) e.getX() + rect.x;
-        int viewY = (int) e.getY() + rect.y;
+        final int viewX = (int) e.getX() + rect.x;
+        final int viewY = (int) e.getY() + rect.y;
         view.runWithBrowserHost(
                 false,
                 host -> host.sendMouseClickEvent(
@@ -117,17 +117,17 @@ final class CefWebViewPopupSurface {
     }
 
     private void forwardMouseMove(MouseEvent e) {
-        var rect = view.popupRect;
+        final var rect = view.popupRect;
         if (rect == null) return;
-        int viewX = (int) e.getX() + rect.x;
-        int viewY = (int) e.getY() + rect.y;
+        final int viewX = (int) e.getX() + rect.x;
+        final int viewY = (int) e.getY() + rect.y;
         view.runWithBrowserHost(
                 false,
                 host -> host.sendMouseMoveEvent(new CefMouseEvent(viewX, viewY, CefWebView.mouseModifiers(e)), false));
     }
 
     private void forwardScroll(ScrollEvent e) {
-        var rect = view.popupRect;
+        final var rect = view.popupRect;
         if (rect == null) return;
         view.runWithBrowserHost(
                 false,

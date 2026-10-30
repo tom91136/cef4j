@@ -7,4 +7,8 @@ public final class ReplayMismatchException extends IllegalStateException {
     public ReplayMismatchException(String message) {
         super(message);
     }
+
+    public ReplayMismatchException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

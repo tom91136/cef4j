@@ -3,12 +3,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class ViewGetHeightForWidthRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 1253442146;
@@ -41,7 +43,7 @@ public final class ViewGetHeightForWidthRequest implements CefMessageView, CefMe
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
@@ -52,12 +54,10 @@ public final class ViewGetHeightForWidthRequest implements CefMessageView, CefMe
     }
 
     public static final CefMessageDecoder<ViewGetHeightForWidthRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "width");
-        int width = __buf.getInt();
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final int width = WireDecoder.int32(__buf, "width");
         WireDecoder.requireFullyConsumed(__buf, "ViewGetHeightForWidthRequest");
         return new ViewGetHeightForWidthRequest(self, width);
     };

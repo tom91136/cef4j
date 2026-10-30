@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
@@ -77,7 +78,7 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
     }
 
     @Override
-    public synchronized void connect() throws IOException {
+    public synchronized void connect() {
         if (connected) return;
         requestHeaders = redirectHeaders(getRequestProperties(), false);
         requestMethod = method;
@@ -87,24 +88,24 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
     }
 
     private void reissue() {
-        Attempt next = new Attempt(maxBufferedResponseBytes, maxBufferedResponseChunks);
+        final Attempt next = new Attempt(maxBufferedResponseBytes, maxBufferedResponseChunks);
         attempt = next;
-        CefHttpEngine.RequestSpec spec =
+        final CefHttpEngine.RequestSpec spec =
                 new CefHttpEngine.RequestSpec(url.toString(), requestMethod, requestHeaders, requestBody);
-        CefHttpEngine.Cancellation nextCancellation = engine.send(spec, new Sink(next));
+        final CefHttpEngine.Cancellation nextCancellation = engine.send(spec, new Sink(next));
         cancellation = nextCancellation;
         if (next.cancelRequested()) nextCancellation.cancel();
     }
 
     private synchronized void awaitResponse() throws IOException {
         connect();
-        int timeout = getConnectTimeout();
-        long deadline = timeout > 0 ? System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeout) : 0;
+        final int timeout = getConnectTimeout();
+        final long deadline = timeout > 0 ? System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeout) : 0;
         for (int redirects = 0; ; redirects++) {
-            Attempt current = attempt;
+            final Attempt current = attempt;
             try {
                 if (timeout > 0) {
-                    long remaining = deadline - System.nanoTime();
+                    final long remaining = deadline - System.nanoTime();
                     if (remaining <= 0 || !current.responseLatch.await(remaining, TimeUnit.NANOSECONDS)) {
                         throw new SocketTimeoutException("timed out awaiting response headers");
                     }
@@ -114,41 +115,40 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
                 Thread.currentThread().interrupt();
                 throw new IOException("interrupted while awaiting response", e);
             }
-            IOException err = current.error;
+            final IOException err = current.error;
             if (err != null) throw err;
-            String location = redirectLocation(current, redirects);
+            final String location = redirectLocation(current, redirects).orElse(null);
             if (location == null) return;
             if (current.statusCode == 301 || current.statusCode == 302 || current.statusCode == 303) {
                 requestMethod = "GET";
                 requestBody = new byte[0];
             }
-            CefHttpEngine.Cancellation previous = cancellation;
+            final CefHttpEngine.Cancellation previous = cancellation;
             if (previous != null) previous.cancel();
-            URL previousUrl = url;
-            URL nextUrl = new URL(previousUrl, location);
+            final URL previousUrl = url;
+            final URL nextUrl = new URL(previousUrl, location);
             requestHeaders = redirectHeaders(requestHeaders, !sameOrigin(previousUrl, nextUrl));
             url = nextUrl;
             reissue();
         }
     }
 
-    @Nullable
-    private String redirectLocation(Attempt current, int redirects) {
-        if (redirects >= MAX_REDIRECTS || !instanceFollowRedirects) return null;
+    private Optional<String> redirectLocation(Attempt current, int redirects) {
+        if (redirects >= MAX_REDIRECTS || !instanceFollowRedirects) return Optional.empty();
         if (current.statusCode != 301
                 && current.statusCode != 302
                 && current.statusCode != 303
                 && current.statusCode != 307
                 && current.statusCode != 308) {
-            return null;
+            return Optional.empty();
         }
         for (Map.Entry<String, List<String>> e : current.responseHeaders.entrySet()) {
             if (e.getKey().equalsIgnoreCase("location")) {
-                List<String> values = e.getValue();
-                if (!values.isEmpty()) return values.get(0);
+                final List<String> values = e.getValue();
+                if (!values.isEmpty()) return Optional.of(values.get(0));
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     private static boolean sameOrigin(URL left, URL right) {
@@ -162,9 +162,9 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
     }
 
     private static Map<String, List<String>> redirectHeaders(Map<String, List<String>> source, boolean crossOrigin) {
-        Map<String, List<String>> result = new LinkedHashMap<>();
+        final Map<String, List<String>> result = new LinkedHashMap<>();
         for (Map.Entry<String, List<String>> entry : source.entrySet()) {
-            String name = entry.getKey().toLowerCase(Locale.ROOT);
+            final String name = entry.getKey().toLowerCase(Locale.ROOT);
             if (name.equals("host")
                     || name.equals("connection")
                     || name.equals("keep-alive")
@@ -200,7 +200,7 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
     public Map<String, List<String>> getHeaderFields() {
         try {
             awaitResponse();
-        } catch (IOException e) {
+        } catch (IOException ignored) {
             return Map.of();
         }
         return attempt.responseHeaders;
@@ -212,12 +212,12 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
         if (name == null) return null;
         try {
             awaitResponse();
-        } catch (IOException e) {
+        } catch (IOException ignored) {
             return null;
         }
         for (Map.Entry<String, List<String>> e : attempt.responseHeaders.entrySet()) {
             if (name.equalsIgnoreCase(e.getKey())) {
-                List<String> vs = e.getValue();
+                final List<String> vs = e.getValue();
                 if (!vs.isEmpty()) return vs.get(0);
             }
         }
@@ -234,7 +234,7 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
     @Override
     public InputStream getInputStream() throws IOException {
         awaitResponse();
-        Attempt current = attempt;
+        final Attempt current = attempt;
         if (current.statusCode >= 400) {
             throw new IOException("Server returned HTTP response code " + current.statusCode + " for URL: " + url);
         }
@@ -246,10 +246,10 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
     public InputStream getErrorStream() {
         try {
             awaitResponse();
-        } catch (IOException e) {
+        } catch (IOException ignored) {
             return null;
         }
-        Attempt current = attempt;
+        final Attempt current = attempt;
         if (current.statusCode < 400) return null;
         return new ChunkInputStream(current);
     }
@@ -257,7 +257,7 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
     @Override
     public void disconnect() {
         attempt.fail(new IOException("connection disconnected"));
-        CefHttpEngine.Cancellation c = cancellation;
+        final CefHttpEngine.Cancellation c = cancellation;
         if (c != null) c.cancel();
     }
 
@@ -308,15 +308,15 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
             return true;
         }
 
-        private byte @Nullable [] take(int timeoutMillis) throws InterruptedException {
-            byte[] chunk = timeoutMillis > 0 ? chunks.poll(timeoutMillis, TimeUnit.MILLISECONDS) : chunks.take();
+        private Optional<byte[]> take(int timeoutMillis) throws InterruptedException {
+            final byte[] chunk = timeoutMillis > 0 ? chunks.poll(timeoutMillis, TimeUnit.MILLISECONDS) : chunks.take();
             if (chunk != null && chunk != EOF) {
                 synchronized (this) {
                     bufferedBytes -= chunk.length;
                     bufferedChunks--;
                 }
             }
-            return chunk;
+            return Optional.ofNullable(chunk);
         }
 
         private synchronized void complete() {
@@ -342,7 +342,7 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
         }
 
         private synchronized boolean closeBody() {
-            boolean cancel = !terminal;
+            final boolean cancel = !terminal;
             terminal = true;
             bufferedBytes = 0;
             bufferedChunks = 0;
@@ -410,8 +410,8 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
     private final class ChunkInputStream extends InputStream {
         private final Attempt source;
         private byte[] current = EOF;
-        private int pos = 0;
-        private boolean eof = false;
+        private int pos;
+        private boolean eof;
         private boolean closed;
 
         private ChunkInputStream(Attempt source) {
@@ -420,8 +420,8 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
 
         @Override
         public int read() throws IOException {
-            byte[] one = new byte[1];
-            int n = read(one, 0, 1);
+            final byte[] one = new byte[1];
+            final int n = read(one, 0, 1);
             return (n < 0) ? -1 : (one[0] & 0xff);
         }
 
@@ -432,28 +432,27 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
             if (eof) return -1;
             while (pos >= current.length) {
                 try {
-                    int timeout = getReadTimeout();
-                    byte[] next = source.take(timeout);
-                    if (next == null) {
-                        SocketTimeoutException failure = new SocketTimeoutException("timed out reading response body");
+                    final int timeout = getReadTimeout();
+                    current = source.take(timeout).orElseThrow(() -> {
+                        final SocketTimeoutException failure =
+                                new SocketTimeoutException("timed out reading response body");
                         source.fail(failure, true);
                         cancel(source);
-                        throw failure;
-                    }
-                    current = next;
+                        return failure;
+                    });
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     throw new IOException("interrupted while reading body", e);
                 }
                 if (current == EOF) {
                     eof = true;
-                    IOException failure = source.error;
+                    final IOException failure = source.error;
                     if (failure != null) throw failure;
                     return -1;
                 }
                 pos = 0;
             }
-            int n = Math.min(len, current.length - pos);
+            final int n = Math.min(len, current.length - pos);
             System.arraycopy(current, pos, b, off, n);
             pos += n;
             return n;
@@ -472,7 +471,7 @@ final class CefHttpURLConnection extends HttpURLConnection implements AutoClosea
 
     private void cancel(Attempt target) {
         if (attempt != target) return;
-        CefHttpEngine.Cancellation current = cancellation;
+        final CefHttpEngine.Cancellation current = cancellation;
         if (current != null) current.cancel();
     }
 }

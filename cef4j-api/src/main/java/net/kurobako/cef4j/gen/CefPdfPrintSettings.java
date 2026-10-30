@@ -37,7 +37,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:2871</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefPdfPrintSettings {
 
@@ -144,30 +143,30 @@ public final class CefPdfPrintSettings {
     /** Create a mutable copy of this instance. */
     public Mutable toMutable() {
         return new Mutable(
-                this.landscape,
-                this.printBackground,
-                this.scale,
-                this.paperWidth,
-                this.paperHeight,
-                this.preferCssPageSize,
-                this.marginType,
-                this.marginTop,
-                this.marginRight,
-                this.marginBottom,
-                this.marginLeft,
-                this.pageRanges,
-                this.displayHeaderFooter,
-                this.headerTemplate,
-                this.footerTemplate,
-                this.generateTaggedPdf,
-                this.generateDocumentOutline);
+                landscape,
+                printBackground,
+                scale,
+                paperWidth,
+                paperHeight,
+                preferCssPageSize,
+                marginType,
+                marginTop,
+                marginRight,
+                marginBottom,
+                marginLeft,
+                pageRanges,
+                displayHeaderFooter,
+                headerTemplate,
+                footerTemplate,
+                generateTaggedPdf,
+                generateDocumentOutline);
     }
 
     @Override
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefPdfPrintSettings)) return false;
-        CefPdfPrintSettings other = (CefPdfPrintSettings) obj;
+        final CefPdfPrintSettings other = (CefPdfPrintSettings) obj;
         return this.landscape == other.landscape
                 && this.printBackground == other.printBackground
                 && this.scale == other.scale
@@ -339,30 +338,30 @@ public final class CefPdfPrintSettings {
         /** Create an immutable snapshot of this instance. */
         public CefPdfPrintSettings toImmutable() {
             return new CefPdfPrintSettings(
-                    this.landscape,
-                    this.printBackground,
-                    this.scale,
-                    this.paperWidth,
-                    this.paperHeight,
-                    this.preferCssPageSize,
-                    this.marginType,
-                    this.marginTop,
-                    this.marginRight,
-                    this.marginBottom,
-                    this.marginLeft,
-                    this.pageRanges,
-                    this.displayHeaderFooter,
-                    this.headerTemplate,
-                    this.footerTemplate,
-                    this.generateTaggedPdf,
-                    this.generateDocumentOutline);
+                    landscape,
+                    printBackground,
+                    scale,
+                    paperWidth,
+                    paperHeight,
+                    preferCssPageSize,
+                    marginType,
+                    marginTop,
+                    marginRight,
+                    marginBottom,
+                    marginLeft,
+                    pageRanges,
+                    displayHeaderFooter,
+                    headerTemplate,
+                    footerTemplate,
+                    generateTaggedPdf,
+                    generateDocumentOutline);
         }
 
         @Override
         public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
-            Mutable other = (Mutable) obj;
+            final Mutable other = (Mutable) obj;
             return this.landscape == other.landscape
                     && this.printBackground == other.printBackground
                     && this.scale == other.scale

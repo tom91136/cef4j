@@ -10,6 +10,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
@@ -167,7 +168,7 @@ class CefSessionImplTest {
         assertThatThrownBy(() -> session.intercept(
                         MSG_INTERCEPT,
                         TestMessages.bytesDecoder(MSG_INTERCEPT),
-                        ignored -> new TestMessages.BytesEncoder(MSG_INTERCEPT, new byte[0])))
+                        ignored -> Optional.of(new TestMessages.BytesEncoder(MSG_INTERCEPT, new byte[0]))))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("session closed");
     }
@@ -273,11 +274,12 @@ class CefSessionImplTest {
                     ByteBuffer.allocate(Envelope.HEADER_SIZE + payloadLength).order(ByteOrder.LITTLE_ENDIAN);
             Envelope.writeHeader(
                     response,
-                    rejectReady ? Envelope.Kind.ERROR : Envelope.Kind.RESPONSE,
-                    0,
-                    request.corrId,
-                    request.messageId,
-                    payloadLength);
+                    new Envelope.Header(
+                            payloadLength,
+                            rejectReady ? Envelope.Kind.ERROR : Envelope.Kind.RESPONSE,
+                            0,
+                            request.corrId,
+                            request.messageId));
             if (rejectReady)
                 response.putInt(CefRemoteException.CODE_TASK_REJECTED).putInt(0);
             response.flip();
@@ -380,8 +382,7 @@ class CefSessionImplTest {
 
     @Test
     void requestTimesOutWhenNoResponseArrives() {
-        CefSessionImpl tightTimeoutSession = new CefSessionImpl(pair.a, Duration.ofMillis(100));
-        try {
+        try (CefSessionImpl tightTimeoutSession = new CefSessionImpl(pair.a, Duration.ofMillis(100))) {
             CompletableFuture<TestMessages.BytesView> fut = tightTimeoutSession.request(
                     new TestMessages.BytesEncoder(MSG_PING, new byte[0]), TestMessages.bytesDecoder(MSG_PING));
             try {
@@ -392,8 +393,6 @@ class CefSessionImplTest {
             org.assertj.core.api.Assertions.assertThatThrownBy(() -> fut.get(2, TimeUnit.SECONDS))
                     .isInstanceOf(ExecutionException.class)
                     .hasCauseInstanceOf(TimeoutException.class);
-        } finally {
-            tightTimeoutSession.close();
         }
     }
 
@@ -404,15 +403,13 @@ class CefSessionImplTest {
         stopped.shutdownNow();
         CefSessionImpl rejected = new CefSessionImpl(isolated.a, Duration.ofSeconds(1), stopped);
         TestPeer isolatedPeer = new TestPeer(isolated.b);
-        try {
+        try (isolatedPeer;
+                rejected) {
             CompletableFuture<TestMessages.BytesView> future = rejected.request(
                     new TestMessages.BytesEncoder(MSG_PING, new byte[0]), TestMessages.bytesDecoder(MSG_PING));
 
             assertThat(future).isCompletedExceptionally();
             assertThat(isolatedPeer.poll(100, TimeUnit.MILLISECONDS)).isNull();
-        } finally {
-            rejected.close();
-            isolatedPeer.close();
         }
     }
 
@@ -422,7 +419,8 @@ class CefSessionImplTest {
         ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
         CefSessionImpl bounded = new CefSessionImpl(isolated.a, Duration.ofSeconds(10), timer, 1);
         TestPeer isolatedPeer = new TestPeer(isolated.b);
-        try {
+        try (isolatedPeer;
+                bounded) {
             CompletableFuture<TestMessages.BytesView> first = bounded.request(
                     new TestMessages.BytesEncoder(MSG_PING, new byte[0]), TestMessages.bytesDecoder(MSG_PING));
             Objects.requireNonNull(isolatedPeer.poll(2, TimeUnit.SECONDS), "first request");
@@ -441,8 +439,6 @@ class CefSessionImplTest {
             assertThat(isolatedPeer.poll(2, TimeUnit.SECONDS)).isNotNull();
             admitted.cancel(false);
         } finally {
-            bounded.close();
-            isolatedPeer.close();
             timer.shutdownNow();
         }
     }
@@ -526,7 +522,7 @@ class CefSessionImplTest {
         session.intercept(MSG_INTERCEPT, TestMessages.bytesDecoder(MSG_INTERCEPT), event -> {
             byte[] reversed = new byte[event.bytes.length];
             for (int i = 0; i < event.bytes.length; i++) reversed[i] = event.bytes[event.bytes.length - 1 - i];
-            return new TestMessages.BytesEncoder(MSG_INTERCEPT, reversed);
+            return Optional.of(new TestMessages.BytesEncoder(MSG_INTERCEPT, reversed));
         });
 
         peer.sendIntercept(99, MSG_INTERCEPT, "abc".getBytes(StandardCharsets.UTF_8));
@@ -548,10 +544,10 @@ class CefSessionImplTest {
     }
 
     @Test
-    void interceptHandlerReturningNullSendsEmptyResponse() throws Exception {
-        session.intercept(MSG_INTERCEPT, TestMessages.bytesDecoder(MSG_INTERCEPT), event -> null);
+    void interceptHandlerReturningEmptySendsEmptyResponse() throws Exception {
+        session.intercept(MSG_INTERCEPT, TestMessages.bytesDecoder(MSG_INTERCEPT), event -> Optional.empty());
         peer.sendIntercept(11, MSG_INTERCEPT, "x".getBytes(StandardCharsets.UTF_8));
-        TestPeer.DecodedFrame resp = Objects.requireNonNull(peer.poll(2, TimeUnit.SECONDS), "null-handler response");
+        TestPeer.DecodedFrame resp = Objects.requireNonNull(peer.poll(2, TimeUnit.SECONDS), "empty-handler response");
         assertThat(resp.header.kind).isEqualTo(Envelope.Kind.INTERCEPT_RESPONSE);
         assertThat(resp.payload).isEmpty();
     }

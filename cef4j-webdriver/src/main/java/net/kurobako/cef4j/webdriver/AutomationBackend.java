@@ -1,6 +1,5 @@
 package net.kurobako.cef4j.webdriver;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /** Browser operations consumed by the W3C HTTP layer, independent of CEF, CDP, or IPC. */
@@ -22,12 +21,19 @@ public interface AutomationBackend extends AutoCloseable {
     /** Complete PNG image bytes. */
     CompletableFuture<byte[]> screenshot();
 
-    default CompletableFuture<String> findElement(String using, String value, Optional<String> parentElement) {
+    default CompletableFuture<String> findElement(String using, String value) {
         return unsupported("find element");
     }
 
-    default CompletableFuture<java.util.List<String>> findElements(
-            String using, String value, Optional<String> parentElement) {
+    default CompletableFuture<String> findElement(String using, String value, String parentElement) {
+        return unsupported("find element");
+    }
+
+    default CompletableFuture<java.util.List<String>> findElements(String using, String value) {
+        return unsupported("find elements");
+    }
+
+    default CompletableFuture<java.util.List<String>> findElements(String using, String value, String parentElement) {
         return unsupported("find elements");
     }
 
@@ -118,7 +124,7 @@ public interface AutomationBackend extends AutoCloseable {
     default void cancelPendingCommands(Throwable failure) {}
 
     static <T> CompletableFuture<T> unsupported(String command) {
-        CompletableFuture<T> result = new CompletableFuture<>();
+        final CompletableFuture<T> result = new CompletableFuture<>();
         result.completeExceptionally(
                 new WebDriverException(WebDriverError.UNSUPPORTED_OPERATION, command + " is not supported"));
         return result;

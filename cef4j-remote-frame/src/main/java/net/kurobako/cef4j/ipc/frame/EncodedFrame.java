@@ -24,7 +24,7 @@ public final class EncodedFrame {
             int height,
             ByteBuffer payload) {
         if (sequence < 0 || width <= 0 || height <= 0) throw new IllegalArgumentException("invalid frame envelope");
-        long pixels = (long) width * height;
+        final long pixels = (long) width * height;
         if (pixels > Integer.MAX_VALUE / 4L) {
             throw new IllegalArgumentException("frame dimensions exceed the maximum raw buffer size");
         }

@@ -6,13 +6,12 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ServiceLoader;
 import net.kurobako.cef4j.policy.NullableBoundary;
 import org.jspecify.annotations.Nullable;
@@ -76,8 +75,8 @@ public final class SessionTrace {
             this.detailMessage = detailMessage;
         }
 
-        public byte @Nullable [] payload() {
-            return payload == null ? null : payload.clone();
+        public Optional<byte[]> payload() {
+            return Optional.ofNullable(payload).map(byte[]::clone);
         }
     }
 
@@ -87,8 +86,8 @@ public final class SessionTrace {
         private final List<Entry> entries;
 
         public Recording(Map<String, String> metadata, List<Entry> entries) {
-            this.metadata = Collections.unmodifiableMap(new LinkedHashMap<>(metadata));
-            this.entries = Collections.unmodifiableList(new ArrayList<>(entries));
+            this.metadata = Map.copyOf(metadata);
+            this.entries = List.copyOf(entries);
         }
 
         public Map<String, String> metadata() {
@@ -107,13 +106,13 @@ public final class SessionTrace {
      * {@code cef4j-codecs-jackson} to the runtime class path, or call an overload that accepts a codec.
      */
     public static SessionTraceCodec defaultCodec() {
-        Iterator<SessionTraceCodec> codecs =
+        final Iterator<SessionTraceCodec> codecs =
                 ServiceLoader.load(SessionTraceCodec.class).iterator();
         if (!codecs.hasNext()) {
             throw new IllegalStateException("No SessionTraceCodec installed; add cef4j-codecs-gson or "
                     + "cef4j-codecs-jackson, or supply a codec");
         }
-        SessionTraceCodec codec = codecs.next();
+        final SessionTraceCodec codec = codecs.next();
         if (codecs.hasNext()) {
             throw new IllegalStateException("Multiple SessionTraceCodec providers installed ("
                     + codec.getClass().getName() + ", "
@@ -136,7 +135,7 @@ public final class SessionTrace {
         Objects.requireNonNull(file, "file");
         Objects.requireNonNull(metadata, "metadata");
         Objects.requireNonNull(codec, "codec");
-        OutputStream output = Files.newOutputStream(
+        final OutputStream output = Files.newOutputStream(
                 file, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
         try {
             return codec.openWriter(output, metadata);
@@ -162,8 +161,19 @@ public final class SessionTrace {
         }
     }
 
+    /** The metadata of a trace, with the header of the format added to the metadata the trace holds. */
+    public static Map<String, String> headerMetadata(Map<String, String> metadata, String createdEpochMillis) {
+        Objects.requireNonNull(metadata, "metadata");
+        Objects.requireNonNull(createdEpochMillis, "createdEpochMillis");
+        final Map<String, String> header = new LinkedHashMap<>(metadata);
+        header.put("format", FORMAT);
+        header.put("formatVersion", Integer.toString(VERSION));
+        header.put("createdEpochMillis", createdEpochMillis);
+        return header;
+    }
+
     static Map<String, String> defaultMetadata() {
-        Map<String, String> metadata = new LinkedHashMap<>();
+        final Map<String, String> metadata = new LinkedHashMap<>();
         metadata.put("java.version", System.getProperty("java.version", "unknown"));
         metadata.put("os.name", System.getProperty("os.name", "unknown"));
         metadata.put("os.arch", System.getProperty("os.arch", "unknown"));

@@ -60,13 +60,13 @@ final class WebDriverRoute {
     }
 
     static Optional<Match> match(String method, String path) {
-        String[] actual = parts(path);
+        final String[] actual = parts(path);
         for (WebDriverRoute route : ROUTES) {
             if (!route.method.equals(method) || route.segments.length != actual.length) continue;
-            Map<String, String> parameters = new LinkedHashMap<>();
+            final Map<String, String> parameters = new LinkedHashMap<>();
             boolean matched = true;
             for (int index = 0; index < actual.length; index++) {
-                String expected = route.segments[index];
+                final String expected = route.segments[index];
                 if (expected.startsWith("{") && expected.endsWith("}")) {
                     parameters.put(expected.substring(1, expected.length() - 1), actual[index]);
                 } else if (!expected.equals(actual[index])) {
@@ -80,7 +80,7 @@ final class WebDriverRoute {
     }
 
     private static List<WebDriverRoute> routes() {
-        List<WebDriverRoute> routes = new ArrayList<>();
+        final List<WebDriverRoute> routes = new ArrayList<>();
         add(routes, "GET", "/status", Command.STATUS);
         add(routes, "POST", "/session", Command.NEW_SESSION);
         add(routes, "DELETE", "/session/{session}", Command.DELETE_SESSION);
@@ -135,7 +135,7 @@ final class WebDriverRoute {
 
         private Match(Command command, Map<String, String> parameters) {
             this.command = command;
-            this.parameters = Collections.unmodifiableMap(new LinkedHashMap<>(parameters));
+            this.parameters = Map.copyOf(parameters);
         }
 
         Command command() {
@@ -143,7 +143,7 @@ final class WebDriverRoute {
         }
 
         String parameter(String name) {
-            String value = parameters.get(name);
+            final String value = parameters.get(name);
             if (value == null) throw new IllegalArgumentException("route parameter not present: " + name);
             return value;
         }

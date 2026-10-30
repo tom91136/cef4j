@@ -1,7 +1,5 @@
 package net.kurobako.cef4j.sample;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -62,7 +60,7 @@ import org.slf4j.LoggerFactory;
  *       CefBrowserView (active tab)
  * </pre>
  */
-@SuppressWarnings("NullAway.Init")
+@SuppressWarnings({"NullAway.Init", "baumkuchen:not-null-field"})
 public final class ViewsBrowserApp {
 
     private static final Logger log = LoggerFactory.getLogger(ViewsBrowserApp.class);
@@ -128,16 +126,12 @@ public final class ViewsBrowserApp {
         throw new IllegalStateException("CEF browser-view factory is unavailable");
     }
 
-    private CefWindow window;
-    private CefPanel mainPanel;
+    private @Nullable CefWindow window;
     private CefPanel tabBar;
-    private CefLabelButton addTabButton;
-    private CefPanel navBar;
     private CefLabelButton backButton;
     private CefLabelButton forwardButton;
     private CefLabelButton reloadButton;
-    private CefTextField urlBar;
-    private CefLabelButton devtoolsButton;
+    private @Nullable CefTextField urlBar;
     private CefPanel contentPanel;
 
     private final List<TabEntry> tabs = new ArrayList<>();
@@ -156,27 +150,27 @@ public final class ViewsBrowserApp {
         }
     }
 
-    private int indexOfTab(TabEntry entry) {
+    private int indexOfTab(@Nullable TabEntry entry) {
         return tabs.indexOf(entry);
     }
 
     private void openNewTab(String url) {
-        TabEntry[] entryHolder = {null};
+        final @Nullable TabEntry[] entryHolder = {null};
 
-        CefLabelButton tabButton = createLabelButton(
+        final CefLabelButton tabButton = createLabelButton(
                         new CefButtonDelegate() {
                             @Override
                             public void onButtonPressed(@Nullable CefButton button) {
-                                int idx = indexOfTab(entryHolder[0]);
+                                final int idx = indexOfTab(entryHolder[0]);
                                 if (idx >= 0) switchToTab(idx);
                             }
                         },
                         "New Tab")
                 .orElseThrow(() -> new RuntimeException("Failed to create tab button"));
 
-        CefClient tabClient = buildTabClient(entryHolder);
+        final CefClient tabClient = buildTabClient(entryHolder);
 
-        CefBrowserView browserView = createBrowserView(
+        final CefBrowserView browserView = createBrowserView(
                         tabClient, url, new CefBrowserSettings.Mutable().toImmutable(), new CefBrowserViewDelegate() {
                             @Override
                             public boolean onPopupBrowserViewCreated(
@@ -192,9 +186,9 @@ public final class ViewsBrowserApp {
                         })
                 .orElseThrow(() -> new RuntimeException("Failed to create CefBrowserView"));
 
-        TabEntry entry = new TabEntry(browserView, tabButton);
+        final TabEntry entry = new TabEntry(browserView, tabButton);
         entryHolder[0] = entry;
-        int insertIndex = tabs.size();
+        final int insertIndex = tabs.size();
         tabs.add(entry);
 
         tabBar.addChildViewAt(tabButton, insertIndex);
@@ -202,20 +196,20 @@ public final class ViewsBrowserApp {
         switchToTab(insertIndex);
     }
 
-    private CefClient buildTabClient(TabEntry[] entryHolder) {
+    private CefClient buildTabClient(@Nullable TabEntry[] entryHolder) {
         return new CefClient() {
             @Override
             public Optional<CefDisplayHandler> getDisplayHandler() {
                 return Optional.of(new CefDisplayHandler() {
                     @Override
                     public void onTitleChange(@Nullable CefBrowser browser, @Nullable String title) {
-                        TabEntry entry = entryHolder[0];
+                        final TabEntry entry = entryHolder[0];
                         if (entry == null) return;
-                        String displayTitle = (title == null || title.isEmpty()) ? "New Tab" : title;
+                        final String displayTitle = (title == null || title.isEmpty()) ? "New Tab" : title;
                         entry.currentTitle = displayTitle;
-                        String tabLabel =
+                        final String tabLabel =
                                 displayTitle.length() > 25 ? displayTitle.substring(0, 22) + "..." : displayTitle;
-                        int idx = indexOfTab(entry);
+                        final int idx = indexOfTab(entry);
                         if (idx == activeTabIndex) {
                             entry.tabButton.setText("[ " + trimTitle(displayTitle) + " ]");
                             if (window != null) window.setTitle(displayTitle + " - cef4j (Views)");
@@ -227,7 +221,7 @@ public final class ViewsBrowserApp {
                     @Override
                     public void onAddressChange(
                             @Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable String url) {
-                        TabEntry entry = entryHolder[0];
+                        final TabEntry entry = entryHolder[0];
                         if (entry == null) return;
                         entry.currentUrl = url == null ? "" : url;
                         if (indexOfTab(entry) == activeTabIndex && urlBar != null) {
@@ -248,7 +242,7 @@ public final class ViewsBrowserApp {
                     @Override
                     public void onLoadingStateChange(
                             @Nullable CefBrowser browser, boolean isLoading, boolean canGoBack, boolean canGoForward) {
-                        TabEntry entry = entryHolder[0];
+                        final TabEntry entry = entryHolder[0];
                         if (entry == null) return;
                         entry.isLoading = isLoading;
                         if (indexOfTab(entry) == activeTabIndex) {
@@ -266,17 +260,17 @@ public final class ViewsBrowserApp {
         if (index < 0 || index >= tabs.size()) return;
 
         if (activeTabIndex >= 0 && activeTabIndex < tabs.size()) {
-            TabEntry prev = tabs.get(activeTabIndex);
+            final TabEntry prev = tabs.get(activeTabIndex);
             contentPanel.removeChildView(prev.browserView);
             prev.tabButton.setText(trimTitle(prev.currentTitle));
         }
 
         activeTabIndex = index;
-        TabEntry entry = tabs.get(index);
+        final TabEntry entry = tabs.get(index);
 
         contentPanel.addChildView(entry.browserView);
 
-        urlBar.setText(entry.currentUrl);
+        if (urlBar != null) urlBar.setText(entry.currentUrl);
         reloadButton.setText(entry.isLoading ? "X" : "R");
         entry.browserView.getBrowser().ifPresent(b -> {
             backButton.setEnabled(b.canGoBack());
@@ -290,7 +284,7 @@ public final class ViewsBrowserApp {
         entry.tabButton.setText("[ " + trimTitle(entry.currentTitle) + " ]");
     }
 
-    private static String trimTitle(String title) {
+    private static String trimTitle(@Nullable String title) {
         if (title == null || title.isEmpty()) return "New Tab";
         return title.length() > 20 ? title.substring(0, 17) + "..." : title;
     }
@@ -302,18 +296,18 @@ public final class ViewsBrowserApp {
             return;
         }
 
-        TabEntry entry = tabs.remove(activeTabIndex);
+        final TabEntry entry = tabs.remove(activeTabIndex);
         contentPanel.removeChildView(entry.browserView);
         tabBar.removeChildView(entry.tabButton);
 
-        int nextIndex = Math.min(activeTabIndex, tabs.size() - 1);
+        final int nextIndex = Math.min(activeTabIndex, tabs.size() - 1);
         activeTabIndex = -1;
         switchToTab(nextIndex);
     }
 
     private void navigateActiveTab(String url) {
         if (activeTabIndex < 0 || activeTabIndex >= tabs.size()) return;
-        String navigateUrl = url.contains("://") ? url : "https://" + url;
+        final String navigateUrl = url.contains("://") ? url : "https://" + url;
         tabs.get(activeTabIndex)
                 .browserView
                 .getBrowser()
@@ -337,17 +331,18 @@ public final class ViewsBrowserApp {
     }
 
     private void buildUi(CefWindow win) {
-        this.window = win;
+        window = win;
 
-        mainPanel = CefPanel.create(null).orElseThrow(() -> new RuntimeException("Failed to create mainPanel"));
-        CefBoxLayout mainLayout = mainPanel
+        final CefPanel mainPanel =
+                CefPanel.create(null).orElseThrow(() -> new RuntimeException("Failed to create mainPanel"));
+        final CefBoxLayout mainLayout = mainPanel
                 .setToBoxLayout(VBOX)
                 .orElseThrow(() -> new RuntimeException("Failed to set mainPanel box layout"));
 
         tabBar = CefPanel.create(null).orElseThrow(() -> new RuntimeException("Failed to create tabBar"));
         tabBar.setToBoxLayout(HBOX);
 
-        addTabButton = createLabelButton(
+        final CefLabelButton addTabButton = createLabelButton(
                         new CefButtonDelegate() {
                             @Override
                             public void onButtonPressed(@Nullable CefButton button) {
@@ -358,8 +353,9 @@ public final class ViewsBrowserApp {
                 .orElseThrow(() -> new RuntimeException("Failed to create addTabButton"));
         tabBar.addChildView(addTabButton);
 
-        navBar = CefPanel.create(null).orElseThrow(() -> new RuntimeException("Failed to create navBar"));
-        CefBoxLayout navLayout =
+        final CefPanel navBar =
+                CefPanel.create(null).orElseThrow(() -> new RuntimeException("Failed to create navBar"));
+        final CefBoxLayout navLayout =
                 navBar.setToBoxLayout(HBOX).orElseThrow(() -> new RuntimeException("Failed to set navBar box layout"));
 
         backButton = createLabelButton(
@@ -408,7 +404,7 @@ public final class ViewsBrowserApp {
                 })
                 .orElseThrow(() -> new RuntimeException("Failed to create urlBar"));
 
-        devtoolsButton = createLabelButton(
+        final CefLabelButton devtoolsButton = createLabelButton(
                         new CefButtonDelegate() {
                             @Override
                             public void onButtonPressed(@Nullable CefButton button) {
@@ -517,17 +513,12 @@ public final class ViewsBrowserApp {
     public static void main(String[] args) throws Exception {
         log.info("cef4j Views browser starting");
 
-        Path cacheDir = Files.createTempDirectory("cef4j-views-");
-        cacheDir.toFile().deleteOnExit();
-
-        CefSettings.Mutable settings = new CefSettings.Mutable();
-        settings.noSandbox = 1;
-        settings.cachePath = cacheDir.toAbsolutePath().toString();
+        final CefSettings.Mutable settings = SampleSettings.newSettings("cef4j-views-");
         settings.windowlessRenderingEnabled = 0;
         settings.multiThreadedMessageLoop = 0;
         settings.externalMessagePump = 0;
 
-        List<String> extraArgs = new ArrayList<>();
+        final List<String> extraArgs = new ArrayList<>();
         if (OS.isLinux()) {
             extraArgs.add("--ozone-platform=x11");
             extraArgs.add("--no-zygote");
@@ -535,12 +526,12 @@ public final class ViewsBrowserApp {
 
         Cef.INSTANCE.initialise(settings, extraArgs);
 
-        ViewsBrowserApp app = new ViewsBrowserApp();
+        final ViewsBrowserApp app = new ViewsBrowserApp();
 
-        CefWindowDelegate windowDelegate = new CefWindowDelegate() {
+        final CefWindowDelegate windowDelegate = new CefWindowDelegate() {
             @SuppressWarnings({"MissingOverride", "UnusedMethod", "EffectivelyPrivate", "UnusedVariable"})
-            public CefRect getInitialBounds(@Nullable CefWindow window) {
-                return new CefRect(0, 0, 1280, 800);
+            public Optional<CefRect> getInitialBounds(@Nullable CefWindow window) {
+                return Optional.of(new CefRect(0, 0, 1280, 800));
             }
 
             @Override
@@ -602,7 +593,7 @@ public final class ViewsBrowserApp {
             }
         };
 
-        CefWindow topLevel = CefWindow.createTopLevel(windowDelegate)
+        final CefWindow topLevel = CefWindow.createTopLevel(windowDelegate)
                 .orElseThrow(() -> new RuntimeException("Failed to create top-level CefWindow"));
         log.debug("Top-level window created: {}", topLevel);
 

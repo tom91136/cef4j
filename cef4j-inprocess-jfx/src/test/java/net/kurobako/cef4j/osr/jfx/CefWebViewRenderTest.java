@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import javafx.concurrent.Worker;
@@ -40,9 +39,7 @@ class CefWebViewRenderTest {
         settings.cachePath = cacheDir.toAbsolutePath().toString();
         CefTestLaunch.setRootCachePath(settings, cacheDir.toAbsolutePath().toString());
         startJavaFx();
-        onFxThread(
-                () -> CefWebView.initialise(settings, CefTestLaunch.extraArgs(), Optional.empty()),
-                CEF_STARTUP_TIMEOUT);
+        onFxThread(() -> CefWebView.initialise(settings, CefTestLaunch.extraArgs()), CEF_STARTUP_TIMEOUT);
         try {
             CefWebView view = Objects.requireNonNull(
                     onFxThread(() -> {

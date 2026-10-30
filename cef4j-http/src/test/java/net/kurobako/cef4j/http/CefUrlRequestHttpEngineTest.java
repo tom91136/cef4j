@@ -15,9 +15,7 @@ class CefUrlRequestHttpEngineTest {
     void rejectsMissingPostDataElementForNonEmptyBody() {
         assertThatIOException()
                 .isThrownBy(() -> CefUrlRequestHttpEngine.buildPostData(
-                        new byte[] {1},
-                        Optional::<CefPostDataElement>empty,
-                        () -> Optional.of(dummy(CefPostData.class))))
+                        new byte[] {1}, Optional::empty, () -> Optional.of(dummy(CefPostData.class))))
                 .withMessageContaining("CefPostDataElement.create");
     }
 
@@ -25,9 +23,7 @@ class CefUrlRequestHttpEngineTest {
     void rejectsMissingPostDataForNonEmptyBody() {
         assertThatIOException()
                 .isThrownBy(() -> CefUrlRequestHttpEngine.buildPostData(
-                        new byte[] {1},
-                        () -> Optional.of(dummy(CefPostDataElement.class)),
-                        Optional::<CefPostData>empty))
+                        new byte[] {1}, () -> Optional.of(dummy(CefPostDataElement.class)), Optional::empty))
                 .withMessageContaining("CefPostData.create");
     }
 

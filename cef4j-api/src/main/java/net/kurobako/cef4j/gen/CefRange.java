@@ -18,7 +18,6 @@ import net.kurobako.cef4j.policy.NullableBoundary;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:3358</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefRange {
 
@@ -32,14 +31,14 @@ public final class CefRange {
 
     /** Create a mutable copy of this instance. */
     public Mutable toMutable() {
-        return new Mutable(this.from, this.to);
+        return new Mutable(from, to);
     }
 
     @Override
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefRange)) return false;
-        CefRange other = (CefRange) obj;
+        final CefRange other = (CefRange) obj;
         return this.from == other.from && this.to == other.to;
     }
 
@@ -74,14 +73,14 @@ public final class CefRange {
 
         /** Create an immutable snapshot of this instance. */
         public CefRange toImmutable() {
-            return new CefRange(this.from, this.to);
+            return new CefRange(from, to);
         }
 
         @Override
         public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
-            Mutable other = (Mutable) obj;
+            final Mutable other = (Mutable) obj;
             return this.from == other.from && this.to == other.to;
         }
 

@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class OsrPaintEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 9;
@@ -98,7 +100,7 @@ public final class OsrPaintEvent implements CefMessageView, CefMessageEncoder {
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(browser.id());
@@ -119,32 +121,19 @@ public final class OsrPaintEvent implements CefMessageView, CefMessageEncoder {
     }
 
     public static final CefMessageDecoder<OsrPaintEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
-        RemoteHandle browser = new RemoteHandle(__buf.getInt());
-        int shmNameLen = WireDecoder.length(__buf, "shmName");
-        byte[] shmNameBuf = new byte[shmNameLen];
-        __buf.get(shmNameBuf);
-        String shmName = new String(shmNameBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "frameSequence");
-        long frameSequence = __buf.getLong();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "width");
-        int width = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "height");
-        int height = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "byteCount");
-        int byteCount = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "paintType");
-        int paintType = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "dirtyX");
-        int dirtyX = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "dirtyY");
-        int dirtyY = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "dirtyWidth");
-        int dirtyWidth = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "dirtyHeight");
-        int dirtyHeight = __buf.getInt();
+        final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
+        final String shmName = WireDecoder.utf8(__buf, "shmName");
+        final long frameSequence = WireDecoder.int64(__buf, "frameSequence");
+        final int width = WireDecoder.int32(__buf, "width");
+        final int height = WireDecoder.int32(__buf, "height");
+        final int byteCount = WireDecoder.int32(__buf, "byteCount");
+        final int paintType = WireDecoder.int32(__buf, "paintType");
+        final int dirtyX = WireDecoder.int32(__buf, "dirtyX");
+        final int dirtyY = WireDecoder.int32(__buf, "dirtyY");
+        final int dirtyWidth = WireDecoder.int32(__buf, "dirtyWidth");
+        final int dirtyHeight = WireDecoder.int32(__buf, "dirtyHeight");
         WireDecoder.requireFullyConsumed(__buf, "OsrPaintEvent");
         return new OsrPaintEvent(browser, shmName, frameSequence, width, height, byteCount, paintType, dirtyX, dirtyY, dirtyWidth, dirtyHeight);
     };

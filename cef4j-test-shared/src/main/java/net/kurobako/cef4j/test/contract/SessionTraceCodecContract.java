@@ -25,7 +25,7 @@ public abstract class SessionTraceCodecContract {
 
     @Test
     final void rejectsDuplicateFields() {
-        String trace = "{\"type\":\"header\",\"type\":\"header\",\"format\":\"cef4j-session-api\","
+        final String trace = "{\"type\":\"header\",\"type\":\"header\",\"format\":\"cef4j-session-api\","
                 + "\"version\":1,\"createdEpochMillis\":\"0\",\"metadata\":{}}\n";
         assertThatThrownBy(() -> codec().read(new ByteArrayInputStream(trace.getBytes(StandardCharsets.UTF_8))))
                 .isInstanceOf(IOException.class)
@@ -35,8 +35,8 @@ public abstract class SessionTraceCodecContract {
     @Test
     final void writesCanonicalReadableNdjson(@TempDir Path directory) throws Exception {
         assertThat(SessionTrace.defaultCodec()).isInstanceOf(codec().getClass());
-        Path trace = directory.resolve("trace.cef4japi.jsonl");
-        byte[] payload = {0, 1, 2, (byte) 0xff};
+        final Path trace = directory.resolve("trace.cef4japi.jsonl");
+        final byte[] payload = {0, 1, 2, (byte) 0xff};
         try (SessionTraceWriter writer = SessionTrace.writer(trace, Map.of("application", "unicode-π"), codec())) {
             writer.append(SessionTrace.Kind.REQUEST, 9, 123, payload);
             writer.append(
@@ -44,7 +44,7 @@ public abstract class SessionTraceCodecContract {
             writer.append(SessionTrace.Kind.CLOSE, 0, 0, null);
         }
 
-        List<String> lines = Files.readAllLines(trace, StandardCharsets.UTF_8);
+        final List<String> lines = Files.readAllLines(trace, StandardCharsets.UTF_8);
         assertThat(lines).hasSize(4);
         assertThat(lines.get(0))
                 .startsWith("{\"type\":\"header\",\"format\":\"cef4j-session-api\",\"version\":1")
@@ -55,16 +55,16 @@ public abstract class SessionTraceCodecContract {
                 .contains("\"operationId\":\"9\"")
                 .contains("\"payloadBase64\":\"AAEC/w==\"");
 
-        SessionTrace.Recording recording = SessionTrace.read(trace, codec());
+        final SessionTrace.Recording recording = SessionTrace.read(trace, codec());
         assertThat(recording.metadata()).containsEntry("application", "unicode-π");
         assertThat(recording.entries()).hasSize(3);
-        assertThat(recording.entries().get(0).payload()).containsExactly(payload);
+        assertThat(recording.entries().get(0).payload().orElseThrow()).containsExactly(payload);
         assertThat(recording.entries().get(1).detailMessage).isEqualTo("quote=\" newline=\n");
     }
 
     @Test
     final void ignoresOnlyAnUnterminatedCrashFragment(@TempDir Path directory) throws Exception {
-        Path trace = directory.resolve("crashed.cef4japi.jsonl");
+        final Path trace = directory.resolve("crashed.cef4japi.jsonl");
         try (SessionTraceWriter writer = SessionTrace.writer(trace, Map.of(), codec())) {
             writer.append(SessionTrace.Kind.FAILURE, 1, 5, null, "failure", "flushed");
         }
@@ -83,10 +83,10 @@ public abstract class SessionTraceCodecContract {
 
     @Test
     final void explicitCodecIsUsedForWritingAndReading(@TempDir Path directory) throws Exception {
-        AtomicBoolean opened = new AtomicBoolean();
-        AtomicBoolean read = new AtomicBoolean();
-        SessionTraceCodec delegate = codec();
-        SessionTraceCodec codec = new SessionTraceCodec() {
+        final AtomicBoolean opened = new AtomicBoolean();
+        final AtomicBoolean read = new AtomicBoolean();
+        final SessionTraceCodec delegate = codec();
+        final SessionTraceCodec codec = new SessionTraceCodec() {
             @Override
             public String format() {
                 return "test-wrapper";
@@ -110,7 +110,7 @@ public abstract class SessionTraceCodecContract {
                 return delegate.read(source);
             }
         };
-        Path trace = directory.resolve("trace.test");
+        final Path trace = directory.resolve("trace.test");
         try (SessionTraceWriter writer = SessionTrace.writer(trace, Map.of(), codec)) {
             writer.append(SessionTrace.Kind.CLOSE, 0, 0, null);
         }

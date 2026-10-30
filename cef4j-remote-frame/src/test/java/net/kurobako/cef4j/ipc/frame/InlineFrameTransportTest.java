@@ -98,7 +98,9 @@ final class InlineFrameTransportTest {
         ByteBuffer frame =
                 ByteBuffer.allocate(Envelope.HEADER_SIZE + event.encodedSize()).order(ByteOrder.LITTLE_ENDIAN);
         Envelope.writeHeader(
-                frame, Envelope.Kind.EVENT, 0, Envelope.NO_CORR_ID, InlinePaintEvent.MESSAGE_ID, event.encodedSize());
+                frame,
+                new Envelope.Header(
+                        event.encodedSize(), Envelope.Kind.EVENT, 0, Envelope.NO_CORR_ID, InlinePaintEvent.MESSAGE_ID));
         event.encodeInto(frame);
         frame.flip();
         peer.send(frame);

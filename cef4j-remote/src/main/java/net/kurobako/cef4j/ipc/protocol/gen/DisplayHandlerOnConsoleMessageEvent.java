@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class DisplayHandlerOnConsoleMessageEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 1245975857;
@@ -64,7 +66,7 @@ public final class DisplayHandlerOnConsoleMessageEvent implements CefMessageView
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(browser.id());
@@ -80,22 +82,13 @@ public final class DisplayHandlerOnConsoleMessageEvent implements CefMessageView
     }
 
     public static final CefMessageDecoder<DisplayHandlerOnConsoleMessageEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
-        RemoteHandle browser = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "level");
-        int level = __buf.getInt();
-        int messageLen = WireDecoder.length(__buf, "message");
-        byte[] messageBuf = new byte[messageLen];
-        __buf.get(messageBuf);
-        String message = new String(messageBuf, StandardCharsets.UTF_8);
-        int sourceLen = WireDecoder.length(__buf, "source");
-        byte[] sourceBuf = new byte[sourceLen];
-        __buf.get(sourceBuf);
-        String source = new String(sourceBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "line");
-        int line = __buf.getInt();
+        final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
+        final int level = WireDecoder.int32(__buf, "level");
+        final String message = WireDecoder.utf8(__buf, "message");
+        final String source = WireDecoder.utf8(__buf, "source");
+        final int line = WireDecoder.int32(__buf, "line");
         WireDecoder.requireFullyConsumed(__buf, "DisplayHandlerOnConsoleMessageEvent");
         return new DisplayHandlerOnConsoleMessageEvent(browser, level, message, source, line);
     };

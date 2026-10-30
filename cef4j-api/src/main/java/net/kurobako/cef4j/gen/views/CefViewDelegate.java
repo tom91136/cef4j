@@ -2,6 +2,7 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
+import java.util.Optional;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.gen.CefClientHandler;
 import net.kurobako.cef4j.gen.CefRect;
@@ -25,7 +26,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:45</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefViewDelegate extends CefClientHandler {
 
@@ -40,8 +40,8 @@ public interface CefViewDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:54</a>
      */
-    default @Nullable CefSize getPreferredSize(@Nullable CefView view) {
-        return null;
+    default Optional<CefSize> getPreferredSize(@Nullable CefView view) {
+        return Optional.empty();
     }
 
     /**
@@ -55,8 +55,8 @@ public interface CefViewDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:63</a>
      */
-    default @Nullable CefSize getMinimumSize(@Nullable CefView view) {
-        return null;
+    default Optional<CefSize> getMinimumSize(@Nullable CefView view) {
+        return Optional.empty();
     }
 
     /**
@@ -70,8 +70,8 @@ public interface CefViewDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__view__delegate_8h.html">views/cef_view_delegate.h:69</a>
      */
-    default @Nullable CefSize getMaximumSize(@Nullable CefView view) {
-        return null;
+    default Optional<CefSize> getMaximumSize(@Nullable CefView view) {
+        return Optional.empty();
     }
 
     /**
@@ -206,8 +206,8 @@ public interface CefViewDelegate extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefViewDelegate {
         private final java.util.List<CefViewDelegate> delegates;
@@ -217,21 +217,21 @@ public interface CefViewDelegate extends CefClientHandler {
         }
 
         @Override
-        public @Nullable CefSize getPreferredSize(@Nullable CefView view) {
+        public Optional<CefSize> getPreferredSize(@Nullable CefView view) {
             if (!delegates.isEmpty()) return delegates.get(0).getPreferredSize(view);
-            return null;
+            return Optional.empty();
         }
 
         @Override
-        public @Nullable CefSize getMinimumSize(@Nullable CefView view) {
+        public Optional<CefSize> getMinimumSize(@Nullable CefView view) {
             if (!delegates.isEmpty()) return delegates.get(0).getMinimumSize(view);
-            return null;
+            return Optional.empty();
         }
 
         @Override
-        public @Nullable CefSize getMaximumSize(@Nullable CefView view) {
+        public Optional<CefSize> getMaximumSize(@Nullable CefView view) {
             if (!delegates.isEmpty()) return delegates.get(0).getMaximumSize(view);
-            return null;
+            return Optional.empty();
         }
 
         @Override
@@ -242,37 +242,37 @@ public interface CefViewDelegate extends CefClientHandler {
 
         @Override
         public void onParentViewChanged(@Nullable CefView view, boolean added, @Nullable CefView parent) {
-            for (CefViewDelegate d : delegates) d.onParentViewChanged(view, added, parent);
+            for (final CefViewDelegate d : delegates) d.onParentViewChanged(view, added, parent);
         }
 
         @Override
         public void onChildViewChanged(@Nullable CefView view, boolean added, @Nullable CefView child) {
-            for (CefViewDelegate d : delegates) d.onChildViewChanged(view, added, child);
+            for (final CefViewDelegate d : delegates) d.onChildViewChanged(view, added, child);
         }
 
         @Override
         public void onWindowChanged(@Nullable CefView view, boolean added) {
-            for (CefViewDelegate d : delegates) d.onWindowChanged(view, added);
+            for (final CefViewDelegate d : delegates) d.onWindowChanged(view, added);
         }
 
         @Override
         public void onLayoutChanged(@Nullable CefView view, CefRect newBounds) {
-            for (CefViewDelegate d : delegates) d.onLayoutChanged(view, newBounds);
+            for (final CefViewDelegate d : delegates) d.onLayoutChanged(view, newBounds);
         }
 
         @Override
         public void onFocus(@Nullable CefView view) {
-            for (CefViewDelegate d : delegates) d.onFocus(view);
+            for (final CefViewDelegate d : delegates) d.onFocus(view);
         }
 
         @Override
         public void onBlur(@Nullable CefView view) {
-            for (CefViewDelegate d : delegates) d.onBlur(view);
+            for (final CefViewDelegate d : delegates) d.onBlur(view);
         }
 
         @Override
         public void onThemeChanged(@Nullable CefView view) {
-            for (CefViewDelegate d : delegates) d.onThemeChanged(view);
+            for (final CefViewDelegate d : delegates) d.onThemeChanged(view);
         }
     }
 }

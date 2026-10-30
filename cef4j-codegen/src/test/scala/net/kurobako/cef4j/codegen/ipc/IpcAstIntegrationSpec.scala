@@ -12,7 +12,7 @@ import net.kurobako.cef4j.codegen.Preprocessor
 
 class IpcAstIntegrationSpec extends munit.FunSuite {
 
-  override val munitTimeout = 2.minutes
+  override val munitTimeout: FiniteDuration = 2.minutes
 
   private val cefRoot: Path = {
     val prop = Option(System.getProperty("cef.root")).getOrElse(fail("cef.root is not set; run mvn verify"))
@@ -144,8 +144,8 @@ class IpcAstIntegrationSpec extends munit.FunSuite {
       h.methods.foreach { m =>
         val returnType = m.returnType match {
           case None                 => "void"
-          case Some(FieldType.Bool) => "Boolean"
-          case Some(FieldType.I32)  => "Integer"
+          case Some(FieldType.Bool) => "java.util.Optional<Boolean>"
+          case Some(FieldType.I32)  => "java.util.OptionalInt"
           case Some(_)              => "void"
         }
         assert(

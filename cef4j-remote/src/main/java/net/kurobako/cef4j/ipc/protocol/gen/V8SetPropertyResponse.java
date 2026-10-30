@@ -4,11 +4,13 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class V8SetPropertyResponse implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 19;
@@ -43,7 +45,7 @@ public final class V8SetPropertyResponse implements CefMessageView, CefMessageEn
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.put((byte) (ok ? 1 : 0));
@@ -55,14 +57,10 @@ public final class V8SetPropertyResponse implements CefMessageView, CefMessageEn
     }
 
     public static final CefMessageDecoder<V8SetPropertyResponse> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, 1, "ok");
-        boolean ok = __buf.get() != 0;
-        int errorMessageLen = WireDecoder.length(__buf, "errorMessage");
-        byte[] errorMessageBuf = new byte[errorMessageLen];
-        __buf.get(errorMessageBuf);
-        String errorMessage = new String(errorMessageBuf, StandardCharsets.UTF_8);
+        final boolean ok = WireDecoder.bool(__buf, "ok");
+        final String errorMessage = WireDecoder.utf8(__buf, "errorMessage");
         WireDecoder.requireFullyConsumed(__buf, "V8SetPropertyResponse");
         return new V8SetPropertyResponse(ok, errorMessage);
     };

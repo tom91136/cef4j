@@ -77,7 +77,7 @@ final class CefWebViewTestSupport {
                 }
             }
         } catch (IllegalStateException ignored) {
-            return;
+            /* The failure is expected or cannot be handled here. */
         }
     }
 

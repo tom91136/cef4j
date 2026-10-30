@@ -35,16 +35,17 @@ import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+@SuppressWarnings("baumkuchen:auto-closeable-resource")
 public abstract class DevToolsSessionContract {
 
-    private static boolean hasSendDevToolsMessage;
+    private static boolean hasSendDevToolsMessage = false;
 
     @BeforeAll
     static void checkAvailable() {
         try {
             Class.forName("net.kurobako.cef4j.ipc.protocol.gen.BrowserHostSendDevToolsMessageRequest");
             hasSendDevToolsMessage = true;
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException ignored) {
             hasSendDevToolsMessage = false;
         }
     }
@@ -54,44 +55,39 @@ public abstract class DevToolsSessionContract {
     @Test
     final void correlatesCommandsAndEventsOverTransportNeutralSession() throws Exception {
         Assumptions.assumeTrue(hasSendDevToolsMessage, "sendDevToolsMessage not available in this CEF version");
-        LoopbackTransport.Pair pair = LoopbackTransport.create();
+        final LoopbackTransport.Pair pair = LoopbackTransport.create();
         try (CefSessionImpl session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
                 Peer peer = new Peer(pair.b)) {
-            RemoteHandle browser = new RemoteHandle(11);
-            BrowserHost host = new BrowserHost(session, new RemoteHandle(22));
+            final RemoteHandle browser = new RemoteHandle(11);
+            final BrowserHost host = new BrowserHost(session, new RemoteHandle(22));
 
-            var attaching = DevToolsSession.attach(session, browser, host, codec());
-            Frame attach = peer.receive();
+            final var attaching = DevToolsSession.attach(session, browser, host, codec());
+            final Frame attach = peer.receive();
             assertThat(attach.messageId).isEqualTo(27);
             peer.respond(attach, null);
-            DevToolsSession devTools = attaching.get(2, TimeUnit.SECONDS);
+            final DevToolsSession devTools = attaching.get(2, TimeUnit.SECONDS);
 
-            Map<String, Object> params = Map.of("expression", "6 * 7");
-            var command = devTools.send("Runtime.evaluate", params);
-            Frame send = peer.receive();
+            final Map<String, Object> params = Map.of("expression", "6 * 7");
+            final var command = devTools.send("Runtime.evaluate", params);
+            final Frame send = peer.receive();
             assertThat(send.messageId).isEqualTo(sendDevToolsMessageId());
-            Map<?, ?> wireJson = (Map<?, ?>) Objects.requireNonNull(codec().decode(requestMessage(send)));
+            final Map<?, ?> wireJson =
+                    (Map<?, ?>) codec().decode(requestMessage(send)).orElseThrow();
             assertThat(wireJson.get("method")).isEqualTo("Runtime.evaluate");
             assertThat(((Map<?, ?>) Objects.requireNonNull(wireJson.get("params"))).get("expression"))
                     .isEqualTo("6 * 7");
-            int commandId = ((Number) Objects.requireNonNull(wireJson.get("id"))).intValue();
+            final int commandId = ((Number) Objects.requireNonNull(wireJson.get("id"))).intValue();
             peer.respond(send, successfulSendResponse());
             peer.event(new DevToolsMessageEvent(
                     browser,
                     ("{\"id\":" + commandId + ",\"result\":{\"answer\":42}}").getBytes(StandardCharsets.UTF_8)));
-            Map<String, Object> response = command.get(2, TimeUnit.SECONDS);
+            final Map<String, Object> response = command.get(2, TimeUnit.SECONDS);
             assertThat(((Number) Objects.requireNonNull(response.get("answer"))).intValue())
                     .isEqualTo(42);
 
-            CdpClient typed = new CdpClient(devTools, codec());
-            var typedCommand = typed.domains().runtime().evaluate("document.title");
-            Frame typedSend = peer.receive();
-            int typedId = commandId(typedSend);
-            peer.respond(typedSend, successfulSendResponse());
-            peer.event(new DevToolsMessageEvent(
-                    browser,
-                    ("{\"id\":" + typedId + ",\"result\":{\"result\":{\"type\":\"string\",\"value\":\"cef4j\"}}}")
-                            .getBytes(StandardCharsets.UTF_8)));
+            final CdpClient typed = new CdpClient(devTools, codec());
+            final var typedCommand = typed.domains().runtime().evaluate("document.title");
+            respondWithEvent(peer, browser, "\"result\":{\"result\":{\"type\":\"string\",\"value\":\"cef4j\"}}");
             assertThat(typedCommand
                             .toCompletableFuture()
                             .get(2, TimeUnit.SECONDS)
@@ -99,18 +95,20 @@ public abstract class DevToolsSessionContract {
                             .value())
                     .isEqualTo(Optional.of("cef4j"));
 
-            BlockingQueue<Map<String, Object>> consoleEvents = new LinkedBlockingQueue<>();
-            devTools.on("Runtime.consoleAPICalled", consoleEvents::offer);
+            final BlockingQueue<Map<String, Object>> consoleEvents = new LinkedBlockingQueue<>();
+            devTools.on("Runtime.consoleAPICalled", event -> {
+                if (!consoleEvents.offer(event)) throw new IllegalStateException("console event queue full");
+            });
             peer.event(new DevToolsMessageEvent(
                     browser,
                     "{\"method\":\"Runtime.consoleAPICalled\",\"params\":{\"type\":\"log\"}}"
                             .getBytes(StandardCharsets.UTF_8)));
-            Map<String, Object> event = consoleEvents.poll(2, TimeUnit.SECONDS);
+            final Map<String, Object> event = consoleEvents.poll(2, TimeUnit.SECONDS);
             assertThat(event).isNotNull();
             assertThat(event.get("type")).isEqualTo("log");
 
-            CompletableFuture<Void> closing = devTools.closeAsync().toCompletableFuture();
-            Frame detach = peer.receive();
+            final CompletableFuture<Void> closing = devTools.closeAsync().toCompletableFuture();
+            final Frame detach = peer.receive();
             assertThat(detach.messageId).isEqualTo(30);
             assertThat(closing).isNotDone();
             peer.respond(detach, null);
@@ -121,29 +119,23 @@ public abstract class DevToolsSessionContract {
     @Test
     final void reportsCdpErrorsAndFailsPendingCallsWhenAgentDetaches() throws Exception {
         Assumptions.assumeTrue(hasSendDevToolsMessage, "sendDevToolsMessage not available in this CEF version");
-        LoopbackTransport.Pair pair = LoopbackTransport.create();
+        final LoopbackTransport.Pair pair = LoopbackTransport.create();
         try (CefSessionImpl session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
                 Peer peer = new Peer(pair.b)) {
-            RemoteHandle browser = new RemoteHandle(31);
-            var attaching =
+            final RemoteHandle browser = new RemoteHandle(31);
+            final var attaching =
                     DevToolsSession.attach(session, browser, new BrowserHost(session, new RemoteHandle(32)), codec());
             peer.respond(peer.receive(), null);
-            DevToolsSession devTools = attaching.get(2, TimeUnit.SECONDS);
+            final DevToolsSession devTools = attaching.get(2, TimeUnit.SECONDS);
 
-            var failed = devTools.send("No.suchMethod", null);
-            Frame failedSend = peer.receive();
-            int failedId = commandId(failedSend);
-            peer.respond(failedSend, successfulSendResponse());
-            peer.event(new DevToolsMessageEvent(
-                    browser,
-                    ("{\"id\":" + failedId + ",\"error\":{\"code\":-32601,\"message\":\"unknown method\"}}")
-                            .getBytes(StandardCharsets.UTF_8)));
+            final var failed = devTools.send("No.suchMethod", null);
+            respondWithEvent(peer, browser, "\"error\":{\"code\":-32601,\"message\":\"unknown method\"}");
             assertThatThrownBy(() -> failed.get(2, TimeUnit.SECONDS))
                     .hasRootCauseInstanceOf(CdpException.class)
                     .hasRootCauseMessage("unknown method");
 
-            var pending = devTools.send("Page.captureScreenshot", null);
-            Frame pendingSend = peer.receive();
+            final var pending = devTools.send("Page.captureScreenshot", null);
+            final Frame pendingSend = peer.receive();
             peer.respond(pendingSend, successfulSendResponse());
             peer.event(new DevToolsAgentDetachedEvent(browser));
             assertThatThrownBy(() -> pending.get(2, TimeUnit.SECONDS))
@@ -156,19 +148,19 @@ public abstract class DevToolsSessionContract {
     @SuppressWarnings("try")
     final void transportDisconnectFailsPendingCdpCalls() throws Exception {
         Assumptions.assumeTrue(hasSendDevToolsMessage, "sendDevToolsMessage not available in this CEF version");
-        LoopbackTransport.Pair pair = LoopbackTransport.create();
+        final LoopbackTransport.Pair pair = LoopbackTransport.create();
         try (CefSessionImpl session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
                 Peer peer = new Peer(pair.b)) {
-            RemoteHandle browser = new RemoteHandle(41);
-            var attaching =
+            final RemoteHandle browser = new RemoteHandle(41);
+            final var attaching =
                     DevToolsSession.attach(session, browser, new BrowserHost(session, new RemoteHandle(42)), codec());
             peer.respond(peer.receive(), null);
-            DevToolsSession devTools = attaching.get(2, TimeUnit.SECONDS);
-            var pending = devTools.send("Page.captureScreenshot", null);
+            final DevToolsSession devTools = attaching.get(2, TimeUnit.SECONDS);
+            final var pending = devTools.send("Page.captureScreenshot", null);
             peer.respond(peer.receive(), successfulSendResponse());
             peer.close();
             assertThatThrownBy(() -> pending.get(2, TimeUnit.SECONDS)).satisfies(failure -> {
-                Throwable cause = Objects.requireNonNull(failure.getCause());
+                final Throwable cause = Objects.requireNonNull(failure.getCause());
                 assertThat(cause).isInstanceOfAny(IllegalStateException.class, CefTransportException.class);
                 assertThat(cause.getMessage()).isIn("CEF session closed", "transport disconnected");
             });
@@ -178,30 +170,26 @@ public abstract class DevToolsSessionContract {
     @Test
     final void cancelledCommandDoesNotConsumeALaterResponse() throws Exception {
         Assumptions.assumeTrue(hasSendDevToolsMessage, "sendDevToolsMessage not available in this CEF version");
-        LoopbackTransport.Pair pair = LoopbackTransport.create();
+        final LoopbackTransport.Pair pair = LoopbackTransport.create();
         try (CefSessionImpl session = new CefSessionImpl(pair.a, Duration.ofSeconds(2));
                 Peer peer = new Peer(pair.b)) {
-            RemoteHandle browser = new RemoteHandle(51);
-            var attaching =
+            final RemoteHandle browser = new RemoteHandle(51);
+            final var attaching =
                     DevToolsSession.attach(session, browser, new BrowserHost(session, new RemoteHandle(52)), codec());
             peer.respond(peer.receive(), null);
-            DevToolsSession devTools = attaching.get(2, TimeUnit.SECONDS);
+            final DevToolsSession devTools = attaching.get(2, TimeUnit.SECONDS);
 
-            CompletableFuture<Map<String, Object>> cancelled = devTools.send("Runtime.evaluate", null);
-            Frame firstSend = peer.receive();
-            int firstId = commandId(firstSend);
+            final CompletableFuture<Map<String, Object>> cancelled = devTools.send("Runtime.evaluate", null);
+            final Frame firstSend = peer.receive();
+            final int firstId = commandId(firstSend);
             peer.respond(firstSend, successfulSendResponse());
             cancelled.cancel(false);
             peer.event(new DevToolsMessageEvent(
                     browser,
                     ("{\"id\":" + firstId + ",\"result\":{\"stale\":true}}").getBytes(StandardCharsets.UTF_8)));
 
-            CompletableFuture<Map<String, Object>> next = devTools.send("Runtime.evaluate", null);
-            Frame nextSend = peer.receive();
-            int nextId = commandId(nextSend);
-            peer.respond(nextSend, successfulSendResponse());
-            peer.event(new DevToolsMessageEvent(
-                    browser, ("{\"id\":" + nextId + ",\"result\":{\"answer\":42}}").getBytes(StandardCharsets.UTF_8)));
+            final CompletableFuture<Map<String, Object>> next = devTools.send("Runtime.evaluate", null);
+            respondWithEvent(peer, browser, "\"result\":{\"answer\":42}");
 
             assertThat(cancelled).isCancelled();
             assertThat(((Number) Objects.requireNonNull(
@@ -211,8 +199,18 @@ public abstract class DevToolsSessionContract {
         }
     }
 
+    /** Answers the command the peer receives, and delivers the event that carries the given result of it. */
+    private void respondWithEvent(Peer peer, RemoteHandle browser, String result) throws Exception {
+        final Frame send = peer.receive();
+        final int id = commandId(send);
+        peer.respond(send, successfulSendResponse());
+        peer.event(new DevToolsMessageEvent(
+                browser, ("{\"id\":" + id + "," + result + "}").getBytes(StandardCharsets.UTF_8)));
+    }
+
     private int commandId(Frame frame) throws ReflectiveOperationException {
-        Map<?, ?> message = (Map<?, ?>) Objects.requireNonNull(codec().decode(requestMessage(frame)));
+        final Map<?, ?> message =
+                (Map<?, ?>) codec().decode(requestMessage(frame)).orElseThrow();
         return ((Number) Objects.requireNonNull(message.get("id"))).intValue();
     }
 
@@ -222,14 +220,15 @@ public abstract class DevToolsSessionContract {
 
     private static byte[] requestMessage(Frame frame) throws ReflectiveOperationException {
         @SuppressWarnings("unchecked")
-        CefMessageDecoder<CefMessageView> decoder = (CefMessageDecoder<CefMessageView>)
+        final CefMessageDecoder<CefMessageView> decoder = (CefMessageDecoder<CefMessageView>)
                 sendRequestClass().getField("DECODER").get(null);
-        Object request = decoder.decode(ByteBuffer.wrap(frame.payload));
+        final Object request = decoder.decode(ByteBuffer.wrap(frame.payload));
         return (byte[]) request.getClass().getMethod("message").invoke(request);
     }
 
     private static CefMessageEncoder successfulSendResponse() throws ReflectiveOperationException {
-        Class<?> type = Class.forName("net.kurobako.cef4j.ipc.protocol.gen.BrowserHostSendDevToolsMessageResponse");
+        final Class<?> type =
+                Class.forName("net.kurobako.cef4j.ipc.protocol.gen.BrowserHostSendDevToolsMessageResponse");
         return (CefMessageEncoder) type.getConstructor(int.class).newInstance(1);
     }
 
@@ -244,16 +243,16 @@ public abstract class DevToolsSessionContract {
         private Peer(CefTransport transport) {
             this.transport = transport;
             transport.onReceive(buffer -> {
-                ByteBuffer copy = buffer.duplicate();
-                Envelope.Header header = Envelope.readHeader(copy);
-                byte[] payload = new byte[copy.remaining()];
+                final ByteBuffer copy = buffer.duplicate();
+                final Envelope.Header header = Envelope.readHeader(copy);
+                final byte[] payload = new byte[copy.remaining()];
                 copy.get(payload);
                 frames.add(new Frame(header.corrId, header.messageId, payload));
             });
         }
 
         private Frame receive() throws InterruptedException {
-            Frame frame = frames.poll(2, TimeUnit.SECONDS);
+            final Frame frame = frames.poll(2, TimeUnit.SECONDS);
             if (frame == null) throw new AssertionError("timed out waiting for IPC frame");
             return frame;
         }
@@ -268,10 +267,10 @@ public abstract class DevToolsSessionContract {
 
         private void send(Envelope.Kind kind, int corrId, int messageId, @Nullable CefMessageEncoder message)
                 throws CefTransportException {
-            int payloadSize = message == null ? 0 : message.encodedSize();
-            ByteBuffer frame =
+            final int payloadSize = message == null ? 0 : message.encodedSize();
+            final ByteBuffer frame =
                     ByteBuffer.allocate(Envelope.HEADER_SIZE + payloadSize).order(ByteOrder.LITTLE_ENDIAN);
-            Envelope.writeHeader(frame, kind, 0, corrId, messageId, payloadSize);
+            Envelope.writeHeader(frame, new Envelope.Header(payloadSize, kind, 0, corrId, messageId));
             if (message != null) message.encodeInto(frame);
             frame.flip();
             transport.send(frame);

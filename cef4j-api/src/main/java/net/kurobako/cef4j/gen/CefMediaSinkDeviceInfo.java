@@ -21,7 +21,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:3625</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefMediaSinkDeviceInfo {
 
@@ -43,7 +42,7 @@ public final class CefMediaSinkDeviceInfo {
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefMediaSinkDeviceInfo)) return false;
-        CefMediaSinkDeviceInfo other = (CefMediaSinkDeviceInfo) obj;
+        final CefMediaSinkDeviceInfo other = (CefMediaSinkDeviceInfo) obj;
         return java.util.Objects.equals(this.ipAddress, other.ipAddress)
                 && this.port == other.port
                 && java.util.Objects.equals(this.modelName, other.modelName);

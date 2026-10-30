@@ -48,7 +48,7 @@ import org.junit.jupiter.api.Assumptions;
 import org.opentest4j.TestAbortedException;
 
 final class SwingBrowserPanelTestSupport {
-    private static volatile boolean started;
+    private static volatile boolean started = false;
     private static final CopyOnWriteArrayList<JFrame> FRAMES = new CopyOnWriteArrayList<>();
     static final Map<CefBrowserPanel, PanelState> STATES = new ConcurrentHashMap<>();
 
@@ -57,9 +57,9 @@ final class SwingBrowserPanelTestSupport {
     static final class PanelState {
         volatile String title = "";
         volatile String location = "";
-        volatile boolean loading;
-        volatile boolean canGoBack;
-        volatile boolean canGoForward;
+        volatile boolean loading = false;
+        volatile boolean canGoBack = false;
+        volatile boolean canGoForward = false;
         final AtomicLong loadGeneration = new AtomicLong();
         final CountDownLatch browserReady = new CountDownLatch(1);
         final CountDownLatch browserClosed = new CountDownLatch(1);
@@ -83,7 +83,7 @@ final class SwingBrowserPanelTestSupport {
                     .resolve("cef-" + ProcessHandle.current().pid() + ".log")
                     .toAbsolutePath()
                     .toString();
-            CefBrowserPanel.initialise(settings, CefTestLaunch.extraArgs(), Optional.empty());
+            CefBrowserPanel.initialise(settings, CefTestLaunch.extraArgs());
             started = true;
         } catch (Exception e) {
             throw new TestAbortedException("Failed to initialise CEF for Swing tests", e);
@@ -170,8 +170,10 @@ final class SwingBrowserPanelTestSupport {
 
                         @Override
                         public void onBeforeClose(@Nullable CefBrowser b) {
-                            CefBrowser current = panel.browser();
-                            if (b != null && current != null && current.isSame(b)) {
+                            if (b != null
+                                    && panel.browser()
+                                            .filter(current -> current.isSame(b))
+                                            .isPresent()) {
                                 panel.browser(null);
                             }
                             state.browserClosed.countDown();
@@ -321,7 +323,7 @@ final class SwingBrowserPanelTestSupport {
     }
 
     private static net.kurobako.cef4j.gen.CefFrame requireMainFrame(CefBrowserPanel panel) {
-        CefBrowser browser = Objects.requireNonNull(panel.browser(), "browser not ready");
+        CefBrowser browser = panel.browser().orElseThrow(() -> new NullPointerException("browser not ready"));
         return browser.getMainFrame().orElseThrow(() -> new IllegalStateException("main frame not ready"));
     }
 

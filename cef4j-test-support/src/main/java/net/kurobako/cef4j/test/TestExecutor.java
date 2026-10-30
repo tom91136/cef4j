@@ -17,9 +17,9 @@ public final class TestExecutor implements Executor, AutoCloseable {
     private TestExecutor(int threads, String threadName) {
         if (threads <= 0) throw new IllegalArgumentException("thread count must be positive");
         Objects.requireNonNull(threadName, "threadName");
-        AtomicInteger sequence = new AtomicInteger();
-        ThreadFactory factory = task -> {
-            Thread thread = new Thread(task, threadName + "-" + sequence.incrementAndGet());
+        final AtomicInteger sequence = new AtomicInteger();
+        final ThreadFactory factory = task -> {
+            final Thread thread = new Thread(task, threadName + "-" + sequence.incrementAndGet());
             thread.setDaemon(true);
             return thread;
         };

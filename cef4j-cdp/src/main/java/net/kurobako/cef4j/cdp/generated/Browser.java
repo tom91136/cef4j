@@ -4,7 +4,6 @@ package net.kurobako.cef4j.cdp.generated;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
@@ -13,6 +12,8 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The Browser domain defines methods and events for browser managing.
@@ -20,6 +21,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Browser {
     private Browser() {}
     /**
@@ -29,7 +31,7 @@ public final class Browser {
     public static final class BrowserContextID implements CdpValue<String> {
         public final String value;
         public BrowserContextID(String value) { this.value = java.util.Objects.requireNonNull(value); }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof BrowserContextID)) return false;
@@ -45,7 +47,7 @@ public final class Browser {
     public static final class WindowID implements CdpValue<Long> {
         public final long value;
         public WindowID(long value) { this.value = value; }
-        public Long value() { return value; }
+        @Override public Long value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof WindowID)) return false;
@@ -65,7 +67,7 @@ public final class Browser {
         FULLSCREEN("fullscreen");
         public final String value;
         WindowState(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static WindowState of(String value) {
             for (WindowState constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -88,125 +90,75 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong left() {
-            Long value = CdpObject.numberAsLong(raw("left"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("left").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * The offset from the top edge of the screen to the window in pixels.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong top() {
-            Long value = CdpObject.numberAsLong(raw("top"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("top").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * The window width in pixels.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong width() {
-            Long value = CdpObject.numberAsLong(raw("width"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("width").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * The window height in pixels.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong height() {
-            Long value = CdpObject.numberAsLong(raw("height"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("height").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * The window state. Default to normal.
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.WindowState> windowState() {
-            Object value = raw("windowState");
-            return Optional.ofNullable(value == null ? null : Browser.WindowState.of((String) value));
+            return raw("windowState").map(value -> Browser.WindowState.of((String) value));
         }
         /**
          * The offset from the left edge of the screen to the window in pixels.
-         * @param left field value; empty omits the value
+         * @param left field value
          * @return this model
          */
-        public Bounds left(OptionalLong left) {
-            set("left", left.isPresent() ? left.getAsLong() : null);
-            return this;
-        }
-        /**
-         * The offset from the left edge of the screen to the window in pixels.
-         * @param left field value; null removes the value
-         * @return this model
-         */
-        public Bounds left(Long left) {
+        public Bounds left(long left) {
             set("left", left);
             return this;
         }
         /**
          * The offset from the top edge of the screen to the window in pixels.
-         * @param top field value; empty omits the value
+         * @param top field value
          * @return this model
          */
-        public Bounds top(OptionalLong top) {
-            set("top", top.isPresent() ? top.getAsLong() : null);
-            return this;
-        }
-        /**
-         * The offset from the top edge of the screen to the window in pixels.
-         * @param top field value; null removes the value
-         * @return this model
-         */
-        public Bounds top(Long top) {
+        public Bounds top(long top) {
             set("top", top);
             return this;
         }
         /**
          * The window width in pixels.
-         * @param width field value; empty omits the value
+         * @param width field value
          * @return this model
          */
-        public Bounds width(OptionalLong width) {
-            set("width", width.isPresent() ? width.getAsLong() : null);
-            return this;
-        }
-        /**
-         * The window width in pixels.
-         * @param width field value; null removes the value
-         * @return this model
-         */
-        public Bounds width(Long width) {
+        public Bounds width(long width) {
             set("width", width);
             return this;
         }
         /**
          * The window height in pixels.
-         * @param height field value; empty omits the value
+         * @param height field value
          * @return this model
          */
-        public Bounds height(OptionalLong height) {
-            set("height", height.isPresent() ? height.getAsLong() : null);
-            return this;
-        }
-        /**
-         * The window height in pixels.
-         * @param height field value; null removes the value
-         * @return this model
-         */
-        public Bounds height(Long height) {
+        public Bounds height(long height) {
             set("height", height);
             return this;
         }
         /**
          * The window state. Default to normal.
-         * @param windowState field value; empty omits the value
-         * @return this model
-         */
-        public Bounds windowState(Optional<Browser.WindowState> windowState) {
-            set("windowState", windowState.orElse(null));
-            return this;
-        }
-        /**
-         * The window state. Default to normal.
-         * @param windowState field value; null removes the value
+         * @param windowState field value
          * @return this model
          */
         public Bounds windowState(Browser.WindowState windowState) {
@@ -260,7 +212,7 @@ public final class Browser {
         WINDOWMANAGEMENT("windowManagement");
         public final String value;
         PermissionType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static PermissionType of(String value) {
             for (PermissionType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -278,7 +230,7 @@ public final class Browser {
         PROMPT("prompt");
         public final String value;
         PermissionSetting(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static PermissionSetting of(String value) {
             for (PermissionSetting constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -308,40 +260,35 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> sysex() {
-            Object value = raw("sysex");
-            return Optional.ofNullable((Boolean) value);
+            return raw("sysex").map(value -> (Boolean) value);
         }
         /**
          * For &quot;push&quot; permission, may specify userVisibleOnly. Note that userVisibleOnly = true is the only currently supported type.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> userVisibleOnly() {
-            Object value = raw("userVisibleOnly");
-            return Optional.ofNullable((Boolean) value);
+            return raw("userVisibleOnly").map(value -> (Boolean) value);
         }
         /**
          * For &quot;clipboard&quot; permission, may specify allowWithoutSanitization.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> allowWithoutSanitization() {
-            Object value = raw("allowWithoutSanitization");
-            return Optional.ofNullable((Boolean) value);
+            return raw("allowWithoutSanitization").map(value -> (Boolean) value);
         }
         /**
          * For &quot;fullscreen&quot; permission, must specify allowWithoutGesture:true.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> allowWithoutGesture() {
-            Object value = raw("allowWithoutGesture");
-            return Optional.ofNullable((Boolean) value);
+            return raw("allowWithoutGesture").map(value -> (Boolean) value);
         }
         /**
          * For &quot;camera&quot; permission, may specify panTiltZoom.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> panTiltZoom() {
-            Object value = raw("panTiltZoom");
-            return Optional.ofNullable((Boolean) value);
+            return raw("panTiltZoom").map(value -> (Boolean) value);
         }
         /**
          * Name of permission. See https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/permissions/permission_descriptor.idl for valid permission names.
@@ -354,91 +301,46 @@ public final class Browser {
         }
         /**
          * For &quot;midi&quot; permission, may also specify sysex control.
-         * @param sysex field value; empty omits the value
+         * @param sysex field value
          * @return this model
          */
-        public PermissionDescriptor sysex(Optional<Boolean> sysex) {
-            set("sysex", sysex.orElse(null));
-            return this;
-        }
-        /**
-         * For &quot;midi&quot; permission, may also specify sysex control.
-         * @param sysex field value; null removes the value
-         * @return this model
-         */
-        public PermissionDescriptor sysex(Boolean sysex) {
+        public PermissionDescriptor sysex(boolean sysex) {
             set("sysex", sysex);
             return this;
         }
         /**
          * For &quot;push&quot; permission, may specify userVisibleOnly. Note that userVisibleOnly = true is the only currently supported type.
-         * @param userVisibleOnly field value; empty omits the value
+         * @param userVisibleOnly field value
          * @return this model
          */
-        public PermissionDescriptor userVisibleOnly(Optional<Boolean> userVisibleOnly) {
-            set("userVisibleOnly", userVisibleOnly.orElse(null));
-            return this;
-        }
-        /**
-         * For &quot;push&quot; permission, may specify userVisibleOnly. Note that userVisibleOnly = true is the only currently supported type.
-         * @param userVisibleOnly field value; null removes the value
-         * @return this model
-         */
-        public PermissionDescriptor userVisibleOnly(Boolean userVisibleOnly) {
+        public PermissionDescriptor userVisibleOnly(boolean userVisibleOnly) {
             set("userVisibleOnly", userVisibleOnly);
             return this;
         }
         /**
          * For &quot;clipboard&quot; permission, may specify allowWithoutSanitization.
-         * @param allowWithoutSanitization field value; empty omits the value
+         * @param allowWithoutSanitization field value
          * @return this model
          */
-        public PermissionDescriptor allowWithoutSanitization(Optional<Boolean> allowWithoutSanitization) {
-            set("allowWithoutSanitization", allowWithoutSanitization.orElse(null));
-            return this;
-        }
-        /**
-         * For &quot;clipboard&quot; permission, may specify allowWithoutSanitization.
-         * @param allowWithoutSanitization field value; null removes the value
-         * @return this model
-         */
-        public PermissionDescriptor allowWithoutSanitization(Boolean allowWithoutSanitization) {
+        public PermissionDescriptor allowWithoutSanitization(boolean allowWithoutSanitization) {
             set("allowWithoutSanitization", allowWithoutSanitization);
             return this;
         }
         /**
          * For &quot;fullscreen&quot; permission, must specify allowWithoutGesture:true.
-         * @param allowWithoutGesture field value; empty omits the value
+         * @param allowWithoutGesture field value
          * @return this model
          */
-        public PermissionDescriptor allowWithoutGesture(Optional<Boolean> allowWithoutGesture) {
-            set("allowWithoutGesture", allowWithoutGesture.orElse(null));
-            return this;
-        }
-        /**
-         * For &quot;fullscreen&quot; permission, must specify allowWithoutGesture:true.
-         * @param allowWithoutGesture field value; null removes the value
-         * @return this model
-         */
-        public PermissionDescriptor allowWithoutGesture(Boolean allowWithoutGesture) {
+        public PermissionDescriptor allowWithoutGesture(boolean allowWithoutGesture) {
             set("allowWithoutGesture", allowWithoutGesture);
             return this;
         }
         /**
          * For &quot;camera&quot; permission, may specify panTiltZoom.
-         * @param panTiltZoom field value; empty omits the value
+         * @param panTiltZoom field value
          * @return this model
          */
-        public PermissionDescriptor panTiltZoom(Optional<Boolean> panTiltZoom) {
-            set("panTiltZoom", panTiltZoom.orElse(null));
-            return this;
-        }
-        /**
-         * For &quot;camera&quot; permission, may specify panTiltZoom.
-         * @param panTiltZoom field value; null removes the value
-         * @return this model
-         */
-        public PermissionDescriptor panTiltZoom(Boolean panTiltZoom) {
+        public PermissionDescriptor panTiltZoom(boolean panTiltZoom) {
             set("panTiltZoom", panTiltZoom);
             return this;
         }
@@ -453,7 +355,7 @@ public final class Browser {
         OPENGLIC("openGlic");
         public final String value;
         BrowserCommandId(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static BrowserCommandId of(String value) {
             for (BrowserCommandId constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -556,7 +458,7 @@ public final class Browser {
          * @return the protocol field value
          */
         public java.util.List<Browser.Bucket> buckets() {
-            return CdpObject.requireList(require("buckets"), element0 -> java.util.Objects.requireNonNull(Browser.Bucket.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("buckets"), element0 -> java.util.Objects.requireNonNull(Browser.Bucket.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Name.
@@ -604,7 +506,7 @@ public final class Browser {
         TRUSTEDKEYVALUE("TrustedKeyValue");
         public final String value;
         PrivacySandboxAPI(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static PrivacySandboxAPI of(String value) {
             for (PrivacySandboxAPI constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -625,11 +527,10 @@ public final class Browser {
          * @param setting protocol value
          */
         public SetPermissionRequest(Browser.PermissionDescriptor permission, Browser.PermissionSetting setting) {
-            set("permission", permission);
-            set("setting", setting);
+            permission(permission).setting(setting);
         }
         public static SetPermissionRequest fromMap(Map<String, Object> values) {
-            SetPermissionRequest instance_ = new SetPermissionRequest();
+            final SetPermissionRequest instance_ = new SetPermissionRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -638,7 +539,7 @@ public final class Browser {
          * @return the protocol field value
          */
         public Browser.PermissionDescriptor permission() {
-            return java.util.Objects.requireNonNull(Browser.PermissionDescriptor.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("permission")))));
+            return java.util.Objects.requireNonNull(Browser.PermissionDescriptor.fromMap(CdpObject.requireObjectMap(require("permission"))));
         }
         /**
          * Setting of the permission.
@@ -652,24 +553,21 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> origin() {
-            Object value = raw("origin");
-            return Optional.ofNullable((String) value);
+            return raw("origin").map(value -> (String) value);
         }
         /**
          * Embedded origin the permission applies to. It is ignored unless the embedding origin is present and valid. If the embedding origin is provided but the embedded origin isn&#x27;t, the embedding origin is used as the embedded origin.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> embeddedOrigin() {
-            Object value = raw("embeddedOrigin");
-            return Optional.ofNullable((String) value);
+            return raw("embeddedOrigin").map(value -> (String) value);
         }
         /**
          * Context to override. When omitted, default browser context is used.
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            Object value = raw("browserContextId");
-            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
+            return raw("browserContextId").map(value -> new Browser.BrowserContextID((String) value));
         }
         /**
          * Descriptor of permission to override.
@@ -691,16 +589,7 @@ public final class Browser {
         }
         /**
          * Embedding origin the permission applies to, all origins if not specified.
-         * @param origin field value; empty omits the value
-         * @return this model
-         */
-        public SetPermissionRequest origin(Optional<String> origin) {
-            set("origin", origin.orElse(null));
-            return this;
-        }
-        /**
-         * Embedding origin the permission applies to, all origins if not specified.
-         * @param origin field value; null removes the value
+         * @param origin field value
          * @return this model
          */
         public SetPermissionRequest origin(String origin) {
@@ -709,16 +598,7 @@ public final class Browser {
         }
         /**
          * Embedded origin the permission applies to. It is ignored unless the embedding origin is present and valid. If the embedding origin is provided but the embedded origin isn&#x27;t, the embedding origin is used as the embedded origin.
-         * @param embeddedOrigin field value; empty omits the value
-         * @return this model
-         */
-        public SetPermissionRequest embeddedOrigin(Optional<String> embeddedOrigin) {
-            set("embeddedOrigin", embeddedOrigin.orElse(null));
-            return this;
-        }
-        /**
-         * Embedded origin the permission applies to. It is ignored unless the embedding origin is present and valid. If the embedding origin is provided but the embedded origin isn&#x27;t, the embedding origin is used as the embedded origin.
-         * @param embeddedOrigin field value; null removes the value
+         * @param embeddedOrigin field value
          * @return this model
          */
         public SetPermissionRequest embeddedOrigin(String embeddedOrigin) {
@@ -727,16 +607,7 @@ public final class Browser {
         }
         /**
          * Context to override. When omitted, default browser context is used.
-         * @param browserContextId field value; empty omits the value
-         * @return this model
-         */
-        public SetPermissionRequest browserContextId(Optional<Browser.BrowserContextID> browserContextId) {
-            set("browserContextId", browserContextId.orElse(null));
-            return this;
-        }
-        /**
-         * Context to override. When omitted, default browser context is used.
-         * @param browserContextId field value; null removes the value
+         * @param browserContextId field value
          * @return this model
          */
         public SetPermissionRequest browserContextId(Browser.BrowserContextID browserContextId) {
@@ -760,10 +631,10 @@ public final class Browser {
          */
         @Deprecated
         public GrantPermissionsRequest(java.util.List<Browser.PermissionType> permissions) {
-            set("permissions", permissions);
+            permissions(permissions);
         }
         public static GrantPermissionsRequest fromMap(Map<String, Object> values) {
-            GrantPermissionsRequest instance_ = new GrantPermissionsRequest();
+            final GrantPermissionsRequest instance_ = new GrantPermissionsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -779,16 +650,14 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> origin() {
-            Object value = raw("origin");
-            return Optional.ofNullable((String) value);
+            return raw("origin").map(value -> (String) value);
         }
         /**
          * BrowserContext to override permissions. When omitted, default browser context is used.
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            Object value = raw("browserContextId");
-            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
+            return raw("browserContextId").map(value -> new Browser.BrowserContextID((String) value));
         }
         /**
          * Sets the permissions field.
@@ -801,16 +670,7 @@ public final class Browser {
         }
         /**
          * Origin the permission applies to, all origins if not specified.
-         * @param origin field value; empty omits the value
-         * @return this model
-         */
-        public GrantPermissionsRequest origin(Optional<String> origin) {
-            set("origin", origin.orElse(null));
-            return this;
-        }
-        /**
-         * Origin the permission applies to, all origins if not specified.
-         * @param origin field value; null removes the value
+         * @param origin field value
          * @return this model
          */
         public GrantPermissionsRequest origin(String origin) {
@@ -819,16 +679,7 @@ public final class Browser {
         }
         /**
          * BrowserContext to override permissions. When omitted, default browser context is used.
-         * @param browserContextId field value; empty omits the value
-         * @return this model
-         */
-        public GrantPermissionsRequest browserContextId(Optional<Browser.BrowserContextID> browserContextId) {
-            set("browserContextId", browserContextId.orElse(null));
-            return this;
-        }
-        /**
-         * BrowserContext to override permissions. When omitted, default browser context is used.
-         * @param browserContextId field value; null removes the value
+         * @param browserContextId field value
          * @return this model
          */
         public GrantPermissionsRequest browserContextId(Browser.BrowserContextID browserContextId) {
@@ -842,7 +693,7 @@ public final class Browser {
     public static final class ResetPermissionsRequest extends CdpObject {
         public ResetPermissionsRequest() {}
         public static ResetPermissionsRequest fromMap(Map<String, Object> values) {
-            ResetPermissionsRequest instance_ = new ResetPermissionsRequest();
+            final ResetPermissionsRequest instance_ = new ResetPermissionsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -851,21 +702,11 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            Object value = raw("browserContextId");
-            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
+            return raw("browserContextId").map(value -> new Browser.BrowserContextID((String) value));
         }
         /**
          * BrowserContext to reset permissions. When omitted, default browser context is used.
-         * @param browserContextId field value; empty omits the value
-         * @return this model
-         */
-        public ResetPermissionsRequest browserContextId(Optional<Browser.BrowserContextID> browserContextId) {
-            set("browserContextId", browserContextId.orElse(null));
-            return this;
-        }
-        /**
-         * BrowserContext to reset permissions. When omitted, default browser context is used.
-         * @param browserContextId field value; null removes the value
+         * @param browserContextId field value
          * @return this model
          */
         public ResetPermissionsRequest browserContextId(Browser.BrowserContextID browserContextId) {
@@ -885,10 +726,10 @@ public final class Browser {
          * @param behavior protocol value
          */
         public SetDownloadBehaviorRequest(SetDownloadBehaviorBehaviorValues behavior) {
-            set("behavior", behavior);
+            behavior(behavior);
         }
         public static SetDownloadBehaviorRequest fromMap(Map<String, Object> values) {
-            SetDownloadBehaviorRequest instance_ = new SetDownloadBehaviorRequest();
+            final SetDownloadBehaviorRequest instance_ = new SetDownloadBehaviorRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -904,24 +745,21 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            Object value = raw("browserContextId");
-            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
+            return raw("browserContextId").map(value -> new Browser.BrowserContextID((String) value));
         }
         /**
          * The default path to save downloaded files to. This is required if behavior is set to &#x27;allow&#x27; or &#x27;allowAndName&#x27;.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> downloadPath() {
-            Object value = raw("downloadPath");
-            return Optional.ofNullable((String) value);
+            return raw("downloadPath").map(value -> (String) value);
         }
         /**
          * Whether to emit download events (defaults to false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> eventsEnabled() {
-            Object value = raw("eventsEnabled");
-            return Optional.ofNullable((Boolean) value);
+            return raw("eventsEnabled").map(value -> (Boolean) value);
         }
         /**
          * Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny). |allowAndName| allows download and names files according to their download guids.
@@ -934,16 +772,7 @@ public final class Browser {
         }
         /**
          * BrowserContext to set download behavior. When omitted, default browser context is used.
-         * @param browserContextId field value; empty omits the value
-         * @return this model
-         */
-        public SetDownloadBehaviorRequest browserContextId(Optional<Browser.BrowserContextID> browserContextId) {
-            set("browserContextId", browserContextId.orElse(null));
-            return this;
-        }
-        /**
-         * BrowserContext to set download behavior. When omitted, default browser context is used.
-         * @param browserContextId field value; null removes the value
+         * @param browserContextId field value
          * @return this model
          */
         public SetDownloadBehaviorRequest browserContextId(Browser.BrowserContextID browserContextId) {
@@ -952,16 +781,7 @@ public final class Browser {
         }
         /**
          * The default path to save downloaded files to. This is required if behavior is set to &#x27;allow&#x27; or &#x27;allowAndName&#x27;.
-         * @param downloadPath field value; empty omits the value
-         * @return this model
-         */
-        public SetDownloadBehaviorRequest downloadPath(Optional<String> downloadPath) {
-            set("downloadPath", downloadPath.orElse(null));
-            return this;
-        }
-        /**
-         * The default path to save downloaded files to. This is required if behavior is set to &#x27;allow&#x27; or &#x27;allowAndName&#x27;.
-         * @param downloadPath field value; null removes the value
+         * @param downloadPath field value
          * @return this model
          */
         public SetDownloadBehaviorRequest downloadPath(String downloadPath) {
@@ -970,19 +790,10 @@ public final class Browser {
         }
         /**
          * Whether to emit download events (defaults to false).
-         * @param eventsEnabled field value; empty omits the value
+         * @param eventsEnabled field value
          * @return this model
          */
-        public SetDownloadBehaviorRequest eventsEnabled(Optional<Boolean> eventsEnabled) {
-            set("eventsEnabled", eventsEnabled.orElse(null));
-            return this;
-        }
-        /**
-         * Whether to emit download events (defaults to false).
-         * @param eventsEnabled field value; null removes the value
-         * @return this model
-         */
-        public SetDownloadBehaviorRequest eventsEnabled(Boolean eventsEnabled) {
+        public SetDownloadBehaviorRequest eventsEnabled(boolean eventsEnabled) {
             set("eventsEnabled", eventsEnabled);
             return this;
         }
@@ -999,10 +810,10 @@ public final class Browser {
          * @param guid protocol value
          */
         public CancelDownloadRequest(String guid) {
-            set("guid", guid);
+            guid(guid);
         }
         public static CancelDownloadRequest fromMap(Map<String, Object> values) {
-            CancelDownloadRequest instance_ = new CancelDownloadRequest();
+            final CancelDownloadRequest instance_ = new CancelDownloadRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1018,8 +829,7 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            Object value = raw("browserContextId");
-            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
+            return raw("browserContextId").map(value -> new Browser.BrowserContextID((String) value));
         }
         /**
          * Global unique identifier of the download.
@@ -1032,16 +842,7 @@ public final class Browser {
         }
         /**
          * BrowserContext to perform the action in. When omitted, default browser context is used.
-         * @param browserContextId field value; empty omits the value
-         * @return this model
-         */
-        public CancelDownloadRequest browserContextId(Optional<Browser.BrowserContextID> browserContextId) {
-            set("browserContextId", browserContextId.orElse(null));
-            return this;
-        }
-        /**
-         * BrowserContext to perform the action in. When omitted, default browser context is used.
-         * @param browserContextId field value; null removes the value
+         * @param browserContextId field value
          * @return this model
          */
         public CancelDownloadRequest browserContextId(Browser.BrowserContextID browserContextId) {
@@ -1056,7 +857,7 @@ public final class Browser {
     public static final class GetHistogramsRequest extends CdpObject {
         public GetHistogramsRequest() {}
         public static GetHistogramsRequest fromMap(Map<String, Object> values) {
-            GetHistogramsRequest instance_ = new GetHistogramsRequest();
+            final GetHistogramsRequest instance_ = new GetHistogramsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1065,29 +866,18 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> query() {
-            Object value = raw("query");
-            return Optional.ofNullable((String) value);
+            return raw("query").map(value -> (String) value);
         }
         /**
          * If true, retrieve delta since last delta call.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> delta() {
-            Object value = raw("delta");
-            return Optional.ofNullable((Boolean) value);
+            return raw("delta").map(value -> (Boolean) value);
         }
         /**
          * Requested substring in name. Only histograms which have query as a substring in their name are extracted. An empty or absent query returns all histograms.
-         * @param query field value; empty omits the value
-         * @return this model
-         */
-        public GetHistogramsRequest query(Optional<String> query) {
-            set("query", query.orElse(null));
-            return this;
-        }
-        /**
-         * Requested substring in name. Only histograms which have query as a substring in their name are extracted. An empty or absent query returns all histograms.
-         * @param query field value; null removes the value
+         * @param query field value
          * @return this model
          */
         public GetHistogramsRequest query(String query) {
@@ -1096,19 +886,10 @@ public final class Browser {
         }
         /**
          * If true, retrieve delta since last delta call.
-         * @param delta field value; empty omits the value
+         * @param delta field value
          * @return this model
          */
-        public GetHistogramsRequest delta(Optional<Boolean> delta) {
-            set("delta", delta.orElse(null));
-            return this;
-        }
-        /**
-         * If true, retrieve delta since last delta call.
-         * @param delta field value; null removes the value
-         * @return this model
-         */
-        public GetHistogramsRequest delta(Boolean delta) {
+        public GetHistogramsRequest delta(boolean delta) {
             set("delta", delta);
             return this;
         }
@@ -1125,10 +906,10 @@ public final class Browser {
          * @param name protocol value
          */
         public GetHistogramRequest(String name) {
-            set("name", name);
+            name(name);
         }
         public static GetHistogramRequest fromMap(Map<String, Object> values) {
-            GetHistogramRequest instance_ = new GetHistogramRequest();
+            final GetHistogramRequest instance_ = new GetHistogramRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1144,8 +925,7 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> delta() {
-            Object value = raw("delta");
-            return Optional.ofNullable((Boolean) value);
+            return raw("delta").map(value -> (Boolean) value);
         }
         /**
          * Requested histogram name.
@@ -1158,19 +938,10 @@ public final class Browser {
         }
         /**
          * If true, retrieve delta since last delta call.
-         * @param delta field value; empty omits the value
+         * @param delta field value
          * @return this model
          */
-        public GetHistogramRequest delta(Optional<Boolean> delta) {
-            set("delta", delta.orElse(null));
-            return this;
-        }
-        /**
-         * If true, retrieve delta since last delta call.
-         * @param delta field value; null removes the value
-         * @return this model
-         */
-        public GetHistogramRequest delta(Boolean delta) {
+        public GetHistogramRequest delta(boolean delta) {
             set("delta", delta);
             return this;
         }
@@ -1187,10 +958,10 @@ public final class Browser {
          * @param windowId protocol value
          */
         public GetWindowBoundsRequest(Browser.WindowID windowId) {
-            set("windowId", windowId);
+            windowId(windowId);
         }
         public static GetWindowBoundsRequest fromMap(Map<String, Object> values) {
-            GetWindowBoundsRequest instance_ = new GetWindowBoundsRequest();
+            final GetWindowBoundsRequest instance_ = new GetWindowBoundsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1218,7 +989,7 @@ public final class Browser {
     public static final class GetWindowForTargetRequest extends CdpObject {
         public GetWindowForTargetRequest() {}
         public static GetWindowForTargetRequest fromMap(Map<String, Object> values) {
-            GetWindowForTargetRequest instance_ = new GetWindowForTargetRequest();
+            final GetWindowForTargetRequest instance_ = new GetWindowForTargetRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1227,21 +998,11 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<Target.TargetID> targetId() {
-            Object value = raw("targetId");
-            return Optional.ofNullable(value == null ? null : new Target.TargetID((String) value));
+            return raw("targetId").map(value -> new Target.TargetID((String) value));
         }
         /**
          * Devtools agent host id. If called as a part of the session, associated targetId is used.
-         * @param targetId field value; empty omits the value
-         * @return this model
-         */
-        public GetWindowForTargetRequest targetId(Optional<Target.TargetID> targetId) {
-            set("targetId", targetId.orElse(null));
-            return this;
-        }
-        /**
-         * Devtools agent host id. If called as a part of the session, associated targetId is used.
-         * @param targetId field value; null removes the value
+         * @param targetId field value
          * @return this model
          */
         public GetWindowForTargetRequest targetId(Target.TargetID targetId) {
@@ -1262,11 +1023,10 @@ public final class Browser {
          * @param bounds protocol value
          */
         public SetWindowBoundsRequest(Browser.WindowID windowId, Browser.Bounds bounds) {
-            set("windowId", windowId);
-            set("bounds", bounds);
+            windowId(windowId).bounds(bounds);
         }
         public static SetWindowBoundsRequest fromMap(Map<String, Object> values) {
-            SetWindowBoundsRequest instance_ = new SetWindowBoundsRequest();
+            final SetWindowBoundsRequest instance_ = new SetWindowBoundsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1282,7 +1042,7 @@ public final class Browser {
          * @return the protocol field value
          */
         public Browser.Bounds bounds() {
-            return java.util.Objects.requireNonNull(Browser.Bounds.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("bounds")))));
+            return java.util.Objects.requireNonNull(Browser.Bounds.fromMap(CdpObject.requireObjectMap(require("bounds"))));
         }
         /**
          * Browser window id.
@@ -1315,10 +1075,10 @@ public final class Browser {
          * @param windowId protocol value
          */
         public SetContentsSizeRequest(Browser.WindowID windowId) {
-            set("windowId", windowId);
+            windowId(windowId);
         }
         public static SetContentsSizeRequest fromMap(Map<String, Object> values) {
-            SetContentsSizeRequest instance_ = new SetContentsSizeRequest();
+            final SetContentsSizeRequest instance_ = new SetContentsSizeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1334,16 +1094,14 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong width() {
-            Long value = CdpObject.numberAsLong(raw("width"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("width").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * The window contents height in DIP. Assumes current height if omitted. Must be specified if &#x27;width&#x27; is omitted.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong height() {
-            Long value = CdpObject.numberAsLong(raw("height"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("height").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Browser window id.
@@ -1356,37 +1114,19 @@ public final class Browser {
         }
         /**
          * The window contents width in DIP. Assumes current width if omitted. Must be specified if &#x27;height&#x27; is omitted.
-         * @param width field value; empty omits the value
+         * @param width field value
          * @return this model
          */
-        public SetContentsSizeRequest width(OptionalLong width) {
-            set("width", width.isPresent() ? width.getAsLong() : null);
-            return this;
-        }
-        /**
-         * The window contents width in DIP. Assumes current width if omitted. Must be specified if &#x27;height&#x27; is omitted.
-         * @param width field value; null removes the value
-         * @return this model
-         */
-        public SetContentsSizeRequest width(Long width) {
+        public SetContentsSizeRequest width(long width) {
             set("width", width);
             return this;
         }
         /**
          * The window contents height in DIP. Assumes current height if omitted. Must be specified if &#x27;width&#x27; is omitted.
-         * @param height field value; empty omits the value
+         * @param height field value
          * @return this model
          */
-        public SetContentsSizeRequest height(OptionalLong height) {
-            set("height", height.isPresent() ? height.getAsLong() : null);
-            return this;
-        }
-        /**
-         * The window contents height in DIP. Assumes current height if omitted. Must be specified if &#x27;width&#x27; is omitted.
-         * @param height field value; null removes the value
-         * @return this model
-         */
-        public SetContentsSizeRequest height(Long height) {
+        public SetContentsSizeRequest height(long height) {
             set("height", height);
             return this;
         }
@@ -1398,7 +1138,7 @@ public final class Browser {
     public static final class SetDockTileRequest extends CdpObject {
         public SetDockTileRequest() {}
         public static SetDockTileRequest fromMap(Map<String, Object> values) {
-            SetDockTileRequest instance_ = new SetDockTileRequest();
+            final SetDockTileRequest instance_ = new SetDockTileRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1407,29 +1147,18 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> badgeLabel() {
-            Object value = raw("badgeLabel");
-            return Optional.ofNullable((String) value);
+            return raw("badgeLabel").map(value -> (String) value);
         }
         /**
          * Png encoded image. (Encoded as a base64 string when passed over JSON)
          * @return the protocol field value, empty when absent
          */
         public Optional<String> image() {
-            Object value = raw("image");
-            return Optional.ofNullable((String) value);
+            return raw("image").map(value -> (String) value);
         }
         /**
          * Sets the badgeLabel field.
-         * @param badgeLabel field value; empty omits the value
-         * @return this model
-         */
-        public SetDockTileRequest badgeLabel(Optional<String> badgeLabel) {
-            set("badgeLabel", badgeLabel.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the badgeLabel field.
-         * @param badgeLabel field value; null removes the value
+         * @param badgeLabel field value
          * @return this model
          */
         public SetDockTileRequest badgeLabel(String badgeLabel) {
@@ -1438,16 +1167,7 @@ public final class Browser {
         }
         /**
          * Png encoded image. (Encoded as a base64 string when passed over JSON)
-         * @param image field value; empty omits the value
-         * @return this model
-         */
-        public SetDockTileRequest image(Optional<String> image) {
-            set("image", image.orElse(null));
-            return this;
-        }
-        /**
-         * Png encoded image. (Encoded as a base64 string when passed over JSON)
-         * @param image field value; null removes the value
+         * @param image field value
          * @return this model
          */
         public SetDockTileRequest image(String image) {
@@ -1467,10 +1187,10 @@ public final class Browser {
          * @param commandId protocol value
          */
         public ExecuteBrowserCommandRequest(Browser.BrowserCommandId commandId) {
-            set("commandId", commandId);
+            commandId(commandId);
         }
         public static ExecuteBrowserCommandRequest fromMap(Map<String, Object> values) {
-            ExecuteBrowserCommandRequest instance_ = new ExecuteBrowserCommandRequest();
+            final ExecuteBrowserCommandRequest instance_ = new ExecuteBrowserCommandRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1501,10 +1221,10 @@ public final class Browser {
          * @param url protocol value
          */
         public AddPrivacySandboxEnrollmentOverrideRequest(String url) {
-            set("url", url);
+            url(url);
         }
         public static AddPrivacySandboxEnrollmentOverrideRequest fromMap(Map<String, Object> values) {
-            AddPrivacySandboxEnrollmentOverrideRequest instance_ = new AddPrivacySandboxEnrollmentOverrideRequest();
+            final AddPrivacySandboxEnrollmentOverrideRequest instance_ = new AddPrivacySandboxEnrollmentOverrideRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1537,12 +1257,10 @@ public final class Browser {
          * @param keyConfig protocol value
          */
         public AddPrivacySandboxCoordinatorKeyConfigRequest(Browser.PrivacySandboxAPI api, String coordinatorOrigin, String keyConfig) {
-            set("api", api);
-            set("coordinatorOrigin", coordinatorOrigin);
-            set("keyConfig", keyConfig);
+            api(api).coordinatorOrigin(coordinatorOrigin).keyConfig(keyConfig);
         }
         public static AddPrivacySandboxCoordinatorKeyConfigRequest fromMap(Map<String, Object> values) {
-            AddPrivacySandboxCoordinatorKeyConfigRequest instance_ = new AddPrivacySandboxCoordinatorKeyConfigRequest();
+            final AddPrivacySandboxCoordinatorKeyConfigRequest instance_ = new AddPrivacySandboxCoordinatorKeyConfigRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1572,8 +1290,7 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            Object value = raw("browserContextId");
-            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
+            return raw("browserContextId").map(value -> new Browser.BrowserContextID((String) value));
         }
         /**
          * Sets the api field.
@@ -1604,16 +1321,7 @@ public final class Browser {
         }
         /**
          * BrowserContext to perform the action in. When omitted, default browser context is used.
-         * @param browserContextId field value; empty omits the value
-         * @return this model
-         */
-        public AddPrivacySandboxCoordinatorKeyConfigRequest browserContextId(Optional<Browser.BrowserContextID> browserContextId) {
-            set("browserContextId", browserContextId.orElse(null));
-            return this;
-        }
-        /**
-         * BrowserContext to perform the action in. When omitted, default browser context is used.
-         * @param browserContextId field value; null removes the value
+         * @param browserContextId field value
          * @return this model
          */
         public AddPrivacySandboxCoordinatorKeyConfigRequest browserContextId(Browser.BrowserContextID browserContextId) {
@@ -1733,7 +1441,7 @@ public final class Browser {
          * @return the protocol field value
          */
         public Browser.Bounds bounds() {
-            return java.util.Objects.requireNonNull(Browser.Bounds.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("bounds")))));
+            return java.util.Objects.requireNonNull(Browser.Bounds.fromMap(CdpObject.requireObjectMap(require("bounds"))));
         }
         /**
          * Browser window id.
@@ -1848,7 +1556,7 @@ public final class Browser {
             CANCELED("canceled");
             public final String value;
             StateValues(String value) { this.value = value; }
-            public String value() { return value; }
+            @Override public String value() { return value; }
             public static StateValues of(String value) {
                 for (StateValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
@@ -1890,8 +1598,7 @@ public final class Browser {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> filePath() {
-            Object value = raw("filePath");
-            return Optional.ofNullable((String) value);
+            return raw("filePath").map(value -> (String) value);
         }
         /**
          * Global unique identifier of the download.
@@ -1932,17 +1639,7 @@ public final class Browser {
         /**
          * If download is &quot;completed&quot;, provides the path of the downloaded file. Depending on the platform, it is not guaranteed to be set, nor the file is guaranteed to exist.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param filePath field value; empty omits the value
-         * @return this model
-         */
-        public DownloadProgressEvent filePath(Optional<String> filePath) {
-            set("filePath", filePath.orElse(null));
-            return this;
-        }
-        /**
-         * If download is &quot;completed&quot;, provides the path of the downloaded file. Depending on the platform, it is not guaranteed to be set, nor the file is guaranteed to exist.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param filePath field value; null removes the value
+         * @param filePath field value
          * @return this model
          */
         public DownloadProgressEvent filePath(String filePath) {
@@ -1960,7 +1657,7 @@ public final class Browser {
         DEFAULT("default");
         public final String value;
         SetDownloadBehaviorBehaviorValues(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static SetDownloadBehaviorBehaviorValues of(String value) {
             for (SetDownloadBehaviorBehaviorValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -1981,13 +1678,13 @@ public final class Browser {
          * @param browserContextId protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setPermission(Browser.PermissionDescriptor permission, Browser.PermissionSetting setting, Optional<String> origin, Optional<String> embeddedOrigin, Optional<Browser.BrowserContextID> browserContextId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> setPermission(Browser.PermissionDescriptor permission, Browser.PermissionSetting setting, @Nullable String origin, @Nullable String embeddedOrigin, Browser.@Nullable BrowserContextID browserContextId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("permission", CdpObject.json(permission));
             params.put("setting", CdpObject.json(setting));
-            origin.ifPresent(value_ -> params.put("origin", CdpObject.json(value_)));
-            embeddedOrigin.ifPresent(value_ -> params.put("embeddedOrigin", CdpObject.json(value_)));
-            browserContextId.ifPresent(value_ -> params.put("browserContextId", CdpObject.json(value_)));
+            if (origin != null) params.put("origin", CdpObject.json(origin));
+            if (embeddedOrigin != null) params.put("embeddedOrigin", CdpObject.json(embeddedOrigin));
+            if (browserContextId != null) params.put("browserContextId", CdpObject.json(browserContextId));
             return client.call("Browser.setPermission", params);
         }
         /**
@@ -1998,7 +1695,10 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPermission(Browser.PermissionDescriptor permission, Browser.PermissionSetting setting) {
-            return setPermission(permission, setting, Optional.empty(), Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("permission", CdpObject.json(permission));
+            params.put("setting", CdpObject.json(setting));
+            return client.call("Browser.setPermission", params);
         }
         /**
          * Set permission settings for given embedding and embedded origins.
@@ -2019,11 +1719,11 @@ public final class Browser {
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
         @Deprecated
-        public CompletionStage<Void> grantPermissions(java.util.List<Browser.PermissionType> permissions, Optional<String> origin, Optional<Browser.BrowserContextID> browserContextId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> grantPermissions(java.util.List<Browser.PermissionType> permissions, @Nullable String origin, Browser.@Nullable BrowserContextID browserContextId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("permissions", CdpObject.json(permissions));
-            origin.ifPresent(value_ -> params.put("origin", CdpObject.json(value_)));
-            browserContextId.ifPresent(value_ -> params.put("browserContextId", CdpObject.json(value_)));
+            if (origin != null) params.put("origin", CdpObject.json(origin));
+            if (browserContextId != null) params.put("browserContextId", CdpObject.json(browserContextId));
             return client.call("Browser.grantPermissions", params);
         }
         /**
@@ -2035,7 +1735,9 @@ public final class Browser {
          */
         @Deprecated
         public CompletionStage<Void> grantPermissions(java.util.List<Browser.PermissionType> permissions) {
-            return grantPermissions(permissions, Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("permissions", CdpObject.json(permissions));
+            return client.call("Browser.grantPermissions", params);
         }
         /**
          * Grant specific permissions to the given origin and reject all others. Deprecated. Use setPermission instead.
@@ -2053,9 +1755,9 @@ public final class Browser {
          * @param browserContextId protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> resetPermissions(Optional<Browser.BrowserContextID> browserContextId) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            browserContextId.ifPresent(value_ -> params.put("browserContextId", CdpObject.json(value_)));
+        public CompletionStage<Void> resetPermissions(Browser.BrowserContextID browserContextId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("browserContextId", CdpObject.json(browserContextId));
             return client.call("Browser.resetPermissions", params);
         }
         /**
@@ -2063,7 +1765,7 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> resetPermissions() {
-            return resetPermissions(Optional.empty());
+            return client.call("Browser.resetPermissions", null);
         }
         /**
          * Reset all permission management for all origins.
@@ -2082,12 +1784,12 @@ public final class Browser {
          * @param eventsEnabled protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setDownloadBehavior(SetDownloadBehaviorBehaviorValues behavior, Optional<Browser.BrowserContextID> browserContextId, Optional<String> downloadPath, Optional<Boolean> eventsEnabled) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> setDownloadBehavior(SetDownloadBehaviorBehaviorValues behavior, Browser.@Nullable BrowserContextID browserContextId, @Nullable String downloadPath, @Nullable Boolean eventsEnabled) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("behavior", CdpObject.json(behavior));
-            browserContextId.ifPresent(value_ -> params.put("browserContextId", CdpObject.json(value_)));
-            downloadPath.ifPresent(value_ -> params.put("downloadPath", CdpObject.json(value_)));
-            eventsEnabled.ifPresent(value_ -> params.put("eventsEnabled", value_));
+            if (browserContextId != null) params.put("browserContextId", CdpObject.json(browserContextId));
+            if (downloadPath != null) params.put("downloadPath", CdpObject.json(downloadPath));
+            if (eventsEnabled != null) params.put("eventsEnabled", CdpObject.json(eventsEnabled));
             return client.call("Browser.setDownloadBehavior", params);
         }
         /**
@@ -2097,7 +1799,9 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDownloadBehavior(SetDownloadBehaviorBehaviorValues behavior) {
-            return setDownloadBehavior(behavior, Optional.empty(), Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("behavior", CdpObject.json(behavior));
+            return client.call("Browser.setDownloadBehavior", params);
         }
         /**
          * Set the behavior when downloading a file.
@@ -2115,10 +1819,10 @@ public final class Browser {
          * @param browserContextId protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> cancelDownload(String guid, Optional<Browser.BrowserContextID> browserContextId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> cancelDownload(String guid, Browser.BrowserContextID browserContextId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("guid", CdpObject.json(guid));
-            browserContextId.ifPresent(value_ -> params.put("browserContextId", CdpObject.json(value_)));
+            params.put("browserContextId", CdpObject.json(browserContextId));
             return client.call("Browser.cancelDownload", params);
         }
         /**
@@ -2128,7 +1832,9 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> cancelDownload(String guid) {
-            return cancelDownload(guid, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("guid", CdpObject.json(guid));
+            return client.call("Browser.cancelDownload", params);
         }
         /**
          * Cancel a download if in progress
@@ -2184,11 +1890,11 @@ public final class Browser {
          * @param delta protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<java.util.List<Browser.Histogram>> getHistograms(Optional<String> query, Optional<Boolean> delta) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            query.ifPresent(value_ -> params.put("query", CdpObject.json(value_)));
-            delta.ifPresent(value_ -> params.put("delta", value_));
-            return client.call("Browser.getHistograms", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("histograms")), element0 -> java.util.Objects.requireNonNull(Browser.Histogram.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        public CompletionStage<java.util.List<Browser.Histogram>> getHistograms(@Nullable String query, @Nullable Boolean delta) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (query != null) params.put("query", CdpObject.json(query));
+            if (delta != null) params.put("delta", CdpObject.json(delta));
+            return client.call("Browser.getHistograms", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("histograms")), element0 -> java.util.Objects.requireNonNull(Browser.Histogram.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Get Chrome histograms.
@@ -2196,7 +1902,7 @@ public final class Browser {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Browser.Histogram>> getHistograms() {
-            return getHistograms(Optional.empty(), Optional.empty());
+            return client.call("Browser.getHistograms", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("histograms")), element0 -> java.util.Objects.requireNonNull(Browser.Histogram.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Get Chrome histograms.
@@ -2205,7 +1911,7 @@ public final class Browser {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Browser.Histogram>> getHistograms(GetHistogramsRequest request) {
-            return client.call("Browser.getHistograms", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("histograms")), element0 -> java.util.Objects.requireNonNull(Browser.Histogram.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("Browser.getHistograms", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("histograms")), element0 -> java.util.Objects.requireNonNull(Browser.Histogram.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Get a Chrome histogram by name.
@@ -2214,11 +1920,11 @@ public final class Browser {
          * @param delta protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<Browser.Histogram> getHistogram(String name, Optional<Boolean> delta) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Browser.Histogram> getHistogram(String name, boolean delta) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("name", CdpObject.json(name));
-            delta.ifPresent(value_ -> params.put("delta", value_));
-            return client.call("Browser.getHistogram", params, result_ -> java.util.Objects.requireNonNull(Browser.Histogram.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("histogram")))))));
+            params.put("delta", CdpObject.json(delta));
+            return client.call("Browser.getHistogram", params, result_ -> java.util.Objects.requireNonNull(Browser.Histogram.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("histogram"))))));
         }
         /**
          * Get a Chrome histogram by name.
@@ -2227,7 +1933,9 @@ public final class Browser {
          * @return a stage completing with the command result
          */
         public CompletionStage<Browser.Histogram> getHistogram(String name) {
-            return getHistogram(name, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("name", CdpObject.json(name));
+            return client.call("Browser.getHistogram", params, result_ -> java.util.Objects.requireNonNull(Browser.Histogram.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("histogram"))))));
         }
         /**
          * Get a Chrome histogram by name.
@@ -2236,7 +1944,7 @@ public final class Browser {
          * @return a stage completing with the command result
          */
         public CompletionStage<Browser.Histogram> getHistogram(GetHistogramRequest request) {
-            return client.call("Browser.getHistogram", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Browser.Histogram.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("histogram")))))));
+            return client.call("Browser.getHistogram", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Browser.Histogram.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("histogram"))))));
         }
         /**
          * Get position and size of the browser window.
@@ -2245,9 +1953,9 @@ public final class Browser {
          * @return a stage completing with the command result
          */
         public CompletionStage<Browser.Bounds> getWindowBounds(Browser.WindowID windowId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("windowId", CdpObject.json(windowId));
-            return client.call("Browser.getWindowBounds", params, result_ -> java.util.Objects.requireNonNull(Browser.Bounds.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("bounds")))))));
+            return client.call("Browser.getWindowBounds", params, result_ -> java.util.Objects.requireNonNull(Browser.Bounds.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("bounds"))))));
         }
         /**
          * Get position and size of the browser window.
@@ -2256,7 +1964,7 @@ public final class Browser {
          * @return a stage completing with the command result
          */
         public CompletionStage<Browser.Bounds> getWindowBounds(GetWindowBoundsRequest request) {
-            return client.call("Browser.getWindowBounds", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Browser.Bounds.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("bounds")))))));
+            return client.call("Browser.getWindowBounds", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Browser.Bounds.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("bounds"))))));
         }
         /**
          * Get the browser window that contains the devtools target.
@@ -2264,9 +1972,9 @@ public final class Browser {
          * @param targetId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetWindowForTargetResult> getWindowForTarget(Optional<Target.TargetID> targetId) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            targetId.ifPresent(value_ -> params.put("targetId", CdpObject.json(value_)));
+        public CompletionStage<GetWindowForTargetResult> getWindowForTarget(Target.TargetID targetId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("targetId", CdpObject.json(targetId));
             return client.call("Browser.getWindowForTarget", params, result_ -> new GetWindowForTargetResult(result_));
         }
         /**
@@ -2275,7 +1983,7 @@ public final class Browser {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetWindowForTargetResult> getWindowForTarget() {
-            return getWindowForTarget(Optional.empty());
+            return client.call("Browser.getWindowForTarget", null, result_ -> new GetWindowForTargetResult(result_));
         }
         /**
          * Get the browser window that contains the devtools target.
@@ -2294,7 +2002,7 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setWindowBounds(Browser.WindowID windowId, Browser.Bounds bounds) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("windowId", CdpObject.json(windowId));
             params.put("bounds", CdpObject.json(bounds));
             return client.call("Browser.setWindowBounds", params);
@@ -2316,11 +2024,11 @@ public final class Browser {
          * @param height protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setContentsSize(Browser.WindowID windowId, OptionalLong width, OptionalLong height) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> setContentsSize(Browser.WindowID windowId, @Nullable Long width, @Nullable Long height) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("windowId", CdpObject.json(windowId));
-            width.ifPresent(value_ -> params.put("width", value_));
-            height.ifPresent(value_ -> params.put("height", value_));
+            if (width != null) params.put("width", CdpObject.json(width));
+            if (height != null) params.put("height", CdpObject.json(height));
             return client.call("Browser.setContentsSize", params);
         }
         /**
@@ -2330,7 +2038,9 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setContentsSize(Browser.WindowID windowId) {
-            return setContentsSize(windowId, OptionalLong.empty(), OptionalLong.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("windowId", CdpObject.json(windowId));
+            return client.call("Browser.setContentsSize", params);
         }
         /**
          * Set size of the browser contents resizing browser window as necessary.
@@ -2348,10 +2058,10 @@ public final class Browser {
          * @param image protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setDockTile(Optional<String> badgeLabel, Optional<String> image) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            badgeLabel.ifPresent(value_ -> params.put("badgeLabel", CdpObject.json(value_)));
-            image.ifPresent(value_ -> params.put("image", CdpObject.json(value_)));
+        public CompletionStage<Void> setDockTile(@Nullable String badgeLabel, @Nullable String image) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (badgeLabel != null) params.put("badgeLabel", CdpObject.json(badgeLabel));
+            if (image != null) params.put("image", CdpObject.json(image));
             return client.call("Browser.setDockTile", params);
         }
         /**
@@ -2360,7 +2070,7 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDockTile() {
-            return setDockTile(Optional.empty(), Optional.empty());
+            return client.call("Browser.setDockTile", null);
         }
         /**
          * Set dock tile details, platform-specific.
@@ -2378,7 +2088,7 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> executeBrowserCommand(Browser.BrowserCommandId commandId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("commandId", CdpObject.json(commandId));
             return client.call("Browser.executeBrowserCommand", params);
         }
@@ -2397,7 +2107,7 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> addPrivacySandboxEnrollmentOverride(String url) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("url", CdpObject.json(url));
             return client.call("Browser.addPrivacySandboxEnrollmentOverride", params);
         }
@@ -2417,12 +2127,12 @@ public final class Browser {
          * @param browserContextId protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> addPrivacySandboxCoordinatorKeyConfig(Browser.PrivacySandboxAPI api, String coordinatorOrigin, String keyConfig, Optional<Browser.BrowserContextID> browserContextId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> addPrivacySandboxCoordinatorKeyConfig(Browser.PrivacySandboxAPI api, String coordinatorOrigin, String keyConfig, Browser.BrowserContextID browserContextId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("api", CdpObject.json(api));
             params.put("coordinatorOrigin", CdpObject.json(coordinatorOrigin));
             params.put("keyConfig", CdpObject.json(keyConfig));
-            browserContextId.ifPresent(value_ -> params.put("browserContextId", CdpObject.json(value_)));
+            params.put("browserContextId", CdpObject.json(browserContextId));
             return client.call("Browser.addPrivacySandboxCoordinatorKeyConfig", params);
         }
         /**
@@ -2433,7 +2143,11 @@ public final class Browser {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> addPrivacySandboxCoordinatorKeyConfig(Browser.PrivacySandboxAPI api, String coordinatorOrigin, String keyConfig) {
-            return addPrivacySandboxCoordinatorKeyConfig(api, coordinatorOrigin, keyConfig, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("api", CdpObject.json(api));
+            params.put("coordinatorOrigin", CdpObject.json(coordinatorOrigin));
+            params.put("keyConfig", CdpObject.json(keyConfig));
+            return client.call("Browser.addPrivacySandboxCoordinatorKeyConfig", params);
         }
         /**
          * Configures encryption keys used with a given privacy sandbox API to talk to a trusted coordinator. Since this is intended for test automation only, coordinatorOrigin must be a .test domain. No existing coordinator configuration for the origin may exist.

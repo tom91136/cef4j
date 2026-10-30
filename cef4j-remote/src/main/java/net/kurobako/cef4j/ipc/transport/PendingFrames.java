@@ -1,7 +1,8 @@
 package net.kurobako.cef4j.ipc.transport;
 
 import java.util.ArrayDeque;
-import org.jspecify.annotations.Nullable;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 final class PendingFrames {
     static final int DEFAULT_MAX_FRAMES = 4096;
@@ -30,10 +31,14 @@ final class PendingFrames {
         return true;
     }
 
-    byte @Nullable [] poll() {
-        byte[] frame = frames.poll();
+    Optional<byte[]> poll() {
+        final byte[] frame = frames.poll();
         if (frame != null) bytes -= frame.length;
-        return frame;
+        return Optional.ofNullable(frame);
+    }
+
+    void drain(Consumer<byte[]> sink) {
+        for (Optional<byte[]> frame = poll(); frame.isPresent(); frame = poll()) frame.ifPresent(sink);
     }
 
     boolean isEmpty() {

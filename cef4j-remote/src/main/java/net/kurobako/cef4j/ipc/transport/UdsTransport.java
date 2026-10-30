@@ -32,7 +32,6 @@ public final class UdsTransport implements CefTransport {
     private final Object sendLock = new Object();
     private final Object receiveLock = new Object();
     private final PendingFrames pending = new PendingFrames();
-    private final Thread reader;
 
     @Nullable
     private volatile Consumer<ByteBuffer> receiveHandler;
@@ -40,12 +39,12 @@ public final class UdsTransport implements CefTransport {
     @Nullable
     private volatile Runnable disconnectHandler;
 
-    private volatile boolean closed;
-    private volatile boolean disconnected;
+    private volatile boolean closed = false;
+    private volatile boolean disconnected = false;
     private final AtomicBoolean disconnectNotified = new AtomicBoolean();
 
     public static UdsTransport connect(String endpoint) throws CefTransportException {
-        Path path = pathOf(endpoint);
+        final Path path = pathOf(endpoint);
         AFUNIXSocket socket = null;
         try {
             socket = AFUNIXSocket.newInstance();
@@ -70,9 +69,9 @@ public final class UdsTransport implements CefTransport {
     private UdsTransport(String endpoint, Socket socket) throws IOException {
         this.endpoint = endpoint;
         this.socket = socket;
-        this.input = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-        this.output = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-        this.reader = new Thread(this::readLoop, "uds-reader-" + INSTANCE.incrementAndGet());
+        input = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+        output = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+        final Thread reader = new Thread(this::readLoop, "uds-reader-" + INSTANCE.incrementAndGet());
         reader.setDaemon(true);
         reader.start();
     }
@@ -85,7 +84,7 @@ public final class UdsTransport implements CefTransport {
     public void send(ByteBuffer frame) throws CefTransportException {
         if (closed) throw new CefTransportException(endpoint + ": send on closed transport");
         if (disconnected) throw new CefTransportException(endpoint + ": peer disconnected");
-        byte[] copy = new byte[frame.remaining()];
+        final byte[] copy = new byte[frame.remaining()];
         frame.get(copy);
         if (copy.length > MAX_FRAME_SIZE) throw new CefTransportException(endpoint + ": frame is too large");
         synchronized (sendLock) {
@@ -104,8 +103,7 @@ public final class UdsTransport implements CefTransport {
     public void onReceive(Consumer<ByteBuffer> handler) {
         synchronized (receiveLock) {
             receiveHandler = handler;
-            byte[] frame;
-            while ((frame = pending.poll()) != null) dispatch(handler, frame);
+            pending.drain(frame -> dispatch(handler, frame));
         }
     }
 
@@ -139,12 +137,12 @@ public final class UdsTransport implements CefTransport {
     private void readLoop() {
         try {
             while (!closed) {
-                int length = input.readInt();
+                final int length = input.readInt();
                 if (length < 0 || length > MAX_FRAME_SIZE) throw new IOException("invalid frame length " + length);
-                byte[] frame = new byte[length];
+                final byte[] frame = new byte[length];
                 input.readFully(frame);
                 synchronized (receiveLock) {
-                    Consumer<ByteBuffer> handler = receiveHandler;
+                    final Consumer<ByteBuffer> handler = receiveHandler;
                     if (handler == null) {
                         if (!pending.offer(frame)) throw new IOException("pending receive queue full");
                     } else {
@@ -152,7 +150,7 @@ public final class UdsTransport implements CefTransport {
                     }
                 }
             }
-        } catch (EOFException e) {
+        } catch (EOFException ignored) {
             markDisconnected();
         } catch (IOException e) {
             if (!closed) LOG.debug("reader on {} failed", endpoint, e);
@@ -175,7 +173,7 @@ public final class UdsTransport implements CefTransport {
     }
 
     private void fireDisconnectIfReady() {
-        Runnable handler = disconnectHandler;
+        final Runnable handler = disconnectHandler;
         if (disconnected && !closed && handler != null && disconnectNotified.compareAndSet(false, true)) {
             try {
                 handler.run();
@@ -186,7 +184,7 @@ public final class UdsTransport implements CefTransport {
     }
 
     static Path pathOf(String endpoint) {
-        String value = endpoint.startsWith("unix://") ? endpoint.substring("unix://".length()) : endpoint;
+        final String value = endpoint.startsWith("unix://") ? endpoint.substring("unix://".length()) : endpoint;
         return Paths.get(value);
     }
 

@@ -25,7 +25,8 @@ public final class CefWebViewTestDiagnostics {
             imageDetails = (int) image.getWidth() + "x" + (int) image.getHeight() + "@" + imageX + "," + imageY + "=0x"
                     + Integer.toHexString(image.getPixelReader().getArgb(imageX, imageY));
         }
-        return "cefFramesPainted=" + cefView.framesPainted.sum() + ", browserPresent=" + (cefView.getBrowser() != null)
-                + ", hostPresent=" + (cefView.getBrowserHost() != null) + ", imagePixel=" + imageDetails;
+        return "cefFramesPainted=" + cefView.framesPainted.sum() + ", browserPresent="
+                + cefView.getBrowser().isPresent() + ", hostPresent="
+                + cefView.getBrowserHost().isPresent() + ", imagePixel=" + imageDetails;
     }
 }

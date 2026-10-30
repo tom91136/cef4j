@@ -1,5 +1,6 @@
 package net.kurobako.cef4j.ipc.session;
 
+import java.util.Optional;
 import net.kurobako.cef4j.policy.NullableBoundary;
 import org.jspecify.annotations.Nullable;
 
@@ -151,19 +152,18 @@ public final class JsResult {
      * Untyped accessor — returns Boolean/Integer/Double/String/null based on {@link #kind}, or throws if the result is
      * an error. Useful for one-off callers that don't care about strict typing.
      */
-    @Nullable
-    public Object value() {
+    public Optional<Object> value() {
         switch (kind) {
             case NULL_OR_UNDEFINED:
-                return null;
+                return Optional.empty();
             case BOOL:
-                return boolValue;
+                return Optional.of(boolValue);
             case INT:
-                return intValue;
+                return Optional.of(intValue);
             case DOUBLE:
-                return doubleValue;
+                return Optional.of(doubleValue);
             case STRING:
-                return stringValue;
+                return Optional.ofNullable(stringValue);
             case ERROR:
                 throw new IllegalStateException("eval failed: " + errorMessage);
             default:
@@ -180,7 +180,7 @@ public final class JsResult {
     public String coerceToString() {
         switch (kind) {
             case BOOL:
-                return boolValue ? "true" : "false";
+                return Boolean.toString(boolValue);
             case INT:
                 return Integer.toString(intValue);
             case DOUBLE:

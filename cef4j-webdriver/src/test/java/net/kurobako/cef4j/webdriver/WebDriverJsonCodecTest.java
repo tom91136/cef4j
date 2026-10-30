@@ -3,6 +3,7 @@ package net.kurobako.cef4j.webdriver;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.nio.file.Path;
+import java.util.Optional;
 import net.kurobako.cef4j.cdp.CdpCodec;
 import net.kurobako.cef4j.test.ServiceLoaderFixture;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,7 @@ final class WebDriverJsonCodecTest {
         }
 
         @Override
-        public Object decode(byte[] json) {
+        public Optional<Object> decode(byte[] json) {
             throw new UnsupportedOperationException();
         }
     }

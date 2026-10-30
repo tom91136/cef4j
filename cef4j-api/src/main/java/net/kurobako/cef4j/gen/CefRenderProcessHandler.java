@@ -22,7 +22,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:50</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefRenderProcessHandler extends CefClientHandler {
 
@@ -185,8 +184,8 @@ public interface CefRenderProcessHandler extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefRenderProcessHandler {
         private final java.util.List<CefRenderProcessHandler> delegates;
@@ -197,36 +196,36 @@ public interface CefRenderProcessHandler extends CefClientHandler {
 
         @Override
         public void onWebKitInitialized() {
-            for (CefRenderProcessHandler d : delegates) d.onWebKitInitialized();
+            for (final CefRenderProcessHandler d : delegates) d.onWebKitInitialized();
         }
 
         @Override
         public void onBrowserCreated(@Nullable CefBrowser browser, @Nullable CefDictionaryValue extraInfo) {
-            for (CefRenderProcessHandler d : delegates) d.onBrowserCreated(browser, extraInfo);
+            for (final CefRenderProcessHandler d : delegates) d.onBrowserCreated(browser, extraInfo);
         }
 
         @Override
         public void onBrowserDestroyed(@Nullable CefBrowser browser) {
-            for (CefRenderProcessHandler d : delegates) d.onBrowserDestroyed(browser);
+            for (final CefRenderProcessHandler d : delegates) d.onBrowserDestroyed(browser);
         }
 
         @Override
         public Optional<CefLoadHandler> getLoadHandler() {
-            java.util.ArrayList<CefLoadHandler> collected = new java.util.ArrayList<>();
-            for (CefRenderProcessHandler d : delegates) d.getLoadHandler().ifPresent(collected::add);
+            final java.util.ArrayList<CefLoadHandler> collected = new java.util.ArrayList<>();
+            for (final CefRenderProcessHandler d : delegates) d.getLoadHandler().ifPresent(collected::add);
             return collected.isEmpty() ? Optional.empty() : Optional.of(new CefLoadHandler.Delegating(collected));
         }
 
         @Override
         public void onContextCreated(
                 @Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefV8Context context) {
-            for (CefRenderProcessHandler d : delegates) d.onContextCreated(browser, frame, context);
+            for (final CefRenderProcessHandler d : delegates) d.onContextCreated(browser, frame, context);
         }
 
         @Override
         public void onContextReleased(
                 @Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefV8Context context) {
-            for (CefRenderProcessHandler d : delegates) d.onContextReleased(browser, frame, context);
+            for (final CefRenderProcessHandler d : delegates) d.onContextReleased(browser, frame, context);
         }
 
         @Override
@@ -236,14 +235,14 @@ public interface CefRenderProcessHandler extends CefClientHandler {
                 @Nullable CefV8Context context,
                 @Nullable CefV8Exception exception,
                 @Nullable CefV8StackTrace stackTrace) {
-            for (CefRenderProcessHandler d : delegates)
+            for (final CefRenderProcessHandler d : delegates)
                 d.onUncaughtException(browser, frame, context, exception, stackTrace);
         }
 
         @Override
         public void onFocusedNodeChanged(
                 @Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable CefDomNode node) {
-            for (CefRenderProcessHandler d : delegates) d.onFocusedNodeChanged(browser, frame, node);
+            for (final CefRenderProcessHandler d : delegates) d.onFocusedNodeChanged(browser, frame, node);
         }
 
         @Override
@@ -252,7 +251,7 @@ public interface CefRenderProcessHandler extends CefClientHandler {
                 @Nullable CefFrame frame,
                 CefProcessId sourceProcess,
                 @Nullable CefProcessMessage message) {
-            for (CefRenderProcessHandler d : delegates) {
+            for (final CefRenderProcessHandler d : delegates) {
                 if (d.onProcessMessageReceived(browser, frame, sourceProcess, message)) return true;
             }
             if (!delegates.isEmpty()) return false;

@@ -3,12 +3,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class ZipReaderReadFileRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 1818261549;
@@ -41,7 +43,7 @@ public final class ZipReaderReadFileRequest implements CefMessageView, CefMessag
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
@@ -53,13 +55,10 @@ public final class ZipReaderReadFileRequest implements CefMessageView, CefMessag
     }
 
     public static final CefMessageDecoder<ZipReaderReadFileRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int bufferLen = WireDecoder.length(__buf, "buffer");
-        byte[] buffer = new byte[bufferLen];
-        __buf.get(buffer);
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final byte[] buffer = WireDecoder.bytes(__buf, "buffer");
         WireDecoder.requireFullyConsumed(__buf, "ZipReaderReadFileRequest");
         return new ZipReaderReadFileRequest(self, buffer);
     };

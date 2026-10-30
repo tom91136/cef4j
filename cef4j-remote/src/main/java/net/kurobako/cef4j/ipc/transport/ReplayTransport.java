@@ -49,8 +49,8 @@ public final class ReplayTransport implements CefTransport {
     }
 
     public static ReplayTransport fromReader(MessageLog.Reader reader) throws IOException {
-        List<byte[]> in = new ArrayList<>();
-        List<byte[]> out = new ArrayList<>();
+        final List<byte[]> in = new ArrayList<>();
+        final List<byte[]> out = new ArrayList<>();
         MessageLog.Entry e;
         while ((e = reader.next().orElse(null)) != null) {
             switch (e.direction) {
@@ -87,7 +87,7 @@ public final class ReplayTransport implements CefTransport {
     @Override
     public void send(ByteBuffer frame) throws CefTransportException {
         if (closed.get()) throw new CefTransportException("replay transport closed");
-        byte[] copy = new byte[frame.remaining()];
+        final byte[] copy = new byte[frame.remaining()];
         frame.get(copy);
         synchronized (outboundLock) {
             actualOutbound.add(copy);
@@ -96,7 +96,7 @@ public final class ReplayTransport implements CefTransport {
 
     @Override
     public void onReceive(Consumer<ByteBuffer> h) {
-        this.handler = h;
+        handler = h;
     }
 
     /**
@@ -106,7 +106,7 @@ public final class ReplayTransport implements CefTransport {
      */
     public void start() {
         if (!started.compareAndSet(false, true)) return;
-        Consumer<ByteBuffer> h = handler;
+        final Consumer<ByteBuffer> h = handler;
         if (h == null) return;
         for (byte[] payload : inbound) h.accept(ByteBuffer.wrap(payload));
     }

@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class FileDialogCallbackContRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 963636576;
@@ -42,13 +44,13 @@ public final class FileDialogCallbackContRequest implements CefMessageView, CefM
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
             __dst.putInt(filePaths.length);
-            for (String __s : filePaths) {
-                byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
+            for (final String __s : filePaths) {
+                final byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
                 __dst.putInt(__b.length);
                 __dst.put(__b);
             }
@@ -58,18 +60,10 @@ public final class FileDialogCallbackContRequest implements CefMessageView, CefM
     }
 
     public static final CefMessageDecoder<FileDialogCallbackContRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int filePathsCount = WireDecoder.count(__buf, "filePaths");
-        String[] filePaths = new String[filePathsCount];
-        for (int __i = 0; __i < filePathsCount; __i++) {
-            int __slen = WireDecoder.length(__buf, "filePaths[" + __i + "]");
-            byte[] __sb = new byte[__slen];
-            __buf.get(__sb);
-            filePaths[__i] = new String(__sb, StandardCharsets.UTF_8);
-        }
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final String[] filePaths = WireDecoder.utf8List(__buf, "filePaths");
         WireDecoder.requireFullyConsumed(__buf, "FileDialogCallbackContRequest");
         return new FileDialogCallbackContRequest(self, filePaths);
     };

@@ -4,6 +4,18 @@ import java.nio.file.Path
 
 object JavaInterfaceCodeGen {
 
+  private enum InterfaceKind {
+    case ObjectInterface, HandlerInterface
+
+    def isObject: Boolean = this == ObjectInterface
+  }
+
+  private enum StaticMethodPlacement {
+    case Interface, InClass
+
+    def isClass: Boolean = this == InClass
+  }
+
   def emitObject(
       decl: CefDecl.ObjectStruct,
       outDir: Path,
@@ -12,7 +24,7 @@ object JavaInterfaceCodeGen {
       handlerNames: Set[String] = Set.empty,
       freeFunctions: List[CefDecl.FreeFunction] = Nil,
       ancestorDecls: List[CefDecl.ObjectStruct] = Nil
-  )(using ctx: Naming.Context, dc: DocComments.Context)(using Banners): Unit = {
+  )(using ctx: Naming.Context)(using DocComments.Context)(using Banners): Unit = {
     val javaName       = Naming.structToJavaName(decl.name)
     val subPkg         = ctx.subPackages.getOrElse(decl.name, "")
     val ffNativeDecls  = collectFreeFuncNativeDecls(freeFunctions)
@@ -20,17 +32,14 @@ object JavaInterfaceCodeGen {
     val parentCefName  = ancestorDecls.headOption.map(_.name)
     val content        =
       renderInterface(
-        javaName,
-        decl.fns,
+        InterfaceKind.ObjectInterface,
+        Naming.FileContext(javaName, decl.sourceHeader, subPkg),
+        Naming.InterfaceContext(javaName, decl.fns, handlerNames),
         docs,
-        true,
+        decl.name,
         classDoc,
         nativePeerBody,
-        handlerNames,
         freeFunctions,
-        decl.sourceHeader,
-        decl.name,
-        subPkg,
         parentCefName,
         ancestorDecls
       )
@@ -53,32 +62,23 @@ object JavaInterfaceCodeGen {
       docs: Map[String, String] = Map.empty,
       classDoc: String = "",
       handlerNames: Set[String] = Set.empty
-  )(using ctx: Naming.Context, dc: DocComments.Context)(using Banners): Unit = {
+  )(using ctx: Naming.Context)(using DocComments.Context)(using Banners): Unit = {
     val javaName = Naming.structToJavaName(decl.name)
     val subPkg   = ctx.subPackages.getOrElse(decl.name, "")
     val content  =
       renderInterface(
-        javaName,
-        decl.fns,
+        InterfaceKind.HandlerInterface,
+        Naming.FileContext(javaName, decl.sourceHeader, subPkg),
+        Naming.InterfaceContext(javaName, decl.fns, handlerNames),
         docs,
-        false,
+        decl.name,
         classDoc,
         "",
-        handlerNames,
         Nil,
-        decl.sourceHeader,
-        decl.name,
-        subPkg,
         None,
         Nil
       )
     JavaCodeGen.writeJavaFile(outDir, javaName, content, subPkg)
-  }
-
-  private def isHandlerPtrReturn(ret: CType, handlerNames: Set[String]): Boolean = ret match {
-    case CType.ObjectPtr(name) => handlerNames.contains(name)
-    case CType.Ptr(inner)      => handlerNames.contains(inner.stripPrefix("_"))
-    case _                     => false
   }
 
   private def handlerPtrJavaType(ret: CType)(using Naming.Context): String = ret match {
@@ -88,35 +88,38 @@ object JavaInterfaceCodeGen {
   }
 
   private def renderInterface(
-      javaName: String,
-      fns: List[FnPtr],
+      kind: InterfaceKind,
+      file: Naming.FileContext,
+      intf: Naming.InterfaceContext,
       docs: Map[String, String],
-      isObject: Boolean,
+      cefStructName: String,
       classDoc: String,
       nativePeerBody: String,
-      handlerNames: Set[String],
       freeFunctions: List[CefDecl.FreeFunction],
-      sourceHeader: String,
-      cefStructName: String,
-      subPackage: String,
       parentCefName: Option[String],
       ancestorDecls: List[CefDecl.ObjectStruct]
   )(using Naming.Context, DocComments.Context, Banners): String = {
-    val ancestorFns    = ancestorDecls.flatMap(_.fns)
-    val hasNullableRet = !isObject && fns.exists(fn => handlerReturnIsNullable(fn, handlerNames))
-    val hasNullable    = hasNullableRet || (fns.iterator ++ ancestorFns.iterator)
+    val isObject     = kind.isObject
+    val javaName     = file.javaName
+    val sourceHeader = file.sourceHeader
+    val subPackage   = file.subPackage
+    val fns          = intf.fns
+    val handlerNames = intf.handlerNames
+
+    val ancestorFns = ancestorDecls.flatMap(_.fns)
+    val hasNullable = (fns.view ++ ancestorFns.view)
       .exists(fn => JavaMethods.hasNullableParam(fn.params, fn.metaAttrs))
 
     val methods = fns.map(fn =>
-      renderInterfaceMethod(fn, docs, isObject, handlerNames, sourceHeader, cefStructName)
+      renderInterfaceMethod(DocComments.MethodDoc(fn, docs, cefStructName), isObject, handlerNames, sourceHeader)
     ).mkString("\n\n")
 
     val hasOptional = (isObject && fns.exists(JavaCodeGen.isOptionalReturn)) ||
-      (!isObject && fns.exists(fn => isHandlerPtrReturn(fn.ret, handlerNames))) ||
+      (!isObject && fns.exists(fn => isOptionalHandlerReturn(fn, handlerNames))) ||
       (isObject && ancestorFns.exists(JavaCodeGen.isOptionalReturn))
 
     val (staticMethodsBlock, _) = if (freeFunctions.nonEmpty) {
-      renderStaticMethods(freeFunctions, docs)
+      renderStaticMethods(freeFunctions, docs, StaticMethodPlacement.Interface)
     } else ("", List.empty[String])
 
     val staticMethodsSection = if (staticMethodsBlock.nonEmpty) s"\n$staticMethodsBlock\n" else ""
@@ -124,7 +127,7 @@ object JavaInterfaceCodeGen {
     val nativePeerSection = if (nativePeerBody.nonEmpty) s"\n$nativePeerBody\n" else ""
 
     val delegatingSection = if (!isObject && fns.nonEmpty) {
-      "\n" + renderDelegatingClass(javaName, fns, handlerNames) + "\n"
+      "\n" + renderDelegatingClass(intf) + "\n"
     } else ""
 
     val ffHasNullable = freeFunctions.exists(fn => JavaMethods.hasNullableParam(fn.params, fn.metaAttrs))
@@ -140,22 +143,20 @@ object JavaInterfaceCodeGen {
     val typeImports   = renderTypeImports(allTypes)
 
     val crossPkgImports = if (subPackage.nonEmpty) {
-      val cefNames      = allTypes.flatMap(Naming.referencedCefNames).distinct
-      val basePkg       = Naming.javaPackage
-      val thisPkg       = s"$basePkg.$subPackage"
-      val fromTypes     = cefNames.map(n => Naming.fullyQualifiedJavaName(n)).filter(!_.startsWith(s"$thisPkg."))
+      val fromTypes     = Naming.crossPackageCefImports(allTypes, subPackage)
+      val thisPkg       = s"${Naming.javaPackage}.$subPackage"
       val markerImports = if (isObject) {
         parentCefName match {
           case Some(pName) =>
             val parentPkg    = Naming.javaPackageFor(pName)
             val parentImport = if (parentPkg != thisPkg) List(s"$parentPkg.${Naming.structToJavaName(pName)}") else Nil
-            val cloImport    = if (ancestorDecls.nonEmpty) List(s"$basePkg.CefLibraryObject") else Nil
+            val cloImport    = if (ancestorDecls.nonEmpty) List(s"${Naming.javaPackage}.CefLibraryObject") else Nil
             parentImport ++ cloImport
-          case None => List(s"$basePkg.CefLibraryObject")
+          case None => List(s"${Naming.javaPackage}.CefLibraryObject")
         }
-      } else List(s"$basePkg.CefClientHandler")
-      val hasOpaquePtr  = allTypes.exists(_ == CType.OpaquePtr)
-      val helperImports = if (hasOpaquePtr) List(s"$basePkg.NativePointer") else Nil
+      } else List(s"${Naming.javaPackage}.CefClientHandler")
+      val hasOpaquePtr  = allTypes.contains(CType.OpaquePtr)
+      val helperImports = if (hasOpaquePtr) List(s"${Naming.javaPackage}.NativePointer") else Nil
       (fromTypes ++ markerImports ++ helperImports).distinct.sorted.map(fqn => s"import $fqn;")
     } else Nil
 
@@ -196,15 +197,15 @@ object JavaInterfaceCodeGen {
     }
 
   private def defaultReturnForType(ret: CType): String = ret match {
-    case CType.Void                          => ""
-    case CType.Bool                          => "\n        return false;"
-    case CType.Int | CType.UInt | CType.Char => "\n        return 0;"
-    case CType.Long | CType.SizeT            => "\n        return 0L;"
-    case CType.Float                         => "\n        return 0.0f;"
-    case CType.Double                        => "\n        return 0.0;"
-    case CType.Ptr(_)                        => "\n        return 0L;"
-    case CType.OpaquePtr                     => "\n        return null;"
-    case CType.CountFuncArray(elem, _, _, _) =>
+    case CType.Void                               => ""
+    case CType.Bool                               => "\n        return false;"
+    case CType.Int | CType.UInt | CType.Char      => "\n        return 0;"
+    case CType.Long | CType.SizeT                 => "\n        return 0L;"
+    case CType.Float                              => "\n        return 0.0f;"
+    case CType.Double                             => "\n        return 0.0;"
+    case CType.Ptr(_)                             => "\n        return 0L;"
+    case CType.OpaquePtr                          => "\n        return null;"
+    case CType.CountFuncArray(elementType = elem) =>
       if (Naming.isPrimitiveElement(elem)) "\n        return null;"
       else "\n        return Collections.emptyList();"
     case _ => "\n        return null;"
@@ -218,13 +219,9 @@ object JavaInterfaceCodeGen {
   private def renderSimpleJavadoc(text: String, capiSource: String, cPrototype: String)(using
       DocComments.Context
   ): String = {
-    val cleaned                  = text.replaceAll("""--cef\([^)]*\)--""", "").trim
-    val converted                = DocComments.convertCefDoc(cleaned, capiSource, cPrototype)
-    val (docText, sourceRefTags) = DocComments.extractSourceTags(converted)
-    val contentLines             = docText.linesIterator.filter(_.nonEmpty).map(l => s"     * $l").toList
-    val seeTags                  = sourceRefTags.map(tag => s"     * @see $tag")
-    val separator                = if (contentLines.nonEmpty && seeTags.nonEmpty) List("     *") else Nil
-    val allLines                 = contentLines ++ separator ++ seeTags
+    val cleaned   = text.replaceAll("""--cef\([^)]*\)--""", "").trim
+    val converted = DocComments.convertCefDoc(cleaned, capiSource, cPrototype)
+    val allLines  = DocComments.javadocLines(converted)
     if (allLines.isEmpty) ""
     else {
       s"""    /**
@@ -237,14 +234,14 @@ ${allLines.mkString("\n")}
   private def renderStaticMethods(
       freeFunctions: List[CefDecl.FreeFunction],
       docs: Map[String, String],
-      isClass: Boolean = false
+      placement: StaticMethodPlacement
   )(using Naming.Context, DocComments.Context): (String, List[String]) = {
-    val methods = freeFunctions.map(ff => renderStaticMethod(ff, docs, isClass))
+    val methods = freeFunctions.map(ff => renderStaticMethod(ff, docs, placement))
 
     val publicMethods   = methods.map(_._1).mkString("\n\n")
-    val nativeDeclLines = methods.map(_._2).toList
+    val nativeDeclLines = methods.map(_._2)
 
-    if (isClass) {
+    if (placement.isClass) {
       val nativeDecls = freeFunctions.map(ff => renderNativeDecl(ff, "    private static native ")).mkString("\n\n")
       (s"$publicMethods\n\n$nativeDecls", List.empty[String])
     } else {
@@ -256,7 +253,7 @@ ${allLines.mkString("\n")}
       freeFunctions: List[CefDecl.FreeFunction],
       docs: Map[String, String]
   )(using Naming.Context, DocComments.Context, Banners): String = {
-    val (staticMethods, _) = renderStaticMethods(freeFunctions, docs, isClass = true)
+    val (staticMethods, _) = renderStaticMethods(freeFunctions, docs, StaticMethodPlacement.InClass)
 
     val hasNullable = freeFunctions.exists(fn => JavaMethods.hasNullableParam(fn.params, fn.metaAttrs))
     val hasOptional = freeFunctions.exists { ff =>
@@ -280,16 +277,15 @@ ${allLines.mkString("\n")}
   }
 
   private def renderDelegatingClass(
-      javaName: String,
-      fns: List[FnPtr],
-      handlerNames: Set[String]
+      intf: Naming.InterfaceContext
   )(using Naming.Context, DocComments.Context): String = {
-    val methods = fns.map(fn => renderDelegatingMethod(fn, javaName, handlerNames)).mkString("\n\n")
+    val javaName = intf.javaName
+    val methods  = intf.fns.map(fn => renderDelegatingMethod(fn, javaName, intf.handlerNames)).mkString("\n\n")
     s"""    /**
        |     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all
        |     * delegates in order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning
        |     * {@code Optional}s collect every non-empty delegate and wrap them in the handler's own {@code Delegating}
-       |     * wrapper; other {@code Optional}s pick the first non-empty; any other return type yields the first
+       |     * wrapper; any other return type, including {@code Optional}s of nullable values, yields the first
        |     * delegate's value.
        |     */
        |    class Delegating implements $javaName {
@@ -316,17 +312,17 @@ ${allLines.mkString("\n")}
 
     val body: String = fn.ret match {
       case CType.Void =>
-        s"            for ($javaName d : delegates) d.$methodName($args);"
+        s"            for (final $javaName d : delegates) d.$methodName($args);"
       case CType.Bool =>
         val defaultStmt = reindentDefaultReturn(defaultMethodReturn(fn, handlerNames))
-        s"""            for ($javaName d : delegates) {
+        s"""            for (final $javaName d : delegates) {
            |                if (d.$methodName($args)) return true;
            |            }
            |            if (!delegates.isEmpty()) return false;$defaultStmt""".stripMargin
-      case r if isHandlerPtrReturn(r, handlerNames) =>
+      case r if Naming.isHandlerPtrReturn(r, handlerNames) =>
         val handlerType = handlerPtrJavaType(r)
-        s"""            java.util.ArrayList<$handlerType> collected = new java.util.ArrayList<>();
-           |            for ($javaName d : delegates) d.$methodName($args).ifPresent(collected::add);
+        s"""            final java.util.ArrayList<$handlerType> collected = new java.util.ArrayList<>();
+           |            for (final $javaName d : delegates) d.$methodName($args).ifPresent(collected::add);
            |            return collected.isEmpty()
            |                    ? Optional.empty()
            |                    : Optional.of(new $handlerType.Delegating(collected));""".stripMargin
@@ -339,10 +335,8 @@ ${allLines.mkString("\n")}
         }
     }
 
-    val declaredRet =
-      if (handlerReturnIsNullable(fn, handlerNames)) Naming.nullableType(shape.retType) else shape.retType
     s"""        @Override
-       |        public $declaredRet $methodName($paramsDecl) {
+       |        public ${shape.retType} $methodName($paramsDecl) {
        |$body
        |        }""".stripMargin
   }
@@ -351,27 +345,28 @@ ${allLines.mkString("\n")}
     if (snippet.isEmpty) snippet else snippet.replace("\n        ", "\n            ")
 
   private def renderInterfaceMethod(
-      fn: FnPtr,
-      docs: Map[String, String],
+      method: DocComments.MethodDoc,
       isObject: Boolean,
       handlerNames: Set[String],
-      sourceHeader: String,
-      cefStructName: String
+      sourceHeader: String
   )(using Naming.Context, DocComments.Context): String = {
+    val fn         = method.fn
     val methodName = Naming.javaMethodName(fn)
     val retType    = methodReturnType(fn, isObject, handlerNames)
     val outColl    = OutCollection.forMethod(fn).map(_._2)
     val shape      = JavaMethods.shape(fn.ret, fn.visibleParams, fn.metaAttrs, Some(retType), outColl)
-    val proto      = if (cefStructName.nonEmpty) DocComments.cPrototypeForMethod(cefStructName, fn) else ""
-    val javadoc    = DocComments.forMethod(fn, docs, sourceHeader, proto, cefStructName, collectionsAsReturns = true)
+    val proto      =
+      if (method.cefStructName.nonEmpty) DocComments.cPrototypeForMethod(method.cefStructName, fn) else ""
+    val javadoc = DocComments.forMethod(method, sourceHeader, proto, collectionsAsReturns = true)
 
     if (isObject) {
-      s"$javadoc    ${shape.retType} $methodName(${shape.paramsDecl});"
+      val unusedSuppress =
+        if (shape.retType == "boolean" && isMutatorSuccessFlag(fn)) "    @SuppressWarnings(\"UnusedReturnValue\")\n"
+        else ""
+      s"$javadoc$unusedSuppress    ${shape.retType} $methodName(${shape.paramsDecl});"
     } else {
       val defaultReturn = defaultMethodReturn(fn, handlerNames)
-      val declaredRet   =
-        if (handlerReturnIsNullable(fn, handlerNames)) Naming.nullableType(shape.retType) else shape.retType
-      s"$javadoc    default $declaredRet $methodName(${shape.paramsDecl}) {$defaultReturn\n    }"
+      s"$javadoc    default ${shape.retType} $methodName(${shape.paramsDecl}) {$defaultReturn\n    }"
     }
   }
 
@@ -381,21 +376,15 @@ ${allLines.mkString("\n")}
       case Some((_, coll))                                      => coll.javaType
       case None if isObject && JavaCodeGen.isOptionalReturn(fn) =>
         s"Optional<${Naming.javaType(fn.ret)}>"
-      case None if !isObject && isHandlerPtrReturn(fn.ret, handlerNames) =>
+      case None if !isObject && Naming.isHandlerPtrReturn(fn.ret, handlerNames) =>
         s"Optional<${handlerPtrJavaType(fn.ret)}>"
+      case None if !isObject && JavaCodeGen.isNullableHandlerReturn(fn, handlerNames) =>
+        s"Optional<${Naming.javaType(fn.ret)}>"
       case None => Naming.javaType(fn.ret)
     }
 
-  /** Handler defaults (and Delegating fallbacks) emit {@code return null;} for reference-typed, non-Optional returns.
-    * Those signatures must advertise the nullability to NullAway.
-    */
-  private def handlerReturnIsNullable(fn: FnPtr, handlerNames: Set[String]): Boolean =
-    if (isHandlerPtrReturn(fn.ret, handlerNames)) false
-    else
-      fn.ret match {
-        case CType.CountFuncArray(elem, _, _, _) if !Naming.isPrimitiveElement(elem) => false
-        case _ => JavaCodeGen.isReferenceType(fn.ret)
-      }
+  private def isOptionalHandlerReturn(fn: FnPtr, handlerNames: Set[String]): Boolean =
+    Naming.isHandlerPtrReturn(fn.ret, handlerNames) || JavaCodeGen.isNullableHandlerReturn(fn, handlerNames)
 
   private def defaultMethodReturn(fn: FnPtr, handlerNames: Set[String])(using
       Naming.Context,
@@ -404,7 +393,7 @@ ${allLines.mkString("\n")}
     if (isResourceReadCompatibilityFallback(fn)) {
       val bytesRead = Naming.toCamelCase(fn.params.find(_.name == "bytes_read").get.name)
       s"\n        $bytesRead[0] = -1;\n        return false;"
-    } else if (isHandlerPtrReturn(fn.ret, handlerNames)) {
+    } else if (isOptionalHandlerReturn(fn, handlerNames)) {
       "\n        return Optional.empty();"
     } else {
       fn.metaAttrs.collectFirst { case ("default_retval", v) => v } match {
@@ -419,23 +408,25 @@ ${allLines.mkString("\n")}
       case _                                                               => false
     }
 
+  private def isMutatorSuccessFlag(fn: FnPtr): Boolean = fn.name.startsWith("set_")
+
   private def renderStaticMethod(
       ff: CefDecl.FreeFunction,
       docs: Map[String, String],
-      isClass: Boolean
+      placement: StaticMethodPlacement
   )(using Naming.Context, DocComments.Context): (String, String) = {
     val methodName = ff.javaMethodName
     val nativeName = Naming.nativeMethodName(ff.javaMethodName)
     val outColl    = OutCollection.forFreeFunction(ff).map(_._2)
     val shape      = JavaMethods.shape(ff.ret, ff.visibleParams, ff.metaAttrs, outCollection = outColl)
-    val callTarget = if (isClass) nativeName else s"NativePeer.$nativeName"
+    val callTarget = if (placement.isClass) nativeName else s"NativePeer.$nativeName"
     val body       = JavaMethods.renderCallBody(s"$callTarget(${shape.argsExpr})", shape)
 
     val javadoc = DocComments.resolveFreeFunctionDoc(ff, docs)
       .map(t => renderSimpleJavadoc(t, ff.sourceHeader, DocComments.cPrototypeForFreeFunction(ff)))
       .getOrElse("")
 
-    val visibility = if (isClass) "public static" else "static"
+    val visibility = if (placement.isClass) "public static" else "static"
     (
       s"""$javadoc    $visibility ${shape.retType} $methodName(${shape.paramsDecl}) {
       $body

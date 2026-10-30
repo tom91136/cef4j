@@ -4,15 +4,13 @@ package net.kurobako.cef4j.cdp.generated;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
-import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This domain allows interacting with the browser to control PWAs.
@@ -21,6 +19,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class PWA {
     private PWA() {}
     /**
@@ -85,7 +84,7 @@ public final class PWA {
          * @return the protocol field value
          */
         public java.util.List<PWA.FileHandlerAccept> accepts() {
-            return CdpObject.requireList(require("accepts"), element0 -> java.util.Objects.requireNonNull(PWA.FileHandlerAccept.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("accepts"), element0 -> java.util.Objects.requireNonNull(PWA.FileHandlerAccept.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Returns the displayName field.
@@ -130,7 +129,7 @@ public final class PWA {
         BROWSER("browser");
         public final String value;
         DisplayMode(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static DisplayMode of(String value) {
             for (DisplayMode constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -148,10 +147,10 @@ public final class PWA {
          * @param manifestId protocol value
          */
         public GetOsAppStateRequest(String manifestId) {
-            set("manifestId", manifestId);
+            manifestId(manifestId);
         }
         public static GetOsAppStateRequest fromMap(Map<String, Object> values) {
-            GetOsAppStateRequest instance_ = new GetOsAppStateRequest();
+            final GetOsAppStateRequest instance_ = new GetOsAppStateRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -194,10 +193,10 @@ public final class PWA {
          * @param manifestId protocol value
          */
         public InstallRequest(String manifestId) {
-            set("manifestId", manifestId);
+            manifestId(manifestId);
         }
         public static InstallRequest fromMap(Map<String, Object> values) {
-            InstallRequest instance_ = new InstallRequest();
+            final InstallRequest instance_ = new InstallRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -213,8 +212,7 @@ public final class PWA {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> installUrlOrBundleUrl() {
-            Object value = raw("installUrlOrBundleUrl");
-            return Optional.ofNullable((String) value);
+            return raw("installUrlOrBundleUrl").map(value -> (String) value);
         }
         /**
          * Sets the manifestId field.
@@ -227,16 +225,7 @@ public final class PWA {
         }
         /**
          * The location of the app or bundle overriding the one derived from the manifestId.
-         * @param installUrlOrBundleUrl field value; empty omits the value
-         * @return this model
-         */
-        public InstallRequest installUrlOrBundleUrl(Optional<String> installUrlOrBundleUrl) {
-            set("installUrlOrBundleUrl", installUrlOrBundleUrl.orElse(null));
-            return this;
-        }
-        /**
-         * The location of the app or bundle overriding the one derived from the manifestId.
-         * @param installUrlOrBundleUrl field value; null removes the value
+         * @param installUrlOrBundleUrl field value
          * @return this model
          */
         public InstallRequest installUrlOrBundleUrl(String installUrlOrBundleUrl) {
@@ -254,10 +243,10 @@ public final class PWA {
          * @param manifestId protocol value
          */
         public UninstallRequest(String manifestId) {
-            set("manifestId", manifestId);
+            manifestId(manifestId);
         }
         public static UninstallRequest fromMap(Map<String, Object> values) {
-            UninstallRequest instance_ = new UninstallRequest();
+            final UninstallRequest instance_ = new UninstallRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -288,10 +277,10 @@ public final class PWA {
          * @param manifestId protocol value
          */
         public LaunchRequest(String manifestId) {
-            set("manifestId", manifestId);
+            manifestId(manifestId);
         }
         public static LaunchRequest fromMap(Map<String, Object> values) {
-            LaunchRequest instance_ = new LaunchRequest();
+            final LaunchRequest instance_ = new LaunchRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -307,8 +296,7 @@ public final class PWA {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            Object value = raw("url");
-            return Optional.ofNullable((String) value);
+            return raw("url").map(value -> (String) value);
         }
         /**
          * Sets the manifestId field.
@@ -321,16 +309,7 @@ public final class PWA {
         }
         /**
          * Sets the url field.
-         * @param url field value; empty omits the value
-         * @return this model
-         */
-        public LaunchRequest url(Optional<String> url) {
-            set("url", url.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the url field.
-         * @param url field value; null removes the value
+         * @param url field value
          * @return this model
          */
         public LaunchRequest url(String url) {
@@ -353,11 +332,10 @@ public final class PWA {
          * @param files protocol value
          */
         public LaunchFilesInAppRequest(String manifestId, java.util.List<String> files) {
-            set("manifestId", manifestId);
-            set("files", files);
+            manifestId(manifestId).files(files);
         }
         public static LaunchFilesInAppRequest fromMap(Map<String, Object> values) {
-            LaunchFilesInAppRequest instance_ = new LaunchFilesInAppRequest();
+            final LaunchFilesInAppRequest instance_ = new LaunchFilesInAppRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -404,10 +382,10 @@ public final class PWA {
          * @param manifestId protocol value
          */
         public OpenCurrentPageInAppRequest(String manifestId) {
-            set("manifestId", manifestId);
+            manifestId(manifestId);
         }
         public static OpenCurrentPageInAppRequest fromMap(Map<String, Object> values) {
-            OpenCurrentPageInAppRequest instance_ = new OpenCurrentPageInAppRequest();
+            final OpenCurrentPageInAppRequest instance_ = new OpenCurrentPageInAppRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -442,10 +420,10 @@ public final class PWA {
          * @param manifestId protocol value
          */
         public ChangeAppUserSettingsRequest(String manifestId) {
-            set("manifestId", manifestId);
+            manifestId(manifestId);
         }
         public static ChangeAppUserSettingsRequest fromMap(Map<String, Object> values) {
-            ChangeAppUserSettingsRequest instance_ = new ChangeAppUserSettingsRequest();
+            final ChangeAppUserSettingsRequest instance_ = new ChangeAppUserSettingsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -463,16 +441,14 @@ public final class PWA {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> linkCapturing() {
-            Object value = raw("linkCapturing");
-            return Optional.ofNullable((Boolean) value);
+            return raw("linkCapturing").map(value -> (Boolean) value);
         }
         /**
          * Returns the displayMode field.
          * @return the protocol field value, empty when absent
          */
         public Optional<PWA.DisplayMode> displayMode() {
-            Object value = raw("displayMode");
-            return Optional.ofNullable(value == null ? null : PWA.DisplayMode.of((String) value));
+            return raw("displayMode").map(value -> PWA.DisplayMode.of((String) value));
         }
         /**
          * Sets the manifestId field.
@@ -487,36 +463,16 @@ public final class PWA {
          * If user allows the links clicked on by the user in the app&#x27;s scope, or extended scope if the manifest has scope extensions and the flags {@code DesktopPWAsLinkCapturingWithScopeExtensions} and {@code WebAppEnableScopeExtensions} are enabled.
          * <p>Note, the API does not support resetting the linkCapturing to the initial value, uninstalling and installing the web app again will reset it.
          * <p>TODO(crbug.com/339453269): Setting this value on ChromeOS is not supported yet.
-         * @param linkCapturing field value; empty omits the value
+         * @param linkCapturing field value
          * @return this model
          */
-        public ChangeAppUserSettingsRequest linkCapturing(Optional<Boolean> linkCapturing) {
-            set("linkCapturing", linkCapturing.orElse(null));
-            return this;
-        }
-        /**
-         * If user allows the links clicked on by the user in the app&#x27;s scope, or extended scope if the manifest has scope extensions and the flags {@code DesktopPWAsLinkCapturingWithScopeExtensions} and {@code WebAppEnableScopeExtensions} are enabled.
-         * <p>Note, the API does not support resetting the linkCapturing to the initial value, uninstalling and installing the web app again will reset it.
-         * <p>TODO(crbug.com/339453269): Setting this value on ChromeOS is not supported yet.
-         * @param linkCapturing field value; null removes the value
-         * @return this model
-         */
-        public ChangeAppUserSettingsRequest linkCapturing(Boolean linkCapturing) {
+        public ChangeAppUserSettingsRequest linkCapturing(boolean linkCapturing) {
             set("linkCapturing", linkCapturing);
             return this;
         }
         /**
          * Sets the displayMode field.
-         * @param displayMode field value; empty omits the value
-         * @return this model
-         */
-        public ChangeAppUserSettingsRequest displayMode(Optional<PWA.DisplayMode> displayMode) {
-            set("displayMode", displayMode.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the displayMode field.
-         * @param displayMode field value; null removes the value
+         * @param displayMode field value
          * @return this model
          */
         public ChangeAppUserSettingsRequest displayMode(PWA.DisplayMode displayMode) {
@@ -545,7 +501,7 @@ public final class PWA {
          * @return the protocol field value
          */
         public java.util.List<PWA.FileHandler> fileHandlers() {
-            return CdpObject.requireList(require("fileHandlers"), element0 -> java.util.Objects.requireNonNull(PWA.FileHandler.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("fileHandlers"), element0 -> java.util.Objects.requireNonNull(PWA.FileHandler.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Sets the badgeCount field.
@@ -575,7 +531,7 @@ public final class PWA {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetOsAppStateResult> getOsAppState(String manifestId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("manifestId", CdpObject.json(manifestId));
             return client.call("PWA.getOsAppState", params, result_ -> new GetOsAppStateResult(result_));
         }
@@ -599,10 +555,10 @@ public final class PWA {
          * @param installUrlOrBundleUrl protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> install(String manifestId, Optional<String> installUrlOrBundleUrl) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> install(String manifestId, String installUrlOrBundleUrl) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("manifestId", CdpObject.json(manifestId));
-            installUrlOrBundleUrl.ifPresent(value_ -> params.put("installUrlOrBundleUrl", CdpObject.json(value_)));
+            params.put("installUrlOrBundleUrl", CdpObject.json(installUrlOrBundleUrl));
             return client.call("PWA.install", params);
         }
         /**
@@ -617,7 +573,9 @@ public final class PWA {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> install(String manifestId) {
-            return install(manifestId, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("manifestId", CdpObject.json(manifestId));
+            return client.call("PWA.install", params);
         }
         /**
          * Installs the given manifest identity, optionally using the given installUrlOrBundleUrl
@@ -639,7 +597,7 @@ public final class PWA {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> uninstall(String manifestId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("manifestId", CdpObject.json(manifestId));
             return client.call("PWA.uninstall", params);
         }
@@ -657,10 +615,10 @@ public final class PWA {
          * @param url protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<Target.TargetID> launch(String manifestId, Optional<String> url) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Target.TargetID> launch(String manifestId, String url) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("manifestId", CdpObject.json(manifestId));
-            url.ifPresent(value_ -> params.put("url", CdpObject.json(value_)));
+            params.put("url", CdpObject.json(url));
             return client.call("PWA.launch", params, result_ -> new Target.TargetID((String) java.util.Objects.requireNonNull(result_.get("targetId"))));
         }
         /**
@@ -669,7 +627,9 @@ public final class PWA {
          * @return a stage completing with the command result
          */
         public CompletionStage<Target.TargetID> launch(String manifestId) {
-            return launch(manifestId, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("manifestId", CdpObject.json(manifestId));
+            return client.call("PWA.launch", params, result_ -> new Target.TargetID((String) java.util.Objects.requireNonNull(result_.get("targetId"))));
         }
         /**
          * Launches the installed web app, or an url in the same web app instead of the default start url if it is provided. Returns a page Target.TargetID which can be used to attach to via Target.attachToTarget or similar APIs.
@@ -688,7 +648,7 @@ public final class PWA {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Target.TargetID>> launchFilesInApp(String manifestId, java.util.List<String> files) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("manifestId", CdpObject.json(manifestId));
             params.put("files", CdpObject.json(files));
             return client.call("PWA.launchFilesInApp", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("targetIds")), element0 -> new Target.TargetID((String) element0)));
@@ -709,7 +669,7 @@ public final class PWA {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> openCurrentPageInApp(String manifestId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("manifestId", CdpObject.json(manifestId));
             return client.call("PWA.openCurrentPageInApp", params);
         }
@@ -730,11 +690,11 @@ public final class PWA {
          * @param displayMode protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> changeAppUserSettings(String manifestId, Optional<Boolean> linkCapturing, Optional<PWA.DisplayMode> displayMode) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> changeAppUserSettings(String manifestId, @Nullable Boolean linkCapturing, PWA.@Nullable DisplayMode displayMode) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("manifestId", CdpObject.json(manifestId));
-            linkCapturing.ifPresent(value_ -> params.put("linkCapturing", value_));
-            displayMode.ifPresent(value_ -> params.put("displayMode", CdpObject.json(value_)));
+            if (linkCapturing != null) params.put("linkCapturing", CdpObject.json(linkCapturing));
+            if (displayMode != null) params.put("displayMode", CdpObject.json(displayMode));
             return client.call("PWA.changeAppUserSettings", params);
         }
         /**
@@ -745,7 +705,9 @@ public final class PWA {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> changeAppUserSettings(String manifestId) {
-            return changeAppUserSettings(manifestId, Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("manifestId", CdpObject.json(manifestId));
+            return client.call("PWA.changeAppUserSettings", params);
         }
         /**
          * Changes user settings of the web app identified by its manifestId. If the app was not installed, this command returns an error. Unset parameters will be ignored; unrecognized values will cause an error.

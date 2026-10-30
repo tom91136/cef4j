@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutionException;
@@ -95,7 +94,7 @@ public final class RuntimeServerProcess implements Closeable {
         Objects.requireNonNull(bootstrapTimeout, "bootstrapTimeout");
         Objects.requireNonNull(environment, "environment");
 
-        ProcessBuilder pb = new ProcessBuilder(serverCommand(
+        final ProcessBuilder pb = new ProcessBuilder(serverCommand(
                 binary, transport, bindEndpoint, frameTransport, System.getProperty(EXTRA_ARGUMENTS_PROPERTY)));
         pb.environment().putAll(environment);
         alignTempEnvironment(
@@ -103,10 +102,10 @@ public final class RuntimeServerProcess implements Closeable {
                 Paths.get(System.getProperty("java.io.tmpdir")).toRealPath(),
                 System.getProperty("os.name", ""));
         pb.redirectErrorStream(false);
-        Process p = pb.start();
+        final Process p = pb.start();
 
-        CompletableFuture<RuntimeServerHandshake> handshakeFuture = new CompletableFuture<>();
-        Deque<String> recentOutput = new ConcurrentLinkedDeque<>();
+        final CompletableFuture<RuntimeServerHandshake> handshakeFuture = new CompletableFuture<>();
+        final Deque<String> recentOutput = new ConcurrentLinkedDeque<>();
         startReader(p.getInputStream(), "runtime-server-stdout-" + p.pid(), line -> {
             rememberOutput(recentOutput, "stdout: " + line);
             if (!handshakeFuture.isDone()) {
@@ -130,7 +129,8 @@ public final class RuntimeServerProcess implements Closeable {
         watchForExit(p, bindEndpoint, handshakeFuture, recentOutput);
 
         try {
-            RuntimeServerHandshake handshake = handshakeFuture.get(bootstrapTimeout.toMillis(), TimeUnit.MILLISECONDS);
+            final RuntimeServerHandshake handshake =
+                    handshakeFuture.get(bootstrapTimeout.toMillis(), TimeUnit.MILLISECONDS);
             if (!transport.equals(handshake.transport()) || !frameTransport.equals(handshake.frameTransport())) {
                 terminateProcessTree(p);
                 cleanupProcessFiles(p.pid());
@@ -156,13 +156,13 @@ public final class RuntimeServerProcess implements Closeable {
             terminateProcessTree(p);
             cleanupProcessFiles(p.pid());
             cleanupUdsSocket(bindEndpoint);
-            Throwable cause = e.getCause();
+            final Throwable cause = e.getCause();
             throw (cause instanceof IOException) ? (IOException) cause : new IOException(cause);
         }
     }
 
     static void alignTempEnvironment(Map<String, String> environment, Path tempDirectory, String osName) {
-        String value = tempDirectory.toString();
+        final String value = tempDirectory.toString();
         if (osName.toLowerCase(Locale.ROOT).contains("win")) {
             environment.put("TEMP", value);
             environment.put("TMP", value);
@@ -181,7 +181,7 @@ public final class RuntimeServerProcess implements Closeable {
         // Chromium normalizes its command line before launching subprocesses by moving all
         // switches ahead of positional arguments. Keep application options self-contained so
         // their values cannot become stray startup URLs in renderer processes.
-        List<String> command = new ArrayList<>(List.of(
+        final List<String> command = new ArrayList<>(List.of(
                 binary.toString(),
                 "--transport=" + transport,
                 "--bind=" + bindEndpoint,
@@ -310,12 +310,24 @@ public final class RuntimeServerProcess implements Closeable {
         return supervise(CefTransports.connect(transport, endpoint, process::isAlive, transportReconnectTimeout));
     }
 
-    /** Connects a WebSocket generation, authenticating with the bearer token when present. */
-    public CefTransport connectWebSocket(Optional<String> bearerToken) throws CefTransportException {
+    /** Connects a WebSocket generation without authentication. */
+    public CefTransport connectWebSocket() throws CefTransportException {
+        return connectWebSocketImpl(null);
+    }
+
+    /** Connects a WebSocket generation, authenticating with the bearer token. */
+    public CefTransport connectWebSocket(String bearerToken) throws CefTransportException {
+        return connectWebSocketImpl(Objects.requireNonNull(bearerToken, "bearerToken"));
+    }
+
+    private CefTransport connectWebSocketImpl(@Nullable String bearerToken) throws CefTransportException {
         if (!"websocket".equals(transport)) {
             throw new CefTransportException("runtime server selected " + transport + ", not websocket");
         }
-        return supervise(WebSocketTransport.connect(endpoint, bearerToken, Optional.empty()));
+        final WebSocketTransport.Options options = bearerToken != null
+                ? WebSocketTransport.Options.defaults().withBearerToken(bearerToken)
+                : WebSocketTransport.Options.defaults();
+        return supervise(WebSocketTransport.connect(endpoint, options));
     }
 
     private CefTransport supervise(CefTransport delegate) {
@@ -331,7 +343,7 @@ public final class RuntimeServerProcess implements Closeable {
     }
 
     public String diagnosticSummary() {
-        String output = recentOutput.isEmpty() ? "none" : recentOutput.stream().collect(Collectors.joining(" | "));
+        final String output = recentOutput.isEmpty() ? "none" : String.join(" | ", recentOutput);
         return "runtime-server{pid=" + pid() + ", alive=" + isAlive() + ", recent=" + output + "}";
     }
 
@@ -408,7 +420,7 @@ public final class RuntimeServerProcess implements Closeable {
         }
 
         private void fireDisconnectIfReady() {
-            Runnable handler = disconnectHandler;
+            final Runnable handler = disconnectHandler;
             if (disconnected.get() && !closed.get() && handler != null && notified.compareAndSet(false, true)) {
                 handler.run();
             }
@@ -423,19 +435,19 @@ public final class RuntimeServerProcess implements Closeable {
     @Override
     public void close() {
         if (!closed.compareAndSet(false, true)) return;
-        List<ProcessHandle> descendants = descendantsOf(process);
+        final List<ProcessHandle> descendants = descendantsOf(process);
         if (!process.isAlive()) {
-            destroy(descendants, true);
+            destroyForcibly(descendants);
             cleanupProcessFiles(process.pid());
             cleanupUdsSocket(endpoint);
             return;
         }
-        boolean gracefulRequested = requestGracefulShutdown();
+        final boolean gracefulRequested = requestGracefulShutdown();
         try {
-            long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(CLOSE_GRACE_MS);
-            boolean processAlive = !process.waitFor(CLOSE_GRACE_MS, TimeUnit.MILLISECONDS);
-            long remaining = Math.max(0L, deadline - System.nanoTime());
-            boolean descendantsExited = awaitExit(descendants, TimeUnit.NANOSECONDS.toMillis(remaining));
+            final long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(CLOSE_GRACE_MS);
+            final boolean processAlive = !process.waitFor(CLOSE_GRACE_MS, TimeUnit.MILLISECONDS);
+            final long remaining = Math.max(0L, deadline - System.nanoTime());
+            final boolean descendantsExited = awaitExit(descendants, TimeUnit.NANOSECONDS.toMillis(remaining));
             if (processAlive || !descendantsExited) {
                 LOG.warn(
                         "runtime server process tree pid={} did not exit within {}ms after {} shutdown; forcing termination",
@@ -443,21 +455,21 @@ public final class RuntimeServerProcess implements Closeable {
                         CLOSE_GRACE_MS,
                         gracefulRequested ? "graceful" : "failed graceful");
                 process.destroyForcibly();
-                destroy(descendants, true);
+                destroyForcibly(descendants);
                 process.waitFor(CLOSE_GRACE_MS, TimeUnit.MILLISECONDS);
                 if (!awaitExit(descendants, CLOSE_GRACE_MS)) {
                     LOG.warn(
                             "runtime server pid={} still has live descendants after forced termination", process.pid());
                 }
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt();
             process.destroyForcibly();
-            destroy(descendants, true);
+            destroyForcibly(descendants);
         } finally {
             // A Windows launcher is commonly cmd.exe with the actual runtime server as a child. Capture descendants
             // before stopping the launcher and always sweep them so repeated tests cannot leak CEF subprocesses.
-            destroy(descendants, true);
+            destroyForcibly(descendants);
             cleanupProcessFiles(process.pid());
             cleanupUdsSocket(endpoint);
         }
@@ -466,7 +478,7 @@ public final class RuntimeServerProcess implements Closeable {
     private boolean requestGracefulShutdown() {
         if (!handshake.hasCapability(GRACEFUL_SHUTDOWN_CAPABILITY)) {
             process.destroy();
-            destroy(descendantsOf(process), false);
+            destroyGracefully(descendantsOf(process));
             return false;
         }
         try {
@@ -480,15 +492,15 @@ public final class RuntimeServerProcess implements Closeable {
     }
 
     private static void terminateProcessTree(Process process) {
-        List<ProcessHandle> descendants = descendantsOf(process);
-        destroy(descendants, true);
+        final List<ProcessHandle> descendants = descendantsOf(process);
+        destroyForcibly(descendants);
         process.destroyForcibly();
         try {
             process.waitFor(CLOSE_GRACE_MS, TimeUnit.MILLISECONDS);
             if (!awaitExit(descendants, CLOSE_GRACE_MS)) {
                 LOG.warn("runtime server pid={} still has live descendants after kill", process.pid());
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt();
         }
     }
@@ -502,13 +514,20 @@ public final class RuntimeServerProcess implements Closeable {
         }
     }
 
-    private static void destroy(List<ProcessHandle> processes, boolean forcibly) {
+    private static void destroyForcibly(List<ProcessHandle> processes) {
+        destroyAll(processes, ProcessHandle::destroyForcibly);
+    }
+
+    private static void destroyGracefully(List<ProcessHandle> processes) {
+        destroyAll(processes, ProcessHandle::destroy);
+    }
+
+    private static void destroyAll(List<ProcessHandle> processes, Consumer<ProcessHandle> destroyer) {
         // Captured ProcessHandles remain usable if the hierarchy changes, so sweep every known subprocess.
         for (ProcessHandle process : processes) {
             if (!process.isAlive()) continue;
             try {
-                if (forcibly) process.destroyForcibly();
-                else process.destroy();
+                destroyer.accept(process);
             } catch (UnsupportedOperationException | SecurityException e) {
                 LOG.debug("cannot terminate runtime server descendant pid={}: {}", process.pid(), e.toString());
             }
@@ -516,7 +535,7 @@ public final class RuntimeServerProcess implements Closeable {
     }
 
     private static boolean awaitExit(List<ProcessHandle> processes, long timeoutMillis) throws InterruptedException {
-        CompletableFuture<?>[] exits = processes.stream()
+        final CompletableFuture<?>[] exits = processes.stream()
                 .filter(ProcessHandle::isAlive)
                 .map(ProcessHandle::onExit)
                 .toArray(CompletableFuture<?>[]::new);
@@ -527,7 +546,7 @@ public final class RuntimeServerProcess implements Closeable {
         } catch (ExecutionException e) {
             LOG.debug("failed while awaiting runtime server descendants", e);
             return false;
-        } catch (TimeoutException e) {
+        } catch (TimeoutException ignored) {
             return false;
         }
     }
@@ -537,7 +556,7 @@ public final class RuntimeServerProcess implements Closeable {
      * directory. Names include the exact server PID, preventing one generation from deleting another's mappings.
      */
     private static void cleanupProcessFiles(long pid) {
-        Path tempRoot = Paths.get(System.getProperty("java.io.tmpdir"));
+        final Path tempRoot = Paths.get(System.getProperty("java.io.tmpdir"));
         if (!Files.isDirectory(tempRoot)) return;
         try (DirectoryStream<Path> entries = Files.newDirectoryStream(tempRoot, "cef4j-paint-" + pid + "-*.frame")) {
             for (Path entry : entries) Files.deleteIfExists(entry);
@@ -546,7 +565,7 @@ public final class RuntimeServerProcess implements Closeable {
             // frame transport closes; a new generation uses a different PID and never reuses this path.
             LOG.debug("failed to clean shared frame files for runtime server pid={}: {}", pid, e.toString());
         }
-        Path cache = tempRoot.resolve("cef4j-runtime-server-" + pid).normalize();
+        final Path cache = tempRoot.resolve("cef4j-runtime-server-" + pid).normalize();
         if (!Objects.equals(cache.getParent(), tempRoot.normalize()) || !Files.isDirectory(cache)) return;
         try (Stream<Path> entries = Files.walk(cache)) {
             entries.sorted(Comparator.reverseOrder()).forEach(path -> {
@@ -571,7 +590,7 @@ public final class RuntimeServerProcess implements Closeable {
     }
 
     private static void startReader(InputStream in, String threadName, Consumer<String> onLine) {
-        Thread t = new Thread(
+        final Thread t = new Thread(
                 () -> {
                     try (BufferedReader r = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
                         String line;

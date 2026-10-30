@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -65,7 +66,7 @@ public final class ReplayCefSession implements CefSession {
         this.mode = Objects.requireNonNull(mode, "mode");
         this.scheduler = mode == ReplayMode.TIMED
                 ? Executors.newSingleThreadScheduledExecutor(runnable -> {
-                    Thread thread = new Thread(runnable, "cef4j-api-replay");
+                    final Thread thread = new Thread(runnable, "cef4j-api-replay");
                     thread.setDaemon(true);
                     return thread;
                 })
@@ -101,7 +102,7 @@ public final class ReplayCefSession implements CefSession {
     public void verifyComplete() {
         synchronized (lock) {
             if (cursor != entries.size()) {
-                SessionTrace.Entry next = entries.get(cursor);
+                final SessionTrace.Entry next = entries.get(cursor);
                 throw mismatch(next, "trace ended with " + (entries.size() - cursor) + " unconsumed entries");
             }
             if (!pending.isEmpty())
@@ -118,9 +119,9 @@ public final class ReplayCefSession implements CefSession {
             try {
                 requireOpen();
                 prepareForActionLocked();
-                SessionTrace.Entry entry = expectActionLocked(SessionTrace.Kind.REQUEST, request.messageId());
-                comparePayload(entry, encode(request), "request");
-                CompletableFuture<R> result = new CompletableFuture<>();
+                final SessionTrace.Entry entry = expectActionLocked(SessionTrace.Kind.REQUEST, request.messageId());
+                comparePayload(entry, MessagePayloads.encode(request), "request");
+                final CompletableFuture<R> result = new CompletableFuture<>();
                 pending.put(entry.operationId, new Pending<>(result, decoder, request.messageId()));
                 continuePlaybackLocked();
                 return result;
@@ -147,8 +148,8 @@ public final class ReplayCefSession implements CefSession {
         synchronized (lock) {
             requireOpen();
             prepareForActionLocked();
-            SessionTrace.Entry entry = expectActionLocked(kind, messageId);
-            EventBinding<E> binding = new EventBinding<>(decoder, handler);
+            final SessionTrace.Entry entry = expectActionLocked(kind, messageId);
+            final EventBinding<E> binding = new EventBinding<>(decoder, handler);
             subscriptions.put(entry.operationId, binding);
             continuePlaybackLocked();
             return new ReplayRegistration(entry.operationId, messageId, false);
@@ -161,7 +162,7 @@ public final class ReplayCefSession implements CefSession {
         synchronized (lock) {
             requireOpen();
             prepareForActionLocked();
-            SessionTrace.Entry entry = expectActionLocked(SessionTrace.Kind.INTERCEPT_REGISTER, messageId);
+            final SessionTrace.Entry entry = expectActionLocked(SessionTrace.Kind.INTERCEPT_REGISTER, messageId);
             intercepts.put(messageId, new InterceptBinding<>(decoder, handler));
             continuePlaybackLocked();
             return new ReplayRegistration(entry.operationId, messageId, true);
@@ -226,8 +227,9 @@ public final class ReplayCefSession implements CefSession {
         synchronized (lock) {
             if (closed) return;
             prepareForActionLocked();
-            SessionTrace.Kind kind = intercept ? SessionTrace.Kind.INTERCEPT_UNREGISTER : SessionTrace.Kind.UNSUBSCRIBE;
-            SessionTrace.Entry entry = expectActionLocked(kind, messageId);
+            final SessionTrace.Kind kind =
+                    intercept ? SessionTrace.Kind.INTERCEPT_UNREGISTER : SessionTrace.Kind.UNSUBSCRIBE;
+            final SessionTrace.Entry entry = expectActionLocked(kind, messageId);
             if (entry.operationId != registrationId) {
                 throw mismatch(
                         entry, "registration id " + registrationId + " does not match recorded " + entry.operationId);
@@ -246,7 +248,7 @@ public final class ReplayCefSession implements CefSession {
         if (cursor >= entries.size()) {
             throw new ReplayMismatchException("expected " + kind + " messageId=" + messageId + " after end of trace");
         }
-        SessionTrace.Entry entry = entries.get(cursor);
+        final SessionTrace.Entry entry = entries.get(cursor);
         if (entry.kind != kind || entry.messageId != messageId) {
             throw mismatch(
                     entry,
@@ -264,18 +266,19 @@ public final class ReplayCefSession implements CefSession {
     }
 
     private void pumpImmediateLocked() {
-        while (cursor < entries.size() && !isAction(entries.get(cursor).kind)) {
+        final int count = entries.size();
+        while (cursor < count && !isAction(entries.get(cursor).kind)) {
             processDeliveryLocked(entries.get(cursor++));
         }
     }
 
     private void scheduleTimedLocked() {
         if (timedDeliveryScheduled || cursor >= entries.size() || isAction(entries.get(cursor).kind)) return;
-        SessionTrace.Entry entry = entries.get(cursor);
-        long due = playbackStartNanos + entry.elapsedNanos;
-        long delay = Math.max(0, due - System.nanoTime());
+        final SessionTrace.Entry entry = entries.get(cursor);
+        final long due = playbackStartNanos + entry.elapsedNanos;
+        final long delay = Math.max(0, due - System.nanoTime());
         timedDeliveryScheduled = true;
-        ScheduledExecutorService activeScheduler = Objects.requireNonNull(scheduler, "timed replay scheduler");
+        final ScheduledExecutorService activeScheduler = Objects.requireNonNull(scheduler, "timed replay scheduler");
         timedTask = activeScheduler.schedule(
                 () -> {
                     synchronized (lock) {
@@ -298,19 +301,19 @@ public final class ReplayCefSession implements CefSession {
     private void processDeliveryLocked(SessionTrace.Entry entry) {
         switch (entry.kind) {
             case RESPONSE:
-                Pending<CefMessageView> response = (Pending<CefMessageView>) pending.remove(entry.operationId);
+                final Pending<CefMessageView> response = (Pending<CefMessageView>) pending.remove(entry.operationId);
                 if (response == null) throw mismatch(entry, "response has no pending request");
                 if (response.messageId != entry.messageId) throw mismatch(entry, "response message id changed");
                 response.complete(requiredPayload(entry));
                 return;
             case FAILURE:
-                Pending<?> failed = pending.remove(entry.operationId);
+                final Pending<?> failed = pending.remove(entry.operationId);
                 if (failed == null) throw mismatch(entry, "failure has no pending request");
                 failed.future.completeExceptionally(new ReplayedSessionException(
                         entry.detailType == null ? "recorded failure" : entry.detailType, entry.detailMessage));
                 return;
             case EVENT:
-                EventBinding<CefMessageView> event =
+                final EventBinding<CefMessageView> event =
                         (EventBinding<CefMessageView>) subscriptions.get(entry.operationId);
                 if (event == null) throw mismatch(entry, "event has no active recorded subscription");
                 event.dispatch(requiredPayload(entry));
@@ -325,41 +328,46 @@ public final class ReplayCefSession implements CefSession {
 
     @SuppressWarnings("unchecked")
     private void dispatchInterceptLocked(SessionTrace.Entry incoming) {
-        InterceptBinding<CefMessageView> binding =
+        final InterceptBinding<CefMessageView> binding =
                 (InterceptBinding<CefMessageView>) intercepts.get(incoming.messageId);
         if (binding == null) throw mismatch(incoming, "intercept has no active handler");
-        CefMessageEncoder actual;
+        Optional<? extends CefMessageEncoder> actual;
         try {
             actual = binding.invoke(requiredPayload(incoming));
         } catch (RuntimeException failure) {
-            if (cursor >= entries.size()) throw mismatch(incoming, "recorded intercept failure is missing");
-            SessionTrace.Entry expectedFailure = entries.get(cursor++);
+            if (cursor >= entries.size()) throw mismatch(incoming, "recorded intercept failure is missing", failure);
+            final SessionTrace.Entry expectedFailure = entries.get(cursor++);
             if (expectedFailure.kind != SessionTrace.Kind.FAILURE
                     || expectedFailure.operationId != incoming.operationId) {
-                throw mismatch(expectedFailure, "expected failure for intercept operation " + incoming.operationId);
+                throw mismatch(
+                        expectedFailure, "expected failure for intercept operation " + incoming.operationId, failure);
             }
             if (expectedFailure.detailType != null
                     && !expectedFailure.detailType.equals(failure.getClass().getName())) {
                 throw mismatch(
                         expectedFailure,
-                        "intercept threw " + failure.getClass().getName() + ", recorded " + expectedFailure.detailType);
+                        "intercept threw " + failure.getClass().getName() + ", recorded " + expectedFailure.detailType,
+                        failure);
             }
             return;
         }
         if (cursor >= entries.size()) throw mismatch(incoming, "intercept response is missing");
-        SessionTrace.Entry expected = entries.get(cursor++);
+        final SessionTrace.Entry expected = entries.get(cursor++);
         if (expected.kind != SessionTrace.Kind.INTERCEPT_RESPONSE || expected.operationId != incoming.operationId) {
             throw mismatch(expected, "expected response for intercept operation " + incoming.operationId);
         }
-        if (actual == null) {
-            if (expected.payload() != null)
-                throw mismatch(expected, "handler returned default action, recording did not");
-        } else {
-            if (actual.messageId() != expected.messageId) {
-                throw mismatch(expected, "intercept response messageId=" + actual.messageId() + " does not match");
-            }
-            comparePayload(expected, encode(actual), "intercept response");
-        }
+        actual.ifPresentOrElse(
+                response -> {
+                    if (response.messageId() != expected.messageId) {
+                        throw mismatch(
+                                expected, "intercept response messageId=" + response.messageId() + " does not match");
+                    }
+                    comparePayload(expected, MessagePayloads.encode(response), "intercept response");
+                },
+                () -> {
+                    if (expected.payload().isPresent())
+                        throw mismatch(expected, "handler returned default action, recording did not");
+                });
     }
 
     private static boolean isAction(SessionTrace.Kind kind) {
@@ -388,16 +396,13 @@ public final class ReplayCefSession implements CefSession {
     }
 
     private static byte[] requiredPayload(SessionTrace.Entry entry) {
-        byte[] payload = entry.payload();
-        if (payload == null) throw mismatch(entry, "entry requires a payload");
-        return payload;
+        return entry.payload().orElseThrow(() -> mismatch(entry, "entry requires a payload"));
     }
 
     private static void comparePayload(SessionTrace.Entry entry, byte[] actual, String label) {
-        byte[] expected = entry.payload();
-        if (expected == null) throw mismatch(entry, label + " recording has no payload");
+        final byte[] expected = entry.payload().orElseThrow(() -> mismatch(entry, label + " recording has no payload"));
         if (Arrays.equals(expected, actual)) return;
-        int shared = Math.min(expected.length, actual.length);
+        final int shared = Math.min(expected.length, actual.length);
         int difference = 0;
         while (difference < shared && expected[difference] == actual[difference]) difference++;
         throw mismatch(
@@ -411,14 +416,9 @@ public final class ReplayCefSession implements CefSession {
                 "API replay mismatch at entry #" + entry.sequence + " (" + entry.kind + "): " + message);
     }
 
-    private static byte[] encode(CefMessageEncoder encoder) {
-        ByteBuffer payload = ByteBuffer.allocate(encoder.encodedSize()).order(ByteOrder.LITTLE_ENDIAN);
-        encoder.encodeInto(payload);
-        if (payload.position() != encoder.encodedSize()) {
-            throw new IllegalArgumentException("encoder for message " + encoder.messageId() + " wrote "
-                    + payload.position() + " bytes, expected " + encoder.encodedSize());
-        }
-        return payload.array();
+    private static ReplayMismatchException mismatch(SessionTrace.Entry entry, String message, Throwable cause) {
+        return new ReplayMismatchException(
+                "API replay mismatch at entry #" + entry.sequence + " (" + entry.kind + "): " + message, cause);
     }
 
     private static final class Pending<R extends CefMessageView> {
@@ -468,9 +468,8 @@ public final class ReplayCefSession implements CefSession {
             this.handler = handler;
         }
 
-        @Nullable
-        CefMessageEncoder invoke(byte[] payload) {
-            E event = decoder.decode(ByteBuffer.wrap(payload).order(ByteOrder.LITTLE_ENDIAN));
+        Optional<? extends CefMessageEncoder> invoke(byte[] payload) {
+            final E event = decoder.decode(ByteBuffer.wrap(payload).order(ByteOrder.LITTLE_ENDIAN));
             return handler.onIntercept(event);
         }
     }

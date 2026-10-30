@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
@@ -13,6 +12,7 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Chrome DevTools Protocol Animation domain.
@@ -21,6 +21,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Animation {
     private Animation() {}
     /**
@@ -41,7 +42,7 @@ public final class Animation {
             WEBANIMATION("WebAnimation");
             public final String value;
             TypeValues(String value) { this.value = value; }
-            public String value() { return value; }
+            @Override public String value() { return value; }
             public static TypeValues of(String value) {
                 for (TypeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
@@ -110,24 +111,21 @@ public final class Animation {
          * @return the protocol field value, empty when absent
          */
         public Optional<Animation.AnimationEffect> source() {
-            Object value = raw("source");
-            return Optional.ofNullable(value == null ? null : Animation.AnimationEffect.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("source").flatMap(CdpObject::objectMap).map(Animation.AnimationEffect::fromMap);
         }
         /**
          * A unique ID for {@code Animation} representing the sources that triggered this CSS animation/transition.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> cssId() {
-            Object value = raw("cssId");
-            return Optional.ofNullable((String) value);
+            return raw("cssId").map(value -> (String) value);
         }
         /**
          * View or scroll timeline
          * @return the protocol field value, empty when absent
          */
         public Optional<Animation.ViewOrScrollTimeline> viewOrScrollTimeline() {
-            Object value = raw("viewOrScrollTimeline");
-            return Optional.ofNullable(value == null ? null : Animation.ViewOrScrollTimeline.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("viewOrScrollTimeline").flatMap(CdpObject::objectMap).map(Animation.ViewOrScrollTimeline::fromMap);
         }
         /**
          * {@code Animation}&#x27;s id.
@@ -203,16 +201,7 @@ public final class Animation {
         }
         /**
          * {@code Animation}&#x27;s source animation node.
-         * @param source field value; empty omits the value
-         * @return this model
-         */
-        public AnimationValue source(Optional<Animation.AnimationEffect> source) {
-            set("source", source.orElse(null));
-            return this;
-        }
-        /**
-         * {@code Animation}&#x27;s source animation node.
-         * @param source field value; null removes the value
+         * @param source field value
          * @return this model
          */
         public AnimationValue source(Animation.AnimationEffect source) {
@@ -221,16 +210,7 @@ public final class Animation {
         }
         /**
          * A unique ID for {@code Animation} representing the sources that triggered this CSS animation/transition.
-         * @param cssId field value; empty omits the value
-         * @return this model
-         */
-        public AnimationValue cssId(Optional<String> cssId) {
-            set("cssId", cssId.orElse(null));
-            return this;
-        }
-        /**
-         * A unique ID for {@code Animation} representing the sources that triggered this CSS animation/transition.
-         * @param cssId field value; null removes the value
+         * @param cssId field value
          * @return this model
          */
         public AnimationValue cssId(String cssId) {
@@ -239,16 +219,7 @@ public final class Animation {
         }
         /**
          * View or scroll timeline
-         * @param viewOrScrollTimeline field value; empty omits the value
-         * @return this model
-         */
-        public AnimationValue viewOrScrollTimeline(Optional<Animation.ViewOrScrollTimeline> viewOrScrollTimeline) {
-            set("viewOrScrollTimeline", viewOrScrollTimeline.orElse(null));
-            return this;
-        }
-        /**
-         * View or scroll timeline
-         * @param viewOrScrollTimeline field value; null removes the value
+         * @param viewOrScrollTimeline field value
          * @return this model
          */
         public AnimationValue viewOrScrollTimeline(Animation.ViewOrScrollTimeline viewOrScrollTimeline) {
@@ -270,32 +241,28 @@ public final class Animation {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> sourceNodeId() {
-            Object value = raw("sourceNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("sourceNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Represents the starting scroll position of the timeline as a length offset in pixels from scroll origin.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble startOffset() {
-            Double value = CdpObject.numberAsDouble(raw("startOffset"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("startOffset").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Represents the ending scroll position of the timeline as a length offset in pixels from scroll origin.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble endOffset() {
-            Double value = CdpObject.numberAsDouble(raw("endOffset"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("endOffset").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * The element whose principal box&#x27;s visibility in the scrollport defined the progress of the timeline. Does not exist for animations with ScrollTimeline
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> subjectNodeId() {
-            Object value = raw("subjectNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("subjectNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Orientation of the scroll
@@ -306,16 +273,7 @@ public final class Animation {
         }
         /**
          * Scroll container node
-         * @param sourceNodeId field value; empty omits the value
-         * @return this model
-         */
-        public ViewOrScrollTimeline sourceNodeId(Optional<DOM.BackendNodeId> sourceNodeId) {
-            set("sourceNodeId", sourceNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Scroll container node
-         * @param sourceNodeId field value; null removes the value
+         * @param sourceNodeId field value
          * @return this model
          */
         public ViewOrScrollTimeline sourceNodeId(DOM.BackendNodeId sourceNodeId) {
@@ -324,52 +282,25 @@ public final class Animation {
         }
         /**
          * Represents the starting scroll position of the timeline as a length offset in pixels from scroll origin.
-         * @param startOffset field value; empty omits the value
+         * @param startOffset field value
          * @return this model
          */
-        public ViewOrScrollTimeline startOffset(OptionalDouble startOffset) {
-            set("startOffset", startOffset.isPresent() ? startOffset.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Represents the starting scroll position of the timeline as a length offset in pixels from scroll origin.
-         * @param startOffset field value; null removes the value
-         * @return this model
-         */
-        public ViewOrScrollTimeline startOffset(Double startOffset) {
+        public ViewOrScrollTimeline startOffset(double startOffset) {
             set("startOffset", startOffset);
             return this;
         }
         /**
          * Represents the ending scroll position of the timeline as a length offset in pixels from scroll origin.
-         * @param endOffset field value; empty omits the value
+         * @param endOffset field value
          * @return this model
          */
-        public ViewOrScrollTimeline endOffset(OptionalDouble endOffset) {
-            set("endOffset", endOffset.isPresent() ? endOffset.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Represents the ending scroll position of the timeline as a length offset in pixels from scroll origin.
-         * @param endOffset field value; null removes the value
-         * @return this model
-         */
-        public ViewOrScrollTimeline endOffset(Double endOffset) {
+        public ViewOrScrollTimeline endOffset(double endOffset) {
             set("endOffset", endOffset);
             return this;
         }
         /**
          * The element whose principal box&#x27;s visibility in the scrollport defined the progress of the timeline. Does not exist for animations with ScrollTimeline
-         * @param subjectNodeId field value; empty omits the value
-         * @return this model
-         */
-        public ViewOrScrollTimeline subjectNodeId(Optional<DOM.BackendNodeId> subjectNodeId) {
-            set("subjectNodeId", subjectNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * The element whose principal box&#x27;s visibility in the scrollport defined the progress of the timeline. Does not exist for animations with ScrollTimeline
-         * @param subjectNodeId field value; null removes the value
+         * @param subjectNodeId field value
          * @return this model
          */
         public ViewOrScrollTimeline subjectNodeId(DOM.BackendNodeId subjectNodeId) {
@@ -421,8 +352,7 @@ public final class Animation {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble iterations() {
-            Double value = CdpObject.numberAsDouble(raw("iterations"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("iterations").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * {@code AnimationEffect}&#x27;s iteration duration. Milliseconds for time based animations and percentage [0 - 100] for scroll driven animations (i.e. when viewOrScrollTimeline exists).
@@ -450,16 +380,14 @@ public final class Animation {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            Object value = raw("backendNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * {@code AnimationEffect}&#x27;s keyframes.
          * @return the protocol field value, empty when absent
          */
         public Optional<Animation.KeyframesRule> keyframesRule() {
-            Object value = raw("keyframesRule");
-            return Optional.ofNullable(value == null ? null : Animation.KeyframesRule.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("keyframesRule").flatMap(CdpObject::objectMap).map(Animation.KeyframesRule::fromMap);
         }
         /**
          * {@code AnimationEffect}&#x27;s timing function.
@@ -497,19 +425,10 @@ public final class Animation {
         }
         /**
          * {@code AnimationEffect}&#x27;s iterations. Omitted if the value is infinite.
-         * @param iterations field value; empty omits the value
+         * @param iterations field value
          * @return this model
          */
-        public AnimationEffect iterations(OptionalDouble iterations) {
-            set("iterations", iterations.isPresent() ? iterations.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * {@code AnimationEffect}&#x27;s iterations. Omitted if the value is infinite.
-         * @param iterations field value; null removes the value
-         * @return this model
-         */
-        public AnimationEffect iterations(Double iterations) {
+        public AnimationEffect iterations(double iterations) {
             set("iterations", iterations);
             return this;
         }
@@ -542,16 +461,7 @@ public final class Animation {
         }
         /**
          * {@code AnimationEffect}&#x27;s target node.
-         * @param backendNodeId field value; empty omits the value
-         * @return this model
-         */
-        public AnimationEffect backendNodeId(Optional<DOM.BackendNodeId> backendNodeId) {
-            set("backendNodeId", backendNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * {@code AnimationEffect}&#x27;s target node.
-         * @param backendNodeId field value; null removes the value
+         * @param backendNodeId field value
          * @return this model
          */
         public AnimationEffect backendNodeId(DOM.BackendNodeId backendNodeId) {
@@ -560,16 +470,7 @@ public final class Animation {
         }
         /**
          * {@code AnimationEffect}&#x27;s keyframes.
-         * @param keyframesRule field value; empty omits the value
-         * @return this model
-         */
-        public AnimationEffect keyframesRule(Optional<Animation.KeyframesRule> keyframesRule) {
-            set("keyframesRule", keyframesRule.orElse(null));
-            return this;
-        }
-        /**
-         * {@code AnimationEffect}&#x27;s keyframes.
-         * @param keyframesRule field value; null removes the value
+         * @param keyframesRule field value
          * @return this model
          */
         public AnimationEffect keyframesRule(Animation.KeyframesRule keyframesRule) {
@@ -600,28 +501,18 @@ public final class Animation {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            Object value = raw("name");
-            return Optional.ofNullable((String) value);
+            return raw("name").map(value -> (String) value);
         }
         /**
          * List of animation keyframes.
          * @return the protocol field value
          */
         public java.util.List<Animation.KeyframeStyle> keyframes() {
-            return CdpObject.requireList(require("keyframes"), element0 -> java.util.Objects.requireNonNull(Animation.KeyframeStyle.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("keyframes"), element0 -> java.util.Objects.requireNonNull(Animation.KeyframeStyle.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * CSS keyframed animation&#x27;s name.
-         * @param name field value; empty omits the value
-         * @return this model
-         */
-        public KeyframesRule name(Optional<String> name) {
-            set("name", name.orElse(null));
-            return this;
-        }
-        /**
-         * CSS keyframed animation&#x27;s name.
-         * @param name field value; null removes the value
+         * @param name field value
          * @return this model
          */
         public KeyframesRule name(String name) {
@@ -690,10 +581,10 @@ public final class Animation {
          * @param id protocol value
          */
         public GetCurrentTimeRequest(String id) {
-            set("id", id);
+            id(id);
         }
         public static GetCurrentTimeRequest fromMap(Map<String, Object> values) {
-            GetCurrentTimeRequest instance_ = new GetCurrentTimeRequest();
+            final GetCurrentTimeRequest instance_ = new GetCurrentTimeRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -724,10 +615,10 @@ public final class Animation {
          * @param animations protocol value
          */
         public ReleaseAnimationsRequest(java.util.List<String> animations) {
-            set("animations", animations);
+            animations(animations);
         }
         public static ReleaseAnimationsRequest fromMap(Map<String, Object> values) {
-            ReleaseAnimationsRequest instance_ = new ReleaseAnimationsRequest();
+            final ReleaseAnimationsRequest instance_ = new ReleaseAnimationsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -758,10 +649,10 @@ public final class Animation {
          * @param animationId protocol value
          */
         public ResolveAnimationRequest(String animationId) {
-            set("animationId", animationId);
+            animationId(animationId);
         }
         public static ResolveAnimationRequest fromMap(Map<String, Object> values) {
-            ResolveAnimationRequest instance_ = new ResolveAnimationRequest();
+            final ResolveAnimationRequest instance_ = new ResolveAnimationRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -793,11 +684,10 @@ public final class Animation {
          * @param currentTime protocol value
          */
         public SeekAnimationsRequest(java.util.List<String> animations, double currentTime) {
-            set("animations", animations);
-            set("currentTime", currentTime);
+            animations(animations).currentTime(currentTime);
         }
         public static SeekAnimationsRequest fromMap(Map<String, Object> values) {
-            SeekAnimationsRequest instance_ = new SeekAnimationsRequest();
+            final SeekAnimationsRequest instance_ = new SeekAnimationsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -845,11 +735,10 @@ public final class Animation {
          * @param paused protocol value
          */
         public SetPausedRequest(java.util.List<String> animations, boolean paused) {
-            set("animations", animations);
-            set("paused", paused);
+            animations(animations).paused(paused);
         }
         public static SetPausedRequest fromMap(Map<String, Object> values) {
-            SetPausedRequest instance_ = new SetPausedRequest();
+            final SetPausedRequest instance_ = new SetPausedRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -896,10 +785,10 @@ public final class Animation {
          * @param playbackRate protocol value
          */
         public SetPlaybackRateRequest(double playbackRate) {
-            set("playbackRate", playbackRate);
+            playbackRate(playbackRate);
         }
         public static SetPlaybackRateRequest fromMap(Map<String, Object> values) {
-            SetPlaybackRateRequest instance_ = new SetPlaybackRateRequest();
+            final SetPlaybackRateRequest instance_ = new SetPlaybackRateRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -932,12 +821,10 @@ public final class Animation {
          * @param delay protocol value
          */
         public SetTimingRequest(String animationId, double duration, double delay) {
-            set("animationId", animationId);
-            set("duration", duration);
-            set("delay", delay);
+            animationId(animationId).duration(duration).delay(delay);
         }
         public static SetTimingRequest fromMap(Map<String, Object> values) {
-            SetTimingRequest instance_ = new SetTimingRequest();
+            final SetTimingRequest instance_ = new SetTimingRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1056,7 +943,7 @@ public final class Animation {
          * @return the protocol field value
          */
         public Animation.AnimationValue animation() {
-            return java.util.Objects.requireNonNull(Animation.AnimationValue.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("animation")))));
+            return java.util.Objects.requireNonNull(Animation.AnimationValue.fromMap(CdpObject.requireObjectMap(require("animation"))));
         }
         /**
          * Animation that was started.
@@ -1082,7 +969,7 @@ public final class Animation {
          * @return the protocol field value
          */
         public Animation.AnimationValue animation() {
-            return java.util.Objects.requireNonNull(Animation.AnimationValue.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("animation")))));
+            return java.util.Objects.requireNonNull(Animation.AnimationValue.fromMap(CdpObject.requireObjectMap(require("animation"))));
         }
         /**
          * Animation that was updated.
@@ -1117,7 +1004,7 @@ public final class Animation {
          * @return a stage completing with the command result
          */
         public CompletionStage<Double> getCurrentTime(String id) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("id", CdpObject.json(id));
             return client.call("Animation.getCurrentTime", params, result_ -> ((Number) java.util.Objects.requireNonNull(result_.get("currentTime"))).doubleValue());
         }
@@ -1142,7 +1029,7 @@ public final class Animation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> releaseAnimations(java.util.List<String> animations) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("animations", CdpObject.json(animations));
             return client.call("Animation.releaseAnimations", params);
         }
@@ -1160,9 +1047,9 @@ public final class Animation {
          * @return a stage completing with the command result
          */
         public CompletionStage<Runtime.RemoteObject> resolveAnimation(String animationId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("animationId", CdpObject.json(animationId));
-            return client.call("Animation.resolveAnimation", params, result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("remoteObject")))))));
+            return client.call("Animation.resolveAnimation", params, result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("remoteObject"))))));
         }
         /**
          * Gets the remote object of the Animation.
@@ -1170,7 +1057,7 @@ public final class Animation {
          * @return a stage completing with the command result
          */
         public CompletionStage<Runtime.RemoteObject> resolveAnimation(ResolveAnimationRequest request) {
-            return client.call("Animation.resolveAnimation", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("remoteObject")))))));
+            return client.call("Animation.resolveAnimation", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("remoteObject"))))));
         }
         /**
          * Seek a set of animations to a particular time within each animation.
@@ -1179,7 +1066,7 @@ public final class Animation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> seekAnimations(java.util.List<String> animations, double currentTime) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("animations", CdpObject.json(animations));
             params.put("currentTime", CdpObject.json(currentTime));
             return client.call("Animation.seekAnimations", params);
@@ -1199,7 +1086,7 @@ public final class Animation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPaused(java.util.List<String> animations, boolean paused) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("animations", CdpObject.json(animations));
             params.put("paused", CdpObject.json(paused));
             return client.call("Animation.setPaused", params);
@@ -1218,7 +1105,7 @@ public final class Animation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPlaybackRate(double playbackRate) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("playbackRate", CdpObject.json(playbackRate));
             return client.call("Animation.setPlaybackRate", params);
         }
@@ -1238,7 +1125,7 @@ public final class Animation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setTiming(String animationId, double duration, double delay) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("animationId", CdpObject.json(animationId));
             params.put("duration", CdpObject.json(duration));
             params.put("delay", CdpObject.json(delay));

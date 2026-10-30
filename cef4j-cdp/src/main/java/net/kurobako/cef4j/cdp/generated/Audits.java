@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
@@ -13,6 +12,8 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Audits domain allows investigation of page violations and possible improvements.
@@ -21,6 +22,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Audits {
     private Audits() {}
     /**
@@ -95,8 +97,7 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.RequestId> requestId() {
-            Object value = raw("requestId");
-            return Optional.ofNullable(value == null ? null : new Network.RequestId((String) value));
+            return raw("requestId").map(value -> new Network.RequestId((String) value));
         }
         /**
          * Returns the url field.
@@ -107,16 +108,7 @@ public final class Audits {
         }
         /**
          * The unique request id.
-         * @param requestId field value; empty omits the value
-         * @return this model
-         */
-        public AffectedRequest requestId(Optional<Network.RequestId> requestId) {
-            set("requestId", requestId.orElse(null));
-            return this;
-        }
-        /**
-         * The unique request id.
-         * @param requestId field value; null removes the value
+         * @param requestId field value
          * @return this model
          */
         public AffectedRequest requestId(Network.RequestId requestId) {
@@ -174,7 +166,7 @@ public final class Audits {
         EXCLUDESCHEMEMISMATCH("ExcludeSchemeMismatch");
         public final String value;
         CookieExclusionReason(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static CookieExclusionReason of(String value) {
             for (CookieExclusionReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -202,7 +194,7 @@ public final class Audits {
         WARNTHIRDPARTYCOOKIEHEURISTIC("WarnThirdPartyCookieHeuristic");
         public final String value;
         CookieWarningReason(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static CookieWarningReason of(String value) {
             for (CookieWarningReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -218,7 +210,7 @@ public final class Audits {
         READCOOKIE("ReadCookie");
         public final String value;
         CookieOperation(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static CookieOperation of(String value) {
             for (CookieOperation constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -235,7 +227,7 @@ public final class Audits {
         HEURISTICS("Heuristics");
         public final String value;
         InsightType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static InsightType of(String value) {
             for (InsightType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -264,8 +256,7 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> tableEntryUrl() {
-            Object value = raw("tableEntryUrl");
-            return Optional.ofNullable((String) value);
+            return raw("tableEntryUrl").map(value -> (String) value);
         }
         /**
          * Sets the type field.
@@ -278,16 +269,7 @@ public final class Audits {
         }
         /**
          * Link to table entry in third-party cookie migration readiness list.
-         * @param tableEntryUrl field value; empty omits the value
-         * @return this model
-         */
-        public CookieIssueInsight tableEntryUrl(Optional<String> tableEntryUrl) {
-            set("tableEntryUrl", tableEntryUrl.orElse(null));
-            return this;
-        }
-        /**
-         * Link to table entry in third-party cookie migration readiness list.
-         * @param tableEntryUrl field value; null removes the value
+         * @param tableEntryUrl field value
          * @return this model
          */
         public CookieIssueInsight tableEntryUrl(String tableEntryUrl) {
@@ -309,16 +291,14 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedCookie> cookie() {
-            Object value = raw("cookie");
-            return Optional.ofNullable(value == null ? null : Audits.AffectedCookie.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("cookie").flatMap(CdpObject::objectMap).map(Audits.AffectedCookie::fromMap);
         }
         /**
          * Returns the rawCookieLine field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> rawCookieLine() {
-            Object value = raw("rawCookieLine");
-            return Optional.ofNullable((String) value);
+            return raw("rawCookieLine").map(value -> (String) value);
         }
         /**
          * Returns the cookieWarningReasons field.
@@ -346,45 +326,32 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> siteForCookies() {
-            Object value = raw("siteForCookies");
-            return Optional.ofNullable((String) value);
+            return raw("siteForCookies").map(value -> (String) value);
         }
         /**
          * Returns the cookieUrl field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> cookieUrl() {
-            Object value = raw("cookieUrl");
-            return Optional.ofNullable((String) value);
+            return raw("cookieUrl").map(value -> (String) value);
         }
         /**
          * Returns the request field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedRequest> request() {
-            Object value = raw("request");
-            return Optional.ofNullable(value == null ? null : Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("request").flatMap(CdpObject::objectMap).map(Audits.AffectedRequest::fromMap);
         }
         /**
          * The recommended solution to the issue.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.CookieIssueInsight> insight() {
-            Object value = raw("insight");
-            return Optional.ofNullable(value == null ? null : Audits.CookieIssueInsight.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("insight").flatMap(CdpObject::objectMap).map(Audits.CookieIssueInsight::fromMap);
         }
         /**
          * If AffectedCookie is not set then rawCookieLine contains the raw Set-Cookie header string. This hints at a problem where the cookie line is syntactically or semantically malformed in a way that no valid cookie could be created.
-         * @param cookie field value; empty omits the value
-         * @return this model
-         */
-        public CookieIssueDetails cookie(Optional<Audits.AffectedCookie> cookie) {
-            set("cookie", cookie.orElse(null));
-            return this;
-        }
-        /**
-         * If AffectedCookie is not set then rawCookieLine contains the raw Set-Cookie header string. This hints at a problem where the cookie line is syntactically or semantically malformed in a way that no valid cookie could be created.
-         * @param cookie field value; null removes the value
+         * @param cookie field value
          * @return this model
          */
         public CookieIssueDetails cookie(Audits.AffectedCookie cookie) {
@@ -393,16 +360,7 @@ public final class Audits {
         }
         /**
          * Sets the rawCookieLine field.
-         * @param rawCookieLine field value; empty omits the value
-         * @return this model
-         */
-        public CookieIssueDetails rawCookieLine(Optional<String> rawCookieLine) {
-            set("rawCookieLine", rawCookieLine.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the rawCookieLine field.
-         * @param rawCookieLine field value; null removes the value
+         * @param rawCookieLine field value
          * @return this model
          */
         public CookieIssueDetails rawCookieLine(String rawCookieLine) {
@@ -438,16 +396,7 @@ public final class Audits {
         }
         /**
          * Sets the siteForCookies field.
-         * @param siteForCookies field value; empty omits the value
-         * @return this model
-         */
-        public CookieIssueDetails siteForCookies(Optional<String> siteForCookies) {
-            set("siteForCookies", siteForCookies.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the siteForCookies field.
-         * @param siteForCookies field value; null removes the value
+         * @param siteForCookies field value
          * @return this model
          */
         public CookieIssueDetails siteForCookies(String siteForCookies) {
@@ -456,16 +405,7 @@ public final class Audits {
         }
         /**
          * Sets the cookieUrl field.
-         * @param cookieUrl field value; empty omits the value
-         * @return this model
-         */
-        public CookieIssueDetails cookieUrl(Optional<String> cookieUrl) {
-            set("cookieUrl", cookieUrl.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the cookieUrl field.
-         * @param cookieUrl field value; null removes the value
+         * @param cookieUrl field value
          * @return this model
          */
         public CookieIssueDetails cookieUrl(String cookieUrl) {
@@ -474,16 +414,7 @@ public final class Audits {
         }
         /**
          * Sets the request field.
-         * @param request field value; empty omits the value
-         * @return this model
-         */
-        public CookieIssueDetails request(Optional<Audits.AffectedRequest> request) {
-            set("request", request.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the request field.
-         * @param request field value; null removes the value
+         * @param request field value
          * @return this model
          */
         public CookieIssueDetails request(Audits.AffectedRequest request) {
@@ -492,16 +423,7 @@ public final class Audits {
         }
         /**
          * The recommended solution to the issue.
-         * @param insight field value; empty omits the value
-         * @return this model
-         */
-        public CookieIssueDetails insight(Optional<Audits.CookieIssueInsight> insight) {
-            set("insight", insight.orElse(null));
-            return this;
-        }
-        /**
-         * The recommended solution to the issue.
-         * @param insight field value; null removes the value
+         * @param insight field value
          * @return this model
          */
         public CookieIssueDetails insight(Audits.CookieIssueInsight insight) {
@@ -516,7 +438,7 @@ public final class Audits {
         DOCUMENTCOOKIE("DocumentCookie");
         public final String value;
         PerformanceIssueType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static PerformanceIssueType of(String value) {
             for (PerformanceIssueType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -545,8 +467,7 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SourceCodeLocation> sourceCodeLocation() {
-            Object value = raw("sourceCodeLocation");
-            return Optional.ofNullable(value == null ? null : Audits.SourceCodeLocation.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("sourceCodeLocation").flatMap(CdpObject::objectMap).map(Audits.SourceCodeLocation::fromMap);
         }
         /**
          * Sets the performanceIssueType field.
@@ -559,16 +480,7 @@ public final class Audits {
         }
         /**
          * Sets the sourceCodeLocation field.
-         * @param sourceCodeLocation field value; empty omits the value
-         * @return this model
-         */
-        public PerformanceIssueDetails sourceCodeLocation(Optional<Audits.SourceCodeLocation> sourceCodeLocation) {
-            set("sourceCodeLocation", sourceCodeLocation.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the sourceCodeLocation field.
-         * @param sourceCodeLocation field value; null removes the value
+         * @param sourceCodeLocation field value
          * @return this model
          */
         public PerformanceIssueDetails sourceCodeLocation(Audits.SourceCodeLocation sourceCodeLocation) {
@@ -585,7 +497,7 @@ public final class Audits {
         MIXEDCONTENTWARNING("MixedContentWarning");
         public final String value;
         MixedContentResolutionStatus(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static MixedContentResolutionStatus of(String value) {
             for (MixedContentResolutionStatus constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -628,7 +540,7 @@ public final class Audits {
         XSLT("XSLT");
         public final String value;
         MixedContentResourceType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static MixedContentResourceType of(String value) {
             for (MixedContentResourceType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -649,8 +561,7 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.MixedContentResourceType> resourceType() {
-            Object value = raw("resourceType");
-            return Optional.ofNullable(value == null ? null : Audits.MixedContentResourceType.of((String) value));
+            return raw("resourceType").map(value -> Audits.MixedContentResourceType.of((String) value));
         }
         /**
          * The way the mixed content issue is being resolved.
@@ -678,29 +589,18 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedRequest> request() {
-            Object value = raw("request");
-            return Optional.ofNullable(value == null ? null : Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("request").flatMap(CdpObject::objectMap).map(Audits.AffectedRequest::fromMap);
         }
         /**
          * Optional because not every mixed content issue is necessarily linked to a frame.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedFrame> frame() {
-            Object value = raw("frame");
-            return Optional.ofNullable(value == null ? null : Audits.AffectedFrame.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("frame").flatMap(CdpObject::objectMap).map(Audits.AffectedFrame::fromMap);
         }
         /**
          * The type of resource causing the mixed content issue (css, js, iframe, form,...). Marked as optional because it is mapped to from blink::mojom::RequestContextType, which will be replaced by network::mojom::RequestDestination
-         * @param resourceType field value; empty omits the value
-         * @return this model
-         */
-        public MixedContentIssueDetails resourceType(Optional<Audits.MixedContentResourceType> resourceType) {
-            set("resourceType", resourceType.orElse(null));
-            return this;
-        }
-        /**
-         * The type of resource causing the mixed content issue (css, js, iframe, form,...). Marked as optional because it is mapped to from blink::mojom::RequestContextType, which will be replaced by network::mojom::RequestDestination
-         * @param resourceType field value; null removes the value
+         * @param resourceType field value
          * @return this model
          */
         public MixedContentIssueDetails resourceType(Audits.MixedContentResourceType resourceType) {
@@ -736,16 +636,7 @@ public final class Audits {
         }
         /**
          * The mixed content request. Does not always exist (e.g. for unsafe form submission urls).
-         * @param request field value; empty omits the value
-         * @return this model
-         */
-        public MixedContentIssueDetails request(Optional<Audits.AffectedRequest> request) {
-            set("request", request.orElse(null));
-            return this;
-        }
-        /**
-         * The mixed content request. Does not always exist (e.g. for unsafe form submission urls).
-         * @param request field value; null removes the value
+         * @param request field value
          * @return this model
          */
         public MixedContentIssueDetails request(Audits.AffectedRequest request) {
@@ -754,16 +645,7 @@ public final class Audits {
         }
         /**
          * Optional because not every mixed content issue is necessarily linked to a frame.
-         * @param frame field value; empty omits the value
-         * @return this model
-         */
-        public MixedContentIssueDetails frame(Optional<Audits.AffectedFrame> frame) {
-            set("frame", frame.orElse(null));
-            return this;
-        }
-        /**
-         * Optional because not every mixed content issue is necessarily linked to a frame.
-         * @param frame field value; null removes the value
+         * @param frame field value
          * @return this model
          */
         public MixedContentIssueDetails frame(Audits.AffectedFrame frame) {
@@ -785,7 +667,7 @@ public final class Audits {
         SRIMESSAGESIGNATUREMISMATCH("SRIMessageSignatureMismatch");
         public final String value;
         BlockedByResponseReason(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static BlockedByResponseReason of(String value) {
             for (BlockedByResponseReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -807,23 +689,21 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.AffectedRequest request() {
-            return java.util.Objects.requireNonNull(Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("request")))));
+            return java.util.Objects.requireNonNull(Audits.AffectedRequest.fromMap(CdpObject.requireObjectMap(require("request"))));
         }
         /**
          * Returns the parentFrame field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedFrame> parentFrame() {
-            Object value = raw("parentFrame");
-            return Optional.ofNullable(value == null ? null : Audits.AffectedFrame.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("parentFrame").flatMap(CdpObject::objectMap).map(Audits.AffectedFrame::fromMap);
         }
         /**
          * Returns the blockedFrame field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedFrame> blockedFrame() {
-            Object value = raw("blockedFrame");
-            return Optional.ofNullable(value == null ? null : Audits.AffectedFrame.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("blockedFrame").flatMap(CdpObject::objectMap).map(Audits.AffectedFrame::fromMap);
         }
         /**
          * Returns the reason field.
@@ -843,16 +723,7 @@ public final class Audits {
         }
         /**
          * Sets the parentFrame field.
-         * @param parentFrame field value; empty omits the value
-         * @return this model
-         */
-        public BlockedByResponseIssueDetails parentFrame(Optional<Audits.AffectedFrame> parentFrame) {
-            set("parentFrame", parentFrame.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the parentFrame field.
-         * @param parentFrame field value; null removes the value
+         * @param parentFrame field value
          * @return this model
          */
         public BlockedByResponseIssueDetails parentFrame(Audits.AffectedFrame parentFrame) {
@@ -861,16 +732,7 @@ public final class Audits {
         }
         /**
          * Sets the blockedFrame field.
-         * @param blockedFrame field value; empty omits the value
-         * @return this model
-         */
-        public BlockedByResponseIssueDetails blockedFrame(Optional<Audits.AffectedFrame> blockedFrame) {
-            set("blockedFrame", blockedFrame.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the blockedFrame field.
-         * @param blockedFrame field value; null removes the value
+         * @param blockedFrame field value
          * @return this model
          */
         public BlockedByResponseIssueDetails blockedFrame(Audits.AffectedFrame blockedFrame) {
@@ -895,7 +757,7 @@ public final class Audits {
         HEAVYADWARNING("HeavyAdWarning");
         public final String value;
         HeavyAdResolutionStatus(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static HeavyAdResolutionStatus of(String value) {
             for (HeavyAdResolutionStatus constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -912,7 +774,7 @@ public final class Audits {
         CPUPEAKLIMIT("CpuPeakLimit");
         public final String value;
         HeavyAdReason(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static HeavyAdReason of(String value) {
             for (HeavyAdReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -947,7 +809,7 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.AffectedFrame frame() {
-            return java.util.Objects.requireNonNull(Audits.AffectedFrame.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("frame")))));
+            return java.util.Objects.requireNonNull(Audits.AffectedFrame.fromMap(CdpObject.requireObjectMap(require("frame"))));
         }
         /**
          * The resolution status, either blocking the content or warning.
@@ -990,7 +852,7 @@ public final class Audits {
         KWASMEVALVIOLATION("kWasmEvalViolation");
         public final String value;
         ContentSecurityPolicyViolationType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static ContentSecurityPolicyViolationType of(String value) {
             for (ContentSecurityPolicyViolationType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -1011,8 +873,7 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ScriptId> scriptId() {
-            Object value = raw("scriptId");
-            return Optional.ofNullable(value == null ? null : new Runtime.ScriptId((String) value));
+            return raw("scriptId").map(value -> new Runtime.ScriptId((String) value));
         }
         /**
          * Returns the url field.
@@ -1037,16 +898,7 @@ public final class Audits {
         }
         /**
          * Sets the scriptId field.
-         * @param scriptId field value; empty omits the value
-         * @return this model
-         */
-        public SourceCodeLocation scriptId(Optional<Runtime.ScriptId> scriptId) {
-            set("scriptId", scriptId.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the scriptId field.
-         * @param scriptId field value; null removes the value
+         * @param scriptId field value
          * @return this model
          */
         public SourceCodeLocation scriptId(Runtime.ScriptId scriptId) {
@@ -1094,8 +946,7 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> blockedURL() {
-            Object value = raw("blockedURL");
-            return Optional.ofNullable((String) value);
+            return raw("blockedURL").map(value -> (String) value);
         }
         /**
          * Specific directive that is violated, causing the CSP issue.
@@ -1123,37 +974,25 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedFrame> frameAncestor() {
-            Object value = raw("frameAncestor");
-            return Optional.ofNullable(value == null ? null : Audits.AffectedFrame.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("frameAncestor").flatMap(CdpObject::objectMap).map(Audits.AffectedFrame::fromMap);
         }
         /**
          * Returns the sourceCodeLocation field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SourceCodeLocation> sourceCodeLocation() {
-            Object value = raw("sourceCodeLocation");
-            return Optional.ofNullable(value == null ? null : Audits.SourceCodeLocation.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("sourceCodeLocation").flatMap(CdpObject::objectMap).map(Audits.SourceCodeLocation::fromMap);
         }
         /**
          * Returns the violatingNodeId field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> violatingNodeId() {
-            Object value = raw("violatingNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("violatingNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * The url not included in allowed sources.
-         * @param blockedURL field value; empty omits the value
-         * @return this model
-         */
-        public ContentSecurityPolicyIssueDetails blockedURL(Optional<String> blockedURL) {
-            set("blockedURL", blockedURL.orElse(null));
-            return this;
-        }
-        /**
-         * The url not included in allowed sources.
-         * @param blockedURL field value; null removes the value
+         * @param blockedURL field value
          * @return this model
          */
         public ContentSecurityPolicyIssueDetails blockedURL(String blockedURL) {
@@ -1189,16 +1028,7 @@ public final class Audits {
         }
         /**
          * Sets the frameAncestor field.
-         * @param frameAncestor field value; empty omits the value
-         * @return this model
-         */
-        public ContentSecurityPolicyIssueDetails frameAncestor(Optional<Audits.AffectedFrame> frameAncestor) {
-            set("frameAncestor", frameAncestor.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the frameAncestor field.
-         * @param frameAncestor field value; null removes the value
+         * @param frameAncestor field value
          * @return this model
          */
         public ContentSecurityPolicyIssueDetails frameAncestor(Audits.AffectedFrame frameAncestor) {
@@ -1207,16 +1037,7 @@ public final class Audits {
         }
         /**
          * Sets the sourceCodeLocation field.
-         * @param sourceCodeLocation field value; empty omits the value
-         * @return this model
-         */
-        public ContentSecurityPolicyIssueDetails sourceCodeLocation(Optional<Audits.SourceCodeLocation> sourceCodeLocation) {
-            set("sourceCodeLocation", sourceCodeLocation.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the sourceCodeLocation field.
-         * @param sourceCodeLocation field value; null removes the value
+         * @param sourceCodeLocation field value
          * @return this model
          */
         public ContentSecurityPolicyIssueDetails sourceCodeLocation(Audits.SourceCodeLocation sourceCodeLocation) {
@@ -1225,16 +1046,7 @@ public final class Audits {
         }
         /**
          * Sets the violatingNodeId field.
-         * @param violatingNodeId field value; empty omits the value
-         * @return this model
-         */
-        public ContentSecurityPolicyIssueDetails violatingNodeId(Optional<DOM.BackendNodeId> violatingNodeId) {
-            set("violatingNodeId", violatingNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the violatingNodeId field.
-         * @param violatingNodeId field value; null removes the value
+         * @param violatingNodeId field value
          * @return this model
          */
         public ContentSecurityPolicyIssueDetails violatingNodeId(DOM.BackendNodeId violatingNodeId) {
@@ -1250,7 +1062,7 @@ public final class Audits {
         CREATIONISSUE("CreationIssue");
         public final String value;
         SharedArrayBufferIssueType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static SharedArrayBufferIssueType of(String value) {
             for (SharedArrayBufferIssueType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -1272,7 +1084,7 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.SourceCodeLocation sourceCodeLocation() {
-            return java.util.Objects.requireNonNull(Audits.SourceCodeLocation.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("sourceCodeLocation")))));
+            return java.util.Objects.requireNonNull(Audits.SourceCodeLocation.fromMap(CdpObject.requireObjectMap(require("sourceCodeLocation"))));
         }
         /**
          * Returns the isWarning field.
@@ -1330,7 +1142,7 @@ public final class Audits {
          * @return the protocol field value
          */
         public Network.CorsErrorStatus corsErrorStatus() {
-            return java.util.Objects.requireNonNull(Network.CorsErrorStatus.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("corsErrorStatus")))));
+            return java.util.Objects.requireNonNull(Network.CorsErrorStatus.fromMap(CdpObject.requireObjectMap(require("corsErrorStatus"))));
         }
         /**
          * Returns the isWarning field.
@@ -1344,39 +1156,35 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.AffectedRequest request() {
-            return java.util.Objects.requireNonNull(Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("request")))));
+            return java.util.Objects.requireNonNull(Audits.AffectedRequest.fromMap(CdpObject.requireObjectMap(require("request"))));
         }
         /**
          * Returns the location field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SourceCodeLocation> location() {
-            Object value = raw("location");
-            return Optional.ofNullable(value == null ? null : Audits.SourceCodeLocation.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("location").flatMap(CdpObject::objectMap).map(Audits.SourceCodeLocation::fromMap);
         }
         /**
          * Returns the initiatorOrigin field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> initiatorOrigin() {
-            Object value = raw("initiatorOrigin");
-            return Optional.ofNullable((String) value);
+            return raw("initiatorOrigin").map(value -> (String) value);
         }
         /**
          * Returns the resourceIPAddressSpace field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.IPAddressSpace> resourceIPAddressSpace() {
-            Object value = raw("resourceIPAddressSpace");
-            return Optional.ofNullable(value == null ? null : Network.IPAddressSpace.of((String) value));
+            return raw("resourceIPAddressSpace").map(value -> Network.IPAddressSpace.of((String) value));
         }
         /**
          * Returns the clientSecurityState field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ClientSecurityState> clientSecurityState() {
-            Object value = raw("clientSecurityState");
-            return Optional.ofNullable(value == null ? null : Network.ClientSecurityState.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("clientSecurityState").flatMap(CdpObject::objectMap).map(Network.ClientSecurityState::fromMap);
         }
         /**
          * Sets the corsErrorStatus field.
@@ -1407,16 +1215,7 @@ public final class Audits {
         }
         /**
          * Sets the location field.
-         * @param location field value; empty omits the value
-         * @return this model
-         */
-        public CorsIssueDetails location(Optional<Audits.SourceCodeLocation> location) {
-            set("location", location.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the location field.
-         * @param location field value; null removes the value
+         * @param location field value
          * @return this model
          */
         public CorsIssueDetails location(Audits.SourceCodeLocation location) {
@@ -1425,16 +1224,7 @@ public final class Audits {
         }
         /**
          * Sets the initiatorOrigin field.
-         * @param initiatorOrigin field value; empty omits the value
-         * @return this model
-         */
-        public CorsIssueDetails initiatorOrigin(Optional<String> initiatorOrigin) {
-            set("initiatorOrigin", initiatorOrigin.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the initiatorOrigin field.
-         * @param initiatorOrigin field value; null removes the value
+         * @param initiatorOrigin field value
          * @return this model
          */
         public CorsIssueDetails initiatorOrigin(String initiatorOrigin) {
@@ -1443,16 +1233,7 @@ public final class Audits {
         }
         /**
          * Sets the resourceIPAddressSpace field.
-         * @param resourceIPAddressSpace field value; empty omits the value
-         * @return this model
-         */
-        public CorsIssueDetails resourceIPAddressSpace(Optional<Network.IPAddressSpace> resourceIPAddressSpace) {
-            set("resourceIPAddressSpace", resourceIPAddressSpace.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the resourceIPAddressSpace field.
-         * @param resourceIPAddressSpace field value; null removes the value
+         * @param resourceIPAddressSpace field value
          * @return this model
          */
         public CorsIssueDetails resourceIPAddressSpace(Network.IPAddressSpace resourceIPAddressSpace) {
@@ -1461,16 +1242,7 @@ public final class Audits {
         }
         /**
          * Sets the clientSecurityState field.
-         * @param clientSecurityState field value; empty omits the value
-         * @return this model
-         */
-        public CorsIssueDetails clientSecurityState(Optional<Network.ClientSecurityState> clientSecurityState) {
-            set("clientSecurityState", clientSecurityState.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the clientSecurityState field.
-         * @param clientSecurityState field value; null removes the value
+         * @param clientSecurityState field value
          * @return this model
          */
         public CorsIssueDetails clientSecurityState(Network.ClientSecurityState clientSecurityState) {
@@ -1505,7 +1277,7 @@ public final class Audits {
         NAVIGATIONREGISTRATIONUNIQUESCOPEALREADYSET("NavigationRegistrationUniqueScopeAlreadySet");
         public final String value;
         AttributionReportingIssueType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static AttributionReportingIssueType of(String value) {
             for (AttributionReportingIssueType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -1545,7 +1317,7 @@ public final class Audits {
         WRITEERRORUNSUPPORTEDTYPE("WriteErrorUnsupportedType");
         public final String value;
         SharedDictionaryError(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static SharedDictionaryError of(String value) {
             for (SharedDictionaryError constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -1584,7 +1356,7 @@ public final class Audits {
         SIGNATUREBASEUNSUPPORTEDCOMPONENT("SignatureBaseUnsupportedComponent");
         public final String value;
         SRIMessageSignatureError(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static SRIMessageSignatureError of(String value) {
             for (SRIMessageSignatureError constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -1602,7 +1374,7 @@ public final class Audits {
         INCORRECTDIGESTLENGTH("IncorrectDigestLength");
         public final String value;
         UnencodedDigestError(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static UnencodedDigestError of(String value) {
             for (UnencodedDigestError constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -1622,7 +1394,7 @@ public final class Audits {
         INVALIDURLPATTERN("InvalidUrlPattern");
         public final String value;
         ConnectionAllowlistError(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static ConnectionAllowlistError of(String value) {
             for (ConnectionAllowlistError constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -1651,24 +1423,21 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedRequest> request() {
-            Object value = raw("request");
-            return Optional.ofNullable(value == null ? null : Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("request").flatMap(CdpObject::objectMap).map(Audits.AffectedRequest::fromMap);
         }
         /**
          * Returns the violatingNodeId field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> violatingNodeId() {
-            Object value = raw("violatingNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("violatingNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Returns the invalidParameter field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> invalidParameter() {
-            Object value = raw("invalidParameter");
-            return Optional.ofNullable((String) value);
+            return raw("invalidParameter").map(value -> (String) value);
         }
         /**
          * Sets the violationType field.
@@ -1681,16 +1450,7 @@ public final class Audits {
         }
         /**
          * Sets the request field.
-         * @param request field value; empty omits the value
-         * @return this model
-         */
-        public AttributionReportingIssueDetails request(Optional<Audits.AffectedRequest> request) {
-            set("request", request.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the request field.
-         * @param request field value; null removes the value
+         * @param request field value
          * @return this model
          */
         public AttributionReportingIssueDetails request(Audits.AffectedRequest request) {
@@ -1699,16 +1459,7 @@ public final class Audits {
         }
         /**
          * Sets the violatingNodeId field.
-         * @param violatingNodeId field value; empty omits the value
-         * @return this model
-         */
-        public AttributionReportingIssueDetails violatingNodeId(Optional<DOM.BackendNodeId> violatingNodeId) {
-            set("violatingNodeId", violatingNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the violatingNodeId field.
-         * @param violatingNodeId field value; null removes the value
+         * @param violatingNodeId field value
          * @return this model
          */
         public AttributionReportingIssueDetails violatingNodeId(DOM.BackendNodeId violatingNodeId) {
@@ -1717,16 +1468,7 @@ public final class Audits {
         }
         /**
          * Sets the invalidParameter field.
-         * @param invalidParameter field value; empty omits the value
-         * @return this model
-         */
-        public AttributionReportingIssueDetails invalidParameter(Optional<String> invalidParameter) {
-            set("invalidParameter", invalidParameter.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the invalidParameter field.
-         * @param invalidParameter field value; null removes the value
+         * @param invalidParameter field value
          * @return this model
          */
         public AttributionReportingIssueDetails invalidParameter(String invalidParameter) {
@@ -1846,8 +1588,7 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SourceCodeLocation> location() {
-            Object value = raw("location");
-            return Optional.ofNullable(value == null ? null : Audits.SourceCodeLocation.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("location").flatMap(CdpObject::objectMap).map(Audits.SourceCodeLocation::fromMap);
         }
         /**
          * Sets the url field.
@@ -1860,16 +1601,7 @@ public final class Audits {
         }
         /**
          * Sets the location field.
-         * @param location field value; empty omits the value
-         * @return this model
-         */
-        public NavigatorUserAgentIssueDetails location(Optional<Audits.SourceCodeLocation> location) {
-            set("location", location.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the location field.
-         * @param location field value; null removes the value
+         * @param location field value
          * @return this model
          */
         public NavigatorUserAgentIssueDetails location(Audits.SourceCodeLocation location) {
@@ -1897,7 +1629,7 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.AffectedRequest request() {
-            return java.util.Objects.requireNonNull(Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("request")))));
+            return java.util.Objects.requireNonNull(Audits.AffectedRequest.fromMap(CdpObject.requireObjectMap(require("request"))));
         }
         /**
          * Sets the sharedDictionaryError field.
@@ -1952,7 +1684,7 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.AffectedRequest request() {
-            return java.util.Objects.requireNonNull(Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("request")))));
+            return java.util.Objects.requireNonNull(Audits.AffectedRequest.fromMap(CdpObject.requireObjectMap(require("request"))));
         }
         /**
          * Sets the error field.
@@ -2011,7 +1743,7 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.AffectedRequest request() {
-            return java.util.Objects.requireNonNull(Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("request")))));
+            return java.util.Objects.requireNonNull(Audits.AffectedRequest.fromMap(CdpObject.requireObjectMap(require("request"))));
         }
         /**
          * Sets the error field.
@@ -2052,7 +1784,7 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.AffectedRequest request() {
-            return java.util.Objects.requireNonNull(Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("request")))));
+            return java.util.Objects.requireNonNull(Audits.AffectedRequest.fromMap(CdpObject.requireObjectMap(require("request"))));
         }
         /**
          * Sets the error field.
@@ -2100,7 +1832,7 @@ public final class Audits {
         FORMMODELCONTEXTPARAMETERMISSINGNAME("FormModelContextParameterMissingName");
         public final String value;
         GenericIssueErrorType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static GenericIssueErrorType of(String value) {
             for (GenericIssueErrorType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -2129,32 +1861,28 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            Object value = raw("frameId");
-            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
+            return raw("frameId").map(value -> new Page.FrameId((String) value));
         }
         /**
          * Returns the violatingNodeId field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> violatingNodeId() {
-            Object value = raw("violatingNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("violatingNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Returns the violatingNodeAttribute field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> violatingNodeAttribute() {
-            Object value = raw("violatingNodeAttribute");
-            return Optional.ofNullable((String) value);
+            return raw("violatingNodeAttribute").map(value -> (String) value);
         }
         /**
          * Returns the request field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedRequest> request() {
-            Object value = raw("request");
-            return Optional.ofNullable(value == null ? null : Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("request").flatMap(CdpObject::objectMap).map(Audits.AffectedRequest::fromMap);
         }
         /**
          * Issues with the same errorType are aggregated in the frontend.
@@ -2167,16 +1895,7 @@ public final class Audits {
         }
         /**
          * Sets the frameId field.
-         * @param frameId field value; empty omits the value
-         * @return this model
-         */
-        public GenericIssueDetails frameId(Optional<Page.FrameId> frameId) {
-            set("frameId", frameId.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the frameId field.
-         * @param frameId field value; null removes the value
+         * @param frameId field value
          * @return this model
          */
         public GenericIssueDetails frameId(Page.FrameId frameId) {
@@ -2185,16 +1904,7 @@ public final class Audits {
         }
         /**
          * Sets the violatingNodeId field.
-         * @param violatingNodeId field value; empty omits the value
-         * @return this model
-         */
-        public GenericIssueDetails violatingNodeId(Optional<DOM.BackendNodeId> violatingNodeId) {
-            set("violatingNodeId", violatingNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the violatingNodeId field.
-         * @param violatingNodeId field value; null removes the value
+         * @param violatingNodeId field value
          * @return this model
          */
         public GenericIssueDetails violatingNodeId(DOM.BackendNodeId violatingNodeId) {
@@ -2203,16 +1913,7 @@ public final class Audits {
         }
         /**
          * Sets the violatingNodeAttribute field.
-         * @param violatingNodeAttribute field value; empty omits the value
-         * @return this model
-         */
-        public GenericIssueDetails violatingNodeAttribute(Optional<String> violatingNodeAttribute) {
-            set("violatingNodeAttribute", violatingNodeAttribute.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the violatingNodeAttribute field.
-         * @param violatingNodeAttribute field value; null removes the value
+         * @param violatingNodeAttribute field value
          * @return this model
          */
         public GenericIssueDetails violatingNodeAttribute(String violatingNodeAttribute) {
@@ -2221,16 +1922,7 @@ public final class Audits {
         }
         /**
          * Sets the request field.
-         * @param request field value; empty omits the value
-         * @return this model
-         */
-        public GenericIssueDetails request(Optional<Audits.AffectedRequest> request) {
-            set("request", request.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the request field.
-         * @param request field value; null removes the value
+         * @param request field value
          * @return this model
          */
         public GenericIssueDetails request(Audits.AffectedRequest request) {
@@ -2252,15 +1944,14 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedFrame> affectedFrame() {
-            Object value = raw("affectedFrame");
-            return Optional.ofNullable(value == null ? null : Audits.AffectedFrame.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("affectedFrame").flatMap(CdpObject::objectMap).map(Audits.AffectedFrame::fromMap);
         }
         /**
          * Returns the sourceCodeLocation field.
          * @return the protocol field value
          */
         public Audits.SourceCodeLocation sourceCodeLocation() {
-            return java.util.Objects.requireNonNull(Audits.SourceCodeLocation.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("sourceCodeLocation")))));
+            return java.util.Objects.requireNonNull(Audits.SourceCodeLocation.fromMap(CdpObject.requireObjectMap(require("sourceCodeLocation"))));
         }
         /**
          * One of the deprecation names from third_party/blink/renderer/core/frame/deprecation/deprecation.json5
@@ -2271,16 +1962,7 @@ public final class Audits {
         }
         /**
          * Sets the affectedFrame field.
-         * @param affectedFrame field value; empty omits the value
-         * @return this model
-         */
-        public DeprecationIssueDetails affectedFrame(Optional<Audits.AffectedFrame> affectedFrame) {
-            set("affectedFrame", affectedFrame.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the affectedFrame field.
-         * @param affectedFrame field value; null removes the value
+         * @param affectedFrame field value
          * @return this model
          */
         public DeprecationIssueDetails affectedFrame(Audits.AffectedFrame affectedFrame) {
@@ -2414,7 +2096,7 @@ public final class Audits {
         METATAGMODIFIEDHTML("MetaTagModifiedHTML");
         public final String value;
         ClientHintIssueReason(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static ClientHintIssueReason of(String value) {
             for (ClientHintIssueReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -2495,7 +2177,7 @@ public final class Audits {
         SUPPRESSEDBYSEGMENTATIONPLATFORM("SuppressedBySegmentationPlatform");
         public final String value;
         FederatedAuthRequestIssueReason(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static FederatedAuthRequestIssueReason of(String value) {
             for (FederatedAuthRequestIssueReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -2543,7 +2225,7 @@ public final class Audits {
         NORETURNINGUSERFROMFETCHEDACCOUNTS("NoReturningUserFromFetchedAccounts");
         public final String value;
         FederatedAuthUserInfoRequestIssueReason(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static FederatedAuthUserInfoRequestIssueReason of(String value) {
             for (FederatedAuthUserInfoRequestIssueReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -2638,7 +2320,7 @@ public final class Audits {
         TOKENVERIFICATIONKBSIGNATUREFAILED("TokenVerificationKbSignatureFailed");
         public final String value;
         EmailVerificationRequestIssueReason(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static EmailVerificationRequestIssueReason of(String value) {
             for (EmailVerificationRequestIssueReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -2660,7 +2342,7 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.SourceCodeLocation sourceCodeLocation() {
-            return java.util.Objects.requireNonNull(Audits.SourceCodeLocation.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("sourceCodeLocation")))));
+            return java.util.Objects.requireNonNull(Audits.SourceCodeLocation.fromMap(CdpObject.requireObjectMap(require("sourceCodeLocation"))));
         }
         /**
          * Returns the clientHintIssueReason field.
@@ -2715,8 +2397,7 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.RequestId> requestId() {
-            Object value = raw("requestId");
-            return Optional.ofNullable(value == null ? null : new Network.RequestId((String) value));
+            return raw("requestId").map(value -> new Network.RequestId((String) value));
         }
         /**
          * The URL that failed to load.
@@ -2738,16 +2419,7 @@ public final class Audits {
         }
         /**
          * Sets the requestId field.
-         * @param requestId field value; empty omits the value
-         * @return this model
-         */
-        public FailedRequestInfo requestId(Optional<Network.RequestId> requestId) {
-            set("requestId", requestId.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the requestId field.
-         * @param requestId field value; null removes the value
+         * @param requestId field value
          * @return this model
          */
         public FailedRequestInfo requestId(Network.RequestId requestId) {
@@ -2763,7 +2435,7 @@ public final class Audits {
         ENFORCENOOPENERFORNAVIGATION("EnforceNoopenerForNavigation");
         public final String value;
         PartitioningBlobURLInfo(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static PartitioningBlobURLInfo of(String value) {
             for (PartitioningBlobURLInfo constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -2824,7 +2496,7 @@ public final class Audits {
         INTERACTIVECONTENTSUMMARYDESCENDANT("InteractiveContentSummaryDescendant");
         public final String value;
         ElementAccessibilityIssueReason(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static ElementAccessibilityIssueReason of(String value) {
             for (ElementAccessibilityIssueReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -2898,7 +2570,7 @@ public final class Audits {
         REQUESTFAILED("RequestFailed");
         public final String value;
         StyleSheetLoadingIssueReason(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static StyleSheetLoadingIssueReason of(String value) {
             for (StyleSheetLoadingIssueReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -2920,7 +2592,7 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.SourceCodeLocation sourceCodeLocation() {
-            return java.util.Objects.requireNonNull(Audits.SourceCodeLocation.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("sourceCodeLocation")))));
+            return java.util.Objects.requireNonNull(Audits.SourceCodeLocation.fromMap(CdpObject.requireObjectMap(require("sourceCodeLocation"))));
         }
         /**
          * Reason why the stylesheet couldn&#x27;t be loaded.
@@ -2934,8 +2606,7 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.FailedRequestInfo> failedRequestInfo() {
-            Object value = raw("failedRequestInfo");
-            return Optional.ofNullable(value == null ? null : Audits.FailedRequestInfo.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("failedRequestInfo").flatMap(CdpObject::objectMap).map(Audits.FailedRequestInfo::fromMap);
         }
         /**
          * Source code position that referenced the failing stylesheet.
@@ -2957,16 +2628,7 @@ public final class Audits {
         }
         /**
          * Contains additional info when the failure was due to a request.
-         * @param failedRequestInfo field value; empty omits the value
-         * @return this model
-         */
-        public StylesheetLoadingIssueDetails failedRequestInfo(Optional<Audits.FailedRequestInfo> failedRequestInfo) {
-            set("failedRequestInfo", failedRequestInfo.orElse(null));
-            return this;
-        }
-        /**
-         * Contains additional info when the failure was due to a request.
-         * @param failedRequestInfo field value; null removes the value
+         * @param failedRequestInfo field value
          * @return this model
          */
         public StylesheetLoadingIssueDetails failedRequestInfo(Audits.FailedRequestInfo failedRequestInfo) {
@@ -2984,7 +2646,7 @@ public final class Audits {
         INVALIDNAME("InvalidName");
         public final String value;
         PropertyRuleIssueReason(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static PropertyRuleIssueReason of(String value) {
             for (PropertyRuleIssueReason constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -3006,7 +2668,7 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.SourceCodeLocation sourceCodeLocation() {
-            return java.util.Objects.requireNonNull(Audits.SourceCodeLocation.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("sourceCodeLocation")))));
+            return java.util.Objects.requireNonNull(Audits.SourceCodeLocation.fromMap(CdpObject.requireObjectMap(require("sourceCodeLocation"))));
         }
         /**
          * Reason why the property rule was discarded.
@@ -3020,8 +2682,7 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> propertyValue() {
-            Object value = raw("propertyValue");
-            return Optional.ofNullable((String) value);
+            return raw("propertyValue").map(value -> (String) value);
         }
         /**
          * Source code position of the property rule.
@@ -3043,16 +2704,7 @@ public final class Audits {
         }
         /**
          * The value of the property rule property that failed to parse
-         * @param propertyValue field value; empty omits the value
-         * @return this model
-         */
-        public PropertyRuleIssueDetails propertyValue(Optional<String> propertyValue) {
-            set("propertyValue", propertyValue.orElse(null));
-            return this;
-        }
-        /**
-         * The value of the property rule property that failed to parse
-         * @param propertyValue field value; null removes the value
+         * @param propertyValue field value
          * @return this model
          */
         public PropertyRuleIssueDetails propertyValue(String propertyValue) {
@@ -3069,7 +2721,7 @@ public final class Audits {
         NOISEDCANVASREADBACK("NoisedCanvasReadback");
         public final String value;
         UserReidentificationIssueType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static UserReidentificationIssueType of(String value) {
             for (UserReidentificationIssueType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -3098,16 +2750,14 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedRequest> request() {
-            Object value = raw("request");
-            return Optional.ofNullable(value == null ? null : Audits.AffectedRequest.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("request").flatMap(CdpObject::objectMap).map(Audits.AffectedRequest::fromMap);
         }
         /**
          * Applies to NoisedCanvasReadback issue type.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SourceCodeLocation> sourceCodeLocation() {
-            Object value = raw("sourceCodeLocation");
-            return Optional.ofNullable(value == null ? null : Audits.SourceCodeLocation.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("sourceCodeLocation").flatMap(CdpObject::objectMap).map(Audits.SourceCodeLocation::fromMap);
         }
         /**
          * Sets the type field.
@@ -3120,16 +2770,7 @@ public final class Audits {
         }
         /**
          * Applies to BlockedFrameNavigation and BlockedSubresource issue types.
-         * @param request field value; empty omits the value
-         * @return this model
-         */
-        public UserReidentificationIssueDetails request(Optional<Audits.AffectedRequest> request) {
-            set("request", request.orElse(null));
-            return this;
-        }
-        /**
-         * Applies to BlockedFrameNavigation and BlockedSubresource issue types.
-         * @param request field value; null removes the value
+         * @param request field value
          * @return this model
          */
         public UserReidentificationIssueDetails request(Audits.AffectedRequest request) {
@@ -3138,16 +2779,7 @@ public final class Audits {
         }
         /**
          * Applies to NoisedCanvasReadback issue type.
-         * @param sourceCodeLocation field value; empty omits the value
-         * @return this model
-         */
-        public UserReidentificationIssueDetails sourceCodeLocation(Optional<Audits.SourceCodeLocation> sourceCodeLocation) {
-            set("sourceCodeLocation", sourceCodeLocation.orElse(null));
-            return this;
-        }
-        /**
-         * Applies to NoisedCanvasReadback issue type.
-         * @param sourceCodeLocation field value; null removes the value
+         * @param sourceCodeLocation field value
          * @return this model
          */
         public UserReidentificationIssueDetails sourceCodeLocation(Audits.SourceCodeLocation sourceCodeLocation) {
@@ -3182,7 +2814,7 @@ public final class Audits {
         INVALIDSIZEVALUE("InvalidSizeValue");
         public final String value;
         PermissionElementIssueType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static PermissionElementIssueType of(String value) {
             for (PermissionElementIssueType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -3211,56 +2843,49 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> type() {
-            Object value = raw("type");
-            return Optional.ofNullable((String) value);
+            return raw("type").map(value -> (String) value);
         }
         /**
          * The node ID of the &lt;permission&gt; element.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> nodeId() {
-            Object value = raw("nodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("nodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * True if the issue is a warning, false if it is an error.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isWarning() {
-            Object value = raw("isWarning");
-            return Optional.ofNullable((Boolean) value);
+            return raw("isWarning").map(value -> (Boolean) value);
         }
         /**
          * Fields for message construction: Used for messages that reference a specific permission name
          * @return the protocol field value, empty when absent
          */
         public Optional<String> permissionName() {
-            Object value = raw("permissionName");
-            return Optional.ofNullable((String) value);
+            return raw("permissionName").map(value -> (String) value);
         }
         /**
          * Used for messages about occlusion
          * @return the protocol field value, empty when absent
          */
         public Optional<String> occluderNodeInfo() {
-            Object value = raw("occluderNodeInfo");
-            return Optional.ofNullable((String) value);
+            return raw("occluderNodeInfo").map(value -> (String) value);
         }
         /**
          * Used for messages about occluder&#x27;s parent
          * @return the protocol field value, empty when absent
          */
         public Optional<String> occluderParentNodeInfo() {
-            Object value = raw("occluderParentNodeInfo");
-            return Optional.ofNullable((String) value);
+            return raw("occluderParentNodeInfo").map(value -> (String) value);
         }
         /**
          * Used for messages about activation disabled reason
          * @return the protocol field value, empty when absent
          */
         public Optional<String> disableReason() {
-            Object value = raw("disableReason");
-            return Optional.ofNullable((String) value);
+            return raw("disableReason").map(value -> (String) value);
         }
         /**
          * Sets the issueType field.
@@ -3273,16 +2898,7 @@ public final class Audits {
         }
         /**
          * The value of the type attribute.
-         * @param type field value; empty omits the value
-         * @return this model
-         */
-        public PermissionElementIssueDetails type(Optional<String> type) {
-            set("type", type.orElse(null));
-            return this;
-        }
-        /**
-         * The value of the type attribute.
-         * @param type field value; null removes the value
+         * @param type field value
          * @return this model
          */
         public PermissionElementIssueDetails type(String type) {
@@ -3291,16 +2907,7 @@ public final class Audits {
         }
         /**
          * The node ID of the &lt;permission&gt; element.
-         * @param nodeId field value; empty omits the value
-         * @return this model
-         */
-        public PermissionElementIssueDetails nodeId(Optional<DOM.BackendNodeId> nodeId) {
-            set("nodeId", nodeId.orElse(null));
-            return this;
-        }
-        /**
-         * The node ID of the &lt;permission&gt; element.
-         * @param nodeId field value; null removes the value
+         * @param nodeId field value
          * @return this model
          */
         public PermissionElementIssueDetails nodeId(DOM.BackendNodeId nodeId) {
@@ -3309,34 +2916,16 @@ public final class Audits {
         }
         /**
          * True if the issue is a warning, false if it is an error.
-         * @param isWarning field value; empty omits the value
+         * @param isWarning field value
          * @return this model
          */
-        public PermissionElementIssueDetails isWarning(Optional<Boolean> isWarning) {
-            set("isWarning", isWarning.orElse(null));
-            return this;
-        }
-        /**
-         * True if the issue is a warning, false if it is an error.
-         * @param isWarning field value; null removes the value
-         * @return this model
-         */
-        public PermissionElementIssueDetails isWarning(Boolean isWarning) {
+        public PermissionElementIssueDetails isWarning(boolean isWarning) {
             set("isWarning", isWarning);
             return this;
         }
         /**
          * Fields for message construction: Used for messages that reference a specific permission name
-         * @param permissionName field value; empty omits the value
-         * @return this model
-         */
-        public PermissionElementIssueDetails permissionName(Optional<String> permissionName) {
-            set("permissionName", permissionName.orElse(null));
-            return this;
-        }
-        /**
-         * Fields for message construction: Used for messages that reference a specific permission name
-         * @param permissionName field value; null removes the value
+         * @param permissionName field value
          * @return this model
          */
         public PermissionElementIssueDetails permissionName(String permissionName) {
@@ -3345,16 +2934,7 @@ public final class Audits {
         }
         /**
          * Used for messages about occlusion
-         * @param occluderNodeInfo field value; empty omits the value
-         * @return this model
-         */
-        public PermissionElementIssueDetails occluderNodeInfo(Optional<String> occluderNodeInfo) {
-            set("occluderNodeInfo", occluderNodeInfo.orElse(null));
-            return this;
-        }
-        /**
-         * Used for messages about occlusion
-         * @param occluderNodeInfo field value; null removes the value
+         * @param occluderNodeInfo field value
          * @return this model
          */
         public PermissionElementIssueDetails occluderNodeInfo(String occluderNodeInfo) {
@@ -3363,16 +2943,7 @@ public final class Audits {
         }
         /**
          * Used for messages about occluder&#x27;s parent
-         * @param occluderParentNodeInfo field value; empty omits the value
-         * @return this model
-         */
-        public PermissionElementIssueDetails occluderParentNodeInfo(Optional<String> occluderParentNodeInfo) {
-            set("occluderParentNodeInfo", occluderParentNodeInfo.orElse(null));
-            return this;
-        }
-        /**
-         * Used for messages about occluder&#x27;s parent
-         * @param occluderParentNodeInfo field value; null removes the value
+         * @param occluderParentNodeInfo field value
          * @return this model
          */
         public PermissionElementIssueDetails occluderParentNodeInfo(String occluderParentNodeInfo) {
@@ -3381,16 +2952,7 @@ public final class Audits {
         }
         /**
          * Used for messages about activation disabled reason
-         * @param disableReason field value; empty omits the value
-         * @return this model
-         */
-        public PermissionElementIssueDetails disableReason(Optional<String> disableReason) {
-            set("disableReason", disableReason.orElse(null));
-            return this;
-        }
-        /**
-         * Used for messages about activation disabled reason
-         * @param disableReason field value; null removes the value
+         * @param disableReason field value
          * @return this model
          */
         public PermissionElementIssueDetails disableReason(String disableReason) {
@@ -3419,15 +2981,14 @@ public final class Audits {
          * @return the protocol field value
          */
         public Network.AdAncestry adAncestry() {
-            return java.util.Objects.requireNonNull(Network.AdAncestry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("adAncestry")))));
+            return java.util.Objects.requireNonNull(Network.AdAncestry.fromMap(CdpObject.requireObjectMap(require("adAncestry"))));
         }
         /**
          * The stack trace at the time of the intervention.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.StackTrace> stackTrace() {
-            Object value = raw("stackTrace");
-            return Optional.ofNullable(value == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("stackTrace").flatMap(CdpObject::objectMap).map(Runtime.StackTrace::fromMap);
         }
         /**
          * Which API was intervened on.
@@ -3449,16 +3010,7 @@ public final class Audits {
         }
         /**
          * The stack trace at the time of the intervention.
-         * @param stackTrace field value; empty omits the value
-         * @return this model
-         */
-        public SelectivePermissionsInterventionIssueDetails stackTrace(Optional<Runtime.StackTrace> stackTrace) {
-            set("stackTrace", stackTrace.orElse(null));
-            return this;
-        }
-        /**
-         * The stack trace at the time of the intervention.
-         * @param stackTrace field value; null removes the value
+         * @param stackTrace field value
          * @return this model
          */
         public SelectivePermissionsInterventionIssueDetails stackTrace(Runtime.StackTrace stackTrace) {
@@ -3502,7 +3054,7 @@ public final class Audits {
         EMAILVERIFICATIONREQUESTISSUE("EmailVerificationRequestIssue");
         public final String value;
         InspectorIssueCode(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static InspectorIssueCode of(String value) {
             for (InspectorIssueCode constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -3524,80 +3076,70 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.CookieIssueDetails> cookieIssueDetails() {
-            Object value = raw("cookieIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.CookieIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("cookieIssueDetails").flatMap(CdpObject::objectMap).map(Audits.CookieIssueDetails::fromMap);
         }
         /**
          * Returns the mixedContentIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.MixedContentIssueDetails> mixedContentIssueDetails() {
-            Object value = raw("mixedContentIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.MixedContentIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("mixedContentIssueDetails").flatMap(CdpObject::objectMap).map(Audits.MixedContentIssueDetails::fromMap);
         }
         /**
          * Returns the blockedByResponseIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.BlockedByResponseIssueDetails> blockedByResponseIssueDetails() {
-            Object value = raw("blockedByResponseIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.BlockedByResponseIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("blockedByResponseIssueDetails").flatMap(CdpObject::objectMap).map(Audits.BlockedByResponseIssueDetails::fromMap);
         }
         /**
          * Returns the heavyAdIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.HeavyAdIssueDetails> heavyAdIssueDetails() {
-            Object value = raw("heavyAdIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.HeavyAdIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("heavyAdIssueDetails").flatMap(CdpObject::objectMap).map(Audits.HeavyAdIssueDetails::fromMap);
         }
         /**
          * Returns the contentSecurityPolicyIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.ContentSecurityPolicyIssueDetails> contentSecurityPolicyIssueDetails() {
-            Object value = raw("contentSecurityPolicyIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.ContentSecurityPolicyIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("contentSecurityPolicyIssueDetails").flatMap(CdpObject::objectMap).map(Audits.ContentSecurityPolicyIssueDetails::fromMap);
         }
         /**
          * Returns the sharedArrayBufferIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SharedArrayBufferIssueDetails> sharedArrayBufferIssueDetails() {
-            Object value = raw("sharedArrayBufferIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.SharedArrayBufferIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("sharedArrayBufferIssueDetails").flatMap(CdpObject::objectMap).map(Audits.SharedArrayBufferIssueDetails::fromMap);
         }
         /**
          * Returns the corsIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.CorsIssueDetails> corsIssueDetails() {
-            Object value = raw("corsIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.CorsIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("corsIssueDetails").flatMap(CdpObject::objectMap).map(Audits.CorsIssueDetails::fromMap);
         }
         /**
          * Returns the attributionReportingIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AttributionReportingIssueDetails> attributionReportingIssueDetails() {
-            Object value = raw("attributionReportingIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.AttributionReportingIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("attributionReportingIssueDetails").flatMap(CdpObject::objectMap).map(Audits.AttributionReportingIssueDetails::fromMap);
         }
         /**
          * Returns the quirksModeIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.QuirksModeIssueDetails> quirksModeIssueDetails() {
-            Object value = raw("quirksModeIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.QuirksModeIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("quirksModeIssueDetails").flatMap(CdpObject::objectMap).map(Audits.QuirksModeIssueDetails::fromMap);
         }
         /**
          * Returns the partitioningBlobURLIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.PartitioningBlobURLIssueDetails> partitioningBlobURLIssueDetails() {
-            Object value = raw("partitioningBlobURLIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.PartitioningBlobURLIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("partitioningBlobURLIssueDetails").flatMap(CdpObject::objectMap).map(Audits.PartitioningBlobURLIssueDetails::fromMap);
         }
         /**
          * Returns the navigatorUserAgentIssueDetails field.
@@ -3606,173 +3148,144 @@ public final class Audits {
          */
         @Deprecated
         public Optional<Audits.NavigatorUserAgentIssueDetails> navigatorUserAgentIssueDetails() {
-            Object value = raw("navigatorUserAgentIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.NavigatorUserAgentIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("navigatorUserAgentIssueDetails").flatMap(CdpObject::objectMap).map(Audits.NavigatorUserAgentIssueDetails::fromMap);
         }
         /**
          * Returns the genericIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.GenericIssueDetails> genericIssueDetails() {
-            Object value = raw("genericIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.GenericIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("genericIssueDetails").flatMap(CdpObject::objectMap).map(Audits.GenericIssueDetails::fromMap);
         }
         /**
          * Returns the deprecationIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.DeprecationIssueDetails> deprecationIssueDetails() {
-            Object value = raw("deprecationIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.DeprecationIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("deprecationIssueDetails").flatMap(CdpObject::objectMap).map(Audits.DeprecationIssueDetails::fromMap);
         }
         /**
          * Returns the clientHintIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.ClientHintIssueDetails> clientHintIssueDetails() {
-            Object value = raw("clientHintIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.ClientHintIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("clientHintIssueDetails").flatMap(CdpObject::objectMap).map(Audits.ClientHintIssueDetails::fromMap);
         }
         /**
          * Returns the federatedAuthRequestIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.FederatedAuthRequestIssueDetails> federatedAuthRequestIssueDetails() {
-            Object value = raw("federatedAuthRequestIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.FederatedAuthRequestIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("federatedAuthRequestIssueDetails").flatMap(CdpObject::objectMap).map(Audits.FederatedAuthRequestIssueDetails::fromMap);
         }
         /**
          * Returns the bounceTrackingIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.BounceTrackingIssueDetails> bounceTrackingIssueDetails() {
-            Object value = raw("bounceTrackingIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.BounceTrackingIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("bounceTrackingIssueDetails").flatMap(CdpObject::objectMap).map(Audits.BounceTrackingIssueDetails::fromMap);
         }
         /**
          * Returns the cookieDeprecationMetadataIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.CookieDeprecationMetadataIssueDetails> cookieDeprecationMetadataIssueDetails() {
-            Object value = raw("cookieDeprecationMetadataIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.CookieDeprecationMetadataIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("cookieDeprecationMetadataIssueDetails").flatMap(CdpObject::objectMap).map(Audits.CookieDeprecationMetadataIssueDetails::fromMap);
         }
         /**
          * Returns the stylesheetLoadingIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.StylesheetLoadingIssueDetails> stylesheetLoadingIssueDetails() {
-            Object value = raw("stylesheetLoadingIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.StylesheetLoadingIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("stylesheetLoadingIssueDetails").flatMap(CdpObject::objectMap).map(Audits.StylesheetLoadingIssueDetails::fromMap);
         }
         /**
          * Returns the propertyRuleIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.PropertyRuleIssueDetails> propertyRuleIssueDetails() {
-            Object value = raw("propertyRuleIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.PropertyRuleIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("propertyRuleIssueDetails").flatMap(CdpObject::objectMap).map(Audits.PropertyRuleIssueDetails::fromMap);
         }
         /**
          * Returns the federatedAuthUserInfoRequestIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.FederatedAuthUserInfoRequestIssueDetails> federatedAuthUserInfoRequestIssueDetails() {
-            Object value = raw("federatedAuthUserInfoRequestIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.FederatedAuthUserInfoRequestIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("federatedAuthUserInfoRequestIssueDetails").flatMap(CdpObject::objectMap).map(Audits.FederatedAuthUserInfoRequestIssueDetails::fromMap);
         }
         /**
          * Returns the sharedDictionaryIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SharedDictionaryIssueDetails> sharedDictionaryIssueDetails() {
-            Object value = raw("sharedDictionaryIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.SharedDictionaryIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("sharedDictionaryIssueDetails").flatMap(CdpObject::objectMap).map(Audits.SharedDictionaryIssueDetails::fromMap);
         }
         /**
          * Returns the elementAccessibilityIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.ElementAccessibilityIssueDetails> elementAccessibilityIssueDetails() {
-            Object value = raw("elementAccessibilityIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.ElementAccessibilityIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("elementAccessibilityIssueDetails").flatMap(CdpObject::objectMap).map(Audits.ElementAccessibilityIssueDetails::fromMap);
         }
         /**
          * Returns the sriMessageSignatureIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SRIMessageSignatureIssueDetails> sriMessageSignatureIssueDetails() {
-            Object value = raw("sriMessageSignatureIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.SRIMessageSignatureIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("sriMessageSignatureIssueDetails").flatMap(CdpObject::objectMap).map(Audits.SRIMessageSignatureIssueDetails::fromMap);
         }
         /**
          * Returns the unencodedDigestIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.UnencodedDigestIssueDetails> unencodedDigestIssueDetails() {
-            Object value = raw("unencodedDigestIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.UnencodedDigestIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("unencodedDigestIssueDetails").flatMap(CdpObject::objectMap).map(Audits.UnencodedDigestIssueDetails::fromMap);
         }
         /**
          * Returns the connectionAllowlistIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.ConnectionAllowlistIssueDetails> connectionAllowlistIssueDetails() {
-            Object value = raw("connectionAllowlistIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.ConnectionAllowlistIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("connectionAllowlistIssueDetails").flatMap(CdpObject::objectMap).map(Audits.ConnectionAllowlistIssueDetails::fromMap);
         }
         /**
          * Returns the userReidentificationIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.UserReidentificationIssueDetails> userReidentificationIssueDetails() {
-            Object value = raw("userReidentificationIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.UserReidentificationIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("userReidentificationIssueDetails").flatMap(CdpObject::objectMap).map(Audits.UserReidentificationIssueDetails::fromMap);
         }
         /**
          * Returns the permissionElementIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.PermissionElementIssueDetails> permissionElementIssueDetails() {
-            Object value = raw("permissionElementIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.PermissionElementIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("permissionElementIssueDetails").flatMap(CdpObject::objectMap).map(Audits.PermissionElementIssueDetails::fromMap);
         }
         /**
          * Returns the performanceIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.PerformanceIssueDetails> performanceIssueDetails() {
-            Object value = raw("performanceIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.PerformanceIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("performanceIssueDetails").flatMap(CdpObject::objectMap).map(Audits.PerformanceIssueDetails::fromMap);
         }
         /**
          * Returns the selectivePermissionsInterventionIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SelectivePermissionsInterventionIssueDetails> selectivePermissionsInterventionIssueDetails() {
-            Object value = raw("selectivePermissionsInterventionIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.SelectivePermissionsInterventionIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("selectivePermissionsInterventionIssueDetails").flatMap(CdpObject::objectMap).map(Audits.SelectivePermissionsInterventionIssueDetails::fromMap);
         }
         /**
          * Returns the emailVerificationRequestIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.EmailVerificationRequestIssueDetails> emailVerificationRequestIssueDetails() {
-            Object value = raw("emailVerificationRequestIssueDetails");
-            return Optional.ofNullable(value == null ? null : Audits.EmailVerificationRequestIssueDetails.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("emailVerificationRequestIssueDetails").flatMap(CdpObject::objectMap).map(Audits.EmailVerificationRequestIssueDetails::fromMap);
         }
         /**
          * Sets the cookieIssueDetails field.
-         * @param cookieIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails cookieIssueDetails(Optional<Audits.CookieIssueDetails> cookieIssueDetails) {
-            set("cookieIssueDetails", cookieIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the cookieIssueDetails field.
-         * @param cookieIssueDetails field value; null removes the value
+         * @param cookieIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails cookieIssueDetails(Audits.CookieIssueDetails cookieIssueDetails) {
@@ -3781,16 +3294,7 @@ public final class Audits {
         }
         /**
          * Sets the mixedContentIssueDetails field.
-         * @param mixedContentIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails mixedContentIssueDetails(Optional<Audits.MixedContentIssueDetails> mixedContentIssueDetails) {
-            set("mixedContentIssueDetails", mixedContentIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the mixedContentIssueDetails field.
-         * @param mixedContentIssueDetails field value; null removes the value
+         * @param mixedContentIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails mixedContentIssueDetails(Audits.MixedContentIssueDetails mixedContentIssueDetails) {
@@ -3799,16 +3303,7 @@ public final class Audits {
         }
         /**
          * Sets the blockedByResponseIssueDetails field.
-         * @param blockedByResponseIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails blockedByResponseIssueDetails(Optional<Audits.BlockedByResponseIssueDetails> blockedByResponseIssueDetails) {
-            set("blockedByResponseIssueDetails", blockedByResponseIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the blockedByResponseIssueDetails field.
-         * @param blockedByResponseIssueDetails field value; null removes the value
+         * @param blockedByResponseIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails blockedByResponseIssueDetails(Audits.BlockedByResponseIssueDetails blockedByResponseIssueDetails) {
@@ -3817,16 +3312,7 @@ public final class Audits {
         }
         /**
          * Sets the heavyAdIssueDetails field.
-         * @param heavyAdIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails heavyAdIssueDetails(Optional<Audits.HeavyAdIssueDetails> heavyAdIssueDetails) {
-            set("heavyAdIssueDetails", heavyAdIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the heavyAdIssueDetails field.
-         * @param heavyAdIssueDetails field value; null removes the value
+         * @param heavyAdIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails heavyAdIssueDetails(Audits.HeavyAdIssueDetails heavyAdIssueDetails) {
@@ -3835,16 +3321,7 @@ public final class Audits {
         }
         /**
          * Sets the contentSecurityPolicyIssueDetails field.
-         * @param contentSecurityPolicyIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails contentSecurityPolicyIssueDetails(Optional<Audits.ContentSecurityPolicyIssueDetails> contentSecurityPolicyIssueDetails) {
-            set("contentSecurityPolicyIssueDetails", contentSecurityPolicyIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the contentSecurityPolicyIssueDetails field.
-         * @param contentSecurityPolicyIssueDetails field value; null removes the value
+         * @param contentSecurityPolicyIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails contentSecurityPolicyIssueDetails(Audits.ContentSecurityPolicyIssueDetails contentSecurityPolicyIssueDetails) {
@@ -3853,16 +3330,7 @@ public final class Audits {
         }
         /**
          * Sets the sharedArrayBufferIssueDetails field.
-         * @param sharedArrayBufferIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails sharedArrayBufferIssueDetails(Optional<Audits.SharedArrayBufferIssueDetails> sharedArrayBufferIssueDetails) {
-            set("sharedArrayBufferIssueDetails", sharedArrayBufferIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the sharedArrayBufferIssueDetails field.
-         * @param sharedArrayBufferIssueDetails field value; null removes the value
+         * @param sharedArrayBufferIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails sharedArrayBufferIssueDetails(Audits.SharedArrayBufferIssueDetails sharedArrayBufferIssueDetails) {
@@ -3871,16 +3339,7 @@ public final class Audits {
         }
         /**
          * Sets the corsIssueDetails field.
-         * @param corsIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails corsIssueDetails(Optional<Audits.CorsIssueDetails> corsIssueDetails) {
-            set("corsIssueDetails", corsIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the corsIssueDetails field.
-         * @param corsIssueDetails field value; null removes the value
+         * @param corsIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails corsIssueDetails(Audits.CorsIssueDetails corsIssueDetails) {
@@ -3889,16 +3348,7 @@ public final class Audits {
         }
         /**
          * Sets the attributionReportingIssueDetails field.
-         * @param attributionReportingIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails attributionReportingIssueDetails(Optional<Audits.AttributionReportingIssueDetails> attributionReportingIssueDetails) {
-            set("attributionReportingIssueDetails", attributionReportingIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the attributionReportingIssueDetails field.
-         * @param attributionReportingIssueDetails field value; null removes the value
+         * @param attributionReportingIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails attributionReportingIssueDetails(Audits.AttributionReportingIssueDetails attributionReportingIssueDetails) {
@@ -3907,16 +3357,7 @@ public final class Audits {
         }
         /**
          * Sets the quirksModeIssueDetails field.
-         * @param quirksModeIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails quirksModeIssueDetails(Optional<Audits.QuirksModeIssueDetails> quirksModeIssueDetails) {
-            set("quirksModeIssueDetails", quirksModeIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the quirksModeIssueDetails field.
-         * @param quirksModeIssueDetails field value; null removes the value
+         * @param quirksModeIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails quirksModeIssueDetails(Audits.QuirksModeIssueDetails quirksModeIssueDetails) {
@@ -3925,16 +3366,7 @@ public final class Audits {
         }
         /**
          * Sets the partitioningBlobURLIssueDetails field.
-         * @param partitioningBlobURLIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails partitioningBlobURLIssueDetails(Optional<Audits.PartitioningBlobURLIssueDetails> partitioningBlobURLIssueDetails) {
-            set("partitioningBlobURLIssueDetails", partitioningBlobURLIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the partitioningBlobURLIssueDetails field.
-         * @param partitioningBlobURLIssueDetails field value; null removes the value
+         * @param partitioningBlobURLIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails partitioningBlobURLIssueDetails(Audits.PartitioningBlobURLIssueDetails partitioningBlobURLIssueDetails) {
@@ -3943,18 +3375,7 @@ public final class Audits {
         }
         /**
          * Sets the navigatorUserAgentIssueDetails field.
-         * @param navigatorUserAgentIssueDetails field value; empty omits the value
-         * @return this model
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public InspectorIssueDetails navigatorUserAgentIssueDetails(Optional<Audits.NavigatorUserAgentIssueDetails> navigatorUserAgentIssueDetails) {
-            set("navigatorUserAgentIssueDetails", navigatorUserAgentIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the navigatorUserAgentIssueDetails field.
-         * @param navigatorUserAgentIssueDetails field value; null removes the value
+         * @param navigatorUserAgentIssueDetails field value
          * @return this model
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
@@ -3965,16 +3386,7 @@ public final class Audits {
         }
         /**
          * Sets the genericIssueDetails field.
-         * @param genericIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails genericIssueDetails(Optional<Audits.GenericIssueDetails> genericIssueDetails) {
-            set("genericIssueDetails", genericIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the genericIssueDetails field.
-         * @param genericIssueDetails field value; null removes the value
+         * @param genericIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails genericIssueDetails(Audits.GenericIssueDetails genericIssueDetails) {
@@ -3983,16 +3395,7 @@ public final class Audits {
         }
         /**
          * Sets the deprecationIssueDetails field.
-         * @param deprecationIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails deprecationIssueDetails(Optional<Audits.DeprecationIssueDetails> deprecationIssueDetails) {
-            set("deprecationIssueDetails", deprecationIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the deprecationIssueDetails field.
-         * @param deprecationIssueDetails field value; null removes the value
+         * @param deprecationIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails deprecationIssueDetails(Audits.DeprecationIssueDetails deprecationIssueDetails) {
@@ -4001,16 +3404,7 @@ public final class Audits {
         }
         /**
          * Sets the clientHintIssueDetails field.
-         * @param clientHintIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails clientHintIssueDetails(Optional<Audits.ClientHintIssueDetails> clientHintIssueDetails) {
-            set("clientHintIssueDetails", clientHintIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the clientHintIssueDetails field.
-         * @param clientHintIssueDetails field value; null removes the value
+         * @param clientHintIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails clientHintIssueDetails(Audits.ClientHintIssueDetails clientHintIssueDetails) {
@@ -4019,16 +3413,7 @@ public final class Audits {
         }
         /**
          * Sets the federatedAuthRequestIssueDetails field.
-         * @param federatedAuthRequestIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails federatedAuthRequestIssueDetails(Optional<Audits.FederatedAuthRequestIssueDetails> federatedAuthRequestIssueDetails) {
-            set("federatedAuthRequestIssueDetails", federatedAuthRequestIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the federatedAuthRequestIssueDetails field.
-         * @param federatedAuthRequestIssueDetails field value; null removes the value
+         * @param federatedAuthRequestIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails federatedAuthRequestIssueDetails(Audits.FederatedAuthRequestIssueDetails federatedAuthRequestIssueDetails) {
@@ -4037,16 +3422,7 @@ public final class Audits {
         }
         /**
          * Sets the bounceTrackingIssueDetails field.
-         * @param bounceTrackingIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails bounceTrackingIssueDetails(Optional<Audits.BounceTrackingIssueDetails> bounceTrackingIssueDetails) {
-            set("bounceTrackingIssueDetails", bounceTrackingIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the bounceTrackingIssueDetails field.
-         * @param bounceTrackingIssueDetails field value; null removes the value
+         * @param bounceTrackingIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails bounceTrackingIssueDetails(Audits.BounceTrackingIssueDetails bounceTrackingIssueDetails) {
@@ -4055,16 +3431,7 @@ public final class Audits {
         }
         /**
          * Sets the cookieDeprecationMetadataIssueDetails field.
-         * @param cookieDeprecationMetadataIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails cookieDeprecationMetadataIssueDetails(Optional<Audits.CookieDeprecationMetadataIssueDetails> cookieDeprecationMetadataIssueDetails) {
-            set("cookieDeprecationMetadataIssueDetails", cookieDeprecationMetadataIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the cookieDeprecationMetadataIssueDetails field.
-         * @param cookieDeprecationMetadataIssueDetails field value; null removes the value
+         * @param cookieDeprecationMetadataIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails cookieDeprecationMetadataIssueDetails(Audits.CookieDeprecationMetadataIssueDetails cookieDeprecationMetadataIssueDetails) {
@@ -4073,16 +3440,7 @@ public final class Audits {
         }
         /**
          * Sets the stylesheetLoadingIssueDetails field.
-         * @param stylesheetLoadingIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails stylesheetLoadingIssueDetails(Optional<Audits.StylesheetLoadingIssueDetails> stylesheetLoadingIssueDetails) {
-            set("stylesheetLoadingIssueDetails", stylesheetLoadingIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the stylesheetLoadingIssueDetails field.
-         * @param stylesheetLoadingIssueDetails field value; null removes the value
+         * @param stylesheetLoadingIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails stylesheetLoadingIssueDetails(Audits.StylesheetLoadingIssueDetails stylesheetLoadingIssueDetails) {
@@ -4091,16 +3449,7 @@ public final class Audits {
         }
         /**
          * Sets the propertyRuleIssueDetails field.
-         * @param propertyRuleIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails propertyRuleIssueDetails(Optional<Audits.PropertyRuleIssueDetails> propertyRuleIssueDetails) {
-            set("propertyRuleIssueDetails", propertyRuleIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the propertyRuleIssueDetails field.
-         * @param propertyRuleIssueDetails field value; null removes the value
+         * @param propertyRuleIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails propertyRuleIssueDetails(Audits.PropertyRuleIssueDetails propertyRuleIssueDetails) {
@@ -4109,16 +3458,7 @@ public final class Audits {
         }
         /**
          * Sets the federatedAuthUserInfoRequestIssueDetails field.
-         * @param federatedAuthUserInfoRequestIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails federatedAuthUserInfoRequestIssueDetails(Optional<Audits.FederatedAuthUserInfoRequestIssueDetails> federatedAuthUserInfoRequestIssueDetails) {
-            set("federatedAuthUserInfoRequestIssueDetails", federatedAuthUserInfoRequestIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the federatedAuthUserInfoRequestIssueDetails field.
-         * @param federatedAuthUserInfoRequestIssueDetails field value; null removes the value
+         * @param federatedAuthUserInfoRequestIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails federatedAuthUserInfoRequestIssueDetails(Audits.FederatedAuthUserInfoRequestIssueDetails federatedAuthUserInfoRequestIssueDetails) {
@@ -4127,16 +3467,7 @@ public final class Audits {
         }
         /**
          * Sets the sharedDictionaryIssueDetails field.
-         * @param sharedDictionaryIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails sharedDictionaryIssueDetails(Optional<Audits.SharedDictionaryIssueDetails> sharedDictionaryIssueDetails) {
-            set("sharedDictionaryIssueDetails", sharedDictionaryIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the sharedDictionaryIssueDetails field.
-         * @param sharedDictionaryIssueDetails field value; null removes the value
+         * @param sharedDictionaryIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails sharedDictionaryIssueDetails(Audits.SharedDictionaryIssueDetails sharedDictionaryIssueDetails) {
@@ -4145,16 +3476,7 @@ public final class Audits {
         }
         /**
          * Sets the elementAccessibilityIssueDetails field.
-         * @param elementAccessibilityIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails elementAccessibilityIssueDetails(Optional<Audits.ElementAccessibilityIssueDetails> elementAccessibilityIssueDetails) {
-            set("elementAccessibilityIssueDetails", elementAccessibilityIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the elementAccessibilityIssueDetails field.
-         * @param elementAccessibilityIssueDetails field value; null removes the value
+         * @param elementAccessibilityIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails elementAccessibilityIssueDetails(Audits.ElementAccessibilityIssueDetails elementAccessibilityIssueDetails) {
@@ -4163,16 +3485,7 @@ public final class Audits {
         }
         /**
          * Sets the sriMessageSignatureIssueDetails field.
-         * @param sriMessageSignatureIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails sriMessageSignatureIssueDetails(Optional<Audits.SRIMessageSignatureIssueDetails> sriMessageSignatureIssueDetails) {
-            set("sriMessageSignatureIssueDetails", sriMessageSignatureIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the sriMessageSignatureIssueDetails field.
-         * @param sriMessageSignatureIssueDetails field value; null removes the value
+         * @param sriMessageSignatureIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails sriMessageSignatureIssueDetails(Audits.SRIMessageSignatureIssueDetails sriMessageSignatureIssueDetails) {
@@ -4181,16 +3494,7 @@ public final class Audits {
         }
         /**
          * Sets the unencodedDigestIssueDetails field.
-         * @param unencodedDigestIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails unencodedDigestIssueDetails(Optional<Audits.UnencodedDigestIssueDetails> unencodedDigestIssueDetails) {
-            set("unencodedDigestIssueDetails", unencodedDigestIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the unencodedDigestIssueDetails field.
-         * @param unencodedDigestIssueDetails field value; null removes the value
+         * @param unencodedDigestIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails unencodedDigestIssueDetails(Audits.UnencodedDigestIssueDetails unencodedDigestIssueDetails) {
@@ -4199,16 +3503,7 @@ public final class Audits {
         }
         /**
          * Sets the connectionAllowlistIssueDetails field.
-         * @param connectionAllowlistIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails connectionAllowlistIssueDetails(Optional<Audits.ConnectionAllowlistIssueDetails> connectionAllowlistIssueDetails) {
-            set("connectionAllowlistIssueDetails", connectionAllowlistIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the connectionAllowlistIssueDetails field.
-         * @param connectionAllowlistIssueDetails field value; null removes the value
+         * @param connectionAllowlistIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails connectionAllowlistIssueDetails(Audits.ConnectionAllowlistIssueDetails connectionAllowlistIssueDetails) {
@@ -4217,16 +3512,7 @@ public final class Audits {
         }
         /**
          * Sets the userReidentificationIssueDetails field.
-         * @param userReidentificationIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails userReidentificationIssueDetails(Optional<Audits.UserReidentificationIssueDetails> userReidentificationIssueDetails) {
-            set("userReidentificationIssueDetails", userReidentificationIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the userReidentificationIssueDetails field.
-         * @param userReidentificationIssueDetails field value; null removes the value
+         * @param userReidentificationIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails userReidentificationIssueDetails(Audits.UserReidentificationIssueDetails userReidentificationIssueDetails) {
@@ -4235,16 +3521,7 @@ public final class Audits {
         }
         /**
          * Sets the permissionElementIssueDetails field.
-         * @param permissionElementIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails permissionElementIssueDetails(Optional<Audits.PermissionElementIssueDetails> permissionElementIssueDetails) {
-            set("permissionElementIssueDetails", permissionElementIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the permissionElementIssueDetails field.
-         * @param permissionElementIssueDetails field value; null removes the value
+         * @param permissionElementIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails permissionElementIssueDetails(Audits.PermissionElementIssueDetails permissionElementIssueDetails) {
@@ -4253,16 +3530,7 @@ public final class Audits {
         }
         /**
          * Sets the performanceIssueDetails field.
-         * @param performanceIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails performanceIssueDetails(Optional<Audits.PerformanceIssueDetails> performanceIssueDetails) {
-            set("performanceIssueDetails", performanceIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the performanceIssueDetails field.
-         * @param performanceIssueDetails field value; null removes the value
+         * @param performanceIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails performanceIssueDetails(Audits.PerformanceIssueDetails performanceIssueDetails) {
@@ -4271,16 +3539,7 @@ public final class Audits {
         }
         /**
          * Sets the selectivePermissionsInterventionIssueDetails field.
-         * @param selectivePermissionsInterventionIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails selectivePermissionsInterventionIssueDetails(Optional<Audits.SelectivePermissionsInterventionIssueDetails> selectivePermissionsInterventionIssueDetails) {
-            set("selectivePermissionsInterventionIssueDetails", selectivePermissionsInterventionIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the selectivePermissionsInterventionIssueDetails field.
-         * @param selectivePermissionsInterventionIssueDetails field value; null removes the value
+         * @param selectivePermissionsInterventionIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails selectivePermissionsInterventionIssueDetails(Audits.SelectivePermissionsInterventionIssueDetails selectivePermissionsInterventionIssueDetails) {
@@ -4289,16 +3548,7 @@ public final class Audits {
         }
         /**
          * Sets the emailVerificationRequestIssueDetails field.
-         * @param emailVerificationRequestIssueDetails field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssueDetails emailVerificationRequestIssueDetails(Optional<Audits.EmailVerificationRequestIssueDetails> emailVerificationRequestIssueDetails) {
-            set("emailVerificationRequestIssueDetails", emailVerificationRequestIssueDetails.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the emailVerificationRequestIssueDetails field.
-         * @param emailVerificationRequestIssueDetails field value; null removes the value
+         * @param emailVerificationRequestIssueDetails field value
          * @return this model
          */
         public InspectorIssueDetails emailVerificationRequestIssueDetails(Audits.EmailVerificationRequestIssueDetails emailVerificationRequestIssueDetails) {
@@ -4312,7 +3562,7 @@ public final class Audits {
     public static final class IssueId implements CdpValue<String> {
         public final String value;
         public IssueId(String value) { this.value = java.util.Objects.requireNonNull(value); }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof IssueId)) return false;
@@ -4342,15 +3592,14 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.InspectorIssueDetails details() {
-            return java.util.Objects.requireNonNull(Audits.InspectorIssueDetails.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("details")))));
+            return java.util.Objects.requireNonNull(Audits.InspectorIssueDetails.fromMap(CdpObject.requireObjectMap(require("details"))));
         }
         /**
          * A unique id for this issue. May be omitted if no other entity (e.g. exception, CDP message, etc.) is referencing this issue.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.IssueId> issueId() {
-            Object value = raw("issueId");
-            return Optional.ofNullable(value == null ? null : new Audits.IssueId((String) value));
+            return raw("issueId").map(value -> new Audits.IssueId((String) value));
         }
         /**
          * Sets the code field.
@@ -4372,16 +3621,7 @@ public final class Audits {
         }
         /**
          * A unique id for this issue. May be omitted if no other entity (e.g. exception, CDP message, etc.) is referencing this issue.
-         * @param issueId field value; empty omits the value
-         * @return this model
-         */
-        public InspectorIssue issueId(Optional<Audits.IssueId> issueId) {
-            set("issueId", issueId.orElse(null));
-            return this;
-        }
-        /**
-         * A unique id for this issue. May be omitted if no other entity (e.g. exception, CDP message, etc.) is referencing this issue.
-         * @param issueId field value; null removes the value
+         * @param issueId field value
          * @return this model
          */
         public InspectorIssue issueId(Audits.IssueId issueId) {
@@ -4400,11 +3640,10 @@ public final class Audits {
          * @param encoding protocol value
          */
         public GetEncodedResponseRequest(Network.RequestId requestId, GetEncodedResponseEncodingValues encoding) {
-            set("requestId", requestId);
-            set("encoding", encoding);
+            requestId(requestId).encoding(encoding);
         }
         public static GetEncodedResponseRequest fromMap(Map<String, Object> values) {
-            GetEncodedResponseRequest instance_ = new GetEncodedResponseRequest();
+            final GetEncodedResponseRequest instance_ = new GetEncodedResponseRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -4427,16 +3666,14 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble quality() {
-            Double value = CdpObject.numberAsDouble(raw("quality"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("quality").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Whether to only return the size information (defaults to false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> sizeOnly() {
-            Object value = raw("sizeOnly");
-            return Optional.ofNullable((Boolean) value);
+            return raw("sizeOnly").map(value -> (Boolean) value);
         }
         /**
          * Identifier of the network request to get content for.
@@ -4458,37 +3695,19 @@ public final class Audits {
         }
         /**
          * The quality of the encoding (0-1). (defaults to 1)
-         * @param quality field value; empty omits the value
+         * @param quality field value
          * @return this model
          */
-        public GetEncodedResponseRequest quality(OptionalDouble quality) {
-            set("quality", quality.isPresent() ? quality.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * The quality of the encoding (0-1). (defaults to 1)
-         * @param quality field value; null removes the value
-         * @return this model
-         */
-        public GetEncodedResponseRequest quality(Double quality) {
+        public GetEncodedResponseRequest quality(double quality) {
             set("quality", quality);
             return this;
         }
         /**
          * Whether to only return the size information (defaults to false).
-         * @param sizeOnly field value; empty omits the value
+         * @param sizeOnly field value
          * @return this model
          */
-        public GetEncodedResponseRequest sizeOnly(Optional<Boolean> sizeOnly) {
-            set("sizeOnly", sizeOnly.orElse(null));
-            return this;
-        }
-        /**
-         * Whether to only return the size information (defaults to false).
-         * @param sizeOnly field value; null removes the value
-         * @return this model
-         */
-        public GetEncodedResponseRequest sizeOnly(Boolean sizeOnly) {
+        public GetEncodedResponseRequest sizeOnly(boolean sizeOnly) {
             set("sizeOnly", sizeOnly);
             return this;
         }
@@ -4507,8 +3726,7 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> body() {
-            Object value = raw("body");
-            return Optional.ofNullable((String) value);
+            return raw("body").map(value -> (String) value);
         }
         /**
          * Size before re-encoding.
@@ -4526,16 +3744,7 @@ public final class Audits {
         }
         /**
          * The encoded body as a base64 string. Omitted if sizeOnly is true. (Encoded as a base64 string when passed over JSON)
-         * @param body field value; empty omits the value
-         * @return this model
-         */
-        public GetEncodedResponseResult body(Optional<String> body) {
-            set("body", body.orElse(null));
-            return this;
-        }
-        /**
-         * The encoded body as a base64 string. Omitted if sizeOnly is true. (Encoded as a base64 string when passed over JSON)
-         * @param body field value; null removes the value
+         * @param body field value
          * @return this model
          */
         public GetEncodedResponseResult body(String body) {
@@ -4575,7 +3784,7 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.InspectorIssue issue() {
-            return java.util.Objects.requireNonNull(Audits.InspectorIssue.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("issue")))));
+            return java.util.Objects.requireNonNull(Audits.InspectorIssue.fromMap(CdpObject.requireObjectMap(require("issue"))));
         }
         /**
          * Sets the issue field.
@@ -4596,7 +3805,7 @@ public final class Audits {
         PNG("png");
         public final String value;
         GetEncodedResponseEncodingValues(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static GetEncodedResponseEncodingValues of(String value) {
             for (GetEncodedResponseEncodingValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -4615,12 +3824,12 @@ public final class Audits {
          * @param sizeOnly protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetEncodedResponseResult> getEncodedResponse(Network.RequestId requestId, GetEncodedResponseEncodingValues encoding, OptionalDouble quality, Optional<Boolean> sizeOnly) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<GetEncodedResponseResult> getEncodedResponse(Network.RequestId requestId, GetEncodedResponseEncodingValues encoding, @Nullable Double quality, @Nullable Boolean sizeOnly) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("requestId", CdpObject.json(requestId));
             params.put("encoding", CdpObject.json(encoding));
-            quality.ifPresent(value_ -> params.put("quality", value_));
-            sizeOnly.ifPresent(value_ -> params.put("sizeOnly", value_));
+            if (quality != null) params.put("quality", CdpObject.json(quality));
+            if (sizeOnly != null) params.put("sizeOnly", CdpObject.json(sizeOnly));
             return client.call("Audits.getEncodedResponse", params, result_ -> new GetEncodedResponseResult(result_));
         }
         /**
@@ -4630,7 +3839,10 @@ public final class Audits {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetEncodedResponseResult> getEncodedResponse(Network.RequestId requestId, GetEncodedResponseEncodingValues encoding) {
-            return getEncodedResponse(requestId, encoding, OptionalDouble.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("requestId", CdpObject.json(requestId));
+            params.put("encoding", CdpObject.json(encoding));
+            return client.call("Audits.getEncodedResponse", params, result_ -> new GetEncodedResponseResult(result_));
         }
         /**
          * Returns the response body and size if it were re-encoded with the specified settings. Only applies to images.
@@ -4659,7 +3871,7 @@ public final class Audits {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Audits.GenericIssueDetails>> checkFormsIssues() {
-            return client.call("Audits.checkFormsIssues", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("formIssues")), element0 -> java.util.Objects.requireNonNull(Audits.GenericIssueDetails.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("Audits.checkFormsIssues", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("formIssues")), element0 -> java.util.Objects.requireNonNull(Audits.GenericIssueDetails.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Subscribes to Audits.issueAdded.

@@ -3,12 +3,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class ViewToStringRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 911389690;
@@ -41,7 +43,7 @@ public final class ViewToStringRequest implements CefMessageView, CefMessageEnco
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
@@ -52,12 +54,10 @@ public final class ViewToStringRequest implements CefMessageView, CefMessageEnco
     }
 
     public static final CefMessageDecoder<ViewToStringRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "includeChildren");
-        int includeChildren = __buf.getInt();
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final int includeChildren = WireDecoder.int32(__buf, "includeChildren");
         WireDecoder.requireFullyConsumed(__buf, "ViewToStringRequest");
         return new ViewToStringRequest(self, includeChildren);
     };

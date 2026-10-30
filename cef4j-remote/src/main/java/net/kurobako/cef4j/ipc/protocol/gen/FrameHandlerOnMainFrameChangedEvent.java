@@ -3,12 +3,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class FrameHandlerOnMainFrameChangedEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 397724186;
@@ -47,7 +49,7 @@ public final class FrameHandlerOnMainFrameChangedEvent implements CefMessageView
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(browser.id());
@@ -59,14 +61,11 @@ public final class FrameHandlerOnMainFrameChangedEvent implements CefMessageView
     }
 
     public static final CefMessageDecoder<FrameHandlerOnMainFrameChangedEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
-        RemoteHandle browser = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "oldFrame");
-        RemoteHandle oldFrame = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "newFrame");
-        RemoteHandle newFrame = new RemoteHandle(__buf.getInt());
+        final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
+        final RemoteHandle oldFrame = WireDecoder.handle(__buf, "oldFrame");
+        final RemoteHandle newFrame = WireDecoder.handle(__buf, "newFrame");
         WireDecoder.requireFullyConsumed(__buf, "FrameHandlerOnMainFrameChangedEvent");
         return new FrameHandlerOnMainFrameChangedEvent(browser, oldFrame, newFrame);
     };

@@ -38,7 +38,6 @@ import net.kurobako.cef4j.gen.CefJsDialogType;
 import net.kurobako.cef4j.gen.CefLifeSpanHandler;
 import net.kurobako.cef4j.gen.CefListValue;
 import net.kurobako.cef4j.gen.CefLoadHandler;
-import net.kurobako.cef4j.gen.CefLogSeverity;
 import net.kurobako.cef4j.gen.CefMenuItemType;
 import net.kurobako.cef4j.gen.CefMenuModel;
 import net.kurobako.cef4j.gen.CefNavigationEntry;
@@ -159,7 +158,8 @@ final class CefWebViewClient implements CefClient {
             public void onLoadEnd(@Nullable CefBrowser browser, @Nullable CefFrame frame, int httpStatusCode) {
                 if (!isMainFrame(frame)) return;
                 scrollbarLoadHandler.onLoadEnd(browser, frame, httpStatusCode);
-                String completedUrl = frame == null ? null : frame.getUrl().orElse(null);
+                final String completedUrl =
+                        frame == null ? null : frame.getUrl().orElse(null);
                 Platform.runLater(() -> {
                     view.engine.markLoadFinished(completedUrl);
                     view.requestViewRefresh(false);
@@ -200,16 +200,6 @@ final class CefWebViewClient implements CefClient {
             }
 
             @Override
-            public boolean onConsoleMessage(
-                    @Nullable CefBrowser browser,
-                    CefLogSeverity level,
-                    @Nullable String message,
-                    @Nullable String source,
-                    int line) {
-                return false;
-            }
-
-            @Override
             public void onStatusMessage(@Nullable CefBrowser browser, @Nullable String value) {
                 Platform.runLater(() -> view.engine.fireStatusChanged(Objects.requireNonNullElse(value, "")));
             }
@@ -240,7 +230,7 @@ final class CefWebViewClient implements CefClient {
             }
 
             private boolean updateCursor(CefCursorType type) {
-                Cursor jfxCursor = view.mapCursor(type);
+                final Cursor jfxCursor = view.mapCursor(type);
                 Platform.runLater(() -> {
                     if (view.getCursor() != jfxCursor) view.setCursor(jfxCursor);
                 });
@@ -251,7 +241,7 @@ final class CefWebViewClient implements CefClient {
 
     @Override
     public Optional<CefContextMenuHandler> getContextMenuHandler() {
-        CefContextMenuHandler handler = new CefContextMenuHandler() {
+        final CefContextMenuHandler handler = new CefContextMenuHandler() {
             @Override
             public boolean runContextMenu(
                     @Nullable CefBrowser browser,
@@ -260,17 +250,21 @@ final class CefWebViewClient implements CefClient {
                     @Nullable CefMenuModel model,
                     @Nullable CefRunContextMenuCallback callback) {
                 if (model == null || callback == null) return false;
-                AtomicBoolean dispatched = new AtomicBoolean();
-                List<MenuItem> items = buildMenuItems(model, callback, dispatched);
-                int menuX = params != null ? params.getXCoord() : 0;
-                int menuY = params != null ? params.getYCoord() : 0;
+                if (!view.contextMenuAllowed) {
+                    callback.cancel();
+                    return true;
+                }
+                final AtomicBoolean dispatched = new AtomicBoolean();
+                final List<MenuItem> items = buildMenuItems(model, callback, dispatched);
                 if (items.isEmpty()) {
                     callback.cancel();
                     return true;
                 }
+                final int menuX = params != null ? params.getXCoord() : 0;
+                final int menuY = params != null ? params.getYCoord() : 0;
                 Platform.runLater(() -> {
                     view.hideContextMenu();
-                    ContextMenu menu = new ContextMenu(items.toArray(new MenuItem[0]));
+                    final ContextMenu menu = new ContextMenu(items.toArray(new MenuItem[0]));
                     menu.setOnHidden(e -> {
                         if (dispatched.compareAndSet(false, true)) callback.cancel();
                         if (view.activeContextMenu == menu) view.activeContextMenu = null;
@@ -278,7 +272,7 @@ final class CefWebViewClient implements CefClient {
                     view.activeContextMenu = menu;
                     double screenX = 0;
                     double screenY = 0;
-                    Point2D pt = view.localToScreen(menuX, menuY);
+                    final Point2D pt = view.localToScreen(menuX, menuY);
                     if (pt != null) {
                         screenX = pt.getX();
                         screenY = pt.getY();
@@ -303,29 +297,27 @@ final class CefWebViewClient implements CefClient {
                     @Nullable String defaultPromptText,
                     @Nullable CefJsDialogCallback callback,
                     int[] suppressMessage) {
-                CefJsDialogType.Kind kind = dialogType.kind().orElse(CefJsDialogType.Kind.ALERT);
+                final CefJsDialogType.Kind kind = dialogType.kind().orElse(CefJsDialogType.Kind.ALERT);
                 switch (kind) {
                     case ALERT:
                         Platform.runLater(() -> view.engine.fireAlert(Objects.requireNonNullElse(messageText, "")));
                         if (callback != null) callback.cont(1, null);
                         return true;
                     case CONFIRM:
-                        javafx.util.Callback<String, Boolean> confirm = view.engine.getConfirmHandler();
-                        if (confirm == null) return false;
-                        AtomicReference<Boolean> confirmResult = new AtomicReference<>(Boolean.FALSE);
-                        view.runOnFxAndWait(
-                                () -> confirmResult.set(confirm.call(Objects.requireNonNullElse(messageText, ""))));
-                        if (callback != null) callback.cont(Boolean.TRUE.equals(confirmResult.get()) ? 1 : 0, null);
-                        return true;
+                        return handleConfirm(messageText, callback);
                     case PROMPT:
-                        javafx.util.Callback<CefPromptData, String> prompt = view.engine.getPromptHandler();
-                        if (prompt == null) return false;
-                        AtomicReference<@Nullable String> promptResult = new AtomicReference<>();
-                        view.runOnFxAndWait(() -> promptResult.set(prompt.call(new CefPromptData(
-                                Objects.requireNonNullElse(messageText, ""),
-                                Objects.requireNonNullElse(defaultPromptText, "")))));
-                        if (callback != null) callback.cont(promptResult.get() != null ? 1 : 0, promptResult.get());
-                        return true;
+                        return Optional.ofNullable(view.engine.getPromptHandler())
+                                .map(prompt -> {
+                                    final AtomicReference<@Nullable String> promptResult = new AtomicReference<>();
+                                    view.runOnFxAndWait(() -> promptResult.set(prompt.call(new CefPromptData(
+                                            Objects.requireNonNullElse(messageText, ""),
+                                            Objects.requireNonNullElse(defaultPromptText, "")))));
+                                    if (callback != null) {
+                                        callback.cont(promptResult.get() != null ? 1 : 0, promptResult.get());
+                                    }
+                                    return true;
+                                })
+                                .orElse(false);
                     default:
                         return false;
                 }
@@ -337,14 +329,23 @@ final class CefWebViewClient implements CefClient {
                     @Nullable String messageText,
                     boolean isReload,
                     @Nullable CefJsDialogCallback callback) {
-                javafx.util.Callback<String, Boolean> confirm = view.engine.getConfirmHandler();
-                if (confirm == null) return false;
-                AtomicReference<Boolean> confirmResult = new AtomicReference<>(Boolean.FALSE);
-                view.runOnFxAndWait(() -> confirmResult.set(confirm.call(Objects.requireNonNullElse(messageText, ""))));
-                if (callback != null) callback.cont(Boolean.TRUE.equals(confirmResult.get()) ? 1 : 0, null);
-                return true;
+                return handleConfirm(messageText, callback);
             }
         });
+    }
+
+    private boolean handleConfirm(@Nullable String messageText, @Nullable CefJsDialogCallback callback) {
+        return Optional.ofNullable(view.engine.getConfirmHandler())
+                .map(confirm -> {
+                    final AtomicReference<Boolean> confirmResult = new AtomicReference<>(Boolean.FALSE);
+                    view.runOnFxAndWait(
+                            () -> confirmResult.set(confirm.call(Objects.requireNonNullElse(messageText, ""))));
+                    if (callback != null) {
+                        callback.cont(Boolean.TRUE.equals(confirmResult.get()) ? 1 : 0, null);
+                    }
+                    return true;
+                })
+                .orElse(false);
     }
 
     @NullableBoundary("CEF client callbacks are nullable across supported ABI versions")
@@ -369,7 +370,7 @@ final class CefWebViewClient implements CefClient {
     private boolean handleLegacyContentsBounds(@Nullable CefProcessMessage message) {
         if (!view.popupBrowser || message == null) return false;
         if (!LEGACY_CONTENTS_BOUNDS_MESSAGE.equals(message.getName().orElse(null))) return false;
-        CefListValue arguments = message.getArgumentList().orElse(null);
+        final CefListValue arguments = message.getArgumentList().orElse(null);
         if (arguments == null) return true;
         try (arguments) {
             view.updateDetachedBounds(
@@ -382,14 +383,14 @@ final class CefWebViewClient implements CefClient {
 
     private List<MenuItem> buildMenuItems(
             CefMenuModel model, CefRunContextMenuCallback callback, AtomicBoolean dispatched) {
-        List<MenuItem> items = new ArrayList<>();
-        long count = model.getCount();
+        final List<MenuItem> items = new ArrayList<>();
+        final long count = model.getCount();
         for (long i = 0; i < count; i++) {
-            int index = Math.toIntExact(i);
-            int commandId = model.getCommandIdAt(index);
-            CefMenuItemType.Kind kind = model.getType(commandId).kind().orElse(CefMenuItemType.Kind.NONE);
-            String label = stripMnemonic(model.getLabel(commandId).orElse(""));
-            javafx.event.EventHandler<javafx.event.ActionEvent> fire = e -> {
+            final int index = Math.toIntExact(i);
+            final int commandId = model.getCommandIdAt(index);
+            final CefMenuItemType.Kind kind = model.getType(commandId).kind().orElse(CefMenuItemType.Kind.NONE);
+            final String label = stripMnemonic(model.getLabel(commandId).orElse(""));
+            final javafx.event.EventHandler<javafx.event.ActionEvent> fire = e -> {
                 if (dispatched.compareAndSet(false, true)) {
                     view.hideContextMenu();
                     callback.cont(commandId, CefEventFlags.of(CefEventFlags.Kind.NONE));
@@ -402,13 +403,13 @@ final class CefWebViewClient implements CefClient {
                     break;
                 case SUBMENU:
                     model.getSubMenuAt(index).ifPresent(sub -> {
-                        Menu menu = new Menu(label);
+                        final Menu menu = new Menu(label);
                         menu.getItems().addAll(buildMenuItems(sub, callback, dispatched));
                         items.add(menu);
                     });
                     break;
                 case CHECK:
-                    CheckMenuItem check = new CheckMenuItem(label);
+                    final CheckMenuItem check = new CheckMenuItem(label);
                     check.setSelected(model.isChecked(commandId));
                     check.setDisable(!model.isEnabled(commandId));
                     check.setOnAction(fire);
@@ -416,7 +417,7 @@ final class CefWebViewClient implements CefClient {
                     break;
                 default:
                     if (label.isEmpty() && kind == CefMenuItemType.Kind.NONE) break;
-                    MenuItem item = new MenuItem(label);
+                    final MenuItem item = new MenuItem(label);
                     item.setDisable(!model.isEnabled(commandId));
                     item.setOnAction(fire);
                     items.add(item);
@@ -428,10 +429,10 @@ final class CefWebViewClient implements CefClient {
 
     private static String stripMnemonic(String label) {
         if (label.indexOf('&') < 0) return label;
-        StringBuilder sb = new StringBuilder(label.length());
+        final StringBuilder sb = new StringBuilder(label.length());
         int i = 0;
         while (i < label.length()) {
-            char c = label.charAt(i);
+            final char c = label.charAt(i);
             if (c == '&' && i + 1 < label.length() && label.charAt(i + 1) == '&') {
                 sb.append('&');
                 i += 2;
@@ -458,23 +459,23 @@ final class CefWebViewClient implements CefClient {
             }
             return;
         }
-        var host = browser != null ? browser.getHost().orElse(null) : null;
+        final var host = browser != null ? browser.getHost().orElse(null) : null;
         if (host == null) return;
-        List<CefWebHistory.EntrySnapshot> snapshots = new ArrayList<>();
+        final List<CefWebHistory.EntrySnapshot> snapshots = new ArrayList<>();
         final int[] currentIndex = {-1};
-        StringBuilder fingerprint = new StringBuilder();
+        final StringBuilder fingerprint = new StringBuilder();
         host.getNavigationEntries(
                 new CefNavigationEntryVisitor() {
                     @Override
                     public boolean visit(@Nullable CefNavigationEntry entry, boolean current, int index, int total) {
-                        String url = entry != null ? entry.getUrl().orElse("") : "";
-                        String title = entry != null ? entry.getTitle().orElse("") : "";
+                        final String url = entry != null ? entry.getUrl().orElse("") : "";
+                        final String title = entry != null ? entry.getTitle().orElse("") : "";
                         snapshots.add(new CefWebHistory.EntrySnapshot(
                                 url, title, completionDate(entry != null ? entry.getCompletionTime() : null)));
                         fingerprint.append(url).append('\u0001').append(title).append('\u0002');
                         if (current) currentIndex[0] = index;
                         if (index + 1 == total) {
-                            String fp = currentIndex[0] + "|" + fingerprint;
+                            final String fp = currentIndex[0] + "|" + fingerprint;
                             if (!fp.equals(lastHistoryFingerprint)) {
                                 lastHistoryFingerprint = fp;
                                 Platform.runLater(() -> view.engine.refreshHistory(snapshots, currentIndex[0]));
@@ -498,10 +499,10 @@ final class CefWebViewClient implements CefClient {
         try {
             try {
                 return completionDate(cefTime.getClass().getField("val").getLong(cefTime));
-            } catch (NoSuchFieldException oldCefTime) {
-                int year = cefTime.getClass().getField("year").getInt(cefTime);
+            } catch (NoSuchFieldException ignored) {
+                final int year = cefTime.getClass().getField("year").getInt(cefTime);
                 if (year == 0) return new Date(0);
-                LocalDateTime value = LocalDateTime.of(
+                final LocalDateTime value = LocalDateTime.of(
                         year,
                         cefTime.getClass().getField("month").getInt(cefTime),
                         cefTime.getClass().getField("dayOfMonth").getInt(cefTime),
@@ -522,7 +523,7 @@ final class CefWebViewClient implements CefClient {
                 new Class<?>[] {CefContextMenuHandler.class},
                 (proxy, method, args) -> {
                     if (method.getName().equals("runQuickMenu")) {
-                        Object callback = args == null || args.length == 0 ? null : args[args.length - 1];
+                        final Object callback = args == null || args.length == 0 ? null : args[args.length - 1];
                         if (callback != null)
                             callback.getClass().getMethod("cancel").invoke(callback);
                         return true;

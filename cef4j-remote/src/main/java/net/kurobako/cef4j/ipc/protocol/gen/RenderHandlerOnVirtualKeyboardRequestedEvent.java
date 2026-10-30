@@ -3,12 +3,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class RenderHandlerOnVirtualKeyboardRequestedEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 245131952;
@@ -41,7 +43,7 @@ public final class RenderHandlerOnVirtualKeyboardRequestedEvent implements CefMe
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(browser.id());
@@ -52,12 +54,10 @@ public final class RenderHandlerOnVirtualKeyboardRequestedEvent implements CefMe
     }
 
     public static final CefMessageDecoder<RenderHandlerOnVirtualKeyboardRequestedEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
-        RemoteHandle browser = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "inputMode");
-        int inputMode = __buf.getInt();
+        final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
+        final int inputMode = WireDecoder.int32(__buf, "inputMode");
         WireDecoder.requireFullyConsumed(__buf, "RenderHandlerOnVirtualKeyboardRequestedEvent");
         return new RenderHandlerOnVirtualKeyboardRequestedEvent(browser, inputMode);
     };

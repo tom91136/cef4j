@@ -4,11 +4,13 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class ResolveCallbackOnResolveCompletedEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 388366023;
@@ -41,13 +43,13 @@ public final class ResolveCallbackOnResolveCompletedEvent implements CefMessageV
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(result);
             __dst.putInt(resolvedIps.length);
-            for (String __s : resolvedIps) {
-                byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
+            for (final String __s : resolvedIps) {
+                final byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
                 __dst.putInt(__b.length);
                 __dst.put(__b);
             }
@@ -57,18 +59,10 @@ public final class ResolveCallbackOnResolveCompletedEvent implements CefMessageV
     }
 
     public static final CefMessageDecoder<ResolveCallbackOnResolveCompletedEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "result");
-        int result = __buf.getInt();
-        int resolvedIpsCount = WireDecoder.count(__buf, "resolvedIps");
-        String[] resolvedIps = new String[resolvedIpsCount];
-        for (int __i = 0; __i < resolvedIpsCount; __i++) {
-            int __slen = WireDecoder.length(__buf, "resolvedIps[" + __i + "]");
-            byte[] __sb = new byte[__slen];
-            __buf.get(__sb);
-            resolvedIps[__i] = new String(__sb, StandardCharsets.UTF_8);
-        }
+        final int result = WireDecoder.int32(__buf, "result");
+        final String[] resolvedIps = WireDecoder.utf8List(__buf, "resolvedIps");
         WireDecoder.requireFullyConsumed(__buf, "ResolveCallbackOnResolveCompletedEvent");
         return new ResolveCallbackOnResolveCompletedEvent(result, resolvedIps);
     };

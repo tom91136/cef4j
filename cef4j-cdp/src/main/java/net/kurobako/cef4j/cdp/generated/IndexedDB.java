@@ -5,14 +5,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
-import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Chrome DevTools Protocol IndexedDB domain.
@@ -21,6 +20,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class IndexedDB {
     private IndexedDB() {}
     /**
@@ -51,7 +51,7 @@ public final class IndexedDB {
          * @return the protocol field value
          */
         public java.util.List<IndexedDB.ObjectStore> objectStores() {
-            return CdpObject.requireList(require("objectStores"), element0 -> java.util.Objects.requireNonNull(IndexedDB.ObjectStore.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("objectStores"), element0 -> java.util.Objects.requireNonNull(IndexedDB.ObjectStore.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Database name.
@@ -102,7 +102,7 @@ public final class IndexedDB {
          * @return the protocol field value
          */
         public IndexedDB.KeyPath keyPath() {
-            return java.util.Objects.requireNonNull(IndexedDB.KeyPath.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("keyPath")))));
+            return java.util.Objects.requireNonNull(IndexedDB.KeyPath.fromMap(CdpObject.requireObjectMap(require("keyPath"))));
         }
         /**
          * If true, object store has auto increment flag set.
@@ -116,7 +116,7 @@ public final class IndexedDB {
          * @return the protocol field value
          */
         public java.util.List<IndexedDB.ObjectStoreIndex> indexes() {
-            return CdpObject.requireList(require("indexes"), element0 -> java.util.Objects.requireNonNull(IndexedDB.ObjectStoreIndex.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("indexes"), element0 -> java.util.Objects.requireNonNull(IndexedDB.ObjectStoreIndex.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Object store name.
@@ -176,7 +176,7 @@ public final class IndexedDB {
          * @return the protocol field value
          */
         public IndexedDB.KeyPath keyPath() {
-            return java.util.Objects.requireNonNull(IndexedDB.KeyPath.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("keyPath")))));
+            return java.util.Objects.requireNonNull(IndexedDB.KeyPath.fromMap(CdpObject.requireObjectMap(require("keyPath"))));
         }
         /**
          * If true, index is unique.
@@ -248,7 +248,7 @@ public final class IndexedDB {
             ARRAY("array");
             public final String value;
             TypeValues(String value) { this.value = value; }
-            public String value() { return value; }
+            @Override public String value() { return value; }
             public static TypeValues of(String value) {
                 for (TypeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
@@ -268,32 +268,28 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble number() {
-            Double value = CdpObject.numberAsDouble(raw("number"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("number").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * String value.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> string() {
-            Object value = raw("string");
-            return Optional.ofNullable((String) value);
+            return raw("string").map(value -> (String) value);
         }
         /**
          * Date value.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble date() {
-            Double value = CdpObject.numberAsDouble(raw("date"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("date").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Array value.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<IndexedDB.Key>> array() {
-            Object value = raw("array");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(IndexedDB.Key.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("array").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(IndexedDB.Key.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Key type.
@@ -306,34 +302,16 @@ public final class IndexedDB {
         }
         /**
          * Number value.
-         * @param number field value; empty omits the value
+         * @param number field value
          * @return this model
          */
-        public Key number(OptionalDouble number) {
-            set("number", number.isPresent() ? number.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Number value.
-         * @param number field value; null removes the value
-         * @return this model
-         */
-        public Key number(Double number) {
+        public Key number(double number) {
             set("number", number);
             return this;
         }
         /**
          * String value.
-         * @param string field value; empty omits the value
-         * @return this model
-         */
-        public Key string(Optional<String> string) {
-            set("string", string.orElse(null));
-            return this;
-        }
-        /**
-         * String value.
-         * @param string field value; null removes the value
+         * @param string field value
          * @return this model
          */
         public Key string(String string) {
@@ -342,34 +320,16 @@ public final class IndexedDB {
         }
         /**
          * Date value.
-         * @param date field value; empty omits the value
+         * @param date field value
          * @return this model
          */
-        public Key date(OptionalDouble date) {
-            set("date", date.isPresent() ? date.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Date value.
-         * @param date field value; null removes the value
-         * @return this model
-         */
-        public Key date(Double date) {
+        public Key date(double date) {
             set("date", date);
             return this;
         }
         /**
          * Array value.
-         * @param array field value; empty omits the value
-         * @return this model
-         */
-        public Key array(Optional<java.util.List<IndexedDB.Key>> array) {
-            set("array", array.orElse(null));
-            return this;
-        }
-        /**
-         * Array value.
-         * @param array field value; null removes the value
+         * @param array field value
          * @return this model
          */
         public Key array(java.util.List<IndexedDB.Key> array) {
@@ -391,16 +351,14 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<IndexedDB.Key> lower() {
-            Object value = raw("lower");
-            return Optional.ofNullable(value == null ? null : IndexedDB.Key.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("lower").flatMap(CdpObject::objectMap).map(IndexedDB.Key::fromMap);
         }
         /**
          * Upper bound.
          * @return the protocol field value, empty when absent
          */
         public Optional<IndexedDB.Key> upper() {
-            Object value = raw("upper");
-            return Optional.ofNullable(value == null ? null : IndexedDB.Key.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("upper").flatMap(CdpObject::objectMap).map(IndexedDB.Key::fromMap);
         }
         /**
          * If true lower bound is open.
@@ -418,16 +376,7 @@ public final class IndexedDB {
         }
         /**
          * Lower bound.
-         * @param lower field value; empty omits the value
-         * @return this model
-         */
-        public KeyRange lower(Optional<IndexedDB.Key> lower) {
-            set("lower", lower.orElse(null));
-            return this;
-        }
-        /**
-         * Lower bound.
-         * @param lower field value; null removes the value
+         * @param lower field value
          * @return this model
          */
         public KeyRange lower(IndexedDB.Key lower) {
@@ -436,16 +385,7 @@ public final class IndexedDB {
         }
         /**
          * Upper bound.
-         * @param upper field value; empty omits the value
-         * @return this model
-         */
-        public KeyRange upper(Optional<IndexedDB.Key> upper) {
-            set("upper", upper.orElse(null));
-            return this;
-        }
-        /**
-         * Upper bound.
-         * @param upper field value; null removes the value
+         * @param upper field value
          * @return this model
          */
         public KeyRange upper(IndexedDB.Key upper) {
@@ -485,21 +425,21 @@ public final class IndexedDB {
          * @return the protocol field value
          */
         public Runtime.RemoteObject key() {
-            return java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("key")))));
+            return java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(require("key"))));
         }
         /**
          * Primary key object.
          * @return the protocol field value
          */
         public Runtime.RemoteObject primaryKey() {
-            return java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("primaryKey")))));
+            return java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(require("primaryKey"))));
         }
         /**
          * Value object.
          * @return the protocol field value
          */
         public Runtime.RemoteObject value() {
-            return java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("value")))));
+            return java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(require("value"))));
         }
         /**
          * Key object.
@@ -547,7 +487,7 @@ public final class IndexedDB {
             ARRAY("array");
             public final String value;
             TypeValues(String value) { this.value = value; }
-            public String value() { return value; }
+            @Override public String value() { return value; }
             public static TypeValues of(String value) {
                 for (TypeValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
@@ -567,16 +507,14 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> string() {
-            Object value = raw("string");
-            return Optional.ofNullable((String) value);
+            return raw("string").map(value -> (String) value);
         }
         /**
          * Array value.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> array() {
-            Object value = raw("array");
-            return Optional.ofNullable(list(value, element0 -> (String) element0));
+            return raw("array").flatMap(value -> list(value, element0 -> (String) element0));
         }
         /**
          * Key path type.
@@ -589,16 +527,7 @@ public final class IndexedDB {
         }
         /**
          * String value.
-         * @param string field value; empty omits the value
-         * @return this model
-         */
-        public KeyPath string(Optional<String> string) {
-            set("string", string.orElse(null));
-            return this;
-        }
-        /**
-         * String value.
-         * @param string field value; null removes the value
+         * @param string field value
          * @return this model
          */
         public KeyPath string(String string) {
@@ -607,16 +536,7 @@ public final class IndexedDB {
         }
         /**
          * Array value.
-         * @param array field value; empty omits the value
-         * @return this model
-         */
-        public KeyPath array(Optional<java.util.List<String>> array) {
-            set("array", array.orElse(null));
-            return this;
-        }
-        /**
-         * Array value.
-         * @param array field value; null removes the value
+         * @param array field value
          * @return this model
          */
         public KeyPath array(java.util.List<String> array) {
@@ -635,11 +555,10 @@ public final class IndexedDB {
          * @param objectStoreName protocol value
          */
         public ClearObjectStoreRequest(String databaseName, String objectStoreName) {
-            set("databaseName", databaseName);
-            set("objectStoreName", objectStoreName);
+            databaseName(databaseName).objectStoreName(objectStoreName);
         }
         public static ClearObjectStoreRequest fromMap(Map<String, Object> values) {
-            ClearObjectStoreRequest instance_ = new ClearObjectStoreRequest();
+            final ClearObjectStoreRequest instance_ = new ClearObjectStoreRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -648,24 +567,21 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> securityOrigin() {
-            Object value = raw("securityOrigin");
-            return Optional.ofNullable((String) value);
+            return raw("securityOrigin").map(value -> (String) value);
         }
         /**
          * Storage key.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> storageKey() {
-            Object value = raw("storageKey");
-            return Optional.ofNullable((String) value);
+            return raw("storageKey").map(value -> (String) value);
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.StorageBucket> storageBucket() {
-            Object value = raw("storageBucket");
-            return Optional.ofNullable(value == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("storageBucket").flatMap(CdpObject::objectMap).map(Storage.StorageBucket::fromMap);
         }
         /**
          * Database name.
@@ -683,16 +599,7 @@ public final class IndexedDB {
         }
         /**
          * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
-         * @param securityOrigin field value; empty omits the value
-         * @return this model
-         */
-        public ClearObjectStoreRequest securityOrigin(Optional<String> securityOrigin) {
-            set("securityOrigin", securityOrigin.orElse(null));
-            return this;
-        }
-        /**
-         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
-         * @param securityOrigin field value; null removes the value
+         * @param securityOrigin field value
          * @return this model
          */
         public ClearObjectStoreRequest securityOrigin(String securityOrigin) {
@@ -701,16 +608,7 @@ public final class IndexedDB {
         }
         /**
          * Storage key.
-         * @param storageKey field value; empty omits the value
-         * @return this model
-         */
-        public ClearObjectStoreRequest storageKey(Optional<String> storageKey) {
-            set("storageKey", storageKey.orElse(null));
-            return this;
-        }
-        /**
-         * Storage key.
-         * @param storageKey field value; null removes the value
+         * @param storageKey field value
          * @return this model
          */
         public ClearObjectStoreRequest storageKey(String storageKey) {
@@ -719,16 +617,7 @@ public final class IndexedDB {
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
-         * @param storageBucket field value; empty omits the value
-         * @return this model
-         */
-        public ClearObjectStoreRequest storageBucket(Optional<Storage.StorageBucket> storageBucket) {
-            set("storageBucket", storageBucket.orElse(null));
-            return this;
-        }
-        /**
-         * Storage bucket. If not specified, it uses the default bucket.
-         * @param storageBucket field value; null removes the value
+         * @param storageBucket field value
          * @return this model
          */
         public ClearObjectStoreRequest storageBucket(Storage.StorageBucket storageBucket) {
@@ -764,10 +653,10 @@ public final class IndexedDB {
          * @param databaseName protocol value
          */
         public DeleteDatabaseRequest(String databaseName) {
-            set("databaseName", databaseName);
+            databaseName(databaseName);
         }
         public static DeleteDatabaseRequest fromMap(Map<String, Object> values) {
-            DeleteDatabaseRequest instance_ = new DeleteDatabaseRequest();
+            final DeleteDatabaseRequest instance_ = new DeleteDatabaseRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -776,24 +665,21 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> securityOrigin() {
-            Object value = raw("securityOrigin");
-            return Optional.ofNullable((String) value);
+            return raw("securityOrigin").map(value -> (String) value);
         }
         /**
          * Storage key.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> storageKey() {
-            Object value = raw("storageKey");
-            return Optional.ofNullable((String) value);
+            return raw("storageKey").map(value -> (String) value);
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.StorageBucket> storageBucket() {
-            Object value = raw("storageBucket");
-            return Optional.ofNullable(value == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("storageBucket").flatMap(CdpObject::objectMap).map(Storage.StorageBucket::fromMap);
         }
         /**
          * Database name.
@@ -804,16 +690,7 @@ public final class IndexedDB {
         }
         /**
          * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
-         * @param securityOrigin field value; empty omits the value
-         * @return this model
-         */
-        public DeleteDatabaseRequest securityOrigin(Optional<String> securityOrigin) {
-            set("securityOrigin", securityOrigin.orElse(null));
-            return this;
-        }
-        /**
-         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
-         * @param securityOrigin field value; null removes the value
+         * @param securityOrigin field value
          * @return this model
          */
         public DeleteDatabaseRequest securityOrigin(String securityOrigin) {
@@ -822,16 +699,7 @@ public final class IndexedDB {
         }
         /**
          * Storage key.
-         * @param storageKey field value; empty omits the value
-         * @return this model
-         */
-        public DeleteDatabaseRequest storageKey(Optional<String> storageKey) {
-            set("storageKey", storageKey.orElse(null));
-            return this;
-        }
-        /**
-         * Storage key.
-         * @param storageKey field value; null removes the value
+         * @param storageKey field value
          * @return this model
          */
         public DeleteDatabaseRequest storageKey(String storageKey) {
@@ -840,16 +708,7 @@ public final class IndexedDB {
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
-         * @param storageBucket field value; empty omits the value
-         * @return this model
-         */
-        public DeleteDatabaseRequest storageBucket(Optional<Storage.StorageBucket> storageBucket) {
-            set("storageBucket", storageBucket.orElse(null));
-            return this;
-        }
-        /**
-         * Storage bucket. If not specified, it uses the default bucket.
-         * @param storageBucket field value; null removes the value
+         * @param storageBucket field value
          * @return this model
          */
         public DeleteDatabaseRequest storageBucket(Storage.StorageBucket storageBucket) {
@@ -878,12 +737,10 @@ public final class IndexedDB {
          * @param keyRange protocol value
          */
         public DeleteObjectStoreEntriesRequest(String databaseName, String objectStoreName, IndexedDB.KeyRange keyRange) {
-            set("databaseName", databaseName);
-            set("objectStoreName", objectStoreName);
-            set("keyRange", keyRange);
+            databaseName(databaseName).objectStoreName(objectStoreName).keyRange(keyRange);
         }
         public static DeleteObjectStoreEntriesRequest fromMap(Map<String, Object> values) {
-            DeleteObjectStoreEntriesRequest instance_ = new DeleteObjectStoreEntriesRequest();
+            final DeleteObjectStoreEntriesRequest instance_ = new DeleteObjectStoreEntriesRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -892,24 +749,21 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> securityOrigin() {
-            Object value = raw("securityOrigin");
-            return Optional.ofNullable((String) value);
+            return raw("securityOrigin").map(value -> (String) value);
         }
         /**
          * Storage key.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> storageKey() {
-            Object value = raw("storageKey");
-            return Optional.ofNullable((String) value);
+            return raw("storageKey").map(value -> (String) value);
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.StorageBucket> storageBucket() {
-            Object value = raw("storageBucket");
-            return Optional.ofNullable(value == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("storageBucket").flatMap(CdpObject::objectMap).map(Storage.StorageBucket::fromMap);
         }
         /**
          * Returns the databaseName field.
@@ -930,20 +784,11 @@ public final class IndexedDB {
          * @return the protocol field value
          */
         public IndexedDB.KeyRange keyRange() {
-            return java.util.Objects.requireNonNull(IndexedDB.KeyRange.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("keyRange")))));
+            return java.util.Objects.requireNonNull(IndexedDB.KeyRange.fromMap(CdpObject.requireObjectMap(require("keyRange"))));
         }
         /**
          * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
-         * @param securityOrigin field value; empty omits the value
-         * @return this model
-         */
-        public DeleteObjectStoreEntriesRequest securityOrigin(Optional<String> securityOrigin) {
-            set("securityOrigin", securityOrigin.orElse(null));
-            return this;
-        }
-        /**
-         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
-         * @param securityOrigin field value; null removes the value
+         * @param securityOrigin field value
          * @return this model
          */
         public DeleteObjectStoreEntriesRequest securityOrigin(String securityOrigin) {
@@ -952,16 +797,7 @@ public final class IndexedDB {
         }
         /**
          * Storage key.
-         * @param storageKey field value; empty omits the value
-         * @return this model
-         */
-        public DeleteObjectStoreEntriesRequest storageKey(Optional<String> storageKey) {
-            set("storageKey", storageKey.orElse(null));
-            return this;
-        }
-        /**
-         * Storage key.
-         * @param storageKey field value; null removes the value
+         * @param storageKey field value
          * @return this model
          */
         public DeleteObjectStoreEntriesRequest storageKey(String storageKey) {
@@ -970,16 +806,7 @@ public final class IndexedDB {
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
-         * @param storageBucket field value; empty omits the value
-         * @return this model
-         */
-        public DeleteObjectStoreEntriesRequest storageBucket(Optional<Storage.StorageBucket> storageBucket) {
-            set("storageBucket", storageBucket.orElse(null));
-            return this;
-        }
-        /**
-         * Storage bucket. If not specified, it uses the default bucket.
-         * @param storageBucket field value; null removes the value
+         * @param storageBucket field value
          * @return this model
          */
         public DeleteObjectStoreEntriesRequest storageBucket(Storage.StorageBucket storageBucket) {
@@ -1027,13 +854,10 @@ public final class IndexedDB {
          * @param pageSize protocol value
          */
         public RequestDataRequest(String databaseName, String objectStoreName, long skipCount, long pageSize) {
-            set("databaseName", databaseName);
-            set("objectStoreName", objectStoreName);
-            set("skipCount", skipCount);
-            set("pageSize", pageSize);
+            databaseName(databaseName).objectStoreName(objectStoreName).skipCount(skipCount).pageSize(pageSize);
         }
         public static RequestDataRequest fromMap(Map<String, Object> values) {
-            RequestDataRequest instance_ = new RequestDataRequest();
+            final RequestDataRequest instance_ = new RequestDataRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1042,24 +866,21 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> securityOrigin() {
-            Object value = raw("securityOrigin");
-            return Optional.ofNullable((String) value);
+            return raw("securityOrigin").map(value -> (String) value);
         }
         /**
          * Storage key.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> storageKey() {
-            Object value = raw("storageKey");
-            return Optional.ofNullable((String) value);
+            return raw("storageKey").map(value -> (String) value);
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.StorageBucket> storageBucket() {
-            Object value = raw("storageBucket");
-            return Optional.ofNullable(value == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("storageBucket").flatMap(CdpObject::objectMap).map(Storage.StorageBucket::fromMap);
         }
         /**
          * Database name.
@@ -1080,8 +901,7 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> indexName() {
-            Object value = raw("indexName");
-            return Optional.ofNullable((String) value);
+            return raw("indexName").map(value -> (String) value);
         }
         /**
          * Number of records to skip.
@@ -1102,21 +922,11 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<IndexedDB.KeyRange> keyRange() {
-            Object value = raw("keyRange");
-            return Optional.ofNullable(value == null ? null : IndexedDB.KeyRange.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("keyRange").flatMap(CdpObject::objectMap).map(IndexedDB.KeyRange::fromMap);
         }
         /**
          * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
-         * @param securityOrigin field value; empty omits the value
-         * @return this model
-         */
-        public RequestDataRequest securityOrigin(Optional<String> securityOrigin) {
-            set("securityOrigin", securityOrigin.orElse(null));
-            return this;
-        }
-        /**
-         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
-         * @param securityOrigin field value; null removes the value
+         * @param securityOrigin field value
          * @return this model
          */
         public RequestDataRequest securityOrigin(String securityOrigin) {
@@ -1125,16 +935,7 @@ public final class IndexedDB {
         }
         /**
          * Storage key.
-         * @param storageKey field value; empty omits the value
-         * @return this model
-         */
-        public RequestDataRequest storageKey(Optional<String> storageKey) {
-            set("storageKey", storageKey.orElse(null));
-            return this;
-        }
-        /**
-         * Storage key.
-         * @param storageKey field value; null removes the value
+         * @param storageKey field value
          * @return this model
          */
         public RequestDataRequest storageKey(String storageKey) {
@@ -1143,16 +944,7 @@ public final class IndexedDB {
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
-         * @param storageBucket field value; empty omits the value
-         * @return this model
-         */
-        public RequestDataRequest storageBucket(Optional<Storage.StorageBucket> storageBucket) {
-            set("storageBucket", storageBucket.orElse(null));
-            return this;
-        }
-        /**
-         * Storage bucket. If not specified, it uses the default bucket.
-         * @param storageBucket field value; null removes the value
+         * @param storageBucket field value
          * @return this model
          */
         public RequestDataRequest storageBucket(Storage.StorageBucket storageBucket) {
@@ -1179,16 +971,7 @@ public final class IndexedDB {
         }
         /**
          * Index name. If not specified, it performs an object store data request.
-         * @param indexName field value; empty omits the value
-         * @return this model
-         */
-        public RequestDataRequest indexName(Optional<String> indexName) {
-            set("indexName", indexName.orElse(null));
-            return this;
-        }
-        /**
-         * Index name. If not specified, it performs an object store data request.
-         * @param indexName field value; null removes the value
+         * @param indexName field value
          * @return this model
          */
         public RequestDataRequest indexName(String indexName) {
@@ -1215,16 +998,7 @@ public final class IndexedDB {
         }
         /**
          * Key range.
-         * @param keyRange field value; empty omits the value
-         * @return this model
-         */
-        public RequestDataRequest keyRange(Optional<IndexedDB.KeyRange> keyRange) {
-            set("keyRange", keyRange.orElse(null));
-            return this;
-        }
-        /**
-         * Key range.
-         * @param keyRange field value; null removes the value
+         * @param keyRange field value
          * @return this model
          */
         public RequestDataRequest keyRange(IndexedDB.KeyRange keyRange) {
@@ -1243,11 +1017,10 @@ public final class IndexedDB {
          * @param objectStoreName protocol value
          */
         public GetMetadataRequest(String databaseName, String objectStoreName) {
-            set("databaseName", databaseName);
-            set("objectStoreName", objectStoreName);
+            databaseName(databaseName).objectStoreName(objectStoreName);
         }
         public static GetMetadataRequest fromMap(Map<String, Object> values) {
-            GetMetadataRequest instance_ = new GetMetadataRequest();
+            final GetMetadataRequest instance_ = new GetMetadataRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1256,24 +1029,21 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> securityOrigin() {
-            Object value = raw("securityOrigin");
-            return Optional.ofNullable((String) value);
+            return raw("securityOrigin").map(value -> (String) value);
         }
         /**
          * Storage key.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> storageKey() {
-            Object value = raw("storageKey");
-            return Optional.ofNullable((String) value);
+            return raw("storageKey").map(value -> (String) value);
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.StorageBucket> storageBucket() {
-            Object value = raw("storageBucket");
-            return Optional.ofNullable(value == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("storageBucket").flatMap(CdpObject::objectMap).map(Storage.StorageBucket::fromMap);
         }
         /**
          * Database name.
@@ -1291,16 +1061,7 @@ public final class IndexedDB {
         }
         /**
          * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
-         * @param securityOrigin field value; empty omits the value
-         * @return this model
-         */
-        public GetMetadataRequest securityOrigin(Optional<String> securityOrigin) {
-            set("securityOrigin", securityOrigin.orElse(null));
-            return this;
-        }
-        /**
-         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
-         * @param securityOrigin field value; null removes the value
+         * @param securityOrigin field value
          * @return this model
          */
         public GetMetadataRequest securityOrigin(String securityOrigin) {
@@ -1309,16 +1070,7 @@ public final class IndexedDB {
         }
         /**
          * Storage key.
-         * @param storageKey field value; empty omits the value
-         * @return this model
-         */
-        public GetMetadataRequest storageKey(Optional<String> storageKey) {
-            set("storageKey", storageKey.orElse(null));
-            return this;
-        }
-        /**
-         * Storage key.
-         * @param storageKey field value; null removes the value
+         * @param storageKey field value
          * @return this model
          */
         public GetMetadataRequest storageKey(String storageKey) {
@@ -1327,16 +1079,7 @@ public final class IndexedDB {
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
-         * @param storageBucket field value; empty omits the value
-         * @return this model
-         */
-        public GetMetadataRequest storageBucket(Optional<Storage.StorageBucket> storageBucket) {
-            set("storageBucket", storageBucket.orElse(null));
-            return this;
-        }
-        /**
-         * Storage bucket. If not specified, it uses the default bucket.
-         * @param storageBucket field value; null removes the value
+         * @param storageBucket field value
          * @return this model
          */
         public GetMetadataRequest storageBucket(Storage.StorageBucket storageBucket) {
@@ -1372,10 +1115,10 @@ public final class IndexedDB {
          * @param databaseName protocol value
          */
         public RequestDatabaseRequest(String databaseName) {
-            set("databaseName", databaseName);
+            databaseName(databaseName);
         }
         public static RequestDatabaseRequest fromMap(Map<String, Object> values) {
-            RequestDatabaseRequest instance_ = new RequestDatabaseRequest();
+            final RequestDatabaseRequest instance_ = new RequestDatabaseRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1384,24 +1127,21 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> securityOrigin() {
-            Object value = raw("securityOrigin");
-            return Optional.ofNullable((String) value);
+            return raw("securityOrigin").map(value -> (String) value);
         }
         /**
          * Storage key.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> storageKey() {
-            Object value = raw("storageKey");
-            return Optional.ofNullable((String) value);
+            return raw("storageKey").map(value -> (String) value);
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.StorageBucket> storageBucket() {
-            Object value = raw("storageBucket");
-            return Optional.ofNullable(value == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("storageBucket").flatMap(CdpObject::objectMap).map(Storage.StorageBucket::fromMap);
         }
         /**
          * Database name.
@@ -1412,16 +1152,7 @@ public final class IndexedDB {
         }
         /**
          * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
-         * @param securityOrigin field value; empty omits the value
-         * @return this model
-         */
-        public RequestDatabaseRequest securityOrigin(Optional<String> securityOrigin) {
-            set("securityOrigin", securityOrigin.orElse(null));
-            return this;
-        }
-        /**
-         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
-         * @param securityOrigin field value; null removes the value
+         * @param securityOrigin field value
          * @return this model
          */
         public RequestDatabaseRequest securityOrigin(String securityOrigin) {
@@ -1430,16 +1161,7 @@ public final class IndexedDB {
         }
         /**
          * Storage key.
-         * @param storageKey field value; empty omits the value
-         * @return this model
-         */
-        public RequestDatabaseRequest storageKey(Optional<String> storageKey) {
-            set("storageKey", storageKey.orElse(null));
-            return this;
-        }
-        /**
-         * Storage key.
-         * @param storageKey field value; null removes the value
+         * @param storageKey field value
          * @return this model
          */
         public RequestDatabaseRequest storageKey(String storageKey) {
@@ -1448,16 +1170,7 @@ public final class IndexedDB {
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
-         * @param storageBucket field value; empty omits the value
-         * @return this model
-         */
-        public RequestDatabaseRequest storageBucket(Optional<Storage.StorageBucket> storageBucket) {
-            set("storageBucket", storageBucket.orElse(null));
-            return this;
-        }
-        /**
-         * Storage bucket. If not specified, it uses the default bucket.
-         * @param storageBucket field value; null removes the value
+         * @param storageBucket field value
          * @return this model
          */
         public RequestDatabaseRequest storageBucket(Storage.StorageBucket storageBucket) {
@@ -1480,7 +1193,7 @@ public final class IndexedDB {
     public static final class RequestDatabaseNamesRequest extends CdpObject {
         public RequestDatabaseNamesRequest() {}
         public static RequestDatabaseNamesRequest fromMap(Map<String, Object> values) {
-            RequestDatabaseNamesRequest instance_ = new RequestDatabaseNamesRequest();
+            final RequestDatabaseNamesRequest instance_ = new RequestDatabaseNamesRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1489,37 +1202,25 @@ public final class IndexedDB {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> securityOrigin() {
-            Object value = raw("securityOrigin");
-            return Optional.ofNullable((String) value);
+            return raw("securityOrigin").map(value -> (String) value);
         }
         /**
          * Storage key.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> storageKey() {
-            Object value = raw("storageKey");
-            return Optional.ofNullable((String) value);
+            return raw("storageKey").map(value -> (String) value);
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.StorageBucket> storageBucket() {
-            Object value = raw("storageBucket");
-            return Optional.ofNullable(value == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("storageBucket").flatMap(CdpObject::objectMap).map(Storage.StorageBucket::fromMap);
         }
         /**
          * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
-         * @param securityOrigin field value; empty omits the value
-         * @return this model
-         */
-        public RequestDatabaseNamesRequest securityOrigin(Optional<String> securityOrigin) {
-            set("securityOrigin", securityOrigin.orElse(null));
-            return this;
-        }
-        /**
-         * At least and at most one of securityOrigin, storageKey, or storageBucket must be specified. Security origin.
-         * @param securityOrigin field value; null removes the value
+         * @param securityOrigin field value
          * @return this model
          */
         public RequestDatabaseNamesRequest securityOrigin(String securityOrigin) {
@@ -1528,16 +1229,7 @@ public final class IndexedDB {
         }
         /**
          * Storage key.
-         * @param storageKey field value; empty omits the value
-         * @return this model
-         */
-        public RequestDatabaseNamesRequest storageKey(Optional<String> storageKey) {
-            set("storageKey", storageKey.orElse(null));
-            return this;
-        }
-        /**
-         * Storage key.
-         * @param storageKey field value; null removes the value
+         * @param storageKey field value
          * @return this model
          */
         public RequestDatabaseNamesRequest storageKey(String storageKey) {
@@ -1546,16 +1238,7 @@ public final class IndexedDB {
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
-         * @param storageBucket field value; empty omits the value
-         * @return this model
-         */
-        public RequestDatabaseNamesRequest storageBucket(Optional<Storage.StorageBucket> storageBucket) {
-            set("storageBucket", storageBucket.orElse(null));
-            return this;
-        }
-        /**
-         * Storage bucket. If not specified, it uses the default bucket.
-         * @param storageBucket field value; null removes the value
+         * @param storageBucket field value
          * @return this model
          */
         public RequestDatabaseNamesRequest storageBucket(Storage.StorageBucket storageBucket) {
@@ -1577,7 +1260,7 @@ public final class IndexedDB {
          * @return the protocol field value
          */
         public java.util.List<IndexedDB.DataEntry> objectStoreDataEntries() {
-            return CdpObject.requireList(require("objectStoreDataEntries"), element0 -> java.util.Objects.requireNonNull(IndexedDB.DataEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("objectStoreDataEntries"), element0 -> java.util.Objects.requireNonNull(IndexedDB.DataEntry.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * If true, there are more entries to fetch in the given range.
@@ -1659,11 +1342,11 @@ public final class IndexedDB {
          * @param objectStoreName protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> clearObjectStore(Optional<String> securityOrigin, Optional<String> storageKey, Optional<Storage.StorageBucket> storageBucket, String databaseName, String objectStoreName) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            securityOrigin.ifPresent(value_ -> params.put("securityOrigin", CdpObject.json(value_)));
-            storageKey.ifPresent(value_ -> params.put("storageKey", CdpObject.json(value_)));
-            storageBucket.ifPresent(value_ -> params.put("storageBucket", CdpObject.json(value_)));
+        public CompletionStage<Void> clearObjectStore(@Nullable String securityOrigin, @Nullable String storageKey, Storage.@Nullable StorageBucket storageBucket, String databaseName, String objectStoreName) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (securityOrigin != null) params.put("securityOrigin", CdpObject.json(securityOrigin));
+            if (storageKey != null) params.put("storageKey", CdpObject.json(storageKey));
+            if (storageBucket != null) params.put("storageBucket", CdpObject.json(storageBucket));
             params.put("databaseName", CdpObject.json(databaseName));
             params.put("objectStoreName", CdpObject.json(objectStoreName));
             return client.call("IndexedDB.clearObjectStore", params);
@@ -1675,7 +1358,10 @@ public final class IndexedDB {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearObjectStore(String databaseName, String objectStoreName) {
-            return clearObjectStore(Optional.empty(), Optional.empty(), Optional.empty(), databaseName, objectStoreName);
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("databaseName", CdpObject.json(databaseName));
+            params.put("objectStoreName", CdpObject.json(objectStoreName));
+            return client.call("IndexedDB.clearObjectStore", params);
         }
         /**
          * Clears all entries from an object store.
@@ -1693,11 +1379,11 @@ public final class IndexedDB {
          * @param databaseName protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> deleteDatabase(Optional<String> securityOrigin, Optional<String> storageKey, Optional<Storage.StorageBucket> storageBucket, String databaseName) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            securityOrigin.ifPresent(value_ -> params.put("securityOrigin", CdpObject.json(value_)));
-            storageKey.ifPresent(value_ -> params.put("storageKey", CdpObject.json(value_)));
-            storageBucket.ifPresent(value_ -> params.put("storageBucket", CdpObject.json(value_)));
+        public CompletionStage<Void> deleteDatabase(@Nullable String securityOrigin, @Nullable String storageKey, Storage.@Nullable StorageBucket storageBucket, String databaseName) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (securityOrigin != null) params.put("securityOrigin", CdpObject.json(securityOrigin));
+            if (storageKey != null) params.put("storageKey", CdpObject.json(storageKey));
+            if (storageBucket != null) params.put("storageBucket", CdpObject.json(storageBucket));
             params.put("databaseName", CdpObject.json(databaseName));
             return client.call("IndexedDB.deleteDatabase", params);
         }
@@ -1707,7 +1393,9 @@ public final class IndexedDB {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteDatabase(String databaseName) {
-            return deleteDatabase(Optional.empty(), Optional.empty(), Optional.empty(), databaseName);
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("databaseName", CdpObject.json(databaseName));
+            return client.call("IndexedDB.deleteDatabase", params);
         }
         /**
          * Deletes a database.
@@ -1727,11 +1415,11 @@ public final class IndexedDB {
          * @param keyRange protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> deleteObjectStoreEntries(Optional<String> securityOrigin, Optional<String> storageKey, Optional<Storage.StorageBucket> storageBucket, String databaseName, String objectStoreName, IndexedDB.KeyRange keyRange) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            securityOrigin.ifPresent(value_ -> params.put("securityOrigin", CdpObject.json(value_)));
-            storageKey.ifPresent(value_ -> params.put("storageKey", CdpObject.json(value_)));
-            storageBucket.ifPresent(value_ -> params.put("storageBucket", CdpObject.json(value_)));
+        public CompletionStage<Void> deleteObjectStoreEntries(@Nullable String securityOrigin, @Nullable String storageKey, Storage.@Nullable StorageBucket storageBucket, String databaseName, String objectStoreName, IndexedDB.KeyRange keyRange) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (securityOrigin != null) params.put("securityOrigin", CdpObject.json(securityOrigin));
+            if (storageKey != null) params.put("storageKey", CdpObject.json(storageKey));
+            if (storageBucket != null) params.put("storageBucket", CdpObject.json(storageBucket));
             params.put("databaseName", CdpObject.json(databaseName));
             params.put("objectStoreName", CdpObject.json(objectStoreName));
             params.put("keyRange", CdpObject.json(keyRange));
@@ -1745,7 +1433,11 @@ public final class IndexedDB {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteObjectStoreEntries(String databaseName, String objectStoreName, IndexedDB.KeyRange keyRange) {
-            return deleteObjectStoreEntries(Optional.empty(), Optional.empty(), Optional.empty(), databaseName, objectStoreName, keyRange);
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("databaseName", CdpObject.json(databaseName));
+            params.put("objectStoreName", CdpObject.json(objectStoreName));
+            params.put("keyRange", CdpObject.json(keyRange));
+            return client.call("IndexedDB.deleteObjectStoreEntries", params);
         }
         /**
          * Delete a range of entries from an object store
@@ -1782,17 +1474,17 @@ public final class IndexedDB {
          * @param keyRange protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<RequestDataResult> requestData(Optional<String> securityOrigin, Optional<String> storageKey, Optional<Storage.StorageBucket> storageBucket, String databaseName, String objectStoreName, Optional<String> indexName, long skipCount, long pageSize, Optional<IndexedDB.KeyRange> keyRange) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            securityOrigin.ifPresent(value_ -> params.put("securityOrigin", CdpObject.json(value_)));
-            storageKey.ifPresent(value_ -> params.put("storageKey", CdpObject.json(value_)));
-            storageBucket.ifPresent(value_ -> params.put("storageBucket", CdpObject.json(value_)));
+        public CompletionStage<RequestDataResult> requestData(@Nullable String securityOrigin, @Nullable String storageKey, Storage.@Nullable StorageBucket storageBucket, String databaseName, String objectStoreName, @Nullable String indexName, long skipCount, long pageSize, IndexedDB.@Nullable KeyRange keyRange) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (securityOrigin != null) params.put("securityOrigin", CdpObject.json(securityOrigin));
+            if (storageKey != null) params.put("storageKey", CdpObject.json(storageKey));
+            if (storageBucket != null) params.put("storageBucket", CdpObject.json(storageBucket));
             params.put("databaseName", CdpObject.json(databaseName));
             params.put("objectStoreName", CdpObject.json(objectStoreName));
-            indexName.ifPresent(value_ -> params.put("indexName", CdpObject.json(value_)));
+            if (indexName != null) params.put("indexName", CdpObject.json(indexName));
             params.put("skipCount", CdpObject.json(skipCount));
             params.put("pageSize", CdpObject.json(pageSize));
-            keyRange.ifPresent(value_ -> params.put("keyRange", CdpObject.json(value_)));
+            if (keyRange != null) params.put("keyRange", CdpObject.json(keyRange));
             return client.call("IndexedDB.requestData", params, result_ -> new RequestDataResult(result_));
         }
         /**
@@ -1804,7 +1496,12 @@ public final class IndexedDB {
          * @return a stage completing with the command result
          */
         public CompletionStage<RequestDataResult> requestData(String databaseName, String objectStoreName, long skipCount, long pageSize) {
-            return requestData(Optional.empty(), Optional.empty(), Optional.empty(), databaseName, objectStoreName, Optional.empty(), skipCount, pageSize, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("databaseName", CdpObject.json(databaseName));
+            params.put("objectStoreName", CdpObject.json(objectStoreName));
+            params.put("skipCount", CdpObject.json(skipCount));
+            params.put("pageSize", CdpObject.json(pageSize));
+            return client.call("IndexedDB.requestData", params, result_ -> new RequestDataResult(result_));
         }
         /**
          * Requests data from object store or index.
@@ -1823,11 +1520,11 @@ public final class IndexedDB {
          * @param objectStoreName protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<GetMetadataResult> getMetadata(Optional<String> securityOrigin, Optional<String> storageKey, Optional<Storage.StorageBucket> storageBucket, String databaseName, String objectStoreName) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            securityOrigin.ifPresent(value_ -> params.put("securityOrigin", CdpObject.json(value_)));
-            storageKey.ifPresent(value_ -> params.put("storageKey", CdpObject.json(value_)));
-            storageBucket.ifPresent(value_ -> params.put("storageBucket", CdpObject.json(value_)));
+        public CompletionStage<GetMetadataResult> getMetadata(@Nullable String securityOrigin, @Nullable String storageKey, Storage.@Nullable StorageBucket storageBucket, String databaseName, String objectStoreName) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (securityOrigin != null) params.put("securityOrigin", CdpObject.json(securityOrigin));
+            if (storageKey != null) params.put("storageKey", CdpObject.json(storageKey));
+            if (storageBucket != null) params.put("storageBucket", CdpObject.json(storageBucket));
             params.put("databaseName", CdpObject.json(databaseName));
             params.put("objectStoreName", CdpObject.json(objectStoreName));
             return client.call("IndexedDB.getMetadata", params, result_ -> new GetMetadataResult(result_));
@@ -1839,7 +1536,10 @@ public final class IndexedDB {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetMetadataResult> getMetadata(String databaseName, String objectStoreName) {
-            return getMetadata(Optional.empty(), Optional.empty(), Optional.empty(), databaseName, objectStoreName);
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("databaseName", CdpObject.json(databaseName));
+            params.put("objectStoreName", CdpObject.json(objectStoreName));
+            return client.call("IndexedDB.getMetadata", params, result_ -> new GetMetadataResult(result_));
         }
         /**
          * Gets metadata of an object store.
@@ -1857,13 +1557,13 @@ public final class IndexedDB {
          * @param databaseName protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<IndexedDB.DatabaseWithObjectStores> requestDatabase(Optional<String> securityOrigin, Optional<String> storageKey, Optional<Storage.StorageBucket> storageBucket, String databaseName) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            securityOrigin.ifPresent(value_ -> params.put("securityOrigin", CdpObject.json(value_)));
-            storageKey.ifPresent(value_ -> params.put("storageKey", CdpObject.json(value_)));
-            storageBucket.ifPresent(value_ -> params.put("storageBucket", CdpObject.json(value_)));
+        public CompletionStage<IndexedDB.DatabaseWithObjectStores> requestDatabase(@Nullable String securityOrigin, @Nullable String storageKey, Storage.@Nullable StorageBucket storageBucket, String databaseName) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (securityOrigin != null) params.put("securityOrigin", CdpObject.json(securityOrigin));
+            if (storageKey != null) params.put("storageKey", CdpObject.json(storageKey));
+            if (storageBucket != null) params.put("storageBucket", CdpObject.json(storageBucket));
             params.put("databaseName", CdpObject.json(databaseName));
-            return client.call("IndexedDB.requestDatabase", params, result_ -> java.util.Objects.requireNonNull(IndexedDB.DatabaseWithObjectStores.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("databaseWithObjectStores")))))));
+            return client.call("IndexedDB.requestDatabase", params, result_ -> java.util.Objects.requireNonNull(IndexedDB.DatabaseWithObjectStores.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("databaseWithObjectStores"))))));
         }
         /**
          * Requests database with given name in given frame.
@@ -1871,7 +1571,9 @@ public final class IndexedDB {
          * @return a stage completing with the command result
          */
         public CompletionStage<IndexedDB.DatabaseWithObjectStores> requestDatabase(String databaseName) {
-            return requestDatabase(Optional.empty(), Optional.empty(), Optional.empty(), databaseName);
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("databaseName", CdpObject.json(databaseName));
+            return client.call("IndexedDB.requestDatabase", params, result_ -> java.util.Objects.requireNonNull(IndexedDB.DatabaseWithObjectStores.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("databaseWithObjectStores"))))));
         }
         /**
          * Requests database with given name in given frame.
@@ -1879,7 +1581,7 @@ public final class IndexedDB {
          * @return a stage completing with the command result
          */
         public CompletionStage<IndexedDB.DatabaseWithObjectStores> requestDatabase(RequestDatabaseRequest request) {
-            return client.call("IndexedDB.requestDatabase", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(IndexedDB.DatabaseWithObjectStores.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("databaseWithObjectStores")))))));
+            return client.call("IndexedDB.requestDatabase", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(IndexedDB.DatabaseWithObjectStores.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("databaseWithObjectStores"))))));
         }
         /**
          * Requests database names for given security origin.
@@ -1888,11 +1590,11 @@ public final class IndexedDB {
          * @param storageBucket protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<java.util.List<String>> requestDatabaseNames(Optional<String> securityOrigin, Optional<String> storageKey, Optional<Storage.StorageBucket> storageBucket) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            securityOrigin.ifPresent(value_ -> params.put("securityOrigin", CdpObject.json(value_)));
-            storageKey.ifPresent(value_ -> params.put("storageKey", CdpObject.json(value_)));
-            storageBucket.ifPresent(value_ -> params.put("storageBucket", CdpObject.json(value_)));
+        public CompletionStage<java.util.List<String>> requestDatabaseNames(@Nullable String securityOrigin, @Nullable String storageKey, Storage.@Nullable StorageBucket storageBucket) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (securityOrigin != null) params.put("securityOrigin", CdpObject.json(securityOrigin));
+            if (storageKey != null) params.put("storageKey", CdpObject.json(storageKey));
+            if (storageBucket != null) params.put("storageBucket", CdpObject.json(storageBucket));
             return client.call("IndexedDB.requestDatabaseNames", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("databaseNames")), element0 -> (String) element0));
         }
         /**
@@ -1900,7 +1602,7 @@ public final class IndexedDB {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> requestDatabaseNames() {
-            return requestDatabaseNames(Optional.empty(), Optional.empty(), Optional.empty());
+            return client.call("IndexedDB.requestDatabaseNames", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("databaseNames")), element0 -> (String) element0));
         }
         /**
          * Requests database names for given security origin.

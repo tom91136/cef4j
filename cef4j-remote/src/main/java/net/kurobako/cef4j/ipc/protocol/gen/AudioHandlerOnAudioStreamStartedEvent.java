@@ -3,12 +3,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class AudioHandlerOnAudioStreamStartedEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 2108053238;
@@ -47,7 +49,7 @@ public final class AudioHandlerOnAudioStreamStartedEvent implements CefMessageVi
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(browser.id());
@@ -59,13 +61,11 @@ public final class AudioHandlerOnAudioStreamStartedEvent implements CefMessageVi
     }
 
     public static final CefMessageDecoder<AudioHandlerOnAudioStreamStartedEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "browser");
-        RemoteHandle browser = new RemoteHandle(__buf.getInt());
-        AudioParameters params = AudioParameters.decode(__buf);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "channels");
-        int channels = __buf.getInt();
+        final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
+        final AudioParameters params = AudioParameters.decode(__buf);
+        final int channels = WireDecoder.int32(__buf, "channels");
         WireDecoder.requireFullyConsumed(__buf, "AudioHandlerOnAudioStreamStartedEvent");
         return new AudioHandlerOnAudioStreamStartedEvent(browser, params, channels);
     };

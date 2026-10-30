@@ -19,7 +19,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__audio__handler_8h.html">cef_audio_handler.h:44</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefAudioHandler extends CefClientHandler {
 
@@ -111,8 +110,8 @@ public interface CefAudioHandler extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefAudioHandler {
         private final java.util.List<CefAudioHandler> delegates;
@@ -123,7 +122,7 @@ public interface CefAudioHandler extends CefClientHandler {
 
         @Override
         public boolean getAudioParameters(@Nullable CefBrowser browser, CefAudioParameters.Mutable params) {
-            for (CefAudioHandler d : delegates) {
+            for (final CefAudioHandler d : delegates) {
                 if (d.getAudioParameters(browser, params)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -132,23 +131,23 @@ public interface CefAudioHandler extends CefClientHandler {
 
         @Override
         public void onAudioStreamStarted(@Nullable CefBrowser browser, CefAudioParameters params, int channels) {
-            for (CefAudioHandler d : delegates) d.onAudioStreamStarted(browser, params, channels);
+            for (final CefAudioHandler d : delegates) d.onAudioStreamStarted(browser, params, channels);
         }
 
         @Override
         public void onAudioStreamPacket(
                 @Nullable CefBrowser browser, @Nullable NativePointer data, int frames, long pts) {
-            for (CefAudioHandler d : delegates) d.onAudioStreamPacket(browser, data, frames, pts);
+            for (final CefAudioHandler d : delegates) d.onAudioStreamPacket(browser, data, frames, pts);
         }
 
         @Override
         public void onAudioStreamStopped(@Nullable CefBrowser browser) {
-            for (CefAudioHandler d : delegates) d.onAudioStreamStopped(browser);
+            for (final CefAudioHandler d : delegates) d.onAudioStreamStopped(browser);
         }
 
         @Override
         public void onAudioStreamError(@Nullable CefBrowser browser, @Nullable String message) {
-            for (CefAudioHandler d : delegates) d.onAudioStreamError(browser, message);
+            for (final CefAudioHandler d : delegates) d.onAudioStreamError(browser, message);
         }
     }
 }

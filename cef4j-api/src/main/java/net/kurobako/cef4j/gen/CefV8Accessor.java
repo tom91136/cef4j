@@ -22,7 +22,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:249</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefV8Accessor extends CefClientHandler {
 
@@ -70,8 +69,8 @@ public interface CefV8Accessor extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefV8Accessor {
         private final java.util.List<CefV8Accessor> delegates;
@@ -86,7 +85,7 @@ public interface CefV8Accessor extends CefClientHandler {
                 @Nullable CefV8Value object,
                 @Nullable AtomicReference<CefV8Value> retval,
                 @Nullable String exception) {
-            for (CefV8Accessor d : delegates) {
+            for (final CefV8Accessor d : delegates) {
                 if (d.get(name, object, retval, exception)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -99,7 +98,7 @@ public interface CefV8Accessor extends CefClientHandler {
                 @Nullable CefV8Value object,
                 @Nullable CefV8Value value,
                 @Nullable String exception) {
-            for (CefV8Accessor d : delegates) {
+            for (final CefV8Accessor d : delegates) {
                 if (d.set(name, object, value, exception)) return true;
             }
             if (!delegates.isEmpty()) return false;

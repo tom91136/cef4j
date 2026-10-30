@@ -19,7 +19,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -42,8 +41,7 @@ class MjpegHttpServerTest {
                 16,
                 0.80f,
                 false,
-                Optional.empty(),
-                Optional.of("secret-token"));
+                MjpegHttpServer.Security.ofBearerToken("secret-token"));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         try {
             try (MjpegHttpServer server = MjpegHttpServer.start(configuration, executor)) {
@@ -143,8 +141,7 @@ class MjpegHttpServerTest {
                 16,
                 0.80f,
                 false,
-                Optional.empty(),
-                Optional.of("secret-token"));
+                MjpegHttpServer.Security.ofBearerToken("secret-token"));
         try (MjpegHttpServer server = MjpegHttpServer.start(configuration);
                 TestFrameSource frames = new TestFrameSource()) {
             server.attach(frames);
@@ -244,15 +241,15 @@ class MjpegHttpServerTest {
     }
 
     private static int statusCode(URI uri, @Nullable String token) throws IOException {
-        try (Socket socket = new Socket(uri.getHost(), uri.getPort())) {
+        try (Socket socket = new Socket(uri.getHost(), uri.getPort());
+                BufferedReader reader =
+                        new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8))) {
             OutputStream out = socket.getOutputStream();
             out.write(("GET " + uri.getPath() + " HTTP/1.1\r\nHost: " + uri.getHost() + "\r\n"
                             + (token == null ? "" : "Authorization: Bearer " + token + "\r\n")
                             + "Connection: close\r\n\r\n")
                     .getBytes(StandardCharsets.UTF_8));
             out.flush();
-            BufferedReader reader =
-                    new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
             String line = reader.readLine();
             if (line == null) throw new IOException("no HTTP response");
             String[] parts = line.split("\\s+", -1);
@@ -264,7 +261,7 @@ class MjpegHttpServerTest {
         @Nullable
         private RawFrameConsumer sink;
 
-        private volatile boolean closed;
+        private volatile boolean closed = false;
 
         @Override
         public void onFrame(@Nullable FrameConsumer consumer) {}

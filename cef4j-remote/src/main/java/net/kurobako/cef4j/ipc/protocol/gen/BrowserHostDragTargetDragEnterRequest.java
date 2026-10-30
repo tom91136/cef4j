@@ -3,12 +3,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class BrowserHostDragTargetDragEnterRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 203167885;
@@ -53,7 +55,7 @@ public final class BrowserHostDragTargetDragEnterRequest implements CefMessageVi
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
@@ -66,15 +68,12 @@ public final class BrowserHostDragTargetDragEnterRequest implements CefMessageVi
     }
 
     public static final CefMessageDecoder<BrowserHostDragTargetDragEnterRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "dragData");
-        RemoteHandle dragData = new RemoteHandle(__buf.getInt());
-        MouseEvent event = MouseEvent.decode(__buf);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "allowedOps");
-        int allowedOps = __buf.getInt();
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final RemoteHandle dragData = WireDecoder.handle(__buf, "dragData");
+        final MouseEvent event = MouseEvent.decode(__buf);
+        final int allowedOps = WireDecoder.int32(__buf, "allowedOps");
         WireDecoder.requireFullyConsumed(__buf, "BrowserHostDragTargetDragEnterRequest");
         return new BrowserHostDragTargetDragEnterRequest(self, dragData, event, allowedOps);
     };

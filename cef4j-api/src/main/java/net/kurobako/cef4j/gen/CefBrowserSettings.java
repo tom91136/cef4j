@@ -47,7 +47,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:571</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefBrowserSettings {
 
@@ -257,40 +256,40 @@ public final class CefBrowserSettings {
     /** Create a mutable copy of this instance. */
     public Mutable toMutable() {
         return new Mutable(
-                this.windowlessFrameRate,
-                this.standardFontFamily,
-                this.fixedFontFamily,
-                this.serifFontFamily,
-                this.sansSerifFontFamily,
-                this.cursiveFontFamily,
-                this.fantasyFontFamily,
-                this.defaultFontSize,
-                this.defaultFixedFontSize,
-                this.minimumFontSize,
-                this.minimumLogicalFontSize,
-                this.defaultEncoding,
-                this.remoteFonts,
-                this.javascript,
-                this.javascriptCloseWindows,
-                this.javascriptAccessClipboard,
-                this.javascriptDomPaste,
-                this.imageLoading,
-                this.imageShrinkStandaloneToFit,
-                this.textAreaResize,
-                this.tabToLinks,
-                this.localStorage,
-                this.databasesDeprecated,
-                this.webgl,
-                this.backgroundColor,
-                this.chromeStatusBubble,
-                this.chromeZoomBubble);
+                windowlessFrameRate,
+                standardFontFamily,
+                fixedFontFamily,
+                serifFontFamily,
+                sansSerifFontFamily,
+                cursiveFontFamily,
+                fantasyFontFamily,
+                defaultFontSize,
+                defaultFixedFontSize,
+                minimumFontSize,
+                minimumLogicalFontSize,
+                defaultEncoding,
+                remoteFonts,
+                javascript,
+                javascriptCloseWindows,
+                javascriptAccessClipboard,
+                javascriptDomPaste,
+                imageLoading,
+                imageShrinkStandaloneToFit,
+                textAreaResize,
+                tabToLinks,
+                localStorage,
+                databasesDeprecated,
+                webgl,
+                backgroundColor,
+                chromeStatusBubble,
+                chromeZoomBubble);
     }
 
     @Override
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefBrowserSettings)) return false;
-        CefBrowserSettings other = (CefBrowserSettings) obj;
+        final CefBrowserSettings other = (CefBrowserSettings) obj;
         return this.windowlessFrameRate == other.windowlessFrameRate
                 && java.util.Objects.equals(this.standardFontFamily, other.standardFontFamily)
                 && java.util.Objects.equals(this.fixedFontFamily, other.fixedFontFamily)
@@ -591,40 +590,40 @@ public final class CefBrowserSettings {
         /** Create an immutable snapshot of this instance. */
         public CefBrowserSettings toImmutable() {
             return new CefBrowserSettings(
-                    this.windowlessFrameRate,
-                    this.standardFontFamily,
-                    this.fixedFontFamily,
-                    this.serifFontFamily,
-                    this.sansSerifFontFamily,
-                    this.cursiveFontFamily,
-                    this.fantasyFontFamily,
-                    this.defaultFontSize,
-                    this.defaultFixedFontSize,
-                    this.minimumFontSize,
-                    this.minimumLogicalFontSize,
-                    this.defaultEncoding,
-                    this.remoteFonts,
-                    this.javascript,
-                    this.javascriptCloseWindows,
-                    this.javascriptAccessClipboard,
-                    this.javascriptDomPaste,
-                    this.imageLoading,
-                    this.imageShrinkStandaloneToFit,
-                    this.textAreaResize,
-                    this.tabToLinks,
-                    this.localStorage,
-                    this.databasesDeprecated,
-                    this.webgl,
-                    this.backgroundColor,
-                    this.chromeStatusBubble,
-                    this.chromeZoomBubble);
+                    windowlessFrameRate,
+                    standardFontFamily,
+                    fixedFontFamily,
+                    serifFontFamily,
+                    sansSerifFontFamily,
+                    cursiveFontFamily,
+                    fantasyFontFamily,
+                    defaultFontSize,
+                    defaultFixedFontSize,
+                    minimumFontSize,
+                    minimumLogicalFontSize,
+                    defaultEncoding,
+                    remoteFonts,
+                    javascript,
+                    javascriptCloseWindows,
+                    javascriptAccessClipboard,
+                    javascriptDomPaste,
+                    imageLoading,
+                    imageShrinkStandaloneToFit,
+                    textAreaResize,
+                    tabToLinks,
+                    localStorage,
+                    databasesDeprecated,
+                    webgl,
+                    backgroundColor,
+                    chromeStatusBubble,
+                    chromeZoomBubble);
         }
 
         @Override
         public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
-            Mutable other = (Mutable) obj;
+            final Mutable other = (Mutable) obj;
             return this.windowlessFrameRate == other.windowlessFrameRate
                     && java.util.Objects.equals(this.standardFontFamily, other.standardFontFamily)
                     && java.util.Objects.equals(this.fixedFontFamily, other.fixedFontFamily)

@@ -4,6 +4,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
@@ -11,6 +12,7 @@ import net.kurobako.cef4j.ipc.session.WireDecoder;
  * to facade methods (or factory requests) that take this struct. The dispatcher decodes them on the
  * runtime-server side and fills the matching {@code cef_linux_window_properties_t} before invoking CEF.
  */
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class LinuxWindowProperties {
 
     private final long size;
@@ -52,20 +54,20 @@ public final class LinuxWindowProperties {
     }
 
     public void encodeInto(ByteBuffer dst) {
-        ByteOrder originalOrder = dst.order();
+        final ByteOrder originalOrder = dst.order();
         try {
             dst.order(ByteOrder.LITTLE_ENDIAN);
             dst.putLong(size);
-            byte[] waylandAppIdBytes = waylandAppId.getBytes(StandardCharsets.UTF_8);
+            final byte[] waylandAppIdBytes = waylandAppId.getBytes(StandardCharsets.UTF_8);
             dst.putInt(waylandAppIdBytes.length);
             dst.put(waylandAppIdBytes);
-            byte[] wmClassClassBytes = wmClassClass.getBytes(StandardCharsets.UTF_8);
+            final byte[] wmClassClassBytes = wmClassClass.getBytes(StandardCharsets.UTF_8);
             dst.putInt(wmClassClassBytes.length);
             dst.put(wmClassClassBytes);
-            byte[] wmClassNameBytes = wmClassName.getBytes(StandardCharsets.UTF_8);
+            final byte[] wmClassNameBytes = wmClassName.getBytes(StandardCharsets.UTF_8);
             dst.putInt(wmClassNameBytes.length);
             dst.put(wmClassNameBytes);
-            byte[] wmRoleNameBytes = wmRoleName.getBytes(StandardCharsets.UTF_8);
+            final byte[] wmRoleNameBytes = wmRoleName.getBytes(StandardCharsets.UTF_8);
             dst.putInt(wmRoleNameBytes.length);
             dst.put(wmRoleNameBytes);
         } finally {
@@ -79,24 +81,11 @@ public final class LinuxWindowProperties {
       * configured the buffer.
       */
     public static LinuxWindowProperties decode(ByteBuffer __buf) {
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "size");
-        long size = __buf.getLong();
-        int waylandAppIdLen = WireDecoder.length(__buf, "waylandAppId");
-        byte[] waylandAppIdBuf = new byte[waylandAppIdLen];
-        __buf.get(waylandAppIdBuf);
-        String waylandAppId = new String(waylandAppIdBuf, StandardCharsets.UTF_8);
-        int wmClassClassLen = WireDecoder.length(__buf, "wmClassClass");
-        byte[] wmClassClassBuf = new byte[wmClassClassLen];
-        __buf.get(wmClassClassBuf);
-        String wmClassClass = new String(wmClassClassBuf, StandardCharsets.UTF_8);
-        int wmClassNameLen = WireDecoder.length(__buf, "wmClassName");
-        byte[] wmClassNameBuf = new byte[wmClassNameLen];
-        __buf.get(wmClassNameBuf);
-        String wmClassName = new String(wmClassNameBuf, StandardCharsets.UTF_8);
-        int wmRoleNameLen = WireDecoder.length(__buf, "wmRoleName");
-        byte[] wmRoleNameBuf = new byte[wmRoleNameLen];
-        __buf.get(wmRoleNameBuf);
-        String wmRoleName = new String(wmRoleNameBuf, StandardCharsets.UTF_8);
+        final long size = WireDecoder.int64(__buf, "size");
+        final String waylandAppId = WireDecoder.utf8(__buf, "waylandAppId");
+        final String wmClassClass = WireDecoder.utf8(__buf, "wmClassClass");
+        final String wmClassName = WireDecoder.utf8(__buf, "wmClassName");
+        final String wmRoleName = WireDecoder.utf8(__buf, "wmRoleName");
         return new LinuxWindowProperties(size, waylandAppId, wmClassClass, wmClassName, wmRoleName);
     }
 
@@ -107,34 +96,34 @@ public final class LinuxWindowProperties {
     /** Lombok-style builder. */
     public static final class Builder {
 
-        private long size = 0L;
+        private long size;
         private String waylandAppId = "";
         private String wmClassClass = "";
         private String wmClassName = "";
         private String wmRoleName = "";
 
-        public Builder size(long size) {
-            this.size = size;
+        public Builder size(long value) {
+            this.size = value;
             return this;
         }
 
-        public Builder waylandAppId(String waylandAppId) {
-            this.waylandAppId = waylandAppId;
+        public Builder waylandAppId(String value) {
+            this.waylandAppId = value;
             return this;
         }
 
-        public Builder wmClassClass(String wmClassClass) {
-            this.wmClassClass = wmClassClass;
+        public Builder wmClassClass(String value) {
+            this.wmClassClass = value;
             return this;
         }
 
-        public Builder wmClassName(String wmClassName) {
-            this.wmClassName = wmClassName;
+        public Builder wmClassName(String value) {
+            this.wmClassName = value;
             return this;
         }
 
-        public Builder wmRoleName(String wmRoleName) {
-            this.wmRoleName = wmRoleName;
+        public Builder wmRoleName(String value) {
+            this.wmRoleName = value;
             return this;
         }
 

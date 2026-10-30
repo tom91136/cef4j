@@ -304,7 +304,8 @@ class CefHttpURLConnectionTest {
         c.connect();
         engine.capturedSink().onResponse(200, "OK", Map.of());
         InputStream input = c.getInputStream();
-        assertThatExceptionOfType(SocketTimeoutException.class).isThrownBy(input::read);
+        assertThatExceptionOfType(SocketTimeoutException.class)
+                .isThrownBy(() -> assertThat(input.read()).isEqualTo(-1));
         c.disconnect();
     }
 
@@ -334,13 +335,14 @@ class CefHttpURLConnectionTest {
     @Test
     void requestBodyBeyondLimitFails() throws Exception {
         FakeCefHttpEngine engine = new FakeCefHttpEngine().stage(200, Map.of(), new byte[0]);
-        CefHttpURLConnection c = new CefHttpURLConnection(new URL("http://example.com/"), engine, 16);
-        c.setRequestMethod("POST");
-        c.setDoOutput(true);
-        OutputStream out = c.getOutputStream();
-        out.write(new byte[16]);
-        assertThatIOException().isThrownBy(() -> out.write(1)).withMessageContaining("exceeds");
-        c.disconnect();
+        try (CefHttpURLConnection c = new CefHttpURLConnection(new URL("http://example.com/"), engine, 16)) {
+            c.setRequestMethod("POST");
+            c.setDoOutput(true);
+            OutputStream out = c.getOutputStream();
+            out.write(new byte[16]);
+            assertThatIOException().isThrownBy(() -> out.write(1)).withMessageContaining("exceeds");
+            c.disconnect();
+        }
     }
 
     @Test
@@ -373,12 +375,13 @@ class CefHttpURLConnectionTest {
     @Test
     void responseChunkCountOverflowCancelsRequest() throws Exception {
         FakeCefHttpEngine engine = FakeCefHttpEngine.empty();
-        CefHttpURLConnection c = new CefHttpURLConnection(new URL("http://example.com/"), engine, 16, 32, 1);
-        c.connect();
-        engine.capturedSink().onResponse(200, "OK", Map.of());
-        engine.capturedSink().onData(new byte[] {1});
-        engine.capturedSink().onData(new byte[] {2});
+        try (CefHttpURLConnection c = new CefHttpURLConnection(new URL("http://example.com/"), engine, 16, 32, 1)) {
+            c.connect();
+            engine.capturedSink().onResponse(200, "OK", Map.of());
+            engine.capturedSink().onData(new byte[] {1});
+            engine.capturedSink().onData(new byte[] {2});
 
-        assertThat(engine.cancelled).isTrue();
+            assertThat(engine.cancelled).isTrue();
+        }
     }
 }

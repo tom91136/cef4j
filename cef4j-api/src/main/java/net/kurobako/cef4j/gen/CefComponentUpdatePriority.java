@@ -7,7 +7,6 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 
 /** Possible values: {@link Kind#BACKGROUND}, {@link Kind#FOREGROUND} */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefComponentUpdatePriority implements CefEnum<CefComponentUpdatePriority> {
 

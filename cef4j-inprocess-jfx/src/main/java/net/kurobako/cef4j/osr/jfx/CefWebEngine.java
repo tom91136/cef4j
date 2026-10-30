@@ -5,6 +5,8 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -23,6 +25,7 @@ import javafx.beans.property.StringProperty;
 import javafx.concurrent.Worker;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
+import javafx.print.PrinterJob;
 import javafx.util.Callback;
 import net.kurobako.cef4j.CefScriptEngine;
 import net.kurobako.cef4j.policy.NullableBoundary;
@@ -34,6 +37,11 @@ import org.w3c.dom.Document;
  *
  * <p>The API intentionally tracks the most common {@code WebEngine} entry points first. Callers that need full CEF
  * control can drop down to the owning {@link CefWebView}.
+ *
+ * <p>An engine created by a {@link CefWebView} renders into that view. An engine created through a public constructor
+ * is headless: it owns a hidden {@link CefWebView} that is never shown. The hidden view creates its off-screen browser
+ * with an 800 by 600 viewport on the first operation that needs one, and loads issued before then are queued until the
+ * browser exists. Call {@code getView().release()} to free the browser of a headless engine.
  */
 @SuppressWarnings("unused")
 @NullableBoundary("JavaFX bean properties use null for unset values")
@@ -74,7 +82,29 @@ public final class CefWebEngine {
             new SimpleObjectProperty<>(this, "promptHandler");
     private final ObjectProperty<@Nullable EventHandler<CefWebErrorEvent>> onError =
             new SimpleObjectProperty<>(this, "onError");
-    private volatile boolean suppressNavigationHistory;
+    private volatile boolean suppressNavigationHistory = false;
+
+    /**
+     * Creates a headless engine.
+     *
+     * @throws IllegalStateException if CEF has not been initialised for off-screen rendering
+     */
+    @SuppressWarnings("this-escape")
+    public CefWebEngine() {
+        this.view = new CefWebView(this);
+        this.history = new CefWebHistory(view);
+        this.loadWorker = new CefLoadWorker(this);
+    }
+
+    /**
+     * Creates a headless engine and starts loading {@code url}.
+     *
+     * @throws IllegalStateException if CEF has not been initialised for off-screen rendering
+     */
+    public CefWebEngine(String url) {
+        this();
+        load(url);
+    }
 
     CefWebEngine(CefWebView view) {
         this.view = view;
@@ -95,8 +125,8 @@ public final class CefWebEngine {
         loadInternal(url);
     }
 
-    private void loadInternal(String url) {
-        String next = url == null || url.isEmpty() ? "about:blank" : url;
+    private void loadInternal(@Nullable String url) {
+        final String next = url == null || url.isEmpty() ? "about:blank" : url;
         view.getScriptEngine().cancelPending("page navigation replaced the renderer context");
         location.set(next);
         document.set(null);
@@ -108,15 +138,17 @@ public final class CefWebEngine {
         loadContent(content, "text/html");
     }
 
-    public void loadContent(String content, String contentType) {
+    @NullableBoundary("JavaFX WebEngine.loadContent accepts null content and content type")
+    public void loadContent(@Nullable String content, @Nullable String contentType) {
         suppressNavigationHistory = true;
-        String mime = contentType == null || contentType.isEmpty() ? "text/html" : contentType;
-        String body = content == null ? "" : content;
+        String mime = Objects.requireNonNullElse(contentType, "text/html");
+        if (mime.isEmpty()) mime = "text/html";
+        final String body = Objects.requireNonNullElse(content, "");
         if (body.getBytes(StandardCharsets.UTF_8).length > MAX_DATA_URL_CONTENT_BYTES) {
             throw new IllegalArgumentException(
                     "content exceeds the data: URL limit of " + MAX_DATA_URL_CONTENT_BYTES + " bytes");
         }
-        String encoded = URLEncoder.encode(body, StandardCharsets.UTF_8).replace("+", "%20");
+        final String encoded = URLEncoder.encode(body, StandardCharsets.UTF_8).replace("+", "%20");
         loadInternal("data:" + mime + ";charset=UTF-8," + encoded);
     }
 
@@ -129,9 +161,10 @@ public final class CefWebEngine {
      * so it is not generally possible to return a JS proxy object. See {@link #evaluateScriptAsync(String)} for a safer
      * alternative.
      */
+    // mirrors javafx.scene.web.WebEngine#executeScript, so code written for WebEngine compiles unchanged
     @Deprecated
-    @Nullable
-    public Object executeScript(String script) {
+    @SuppressWarnings("baumkuchen:nullable-return")
+    public @Nullable Object executeScript(String script) {
         view.executeScript(script);
         return null;
     }
@@ -154,6 +187,18 @@ public final class CefWebEngine {
 
     public void stop() {
         view.stop();
+    }
+
+    /**
+     * Prints the last rendered frame of the page to {@code job}, scaled to fit the printable area of the job's page
+     * layout. Nothing is printed before the first frame has been painted.
+     *
+     * <p>CEF cannot print an off-screen browser through a JavaFX {@link PrinterJob}, so the output is a single
+     * rasterised page rather than the paginated document. The job is not ended, so the caller must call
+     * {@link PrinterJob#endJob()}.
+     */
+    public void print(PrinterJob job) {
+        view.print(job);
     }
 
     public CefWebHistory getHistory() {
@@ -208,6 +253,8 @@ public final class CefWebEngine {
         return document.getReadOnlyProperty();
     }
 
+    // mirrors javafx.scene.web.WebEngine#getDocument, so code written for WebEngine compiles unchanged
+    @SuppressWarnings("baumkuchen:nullable-return")
     public @Nullable Document getDocument() {
         return document.get();
     }
@@ -252,6 +299,8 @@ public final class CefWebEngine {
         return userAgent;
     }
 
+    // mirrors javafx.scene.web.WebEngine#getUserDataDirectory, so code written for WebEngine compiles unchanged
+    @SuppressWarnings("baumkuchen:nullable-return")
     public @Nullable File getUserDataDirectory() {
         return userDataDirectory.get();
     }
@@ -264,8 +313,9 @@ public final class CefWebEngine {
         return userDataDirectory;
     }
 
-    @Nullable
-    public EventHandler<CefWebEvent<String>> getOnAlert() {
+    // mirrors javafx.scene.web.WebEngine#getOnAlert, so code written for WebEngine compiles unchanged
+    @SuppressWarnings("baumkuchen:nullable-return")
+    public @Nullable EventHandler<CefWebEvent<String>> getOnAlert() {
         return onAlert.get();
     }
 
@@ -277,8 +327,9 @@ public final class CefWebEngine {
         return onAlert;
     }
 
-    @Nullable
-    public EventHandler<CefWebEvent<String>> getOnStatusChanged() {
+    // mirrors javafx.scene.web.WebEngine#getOnStatusChanged, so code written for WebEngine compiles unchanged
+    @SuppressWarnings("baumkuchen:nullable-return")
+    public @Nullable EventHandler<CefWebEvent<String>> getOnStatusChanged() {
         return onStatusChanged.get();
     }
 
@@ -290,8 +341,9 @@ public final class CefWebEngine {
         return onStatusChanged;
     }
 
-    @Nullable
-    public EventHandler<CefWebEvent<Rectangle2D>> getOnResized() {
+    // mirrors javafx.scene.web.WebEngine#getOnResized, so code written for WebEngine compiles unchanged
+    @SuppressWarnings("baumkuchen:nullable-return")
+    public @Nullable EventHandler<CefWebEvent<Rectangle2D>> getOnResized() {
         return onResized.get();
     }
 
@@ -303,8 +355,9 @@ public final class CefWebEngine {
         return onResized;
     }
 
-    @Nullable
-    public EventHandler<CefWebEvent<Boolean>> getOnVisibilityChanged() {
+    // mirrors javafx.scene.web.WebEngine#getOnVisibilityChanged, so code written for WebEngine compiles unchanged
+    @SuppressWarnings("baumkuchen:nullable-return")
+    public @Nullable EventHandler<CefWebEvent<Boolean>> getOnVisibilityChanged() {
         return onVisibilityChanged.get();
     }
 
@@ -316,8 +369,9 @@ public final class CefWebEngine {
         return onVisibilityChanged;
     }
 
-    @Nullable
-    public Callback<CefPopupFeatures, CefWebEngine> getCreatePopupHandler() {
+    // mirrors javafx.scene.web.WebEngine#getCreatePopupHandler, so code written for WebEngine compiles unchanged
+    @SuppressWarnings("baumkuchen:nullable-return")
+    public @Nullable Callback<CefPopupFeatures, CefWebEngine> getCreatePopupHandler() {
         return createPopupHandler.get();
     }
 
@@ -329,8 +383,9 @@ public final class CefWebEngine {
         return createPopupHandler;
     }
 
-    @Nullable
-    public Callback<String, Boolean> getConfirmHandler() {
+    // mirrors javafx.scene.web.WebEngine#getConfirmHandler, so code written for WebEngine compiles unchanged
+    @SuppressWarnings("baumkuchen:nullable-return")
+    public @Nullable Callback<String, Boolean> getConfirmHandler() {
         return confirmHandler.get();
     }
 
@@ -342,8 +397,9 @@ public final class CefWebEngine {
         return confirmHandler;
     }
 
-    @Nullable
-    public Callback<CefPromptData, String> getPromptHandler() {
+    // mirrors javafx.scene.web.WebEngine#getPromptHandler, so code written for WebEngine compiles unchanged
+    @SuppressWarnings("baumkuchen:nullable-return")
+    public @Nullable Callback<CefPromptData, String> getPromptHandler() {
         return promptHandler.get();
     }
 
@@ -355,8 +411,9 @@ public final class CefWebEngine {
         return promptHandler;
     }
 
-    @Nullable
-    public EventHandler<CefWebErrorEvent> getOnError() {
+    // mirrors javafx.scene.web.WebEngine#getOnError, so code written for WebEngine compiles unchanged
+    @SuppressWarnings("baumkuchen:nullable-return")
+    public @Nullable EventHandler<CefWebErrorEvent> getOnError() {
         return onError.get();
     }
 
@@ -388,31 +445,31 @@ public final class CefWebEngine {
     }
 
     void updateLoadProgress(double progress) {
-        double clamped = Math.max(0.0, Math.min(1.0, progress));
+        final double clamped = Math.max(0.0, Math.min(1.0, progress));
         loadProgress.set(clamped);
         loadWorker.updateProgress(clamped);
     }
 
     void markLoadFinished(@Nullable String completedUrl) {
-        if (!matchesCurrentNavigation(completedUrl)) return;
+        if (isStaleNavigation(completedUrl)) return;
         loading.set(false);
         loadProgress.set(1.0);
         loadWorker.markSucceeded();
     }
 
     void markLoadFailed(@Nullable String failedUrl, Throwable failure) {
-        if (!matchesCurrentNavigation(failedUrl)) return;
+        if (isStaleNavigation(failedUrl)) return;
         loading.set(false);
         document.set(null);
         loadWorker.markFailed(failure);
     }
 
-    private boolean matchesCurrentNavigation(@Nullable String callbackUrl) {
-        if (callbackUrl == null || callbackUrl.isEmpty() || callbackUrl.equals(location.get())) return true;
+    private boolean isStaleNavigation(@Nullable String callbackUrl) {
+        if (callbackUrl == null || callbackUrl.isEmpty() || callbackUrl.equals(location.get())) return false;
         try {
-            return URI.create(callbackUrl).equals(URI.create(location.get()));
-        } catch (IllegalArgumentException malformedUrl) {
-            return false;
+            return !URI.create(callbackUrl).equals(URI.create(location.get()));
+        } catch (IllegalArgumentException ignored) {
+            return true;
         }
     }
 
@@ -425,29 +482,27 @@ public final class CefWebEngine {
     }
 
     void fireAlert(String data) {
-        EventHandler<CefWebEvent<String>> handler = getOnAlert();
-        if (handler != null) handler.handle(new CefWebEvent<>(this, CefWebEvent.ALERT, data));
+        Optional.ofNullable(getOnAlert())
+                .ifPresent(handler -> handler.handle(new CefWebEvent<>(this, CefWebEvent.ALERT, data)));
     }
 
     void fireStatusChanged(String data) {
-        EventHandler<CefWebEvent<String>> handler = getOnStatusChanged();
-        if (handler != null) handler.handle(new CefWebEvent<>(this, CefWebEvent.STATUS_CHANGED, data));
+        Optional.ofNullable(getOnStatusChanged())
+                .ifPresent(handler -> handler.handle(new CefWebEvent<>(this, CefWebEvent.STATUS_CHANGED, data)));
     }
 
     void fireResized(Rectangle2D data) {
-        EventHandler<CefWebEvent<Rectangle2D>> handler = getOnResized();
-        if (handler != null) handler.handle(new CefWebEvent<>(this, CefWebEvent.RESIZED, data));
+        Optional.ofNullable(getOnResized())
+                .ifPresent(handler -> handler.handle(new CefWebEvent<>(this, CefWebEvent.RESIZED, data)));
     }
 
     void fireVisibilityChanged(boolean visible) {
-        EventHandler<CefWebEvent<Boolean>> handler = getOnVisibilityChanged();
-        if (handler != null) handler.handle(new CefWebEvent<>(this, CefWebEvent.VISIBILITY_CHANGED, visible));
+        Optional.ofNullable(getOnVisibilityChanged())
+                .ifPresent(handler -> handler.handle(new CefWebEvent<>(this, CefWebEvent.VISIBILITY_CHANGED, visible)));
     }
 
     void fireError(String message, Throwable error) {
-        EventHandler<CefWebErrorEvent> handler = getOnError();
-        if (handler != null) {
-            handler.handle(new CefWebErrorEvent(this, CefWebErrorEvent.ANY, message, error));
-        }
+        Optional.ofNullable(getOnError())
+                .ifPresent(handler -> handler.handle(new CefWebErrorEvent(this, CefWebErrorEvent.ANY, message, error)));
     }
 }

@@ -2,8 +2,11 @@ package net.kurobako.cef4j.codegen
 
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.concurrent.TimeUnit
 
 object Preprocessor {
+  private val UnixBaseCommand    = List("cc", "-E", "-x", "c", "-std=c11")
+  private val WindowsBaseCommand = List("cl.exe", "/nologo", "/E", "/EP")
 
   private val WindowsTargetDefine = "OS_WIN"
   private val MacTargetDefine     = "OS_MAC"
@@ -120,15 +123,17 @@ object Preprocessor {
       case other           => sys.error(s"Unknown compiler id: $other")
     }
 
-    val proc = new ProcessBuilder(cmd*)
+    val proc = ProcessBuilder(cmd*)
       .redirectErrorStream(true)
       .start()
-    val out  = proc.getInputStream.readAllBytes()
-    val exit = proc.waitFor()
+    val out      = proc.getInputStream.readAllBytes()
+    val finished = proc.waitFor(30, TimeUnit.SECONDS)
+    if (!finished) { proc.destroyForcibly(); sys.error("Preprocessor timed out after 30 seconds") }
+    val exit = proc.exitValue()
     if (exit != 0) {
-      sys.error(s"Preprocessor failed (exit $exit): ${new String(out, "UTF-8")}")
+      sys.error(s"Preprocessor failed (exit $exit): ${String(out, "UTF-8")}")
     }
-    stripLineMarkers(new String(out, "UTF-8"))
+    stripLineMarkers(String(out, "UTF-8"))
   }
 
   private def unixCommand(file: Path, includes: Seq[Path], defines: Seq[String]): List[String] = {
@@ -153,7 +158,7 @@ object Preprocessor {
         undefs ++ defs
       }
     }
-    List("cc", "-E", "-x", "c", "-std=c11") ++
+    UnixBaseCommand ++
       defines.flatMap(d => List(s"-D$d")) ++
       platformOverrides ++
       extraIncludes.flatMap(d => List("-I", d.toString)) ++
@@ -185,7 +190,7 @@ object Preprocessor {
         undefs ++ defs
       }
     }
-    List("cl.exe", "/nologo", "/E", "/EP") ++
+    WindowsBaseCommand ++
       defines.map(d => s"/D$d") ++
       platformOverrides ++
       extraIncludes.flatMap(d => List(s"/I$d")) ++

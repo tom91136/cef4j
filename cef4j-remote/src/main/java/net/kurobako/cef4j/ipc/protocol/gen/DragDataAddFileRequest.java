@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class DragDataAddFileRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 420598392;
@@ -52,7 +54,7 @@ public final class DragDataAddFileRequest implements CefMessageView, CefMessageE
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
@@ -66,18 +68,11 @@ public final class DragDataAddFileRequest implements CefMessageView, CefMessageE
     }
 
     public static final CefMessageDecoder<DragDataAddFileRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int pathLen = WireDecoder.length(__buf, "path");
-        byte[] pathBuf = new byte[pathLen];
-        __buf.get(pathBuf);
-        String path = new String(pathBuf, StandardCharsets.UTF_8);
-        int displayNameLen = WireDecoder.length(__buf, "displayName");
-        byte[] displayNameBuf = new byte[displayNameLen];
-        __buf.get(displayNameBuf);
-        String displayName = new String(displayNameBuf, StandardCharsets.UTF_8);
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final String path = WireDecoder.utf8(__buf, "path");
+        final String displayName = WireDecoder.utf8(__buf, "displayName");
         WireDecoder.requireFullyConsumed(__buf, "DragDataAddFileRequest");
         return new DragDataAddFileRequest(self, path, displayName);
     };

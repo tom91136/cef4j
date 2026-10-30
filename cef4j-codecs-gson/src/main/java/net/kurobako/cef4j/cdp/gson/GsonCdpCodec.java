@@ -8,8 +8,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.Optional;
 import net.kurobako.cef4j.cdp.CdpCodec;
-import org.jspecify.annotations.Nullable;
 
 /**
  * Gson implementation of the codec-neutral {@link CdpCodec} contract. The default configuration keeps explicit
@@ -36,14 +36,14 @@ public final class GsonCdpCodec implements CdpCodec {
     }
 
     @Override
-    public @Nullable Object decode(byte[] json) {
-        return gson.fromJson(new String(json, StandardCharsets.UTF_8), Object.class);
+    public Optional<Object> decode(byte[] json) {
+        return Optional.ofNullable(gson.fromJson(new String(json, StandardCharsets.UTF_8), Object.class));
     }
 
     private static Number number(JsonReader reader) throws IOException {
-        String text = reader.nextString();
+        final String text = reader.nextString();
         if (text.indexOf('.') >= 0 || text.indexOf('e') >= 0 || text.indexOf('E') >= 0) return new BigDecimal(text);
-        BigInteger value = new BigInteger(text);
+        final BigInteger value = new BigInteger(text);
         if (value.bitLength() < Integer.SIZE) return value.intValue();
         if (value.bitLength() < Long.SIZE) return value.longValue();
         return value;

@@ -21,7 +21,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types__linux_8h.html">internal/cef_types_linux.h:77</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefMainArgs implements net.kurobako.cef4j.gen.CefMainArgs {
 
@@ -35,14 +34,14 @@ public final class CefMainArgs implements net.kurobako.cef4j.gen.CefMainArgs {
 
     /** Create a mutable copy of this instance. */
     public Mutable toMutable() {
-        return new Mutable(this.argc, this.argv);
+        return new Mutable(argc, argv);
     }
 
     @Override
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefMainArgs)) return false;
-        CefMainArgs other = (CefMainArgs) obj;
+        final CefMainArgs other = (CefMainArgs) obj;
         return this.argc == other.argc && java.util.Objects.equals(this.argv, other.argv);
     }
 
@@ -78,14 +77,14 @@ public final class CefMainArgs implements net.kurobako.cef4j.gen.CefMainArgs {
 
         /** Create an immutable snapshot of this instance. */
         public CefMainArgs toImmutable() {
-            return new CefMainArgs(this.argc, this.argv);
+            return new CefMainArgs(argc, argv);
         }
 
         @Override
         public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
-            Mutable other = (Mutable) obj;
+            final Mutable other = (Mutable) obj;
             return this.argc == other.argc && java.util.Objects.equals(this.argv, other.argv);
         }
 

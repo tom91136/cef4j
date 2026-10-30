@@ -22,8 +22,8 @@ object JavaMethods {
 
   def usesArraysAsList(ret: CType): Boolean =
     ret match {
-      case CType.CountFuncArray(elem, _, _, _) => !Naming.isPrimitiveElement(elem)
-      case _                                   => false
+      case CType.CountFuncArray(elementType = elem) => !Naming.isPrimitiveElement(elem)
+      case _                                        => false
     }
 
   def hasNullableParam(params: List[Param], metaAttrs: List[(String, String)]): Boolean = {

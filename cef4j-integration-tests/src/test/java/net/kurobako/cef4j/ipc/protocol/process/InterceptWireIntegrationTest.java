@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Duration;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import net.kurobako.cef4j.ipc.protocol.gen.TriggerInterceptRequest;
 import net.kurobako.cef4j.ipc.protocol.gen.TriggerInterceptResponse;
@@ -36,7 +37,7 @@ class InterceptWireIntegrationTest {
 
             session.intercept(ECHO_MESSAGE_ID, RawPayloadView.DECODER, observed -> {
                 assertThat(observed.bytes()).isEqualTo(requestPayload);
-                return encoderFor(ECHO_MESSAGE_ID, expectedReply);
+                return Optional.of(encoderFor(ECHO_MESSAGE_ID, expectedReply));
             });
 
             TriggerInterceptResponse resp = session.request(

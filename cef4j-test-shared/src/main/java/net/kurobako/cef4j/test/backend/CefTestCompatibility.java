@@ -8,7 +8,7 @@ public final class CefTestCompatibility {
         String value = System.getProperty("cef.api.version", System.getProperty("cef4j.test.cefApiVersion"));
         if (value == null || value.isBlank()) value = System.getProperty("cef.version");
         if (value == null || value.isBlank()) return Integer.MAX_VALUE;
-        int separator = value.indexOf('.');
+        final int separator = value.indexOf('.');
         return Integer.parseInt((separator < 0 ? value : value.substring(0, separator)).trim());
     }
 

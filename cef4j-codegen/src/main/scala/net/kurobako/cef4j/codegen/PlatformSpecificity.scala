@@ -30,18 +30,18 @@ object PlatformSpecificity {
   @tailrec
   def typeUsesPlatformType(ct: CType, platformTypes: Set[String]): Boolean =
     ct match {
-      case CType.Ptr(inner)                    => platformTypes.contains(normalizeName(inner))
-      case CType.ObjectPtr(cefName)            => platformTypes.contains(cefName)
-      case CType.OutObjectPtr(cefName)         => platformTypes.contains(cefName)
-      case CType.ObjectPtrArray(cefName)       => platformTypes.contains(cefName)
-      case CType.ConstDataStructPtr(cefName)   => platformTypes.contains(cefName)
-      case CType.ByValueIn(cefName)            => platformTypes.contains(cefName)
-      case CType.ByValueOut(cefName)           => platformTypes.contains(cefName)
-      case CType.ByValueArray(cefName)         => platformTypes.contains(cefName)
-      case CType.Enum(cefName)                 => platformTypes.contains(cefName)
-      case CType.DataStruct(cefName)           => platformTypes.contains(cefName)
-      case CType.OutPrimitivePtr(inner)        => typeUsesPlatformType(inner, platformTypes)
-      case CType.CountFuncArray(elem, _, _, _) =>
+      case CType.Ptr(inner)                         => platformTypes.contains(normalizeName(inner))
+      case CType.ObjectPtr(cefName)                 => platformTypes.contains(cefName)
+      case CType.OutObjectPtr(cefName)              => platformTypes.contains(cefName)
+      case CType.ObjectPtrArray(cefName)            => platformTypes.contains(cefName)
+      case CType.ConstDataStructPtr(cefName)        => platformTypes.contains(cefName)
+      case CType.ByValueIn(cefName)                 => platformTypes.contains(cefName)
+      case CType.ByValueOut(cefName)                => platformTypes.contains(cefName)
+      case CType.ByValueArray(cefName)              => platformTypes.contains(cefName)
+      case CType.Enum(cefName)                      => platformTypes.contains(cefName)
+      case CType.DataStruct(cefName)                => platformTypes.contains(cefName)
+      case CType.OutPrimitivePtr(inner)             => typeUsesPlatformType(inner, platformTypes)
+      case CType.CountFuncArray(elementType = elem) =>
         typeUsesPlatformType(elem, platformTypes)
       case _ => false
     }

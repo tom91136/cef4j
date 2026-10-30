@@ -73,7 +73,7 @@ class RuntimeServerProcessTest {
     void closeTerminatesRuntimeServerProcess(@TempDir Path tmp) throws Exception {
         Path script = writeLauncherScript(tmp);
         RuntimeServerProcess server = RuntimeServerProcess.spawn(script, "tcp://127.0.0.1:0");
-        try {
+        try (server) {
             long pid = server.pid();
             assertThat(server.isAlive()).isTrue();
             server.close();
@@ -83,8 +83,6 @@ class RuntimeServerProcessTest {
             assertThat(server.onExit().get(1, TimeUnit.SECONDS))
                     .as("cooperative runtime shutdown should preserve a clean exit code")
                     .isZero();
-        } finally {
-            server.close();
         }
     }
 
@@ -107,7 +105,7 @@ class RuntimeServerProcessTest {
     void closeTerminatesLauncherDescendants(@TempDir Path tmp) throws Exception {
         Path script = writeLauncherScript(tmp, false);
         RuntimeServerProcess server = RuntimeServerProcess.spawn(script, "tcp://127.0.0.1:0");
-        try {
+        try (server) {
             List<ProcessHandle> descendants;
             try (java.util.stream.Stream<ProcessHandle> handles =
                     ProcessHandle.of(server.pid()).orElseThrow().descendants()) {
@@ -120,8 +118,6 @@ class RuntimeServerProcessTest {
             server.close();
 
             assertThat(descendants).noneMatch(ProcessHandle::isAlive);
-        } finally {
-            server.close();
         }
     }
 

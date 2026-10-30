@@ -69,7 +69,7 @@ public final class WebDriverServer implements AutoCloseable {
     private final Map<String, ActiveSession> sessions = new ConcurrentHashMap<>();
     private final Object creationLock = new Object();
     private final AtomicBoolean closed = new AtomicBoolean();
-    private volatile boolean creatingSession;
+    private volatile boolean creatingSession = false;
 
     /** Starts a loopback-only endpoint on an ephemeral port. */
     public static WebDriverServer start(AutomationBackendFactory backendFactory) throws IOException {
@@ -93,6 +93,17 @@ public final class WebDriverServer implements AutoCloseable {
         return start(bindAddress, backendFactory, commandTimeout, WebDriverJsonCodec.installed());
     }
 
+    private static void requireStartArguments(
+            InetSocketAddress bindAddress,
+            AutomationBackendFactory backendFactory,
+            Duration commandTimeout,
+            WebDriverJsonCodec jsonCodec) {
+        Objects.requireNonNull(bindAddress, "bindAddress");
+        Objects.requireNonNull(backendFactory, "backendFactory");
+        Objects.requireNonNull(commandTimeout, "commandTimeout");
+        Objects.requireNonNull(jsonCodec, "jsonCodec");
+    }
+
     /** Starts an endpoint with an explicitly selected JSON codec. */
     public static WebDriverServer start(
             InetSocketAddress bindAddress,
@@ -100,14 +111,11 @@ public final class WebDriverServer implements AutoCloseable {
             Duration commandTimeout,
             WebDriverJsonCodec jsonCodec)
             throws IOException {
-        Objects.requireNonNull(bindAddress, "bindAddress");
-        Objects.requireNonNull(backendFactory, "backendFactory");
-        Objects.requireNonNull(commandTimeout, "commandTimeout");
-        Objects.requireNonNull(jsonCodec, "jsonCodec");
+        requireStartArguments(bindAddress, backendFactory, commandTimeout, jsonCodec);
         if (commandTimeout.isZero() || commandTimeout.isNegative()) {
             throw new IllegalArgumentException("commandTimeout must be positive");
         }
-        ExecutorService workers = Executors.newFixedThreadPool(
+        final ExecutorService workers = Executors.newFixedThreadPool(
                 Math.max(2, Runtime.getRuntime().availableProcessors()), daemonThreads("cef4j-webdriver-http"));
         try {
             return start(bindAddress, backendFactory, commandTimeout, jsonCodec, workers, workers);
@@ -135,16 +143,14 @@ public final class WebDriverServer implements AutoCloseable {
             Executor executor,
             @Nullable ExecutorService ownedExecutor)
             throws IOException {
-        Objects.requireNonNull(bindAddress, "bindAddress");
-        Objects.requireNonNull(backendFactory, "backendFactory");
-        Objects.requireNonNull(commandTimeout, "commandTimeout");
-        Objects.requireNonNull(jsonCodec, "jsonCodec");
+        requireStartArguments(bindAddress, backendFactory, commandTimeout, jsonCodec);
         Objects.requireNonNull(executor, "executor");
         if (commandTimeout.isZero() || commandTimeout.isNegative()) {
             throw new IllegalArgumentException("commandTimeout must be positive");
         }
-        HttpServer http = HttpServer.create(bindAddress, DEFAULT_BACKLOG);
-        WebDriverServer result = new WebDriverServer(http, ownedExecutor, backendFactory, commandTimeout, jsonCodec);
+        final HttpServer http = HttpServer.create(bindAddress, DEFAULT_BACKLOG);
+        final WebDriverServer result =
+                new WebDriverServer(http, ownedExecutor, backendFactory, commandTimeout, jsonCodec);
         try {
             http.createContext("/", result::handle);
             http.setExecutor(executor);
@@ -171,7 +177,7 @@ public final class WebDriverServer implements AutoCloseable {
 
     /** Base URI consumed by Selenium's RemoteWebDriver. */
     public URI endpoint() {
-        InetSocketAddress address = server.getAddress();
+        final InetSocketAddress address = server.getAddress();
         String host = address.getAddress().getHostAddress();
         if (host.indexOf(':') >= 0) host = "[" + host + "]";
         return URI.create("http://" + host + ":" + address.getPort());
@@ -196,12 +202,12 @@ public final class WebDriverServer implements AutoCloseable {
     }
 
     private void route(HttpExchange exchange) throws IOException {
-        String method = exchange.getRequestMethod();
-        String path = exchange.getRequestURI().getPath();
-        WebDriverRoute.Match route = WebDriverRoute.match(method, path)
+        final String method = exchange.getRequestMethod();
+        final String path = exchange.getRequestURI().getPath();
+        final WebDriverRoute.Match route = WebDriverRoute.match(method, path)
                 .orElseThrow(() -> error(WebDriverError.UNKNOWN_COMMAND, "unknown command: " + method + " " + path));
         if (route.command() == WebDriverRoute.Command.STATUS) {
-            JsonObject status = new JsonObject();
+            final JsonObject status = new JsonObject();
             status.addProperty("ready", !closed.get() && !creatingSession && sessions.isEmpty());
             status.addProperty("message", sessions.isEmpty() ? "cef4j WebDriver is ready" : "a session is active");
             sendSuccess(exchange, status);
@@ -211,8 +217,8 @@ public final class WebDriverServer implements AutoCloseable {
             createSession(exchange, parseObjectBody(exchange));
             return;
         }
-        String sessionId = route.parameter("session");
-        ActiveSession session = sessions.get(sessionId);
+        final String sessionId = route.parameter("session");
+        final ActiveSession session = sessions.get(sessionId);
         if (session == null) {
             throw error(WebDriverError.INVALID_SESSION_ID, "unknown session: " + sessionId);
         }
@@ -226,7 +232,7 @@ public final class WebDriverServer implements AutoCloseable {
     }
 
     private void createSession(HttpExchange exchange, JsonObject body) throws IOException {
-        List<JsonObject> candidates = matchCapabilities(body);
+        final List<JsonObject> candidates = matchCapabilities(body);
         synchronized (creationLock) {
             if (closed.get() || creatingSession || !sessions.isEmpty()) {
                 throw error(WebDriverError.SESSION_NOT_CREATED, "this endpoint already owns an active session");
@@ -250,15 +256,15 @@ public final class WebDriverServer implements AutoCloseable {
                             failure);
                 }
                 try {
-                    backend = await(creation, WebDriverError.SESSION_NOT_CREATED, commandTimeout, false, null);
+                    backend = awaitUncancelled(creation, WebDriverError.SESSION_NOT_CREATED, commandTimeout);
                 } catch (RuntimeException failure) {
-                    CompletableFuture<?> cleanup = creation.whenComplete((lateBackend, ignored) -> {
+                    final CompletableFuture<?> cleanup = creation.whenComplete((lateBackend, ignored) -> {
                         if (lateBackend != null) closeQuietly(lateBackend);
                     });
                     cleanup.isDone();
                     throw failure;
                 }
-                JsonObject actual = normalizeActualCapabilities(candidate, backend.capabilities());
+                final JsonObject actual = normalizeActualCapabilities(candidate, backend.capabilities());
                 if (matchesRequestedCapabilities(candidate, actual)) {
                     requested = candidate;
                     break;
@@ -272,9 +278,9 @@ public final class WebDriverServer implements AutoCloseable {
                 backend.close();
                 throw error(WebDriverError.SESSION_NOT_CREATED, "WebDriver server closed during session creation");
             }
-            String id = UUID.randomUUID().toString();
-            JsonObject actual = normalizeActualCapabilities(requested, backend.capabilities());
-            ActiveSession active = new ActiveSession(id, backend, actual.object("timeouts"));
+            final String id = UUID.randomUUID().toString();
+            final JsonObject actual = normalizeActualCapabilities(requested, backend.capabilities());
+            final ActiveSession active = new ActiveSession(id, backend, actual.object("timeouts"));
             sessions.put(id, active);
             backend = null;
             if (closed.get() && sessions.remove(id, active)) {
@@ -282,7 +288,7 @@ public final class WebDriverServer implements AutoCloseable {
                 throw error(WebDriverError.SESSION_NOT_CREATED, "WebDriver server closed during session creation");
             }
 
-            JsonObject value = new JsonObject();
+            final JsonObject value = new JsonObject();
             value.addProperty("sessionId", id);
             value.add("capabilities", actual);
             try {
@@ -301,14 +307,14 @@ public final class WebDriverServer implements AutoCloseable {
 
     private void routeSessionCommand(HttpExchange exchange, WebDriverRoute.Match route, ActiveSession session)
             throws IOException {
-        AutomationBackend backend = session.backend;
+        final AutomationBackend backend = session.backend;
         switch (route.command()) {
             case CURRENT_URL:
                 sendSuccess(exchange, string(command(session, backend::currentUrl)));
                 return;
             case NAVIGATE:
-                JsonObject body = parseObjectBody(exchange);
-                String url = requiredString(body, "url");
+                final JsonObject body = parseObjectBody(exchange);
+                final String url = requiredString(body, "url");
                 command(session, "pageLoad", () -> backend.navigate(url));
                 sendSuccess(exchange, JsonNull.INSTANCE);
                 return;
@@ -319,13 +325,13 @@ public final class WebDriverServer implements AutoCloseable {
                 sendSuccess(exchange, string(command(session, backend::pageSource)));
                 return;
             case SCREENSHOT:
-                byte[] png = command(session, backend::screenshot);
+                final byte[] png = command(session, backend::screenshot);
                 sendSuccess(exchange, string(Base64.getEncoder().encodeToString(png)));
                 return;
             case EXECUTE_SCRIPT:
-                JsonObject scriptBody = parseObjectBody(exchange);
-                String script = requiredString(scriptBody, "script");
-                JsonArray arguments = requiredArray(scriptBody, "args");
+                final JsonObject scriptBody = parseObjectBody(exchange);
+                final String script = requiredString(scriptBody, "script");
+                final JsonArray arguments = requiredArray(scriptBody, "args");
                 sendSuccess(
                         exchange,
                         command(session, "script", () -> backend.executeScript(script, arguments.deepCopy())));
@@ -349,7 +355,7 @@ public final class WebDriverServer implements AutoCloseable {
                 sendSuccess(exchange, session.timeouts());
                 return;
             case SET_TIMEOUTS:
-                JsonObject timeouts = parseObjectBody(exchange);
+                final JsonObject timeouts = parseObjectBody(exchange);
                 validateTimeouts(timeouts);
                 session.updateTimeouts(timeouts);
                 sendSuccess(exchange, JsonNull.INSTANCE);
@@ -358,7 +364,7 @@ public final class WebDriverServer implements AutoCloseable {
                 sendSuccess(exchange, command(session, backend::cookies));
                 return;
             case ADD_COOKIE:
-                JsonObject cookieBody = parseObjectBody(exchange);
+                final JsonObject cookieBody = parseObjectBody(exchange);
                 command(
                         session,
                         () -> backend.addCookie(
@@ -378,14 +384,14 @@ public final class WebDriverServer implements AutoCloseable {
                 return;
             case FIND_ELEMENT:
             case FIND_ELEMENTS:
-                findElements(exchange, route.command(), session, backend, Optional.empty());
+                findElements(exchange, route.command(), session, backend, null);
                 return;
             case ACTIVE_ELEMENT:
                 sendSuccess(exchange, elementReference(command(session, backend::activeElement)));
                 return;
             case FIND_CHILD_ELEMENT:
             case FIND_CHILD_ELEMENTS:
-                findElements(exchange, route.command(), session, backend, Optional.of(route.parameter("element")));
+                findElements(exchange, route.command(), session, backend, route.parameter("element"));
                 return;
             case ELEMENT_NAME:
                 sendSuccess(
@@ -423,7 +429,7 @@ public final class WebDriverServer implements AutoCloseable {
                 sendSuccess(exchange, JsonNull.INSTANCE);
                 return;
             case ELEMENT_VALUE:
-                JsonObject valueBody = parseObjectBody(exchange);
+                final JsonObject valueBody = parseObjectBody(exchange);
                 command(
                         session,
                         () -> backend.elementSendKeys(route.parameter("element"), requiredString(valueBody, "text")));
@@ -460,11 +466,11 @@ public final class WebDriverServer implements AutoCloseable {
             WebDriverRoute.Command route,
             ActiveSession session,
             AutomationBackend backend,
-            Optional<String> parent)
+            @Nullable String parent)
             throws IOException {
-        JsonObject body = parseObjectBody(exchange);
-        String using = requiredString(body, "using");
-        String value = requiredString(body, "value");
+        final JsonObject body = parseObjectBody(exchange);
+        final String using = requiredString(body, "using");
+        final String value = requiredString(body, "value");
         if (route == WebDriverRoute.Command.FIND_ELEMENT || route == WebDriverRoute.Command.FIND_CHILD_ELEMENT) {
             sendSuccess(
                     exchange, elementReference(findElementWithImplicitWait(session, backend, using, value, parent)));
@@ -475,13 +481,13 @@ public final class WebDriverServer implements AutoCloseable {
     }
 
     private static JsonObject elementReference(String id) {
-        JsonObject reference = new JsonObject();
+        final JsonObject reference = new JsonObject();
         reference.addProperty(ELEMENT_KEY, id);
         return reference;
     }
 
     private static JsonArray elementReferences(java.util.List<String> ids) {
-        JsonArray references = new JsonArray();
+        final JsonArray references = new JsonArray();
         for (String id : ids) references.add(elementReference(id));
         return references;
     }
@@ -491,22 +497,26 @@ public final class WebDriverServer implements AutoCloseable {
     }
 
     private String findElementWithImplicitWait(
-            ActiveSession session, AutomationBackend backend, String using, String value, Optional<String> parent) {
-        java.util.List<String> found = findElementsWithImplicitWait(session, backend, using, value, parent);
+            ActiveSession session, AutomationBackend backend, String using, String value, @Nullable String parent) {
+        final java.util.List<String> found = findElementsWithImplicitWait(session, backend, using, value, parent);
         if (found.isEmpty()) throw error(WebDriverError.NO_SUCH_ELEMENT, "unable to locate element: " + value);
         return found.get(0);
     }
 
     private java.util.List<String> findElementsWithImplicitWait(
-            ActiveSession session, AutomationBackend backend, String using, String value, Optional<String> parent) {
-        long timeoutMillis = session.timeoutMillis("implicit");
-        long started = System.nanoTime();
-        long timeoutNanos = TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
+            ActiveSession session, AutomationBackend backend, String using, String value, @Nullable String parent) {
+        final long timeoutMillis = session.timeoutMillis("implicit");
+        final long started = System.nanoTime();
+        final long timeoutNanos = TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
         do {
-            java.util.List<String> found = command(session, () -> backend.findElements(using, value, parent));
+            final java.util.List<String> found = command(
+                    session,
+                    () -> parent == null
+                            ? backend.findElements(using, value)
+                            : backend.findElements(using, value, parent));
             if (!found.isEmpty() || System.nanoTime() - started >= timeoutNanos) return found;
             try {
-                Thread.sleep(Math.min(50L, Math.max(1L, timeoutMillis)));
+                TimeUnit.MILLISECONDS.sleep(Math.min(50L, Math.max(1L, timeoutMillis)));
             } catch (InterruptedException failure) {
                 Thread.currentThread().interrupt();
                 throw new WebDriverException(WebDriverError.UNKNOWN_ERROR, "element search interrupted", failure);
@@ -524,13 +534,9 @@ public final class WebDriverServer implements AutoCloseable {
             if (session.closed.get() || sessions.get(session.id) != session) {
                 throw error(WebDriverError.INVALID_SESSION_ID, "session is closed: " + session.id);
             }
-            Duration timeout = timeoutName == null ? commandTimeout : session.timeout(timeoutName);
+            final Duration timeout = timeoutName == null ? commandTimeout : session.timeout(timeoutName);
             return await(
-                    operation.get(),
-                    WebDriverError.UNKNOWN_ERROR,
-                    timeout,
-                    true,
-                    session.backend::cancelPendingCommands);
+                    operation.get(), WebDriverError.UNKNOWN_ERROR, timeout, session.backend::cancelPendingCommands);
         }
     }
 
@@ -538,15 +544,29 @@ public final class WebDriverServer implements AutoCloseable {
             CompletableFuture<? extends T> future,
             WebDriverError fallback,
             Duration timeout,
-            boolean cancelOnTimeout,
+            java.util.function.@Nullable Consumer<Throwable> pendingCancellation) {
+        return await(future, fallback, timeout, () -> future.cancel(true), pendingCancellation);
+    }
+
+    /** Waits for a future the build does not own, so a timeout leaves it to finish on its own. */
+    private static <T> T awaitUncancelled(
+            CompletableFuture<? extends T> future, WebDriverError fallback, Duration timeout) {
+        return await(future, fallback, timeout, null, null);
+    }
+
+    private static <T> T await(
+            CompletableFuture<? extends T> future,
+            WebDriverError fallback,
+            Duration timeout,
+            java.lang.@Nullable Runnable cancelOnTimeout,
             java.util.function.@Nullable Consumer<Throwable> pendingCancellation) {
         Objects.requireNonNull(future, "backend returned null future");
         try {
             return future.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
-            WebDriverException failure =
+            final WebDriverException failure =
                     new WebDriverException(WebDriverError.TIMEOUT, "command exceeded " + timeout, e);
-            if (cancelOnTimeout) future.cancel(true);
+            if (cancelOnTimeout != null) cancelOnTimeout.run();
             if (pendingCancellation != null) pendingCancellation.accept(failure);
             throw failure;
         } catch (InterruptedException e) {
@@ -563,41 +583,37 @@ public final class WebDriverServer implements AutoCloseable {
     }
 
     private static String describe(Throwable failure) {
-        Throwable current = failure;
-        String description = current.getClass().getSimpleName();
-        while (current != null) {
-            if (current.getMessage() != null && !current.getMessage().isBlank()) {
-                description = current.getClass().getSimpleName() + ": " + current.getMessage();
-            }
-            current = current.getCause();
+        Throwable described = null;
+        for (Throwable current = failure; current != null; current = current.getCause()) {
+            if (current.getMessage() != null && !current.getMessage().isBlank()) described = current;
         }
-        return description;
+        if (described == null) return failure.getClass().getSimpleName();
+        return described.getClass().getSimpleName() + ": " + described.getMessage();
     }
 
     private static List<JsonObject> matchCapabilities(JsonObject body) {
-        JsonElement capabilitiesElement = body.get("capabilities");
-        if (capabilitiesElement == null || !capabilitiesElement.isObject()) {
-            throw error(WebDriverError.INVALID_ARGUMENT, "capabilities must be a JSON object");
-        }
-        JsonObject capabilities = capabilitiesElement.asObject();
-        JsonObject always = optionalObject(capabilities, "alwaysMatch", new JsonObject());
-        JsonArray first = optionalArray(capabilities, "firstMatch");
-        if (first == null) {
-            first = new JsonArray();
-            first.add(new JsonObject());
-        }
-        if (first.size() == 0) {
+        final JsonObject capabilities = body.get("capabilities")
+                .filter(JsonElement::isObject)
+                .orElseThrow(() -> error(WebDriverError.INVALID_ARGUMENT, "capabilities must be a JSON object"))
+                .asObject();
+        final JsonObject always = optionalObject(capabilities, "alwaysMatch", new JsonObject());
+        final JsonArray first = optionalArray(capabilities, "firstMatch").orElseGet(() -> {
+            final JsonArray defaultMatch = new JsonArray();
+            defaultMatch.add(new JsonObject());
+            return defaultMatch;
+        });
+        if (first.isEmpty()) {
             throw error(WebDriverError.INVALID_ARGUMENT, "firstMatch must contain at least one entry");
         }
         validateCapabilityObject(always);
-        List<JsonObject> matches = new ArrayList<>();
+        final List<JsonObject> matches = new ArrayList<>();
         for (JsonElement candidateElement : first) {
             if (!candidateElement.isObject()) {
                 throw error(WebDriverError.INVALID_ARGUMENT, "firstMatch entries must be JSON objects");
             }
-            JsonObject candidate = candidateElement.asObject();
+            final JsonObject candidate = candidateElement.asObject();
             validateCapabilityObject(candidate);
-            JsonObject merged = always.deepCopy();
+            final JsonObject merged = always.deepCopy();
             boolean conflict = false;
             for (Map.Entry<String, JsonElement> entry : candidate.entrySet()) {
                 if (merged.has(entry.getKey())) {
@@ -618,16 +634,17 @@ public final class WebDriverServer implements AutoCloseable {
     }
 
     private static boolean matchesCef4j(JsonObject capabilities) {
-        JsonElement browserName = capabilities.get("browserName");
-        return browserName == null
-                || (browserName.isPrimitive()
+        return capabilities
+                .get("browserName")
+                .map(browserName -> browserName.isPrimitive()
                         && browserName.asPrimitive().isString()
-                        && "cef4j".equals(browserName.string()));
+                        && "cef4j".equals(browserName.string()))
+                .orElse(true);
     }
 
     private static void validateCapabilityObject(JsonObject capabilities) {
         for (Map.Entry<String, JsonElement> entry : capabilities.entrySet()) {
-            String name = entry.getKey();
+            final String name = entry.getKey();
             if (!STANDARD_CAPABILITIES.contains(name) && name.indexOf(':') < 1) {
                 throw error(WebDriverError.INVALID_ARGUMENT, "unrecognized capability: " + name);
             }
@@ -639,30 +656,27 @@ public final class WebDriverServer implements AutoCloseable {
         requireOptionalBoolean(capabilities, "setWindowRect");
         requireOptionalBoolean(capabilities, "strictFileInteractability");
         requireOptionalBoolean(capabilities, "webSocketUrl");
-        JsonElement proxy = capabilities.get("proxy");
-        if (proxy != null && !proxy.isObject()) {
-            throw error(WebDriverError.INVALID_ARGUMENT, "proxy must be a JSON object");
-        }
+        capabilities.get("proxy").ifPresent(proxy -> {
+            if (!proxy.isObject()) throw error(WebDriverError.INVALID_ARGUMENT, "proxy must be a JSON object");
+        });
         requireOptionalString(capabilities, "unhandledPromptBehavior");
-        JsonElement strategy = capabilities.get("pageLoadStrategy");
-        if (strategy != null) {
+        capabilities.get("pageLoadStrategy").ifPresent(strategy -> {
             if (!strategy.isPrimitive() || !strategy.asPrimitive().isString()) {
                 throw error(WebDriverError.INVALID_ARGUMENT, "pageLoadStrategy must be a string");
             }
-            String value = strategy.string();
+            final String value = strategy.string();
             if (!"none".equals(value) && !"eager".equals(value) && !"normal".equals(value)) {
                 throw error(WebDriverError.INVALID_ARGUMENT, "invalid pageLoadStrategy: " + value);
             }
-        }
-        JsonElement timeouts = capabilities.get("timeouts");
-        if (timeouts != null) validateTimeouts(timeouts);
+        });
+        capabilities.get("timeouts").ifPresent(WebDriverServer::validateTimeouts);
     }
 
     private static void validateTimeouts(JsonElement element) {
         if (!element.isObject()) {
             throw error(WebDriverError.INVALID_ARGUMENT, "timeouts must be a JSON object");
         }
-        Set<String> known = new HashSet<>();
+        final Set<String> known = new HashSet<>();
         known.add("implicit");
         known.add("pageLoad");
         known.add("script");
@@ -670,7 +684,7 @@ public final class WebDriverServer implements AutoCloseable {
             if (!known.contains(entry.getKey())) {
                 throw error(WebDriverError.INVALID_ARGUMENT, "unknown timeout: " + entry.getKey());
             }
-            JsonElement value = entry.getValue();
+            final JsonElement value = entry.getValue();
             if (!value.isPrimitive() || !value.asPrimitive().isNumber() || !isNonNegativeLong(value.asPrimitive())) {
                 throw error(
                         WebDriverError.INVALID_ARGUMENT, "timeout must be a non-negative integer: " + entry.getKey());
@@ -688,28 +702,39 @@ public final class WebDriverServer implements AutoCloseable {
 
     private static boolean matchesRequestedCapabilities(JsonObject requested, JsonObject actual) {
         for (String name : List.of("browserName", "browserVersion", "platformName", "pageLoadStrategy")) {
-            JsonElement expected = requested.get(name);
-            if (expected != null && !samePrimitive(expected, actual.get(name))) return false;
+            if (requested
+                    .get(name)
+                    .filter(expected -> !samePrimitive(expected, actual, name))
+                    .isPresent()) {
+                return false;
+            }
         }
         for (String name : List.of("acceptInsecureCerts", "setWindowRect", "strictFileInteractability")) {
-            JsonElement expected = requested.get(name);
-            if (expected != null) {
-                JsonElement supplied = actual.get(name);
-                boolean actualValue = supplied != null && supplied.booleanValue();
-                if (expected.booleanValue() != actualValue) return false;
+            final boolean actualValue =
+                    actual.get(name).map(JsonElement::booleanValue).orElse(false);
+            if (requested
+                    .get(name)
+                    .filter(expected -> expected.booleanValue() != actualValue)
+                    .isPresent()) {
+                return false;
             }
         }
         if (requested.has("proxy") || requested.has("unhandledPromptBehavior")) return false;
-        JsonElement webSocketUrl = requested.get("webSocketUrl");
-        return webSocketUrl == null || !webSocketUrl.booleanValue() || actual.has("webSocketUrl");
+        return requested
+                .get("webSocketUrl")
+                .map(webSocketUrl -> !webSocketUrl.booleanValue() || actual.has("webSocketUrl"))
+                .orElse(true);
     }
 
-    private static boolean samePrimitive(JsonElement expected, @Nullable JsonElement actual) {
-        return actual != null && actual.isPrimitive() && expected.string().equals(actual.string());
+    private static boolean samePrimitive(JsonElement expected, JsonObject actual, String name) {
+        return actual.get(name)
+                .filter(JsonElement::isPrimitive)
+                .filter(value -> expected.string().equals(value.string()))
+                .isPresent();
     }
 
     private static JsonObject normalizeActualCapabilities(JsonObject requested, JsonObject supplied) {
-        JsonObject result =
+        final JsonObject result =
                 Objects.requireNonNull(supplied, "backend capabilities").deepCopy();
         if (!result.has("browserName")) result.addProperty("browserName", "cef4j");
         if (!result.has("platformName")) {
@@ -718,32 +743,31 @@ public final class WebDriverServer implements AutoCloseable {
         }
         if (!result.has("acceptInsecureCerts")) result.addProperty("acceptInsecureCerts", false);
         if (!result.has("pageLoadStrategy")) {
-            JsonElement requestedStrategy = requested.get("pageLoadStrategy");
-            result.addProperty("pageLoadStrategy", requestedStrategy == null ? "normal" : requestedStrategy.string());
+            result.addProperty(
+                    "pageLoadStrategy",
+                    requested.get("pageLoadStrategy").map(JsonElement::string).orElse("normal"));
         }
         if (!result.has("setWindowRect")) result.addProperty("setWindowRect", false);
-        JsonObject timeouts = ActiveSession.defaultTimeouts();
-        JsonElement requestedTimeouts = requested.get("timeouts");
-        if (requestedTimeouts != null) {
+        final JsonObject timeouts = ActiveSession.defaultTimeouts();
+        requested.get("timeouts").ifPresent(requestedTimeouts -> {
             for (Map.Entry<String, JsonElement> entry :
                     requestedTimeouts.asObject().entrySet())
                 timeouts.add(entry.getKey(), entry.getValue().deepCopy());
-        }
-        JsonElement suppliedTimeouts = result.get("timeouts");
-        if (suppliedTimeouts != null) {
+        });
+        result.get("timeouts").ifPresent(suppliedTimeouts -> {
             validateTimeouts(suppliedTimeouts);
             for (Map.Entry<String, JsonElement> entry :
                     suppliedTimeouts.asObject().entrySet())
                 timeouts.add(entry.getKey(), entry.getValue().deepCopy());
-        }
+        });
         result.add("timeouts", timeouts);
         return result;
     }
 
     private JsonObject parseObjectBody(HttpExchange exchange) throws IOException {
-        byte[] bytes = readBody(exchange);
+        final byte[] bytes = readBody(exchange);
         try {
-            JsonElement parsed = jsonCodec.decode(bytes);
+            final JsonElement parsed = jsonCodec.decode(bytes);
             if (!parsed.isObject()) {
                 throw error(WebDriverError.INVALID_ARGUMENT, "request body must be a JSON object");
             }
@@ -754,10 +778,10 @@ public final class WebDriverServer implements AutoCloseable {
     }
 
     private static byte[] readBody(HttpExchange exchange) throws IOException {
-        String lengthHeader = exchange.getRequestHeaders().getFirst("Content-Length");
+        final String lengthHeader = exchange.getRequestHeaders().getFirst("Content-Length");
         if (lengthHeader != null) {
             try {
-                long length = Long.parseLong(lengthHeader);
+                final long length = Long.parseLong(lengthHeader);
                 if (length < 0 || length > MAX_REQUEST_BYTES) {
                     throw error(
                             WebDriverError.INVALID_ARGUMENT, "request body exceeds " + MAX_REQUEST_BYTES + " bytes");
@@ -768,7 +792,7 @@ public final class WebDriverServer implements AutoCloseable {
         }
         try (InputStream input = exchange.getRequestBody();
                 ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-            byte[] buffer = new byte[8192];
+            final byte[] buffer = new byte[8192];
             int total = 0;
             int read;
             while ((read = input.read(buffer)) >= 0) {
@@ -784,56 +808,56 @@ public final class WebDriverServer implements AutoCloseable {
     }
 
     private static String requiredString(JsonObject object, String name) {
-        JsonElement value = object.get(name);
-        if (value == null || !value.isPrimitive() || !value.asPrimitive().isString()) {
-            throw error(WebDriverError.INVALID_ARGUMENT, name + " must be a string");
-        }
-        return value.string();
+        return object.get(name)
+                .filter(value -> value.isPrimitive() && value.asPrimitive().isString())
+                .orElseThrow(() -> error(WebDriverError.INVALID_ARGUMENT, name + " must be a string"))
+                .string();
     }
 
     private static JsonArray requiredArray(JsonObject object, String name) {
-        JsonElement value = object.get(name);
-        if (value == null || !value.isArray()) {
-            throw error(WebDriverError.INVALID_ARGUMENT, name + " must be an array");
-        }
-        return value.asArray();
+        return object.get(name)
+                .filter(JsonElement::isArray)
+                .orElseThrow(() -> error(WebDriverError.INVALID_ARGUMENT, name + " must be an array"))
+                .asArray();
     }
 
     private static JsonObject requiredObject(JsonObject object, String name) {
-        JsonElement value = object.get(name);
-        if (value == null || !value.isObject()) {
-            throw error(WebDriverError.INVALID_ARGUMENT, name + " must be an object");
-        }
-        return value.asObject();
+        return object.get(name)
+                .filter(JsonElement::isObject)
+                .orElseThrow(() -> error(WebDriverError.INVALID_ARGUMENT, name + " must be an object"))
+                .asObject();
     }
 
     private static JsonObject optionalObject(JsonObject object, String name, JsonObject fallback) {
-        JsonElement value = object.get(name);
-        if (value == null) return fallback;
-        if (!value.isObject()) throw error(WebDriverError.INVALID_ARGUMENT, name + " must be an object");
-        return value.asObject();
+        return object.get(name)
+                .map(value -> {
+                    if (!value.isObject()) throw error(WebDriverError.INVALID_ARGUMENT, name + " must be an object");
+                    return value.asObject();
+                })
+                .orElse(fallback);
     }
 
-    @Nullable
-    private static JsonArray optionalArray(JsonObject object, String name) {
-        JsonElement value = object.get(name);
-        if (value == null) return null;
-        if (!value.isArray()) throw error(WebDriverError.INVALID_ARGUMENT, name + " must be an array");
-        return value.asArray();
+    private static Optional<JsonArray> optionalArray(JsonObject object, String name) {
+        return object.get(name).map(value -> {
+            if (!value.isArray()) throw error(WebDriverError.INVALID_ARGUMENT, name + " must be an array");
+            return value.asArray();
+        });
     }
 
     private static void requireOptionalString(JsonObject object, String name) {
-        JsonElement value = object.get(name);
-        if (value != null && (!value.isPrimitive() || !value.asPrimitive().isString())) {
-            throw error(WebDriverError.INVALID_ARGUMENT, name + " must be a string");
-        }
+        object.get(name).ifPresent(value -> {
+            if (!value.isPrimitive() || !value.asPrimitive().isString()) {
+                throw error(WebDriverError.INVALID_ARGUMENT, name + " must be a string");
+            }
+        });
     }
 
     private static void requireOptionalBoolean(JsonObject object, String name) {
-        JsonElement value = object.get(name);
-        if (value != null && (!value.isPrimitive() || !value.asPrimitive().isBoolean())) {
-            throw error(WebDriverError.INVALID_ARGUMENT, name + " must be a boolean");
-        }
+        object.get(name).ifPresent(value -> {
+            if (!value.isPrimitive() || !value.asPrimitive().isBoolean()) {
+                throw error(WebDriverError.INVALID_ARGUMENT, name + " must be a boolean");
+            }
+        });
     }
 
     private static JsonElement string(String value) {
@@ -841,27 +865,27 @@ public final class WebDriverServer implements AutoCloseable {
     }
 
     private void sendSuccess(HttpExchange exchange, JsonElement value) throws IOException {
-        JsonObject envelope = new JsonObject();
+        final JsonObject envelope = new JsonObject();
         envelope.add("value", value);
         sendJson(exchange, 200, envelope);
     }
 
     private void sendError(HttpExchange exchange, WebDriverError error, String message) {
-        JsonObject value = new JsonObject();
+        final JsonObject value = new JsonObject();
         value.addProperty("error", error.code());
         value.addProperty("message", message);
         value.addProperty("stacktrace", "");
-        JsonObject envelope = new JsonObject();
+        final JsonObject envelope = new JsonObject();
         envelope.add("value", value);
         try {
             sendJson(exchange, error.httpStatus(), envelope);
-        } catch (IOException ignored) {
-            LOG.debug("Failed to send WebDriver error response", ignored);
+        } catch (IOException failure) {
+            LOG.debug("Failed to send WebDriver error response", failure);
         }
     }
 
     private void sendJson(HttpExchange exchange, int status, JsonObject body) throws IOException {
-        byte[] bytes = jsonCodec.encode(body);
+        final byte[] bytes = jsonCodec.encode(body);
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
         exchange.getResponseHeaders().set("Cache-Control", "no-store");
         exchange.sendResponseHeaders(status, bytes.length);
@@ -873,9 +897,9 @@ public final class WebDriverServer implements AutoCloseable {
     }
 
     private static ThreadFactory daemonThreads(String prefix) {
-        AtomicInteger sequence = new AtomicInteger();
+        final AtomicInteger sequence = new AtomicInteger();
         return task -> {
-            Thread thread = new Thread(task, prefix + "-" + sequence.incrementAndGet());
+            final Thread thread = new Thread(task, prefix + "-" + sequence.incrementAndGet());
             thread.setDaemon(true);
             return thread;
         };
@@ -912,7 +936,7 @@ public final class WebDriverServer implements AutoCloseable {
         }
 
         private static JsonObject defaultTimeouts() {
-            JsonObject result = new JsonObject();
+            final JsonObject result = new JsonObject();
             result.addProperty("implicit", 0);
             result.addProperty("pageLoad", 300000);
             result.addProperty("script", 30000);
@@ -921,14 +945,17 @@ public final class WebDriverServer implements AutoCloseable {
 
         private Duration timeout(String name) {
             synchronized (commandLock) {
-                return Duration.ofMillis(
-                        Objects.requireNonNull(timeouts.get(name), name).longValue());
+                return Duration.ofMillis(timeouts.get(name)
+                        .orElseThrow(() -> new NullPointerException(name))
+                        .longValue());
             }
         }
 
         private long timeoutMillis(String name) {
             synchronized (commandLock) {
-                return Objects.requireNonNull(timeouts.get(name), name).longValue();
+                return timeouts.get(name)
+                        .orElseThrow(() -> new NullPointerException(name))
+                        .longValue();
             }
         }
 

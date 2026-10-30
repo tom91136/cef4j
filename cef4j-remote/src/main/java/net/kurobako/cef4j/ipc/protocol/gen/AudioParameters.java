@@ -3,7 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
@@ -11,6 +11,7 @@ import net.kurobako.cef4j.ipc.session.WireDecoder;
  * to facade methods (or factory requests) that take this struct. The dispatcher decodes them on the
  * runtime-server side and fills the matching {@code cef_audio_parameters_t} before invoking CEF.
  */
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class AudioParameters {
 
     private final long size;
@@ -41,12 +42,13 @@ public final class AudioParameters {
         return framesPerBuffer;
     }
 
+    @SuppressWarnings("SameReturnValue")
     public int encodedSize() {
         return 20;
     }
 
     public void encodeInto(ByteBuffer dst) {
-        ByteOrder originalOrder = dst.order();
+        final ByteOrder originalOrder = dst.order();
         try {
             dst.order(ByteOrder.LITTLE_ENDIAN);
             dst.putLong(size);
@@ -64,14 +66,10 @@ public final class AudioParameters {
       * configured the buffer.
       */
     public static AudioParameters decode(ByteBuffer __buf) {
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "size");
-        long size = __buf.getLong();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "channelLayout");
-        int channelLayout = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "sampleRate");
-        int sampleRate = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "framesPerBuffer");
-        int framesPerBuffer = __buf.getInt();
+        final long size = WireDecoder.int64(__buf, "size");
+        final int channelLayout = WireDecoder.int32(__buf, "channelLayout");
+        final int sampleRate = WireDecoder.int32(__buf, "sampleRate");
+        final int framesPerBuffer = WireDecoder.int32(__buf, "framesPerBuffer");
         return new AudioParameters(size, channelLayout, sampleRate, framesPerBuffer);
     }
 
@@ -82,28 +80,28 @@ public final class AudioParameters {
     /** Lombok-style builder. */
     public static final class Builder {
 
-        private long size = 0L;
-        private int channelLayout = 0;
-        private int sampleRate = 0;
-        private int framesPerBuffer = 0;
+        private long size;
+        private int channelLayout;
+        private int sampleRate;
+        private int framesPerBuffer;
 
-        public Builder size(long size) {
-            this.size = size;
+        public Builder size(long value) {
+            this.size = value;
             return this;
         }
 
-        public Builder channelLayout(int channelLayout) {
-            this.channelLayout = channelLayout;
+        public Builder channelLayout(int value) {
+            this.channelLayout = value;
             return this;
         }
 
-        public Builder sampleRate(int sampleRate) {
-            this.sampleRate = sampleRate;
+        public Builder sampleRate(int value) {
+            this.sampleRate = value;
             return this;
         }
 
-        public Builder framesPerBuffer(int framesPerBuffer) {
-            this.framesPerBuffer = framesPerBuffer;
+        public Builder framesPerBuffer(int value) {
+            this.framesPerBuffer = value;
             return this;
         }
 

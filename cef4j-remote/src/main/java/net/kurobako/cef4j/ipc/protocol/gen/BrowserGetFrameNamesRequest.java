@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class BrowserGetFrameNamesRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 240432539;
@@ -42,13 +44,13 @@ public final class BrowserGetFrameNamesRequest implements CefMessageView, CefMes
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
             __dst.putInt(names.length);
-            for (String __s : names) {
-                byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
+            for (final String __s : names) {
+                final byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
                 __dst.putInt(__b.length);
                 __dst.put(__b);
             }
@@ -58,18 +60,10 @@ public final class BrowserGetFrameNamesRequest implements CefMessageView, CefMes
     }
 
     public static final CefMessageDecoder<BrowserGetFrameNamesRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int namesCount = WireDecoder.count(__buf, "names");
-        String[] names = new String[namesCount];
-        for (int __i = 0; __i < namesCount; __i++) {
-            int __slen = WireDecoder.length(__buf, "names[" + __i + "]");
-            byte[] __sb = new byte[__slen];
-            __buf.get(__sb);
-            names[__i] = new String(__sb, StandardCharsets.UTF_8);
-        }
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final String[] names = WireDecoder.utf8List(__buf, "names");
         WireDecoder.requireFullyConsumed(__buf, "BrowserGetFrameNamesRequest");
         return new BrowserGetFrameNamesRequest(self, names);
     };

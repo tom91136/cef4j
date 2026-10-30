@@ -3,6 +3,7 @@
 package net.kurobako.cef4j.gen;
 
 import java.nio.ByteBuffer;
+import java.util.Optional;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.policy.NullableBoundary;
 import org.jspecify.annotations.Nullable;
@@ -22,7 +23,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response__filter_8h.html">cef_response_filter.h:43</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefResponseFilter extends CefClientHandler {
 
@@ -85,15 +85,15 @@ public interface CefResponseFilter extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response__filter_8h.html">cef_response_filter.h:59</a>
      */
-    default @Nullable CefResponseFilterStatus filter(
+    default Optional<CefResponseFilterStatus> filter(
             @Nullable ByteBuffer dataIn, long[] dataInRead, ByteBuffer dataOut, long[] dataOutWritten) {
-        return CefResponseFilterStatus.of(net.kurobako.cef4j.gen.CefResponseFilterStatus.Kind.ERROR);
+        return Optional.empty();
     }
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefResponseFilter {
         private final java.util.List<CefResponseFilter> delegates;
@@ -104,7 +104,7 @@ public interface CefResponseFilter extends CefClientHandler {
 
         @Override
         public boolean initFilter() {
-            for (CefResponseFilter d : delegates) {
+            for (final CefResponseFilter d : delegates) {
                 if (d.initFilter()) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -112,10 +112,10 @@ public interface CefResponseFilter extends CefClientHandler {
         }
 
         @Override
-        public @Nullable CefResponseFilterStatus filter(
+        public Optional<CefResponseFilterStatus> filter(
                 @Nullable ByteBuffer dataIn, long[] dataInRead, ByteBuffer dataOut, long[] dataOutWritten) {
             if (!delegates.isEmpty()) return delegates.get(0).filter(dataIn, dataInRead, dataOut, dataOutWritten);
-            return CefResponseFilterStatus.of(net.kurobako.cef4j.gen.CefResponseFilterStatus.Kind.ERROR);
+            return Optional.empty();
         }
     }
 }

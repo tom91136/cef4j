@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import net.kurobako.cef4j.cdp.CdpCodec;
 import org.jspecify.annotations.Nullable;
 
@@ -21,7 +22,7 @@ public final class JacksonCdpCodec implements CdpCodec {
     @Override
     public byte[] encode(Object value) {
         try {
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            final ByteArrayOutputStream output = new ByteArrayOutputStream();
             try (JsonGenerator generator = JSON.createGenerator(output)) {
                 write(generator, value);
             }
@@ -32,11 +33,11 @@ public final class JacksonCdpCodec implements CdpCodec {
     }
 
     @Override
-    public @Nullable Object decode(byte[] json) {
+    public Optional<Object> decode(byte[] json) {
         try (JsonParser parser = JSON.createParser(json)) {
-            JsonToken token = parser.nextToken();
+            final JsonToken token = parser.nextToken();
             if (token == null) throw new IllegalArgumentException("CDP JSON is empty");
-            Object result = read(parser, token);
+            final Optional<Object> result = read(parser, token);
             if (parser.nextToken() != null) throw new IllegalArgumentException("data follows CDP JSON value");
             return result;
         } catch (IOException e) {
@@ -44,39 +45,40 @@ public final class JacksonCdpCodec implements CdpCodec {
         }
     }
 
-    private static @Nullable Object read(JsonParser parser, JsonToken token) throws IOException {
+    private static Optional<Object> read(JsonParser parser, JsonToken token) throws IOException {
         switch (token) {
             case START_OBJECT:
-                Map<String, Object> object = new LinkedHashMap<>();
+                final Map<String, Object> object = new LinkedHashMap<>();
                 while (parser.nextToken() != JsonToken.END_OBJECT) {
-                    String name = parser.currentName();
-                    object.put(name, read(parser, parser.nextToken()));
+                    final String name = parser.currentName();
+                    object.put(name, read(parser, parser.nextToken()).orElse(null));
                 }
-                return object;
+                return Optional.of(object);
             case START_ARRAY:
-                List<Object> array = new ArrayList<>();
+                final List<Object> array = new ArrayList<>();
                 JsonToken item;
-                while ((item = parser.nextToken()) != JsonToken.END_ARRAY) array.add(read(parser, item));
-                return array;
+                while ((item = parser.nextToken()) != JsonToken.END_ARRAY)
+                    array.add(read(parser, item).orElse(null));
+                return Optional.of(array);
             case VALUE_STRING:
-                return parser.getText();
+                return Optional.of(parser.getText());
             case VALUE_TRUE:
-                return true;
+                return Optional.of(true);
             case VALUE_FALSE:
-                return false;
+                return Optional.of(false);
             case VALUE_NUMBER_INT:
-                return parser.getNumberValue();
+                return Optional.of(parser.getNumberValue());
             case VALUE_NUMBER_FLOAT:
-                return new BigDecimal(parser.getText());
+                return Optional.of(new BigDecimal(parser.getText()));
             case VALUE_NULL:
-                return null;
+                return Optional.empty();
             default:
                 throw new IllegalArgumentException("unsupported CDP JSON token " + token);
         }
     }
 
     @SuppressWarnings("unchecked")
-    private static void write(JsonGenerator generator, Object value) throws IOException {
+    private static void write(JsonGenerator generator, @Nullable Object value) throws IOException {
         if (value == null) {
             generator.writeNull();
             return;

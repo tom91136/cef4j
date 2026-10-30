@@ -17,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
@@ -72,7 +71,7 @@ class InProcessWebDriverIntegrationTest {
         CefTestLaunch.setRootCachePath(settings, cacheDir.toAbsolutePath().toString());
         onFxThread(
                 () -> {
-                    CefWebView.initialise(settings, CefTestLaunch.extraArgs(), Optional.empty());
+                    CefWebView.initialise(settings, CefTestLaunch.extraArgs());
                     Platform.setImplicitExit(false);
                 },
                 CEF_STARTUP_TIMEOUT);
@@ -143,14 +142,14 @@ class InProcessWebDriverIntegrationTest {
                                 "created browser");
                         CefWebView view = (CefWebView) created[0];
                         Stage stage = (Stage) created[1];
-                        if (!waitUntil(() -> view.getBrowser() != null, 20_000)) {
+                        if (!waitUntil(() -> view.getBrowser().isPresent(), 20_000)) {
                             onFxThread(() -> {
                                 stage.close();
                                 view.release();
                             });
                             throw new IllegalStateException("CEF browser was not created within 20 seconds");
                         }
-                        CefBrowser browser = Objects.requireNonNull(view.getBrowser(), "view browser");
+                        CefBrowser browser = view.getBrowser().orElseThrow();
                         return new InProcessBrowserRuntime() {
                             @Override
                             public CefBrowser browser() {

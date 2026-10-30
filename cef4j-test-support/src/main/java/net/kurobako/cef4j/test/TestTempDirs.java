@@ -10,19 +10,22 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 // XXX: CEF 150 may retain or recreate Chromium cache files until process exit; remove this hook when every supported
 // platform closes cache handles before JUnit TempDir cleanup.
 public final class TestTempDirs {
     private static final Set<Path> REGISTERED = ConcurrentHashMap.newKeySet();
     static final String OWNERSHIP_MARKER = ".cef4j-test-tempdir";
-    private static volatile boolean hookInstalled;
+    private static volatile boolean hookInstalled = false;
 
     private TestTempDirs() {}
 
-    public static void cleanupAtExit(Path dir) {
+    @NullableBoundary("cleanup is a no-op without a directory")
+    public static void cleanupAtExit(@Nullable Path dir) {
         if (dir == null) return;
-        Path safe = requireSafeTempDirectory(dir);
+        final Path safe = requireSafeTempDirectory(dir);
         REGISTERED.add(safe);
         if (!hookInstalled) {
             synchronized (TestTempDirs.class) {
@@ -40,17 +43,17 @@ public final class TestTempDirs {
             if (Files.isSymbolicLink(dir)) {
                 throw new IllegalArgumentException("cleanup target must not be a symbolic link: " + dir);
             }
-            Path safe = dir.toRealPath();
+            final Path safe = dir.toRealPath();
             if (!Files.isDirectory(safe, LinkOption.NOFOLLOW_LINKS)) {
                 throw new IllegalArgumentException("cleanup target must be a directory: " + safe);
             }
-            Path tempRoot = Path.of(System.getProperty("java.io.tmpdir")).toRealPath();
+            final Path tempRoot = Path.of(System.getProperty("java.io.tmpdir")).toRealPath();
             if (safe.equals(tempRoot) || !safe.startsWith(tempRoot)) {
                 throw new IllegalArgumentException("cleanup target must be below the system temp directory: " + safe);
             }
             rejectBroadTarget(safe, Path.of(System.getProperty("user.home", ".")));
             rejectBroadTarget(safe, Path.of(System.getProperty("user.dir", ".")));
-            Path marker = safe.resolve(OWNERSHIP_MARKER);
+            final Path marker = safe.resolve(OWNERSHIP_MARKER);
             if (!Files.exists(marker, LinkOption.NOFOLLOW_LINKS)) {
                 Files.writeString(marker, "owned by cef4j test cleanup\n", StandardOpenOption.CREATE_NEW);
             }
@@ -65,7 +68,7 @@ public final class TestTempDirs {
 
     private static void rejectBroadTarget(Path safe, Path protectedPath) throws IOException {
         if (!Files.exists(protectedPath)) return;
-        Path protectedReal = protectedPath.toRealPath();
+        final Path protectedReal = protectedPath.toRealPath();
         if (protectedReal.startsWith(safe)) {
             throw new IllegalArgumentException("cleanup target contains protected path: " + protectedReal);
         }
@@ -101,12 +104,12 @@ public final class TestTempDirs {
                     try {
                         Files.deleteIfExists(path);
                     } catch (IOException ignored) {
-                        return;
+                        /* The failure is expected or cannot be handled here. */
                     }
                 }
             });
         } catch (IOException ignored) {
-            return;
+            /* The failure is expected or cannot be handled here. */
         }
     }
 }

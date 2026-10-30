@@ -4,11 +4,13 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class NavigateRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 100;
@@ -57,7 +59,7 @@ public final class NavigateRequest implements CefMessageView, CefMessageEncoder 
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(urlBytes.length);
@@ -72,20 +74,12 @@ public final class NavigateRequest implements CefMessageView, CefMessageEncoder 
     }
 
     public static final CefMessageDecoder<NavigateRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        int urlLen = WireDecoder.length(__buf, "url");
-        byte[] urlBuf = new byte[urlLen];
-        __buf.get(urlBuf);
-        String url = new String(urlBuf, StandardCharsets.UTF_8);
-        int referrerLen = WireDecoder.length(__buf, "referrer");
-        byte[] referrerBuf = new byte[referrerLen];
-        __buf.get(referrerBuf);
-        String referrer = new String(referrerBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "transitionType");
-        int transitionType = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, 1, "preserveSession");
-        boolean preserveSession = __buf.get() != 0;
+        final String url = WireDecoder.utf8(__buf, "url");
+        final String referrer = WireDecoder.utf8(__buf, "referrer");
+        final int transitionType = WireDecoder.int32(__buf, "transitionType");
+        final boolean preserveSession = WireDecoder.bool(__buf, "preserveSession");
         WireDecoder.requireFullyConsumed(__buf, "NavigateRequest");
         return new NavigateRequest(url, referrer, transitionType, preserveSession);
     };

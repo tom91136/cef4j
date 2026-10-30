@@ -2,6 +2,7 @@
 // -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.gen.views;
 
+import java.util.Optional;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.gen.CefClientHandler;
 import net.kurobako.cef4j.gen.CefKeyEvent;
@@ -28,7 +29,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:45</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefWindowDelegate extends CefClientHandler {
 
@@ -135,8 +135,8 @@ public interface CefWindowDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:100</a>
      */
-    default @Nullable CefWindow getParentWindow(@Nullable CefWindow window, int[] isMenu, int[] canActivateMenu) {
-        return null;
+    default Optional<CefWindow> getParentWindow(@Nullable CefWindow window, int[] isMenu, int[] canActivateMenu) {
+        return Optional.empty();
     }
 
     /**
@@ -174,8 +174,8 @@ public interface CefWindowDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:128</a>
      */
-    default @Nullable CefRect getInitialBounds(@Nullable CefWindow window) {
-        return null;
+    default Optional<CefRect> getInitialBounds(@Nullable CefWindow window) {
+        return Optional.empty();
     }
 
     /**
@@ -191,8 +191,8 @@ public interface CefWindowDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:141</a>
      */
-    default @Nullable CefShowState getInitialShowState(@Nullable CefWindow window) {
-        return CefShowState.of(net.kurobako.cef4j.gen.CefShowState.Kind.NORMAL);
+    default Optional<CefShowState> getInitialShowState(@Nullable CefWindow window) {
+        return Optional.empty();
     }
 
     /**
@@ -266,8 +266,8 @@ public interface CefWindowDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:179</a>
      */
-    default @Nullable CefState acceptsFirstMouse(@Nullable CefWindow window) {
-        return CefState.of(net.kurobako.cef4j.gen.CefState.Kind.DEFAULT);
+    default Optional<CefState> acceptsFirstMouse(@Nullable CefWindow window) {
+        return Optional.empty();
     }
 
     /**
@@ -410,8 +410,8 @@ public interface CefWindowDelegate extends CefClientHandler {
      * @see <a
      *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__window__delegate_8h.html">views/cef_window_delegate.h:273</a>
      */
-    default @Nullable CefRuntimeStyle getWindowRuntimeStyle() {
-        return CefRuntimeStyle.of(net.kurobako.cef4j.gen.CefRuntimeStyle.Kind.DEFAULT);
+    default Optional<CefRuntimeStyle> getWindowRuntimeStyle() {
+        return Optional.empty();
     }
 
     /**
@@ -432,8 +432,8 @@ public interface CefWindowDelegate extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefWindowDelegate {
         private final java.util.List<CefWindowDelegate> delegates;
@@ -444,43 +444,43 @@ public interface CefWindowDelegate extends CefClientHandler {
 
         @Override
         public void onWindowCreated(@Nullable CefWindow window) {
-            for (CefWindowDelegate d : delegates) d.onWindowCreated(window);
+            for (final CefWindowDelegate d : delegates) d.onWindowCreated(window);
         }
 
         @Override
         public void onWindowClosing(@Nullable CefWindow window) {
-            for (CefWindowDelegate d : delegates) d.onWindowClosing(window);
+            for (final CefWindowDelegate d : delegates) d.onWindowClosing(window);
         }
 
         @Override
         public void onWindowDestroyed(@Nullable CefWindow window) {
-            for (CefWindowDelegate d : delegates) d.onWindowDestroyed(window);
+            for (final CefWindowDelegate d : delegates) d.onWindowDestroyed(window);
         }
 
         @Override
         public void onWindowActivationChanged(@Nullable CefWindow window, boolean active) {
-            for (CefWindowDelegate d : delegates) d.onWindowActivationChanged(window, active);
+            for (final CefWindowDelegate d : delegates) d.onWindowActivationChanged(window, active);
         }
 
         @Override
         public void onWindowBoundsChanged(@Nullable CefWindow window, CefRect newBounds) {
-            for (CefWindowDelegate d : delegates) d.onWindowBoundsChanged(window, newBounds);
+            for (final CefWindowDelegate d : delegates) d.onWindowBoundsChanged(window, newBounds);
         }
 
         @Override
         public void onWindowFullscreenTransition(@Nullable CefWindow window, boolean isCompleted) {
-            for (CefWindowDelegate d : delegates) d.onWindowFullscreenTransition(window, isCompleted);
+            for (final CefWindowDelegate d : delegates) d.onWindowFullscreenTransition(window, isCompleted);
         }
 
         @Override
-        public @Nullable CefWindow getParentWindow(@Nullable CefWindow window, int[] isMenu, int[] canActivateMenu) {
+        public Optional<CefWindow> getParentWindow(@Nullable CefWindow window, int[] isMenu, int[] canActivateMenu) {
             if (!delegates.isEmpty()) return delegates.get(0).getParentWindow(window, isMenu, canActivateMenu);
-            return null;
+            return Optional.empty();
         }
 
         @Override
         public boolean isWindowModalDialog(@Nullable CefWindow window) {
-            for (CefWindowDelegate d : delegates) {
+            for (final CefWindowDelegate d : delegates) {
                 if (d.isWindowModalDialog(window)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -488,20 +488,20 @@ public interface CefWindowDelegate extends CefClientHandler {
         }
 
         @Override
-        public @Nullable CefRect getInitialBounds(@Nullable CefWindow window) {
+        public Optional<CefRect> getInitialBounds(@Nullable CefWindow window) {
             if (!delegates.isEmpty()) return delegates.get(0).getInitialBounds(window);
-            return null;
+            return Optional.empty();
         }
 
         @Override
-        public @Nullable CefShowState getInitialShowState(@Nullable CefWindow window) {
+        public Optional<CefShowState> getInitialShowState(@Nullable CefWindow window) {
             if (!delegates.isEmpty()) return delegates.get(0).getInitialShowState(window);
-            return CefShowState.of(net.kurobako.cef4j.gen.CefShowState.Kind.NORMAL);
+            return Optional.empty();
         }
 
         @Override
         public boolean isFrameless(@Nullable CefWindow window) {
-            for (CefWindowDelegate d : delegates) {
+            for (final CefWindowDelegate d : delegates) {
                 if (d.isFrameless(window)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -510,7 +510,7 @@ public interface CefWindowDelegate extends CefClientHandler {
 
         @Override
         public boolean withStandardWindowButtons(@Nullable CefWindow window) {
-            for (CefWindowDelegate d : delegates) {
+            for (final CefWindowDelegate d : delegates) {
                 if (d.withStandardWindowButtons(window)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -519,7 +519,7 @@ public interface CefWindowDelegate extends CefClientHandler {
 
         @Override
         public boolean getTitlebarHeight(@Nullable CefWindow window, float[] titlebarHeight) {
-            for (CefWindowDelegate d : delegates) {
+            for (final CefWindowDelegate d : delegates) {
                 if (d.getTitlebarHeight(window, titlebarHeight)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -527,14 +527,14 @@ public interface CefWindowDelegate extends CefClientHandler {
         }
 
         @Override
-        public @Nullable CefState acceptsFirstMouse(@Nullable CefWindow window) {
+        public Optional<CefState> acceptsFirstMouse(@Nullable CefWindow window) {
             if (!delegates.isEmpty()) return delegates.get(0).acceptsFirstMouse(window);
-            return CefState.of(net.kurobako.cef4j.gen.CefState.Kind.DEFAULT);
+            return Optional.empty();
         }
 
         @Override
         public boolean canResize(@Nullable CefWindow window) {
-            for (CefWindowDelegate d : delegates) {
+            for (final CefWindowDelegate d : delegates) {
                 if (d.canResize(window)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -543,7 +543,7 @@ public interface CefWindowDelegate extends CefClientHandler {
 
         @Override
         public boolean canMaximize(@Nullable CefWindow window) {
-            for (CefWindowDelegate d : delegates) {
+            for (final CefWindowDelegate d : delegates) {
                 if (d.canMaximize(window)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -552,7 +552,7 @@ public interface CefWindowDelegate extends CefClientHandler {
 
         @Override
         public boolean canMinimize(@Nullable CefWindow window) {
-            for (CefWindowDelegate d : delegates) {
+            for (final CefWindowDelegate d : delegates) {
                 if (d.canMinimize(window)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -561,7 +561,7 @@ public interface CefWindowDelegate extends CefClientHandler {
 
         @Override
         public boolean canClose(@Nullable CefWindow window) {
-            for (CefWindowDelegate d : delegates) {
+            for (final CefWindowDelegate d : delegates) {
                 if (d.canClose(window)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -570,7 +570,7 @@ public interface CefWindowDelegate extends CefClientHandler {
 
         @Override
         public boolean onAccelerator(@Nullable CefWindow window, int commandId) {
-            for (CefWindowDelegate d : delegates) {
+            for (final CefWindowDelegate d : delegates) {
                 if (d.onAccelerator(window, commandId)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -579,7 +579,7 @@ public interface CefWindowDelegate extends CefClientHandler {
 
         @Override
         public boolean onKeyEvent(@Nullable CefWindow window, CefKeyEvent event) {
-            for (CefWindowDelegate d : delegates) {
+            for (final CefWindowDelegate d : delegates) {
                 if (d.onKeyEvent(window, event)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -588,19 +588,19 @@ public interface CefWindowDelegate extends CefClientHandler {
 
         @Override
         public void onThemeColorsChanged(@Nullable CefWindow window, boolean chromeTheme) {
-            for (CefWindowDelegate d : delegates) d.onThemeColorsChanged(window, chromeTheme);
+            for (final CefWindowDelegate d : delegates) d.onThemeColorsChanged(window, chromeTheme);
         }
 
         @Override
-        public @Nullable CefRuntimeStyle getWindowRuntimeStyle() {
+        public Optional<CefRuntimeStyle> getWindowRuntimeStyle() {
             if (!delegates.isEmpty()) return delegates.get(0).getWindowRuntimeStyle();
-            return CefRuntimeStyle.of(net.kurobako.cef4j.gen.CefRuntimeStyle.Kind.DEFAULT);
+            return Optional.empty();
         }
 
         @Override
         public boolean getLinuxWindowProperties(
                 @Nullable CefWindow window, CefLinuxWindowProperties.Mutable properties) {
-            for (CefWindowDelegate d : delegates) {
+            for (final CefWindowDelegate d : delegates) {
                 if (d.getLinuxWindowProperties(window, properties)) return true;
             }
             if (!delegates.isEmpty()) return false;

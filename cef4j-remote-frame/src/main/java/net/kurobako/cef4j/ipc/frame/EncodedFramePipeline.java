@@ -53,7 +53,7 @@ public final class EncodedFramePipeline implements AutoCloseable {
             throw new IllegalArgumentException("closeTimeout must be positive");
         }
         this.worker = Executors.newSingleThreadExecutor(r -> {
-            Thread thread =
+            final Thread thread =
                     new Thread(r, "cef4j-frame-codec-" + codec.descriptor().id());
             thread.setDaemon(true);
             workerThread.set(thread);
@@ -63,7 +63,7 @@ public final class EncodedFramePipeline implements AutoCloseable {
 
     /** Callback suitable for {@link FrameTransport#onRawFrame}. Copies because encoding is asynchronous. */
     public void submit(RawFrame frame) {
-        RawFrame snapshot = frame.snapshot();
+        final RawFrame snapshot = frame.snapshot();
         synchronized (commandLock) {
             if (closed.get()) return;
             latest.set(snapshot);
@@ -81,7 +81,7 @@ public final class EncodedFramePipeline implements AutoCloseable {
     private void drain() {
         try {
             while (!closed.get()) {
-                RawFrame frame = latest.getAndSet(null);
+                final RawFrame frame = latest.getAndSet(null);
                 if (frame == null) break;
                 try {
                     consumer.accept(codec.encode(frame));
@@ -116,7 +116,7 @@ public final class EncodedFramePipeline implements AutoCloseable {
         if (Thread.currentThread() == workerThread.get()) return;
         boolean interrupted = false;
         boolean terminated = false;
-        long deadline = System.nanoTime() + closeTimeout.toNanos();
+        final long deadline = System.nanoTime() + closeTimeout.toNanos();
         try {
             long remaining = deadline - System.nanoTime();
             if (remaining > 0) terminated = codecClosed.await(remaining, TimeUnit.NANOSECONDS);

@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class CommandLineGetArgumentsRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 493165000;
@@ -42,13 +44,13 @@ public final class CommandLineGetArgumentsRequest implements CefMessageView, Cef
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
             __dst.putInt(arguments.length);
-            for (String __s : arguments) {
-                byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
+            for (final String __s : arguments) {
+                final byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
                 __dst.putInt(__b.length);
                 __dst.put(__b);
             }
@@ -58,18 +60,10 @@ public final class CommandLineGetArgumentsRequest implements CefMessageView, Cef
     }
 
     public static final CefMessageDecoder<CommandLineGetArgumentsRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int argumentsCount = WireDecoder.count(__buf, "arguments");
-        String[] arguments = new String[argumentsCount];
-        for (int __i = 0; __i < argumentsCount; __i++) {
-            int __slen = WireDecoder.length(__buf, "arguments[" + __i + "]");
-            byte[] __sb = new byte[__slen];
-            __buf.get(__sb);
-            arguments[__i] = new String(__sb, StandardCharsets.UTF_8);
-        }
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final String[] arguments = WireDecoder.utf8List(__buf, "arguments");
         WireDecoder.requireFullyConsumed(__buf, "CommandLineGetArgumentsRequest");
         return new CommandLineGetArgumentsRequest(self, arguments);
     };

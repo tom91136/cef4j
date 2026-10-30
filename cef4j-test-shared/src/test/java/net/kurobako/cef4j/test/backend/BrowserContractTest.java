@@ -82,7 +82,7 @@ class BrowserContractTest {
         };
 
         BrowserSession.PaintInfo paint =
-                BrowserContract.awaitInitialPaint(session, true, 640, 480, Duration.ofSeconds(1));
+                BrowserContract.awaitInitialPaint(session, true, new PaintTarget(640, 480, Duration.ofSeconds(1)));
 
         assertThat(paint.width).isEqualTo(640);
         assertThat(paint.height).isEqualTo(480);
@@ -112,7 +112,7 @@ class BrowserContractTest {
         };
 
         Throwable failure = org.assertj.core.api.Assertions.catchThrowable(
-                () -> session.awaitPaint(640, 480, Duration.ofMillis(1)));
+                () -> session.awaitPaint(new PaintTarget(640, 480, Duration.ofMillis(1))));
 
         assertThat(failure)
                 .isInstanceOf(TimeoutException.class)
@@ -150,7 +150,8 @@ class BrowserContractTest {
             public void close() {}
         };
 
-        BrowserSession.PaintInfo paint = BrowserContract.resizeUntilPaint(session, 512, 384, Duration.ofSeconds(1));
+        BrowserSession.PaintInfo paint =
+                BrowserContract.resizeUntilPaint(session, new PaintTarget(512, 384, Duration.ofSeconds(1)));
 
         assertThat(paint.width).isEqualTo(512);
         assertThat(paint.height).isEqualTo(384);
@@ -198,7 +199,8 @@ class BrowserContractTest {
             public void close() {}
         };
 
-        BrowserSession.PaintInfo paint = BrowserContract.resizeUntilPaint(session, 512, 384, Duration.ofMillis(100));
+        BrowserSession.PaintInfo paint =
+                BrowserContract.resizeUntilPaint(session, new PaintTarget(512, 384, Duration.ofMillis(100)));
 
         assertThat(paint.width).isEqualTo(512);
         assertThat(paint.height).isEqualTo(384);
@@ -234,7 +236,8 @@ class BrowserContractTest {
             public void close() {}
         };
 
-        BrowserSession.PaintInfo paint = BrowserContract.resizeUntilPaint(session, 512, 384, Duration.ofSeconds(1));
+        BrowserSession.PaintInfo paint =
+                BrowserContract.resizeUntilPaint(session, new PaintTarget(512, 384, Duration.ofSeconds(1)));
 
         assertThat(paint.width).isEqualTo(512);
         assertThat(paint.height).isEqualTo(384);

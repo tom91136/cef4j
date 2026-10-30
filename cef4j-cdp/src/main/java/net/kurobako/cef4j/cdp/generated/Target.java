@@ -4,7 +4,6 @@ package net.kurobako.cef4j.cdp.generated;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
@@ -13,6 +12,8 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Supports additional targets discovery and allows to attach to them.
@@ -20,6 +21,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Target {
     private Target() {}
     /**
@@ -28,7 +30,7 @@ public final class Target {
     public static final class TargetID implements CdpValue<String> {
         public final String value;
         public TargetID(String value) { this.value = java.util.Objects.requireNonNull(value); }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof TargetID)) return false;
@@ -43,7 +45,7 @@ public final class Target {
     public static final class SessionID implements CdpValue<String> {
         public final String value;
         public SessionID(String value) { this.value = java.util.Objects.requireNonNull(value); }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof SessionID)) return false;
@@ -100,16 +102,14 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Target.TargetID> parentId() {
-            Object value = raw("parentId");
-            return Optional.ofNullable(value == null ? null : new Target.TargetID((String) value));
+            return raw("parentId").map(value -> new Target.TargetID((String) value));
         }
         /**
          * Opener target Id
          * @return the protocol field value, empty when absent
          */
         public Optional<Target.TargetID> openerId() {
-            Object value = raw("openerId");
-            return Optional.ofNullable(value == null ? null : new Target.TargetID((String) value));
+            return raw("openerId").map(value -> new Target.TargetID((String) value));
         }
         /**
          * Whether the target has access to the originating window.
@@ -125,8 +125,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> openerFrameId() {
-            Object value = raw("openerFrameId");
-            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
+            return raw("openerFrameId").map(value -> new Page.FrameId((String) value));
         }
         /**
          * Id of the parent frame, present for &quot;iframe&quot; and &quot;worker&quot; targets. For nested workers, this is the &quot;ancestor&quot; frame that created the first worker in the nested chain.
@@ -134,8 +133,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> parentFrameId() {
-            Object value = raw("parentFrameId");
-            return Optional.ofNullable(value == null ? null : new Page.FrameId((String) value));
+            return raw("parentFrameId").map(value -> new Page.FrameId((String) value));
         }
         /**
          * Returns the browserContextId field.
@@ -143,8 +141,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            Object value = raw("browserContextId");
-            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
+            return raw("browserContextId").map(value -> new Browser.BrowserContextID((String) value));
         }
         /**
          * Provides additional details for specific target types. For example, for the type of &quot;page&quot;, this may be set to &quot;prerender&quot;.
@@ -152,8 +149,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> subtype() {
-            Object value = raw("subtype");
-            return Optional.ofNullable((String) value);
+            return raw("subtype").map(value -> (String) value);
         }
         /**
          * Embedder-specific target metadata. This is only set for targets of type &quot;tab&quot;.
@@ -161,8 +157,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> embedderData() {
-            Object value = raw("embedderData");
-            return Optional.ofNullable(objectMap(value));
+            return raw("embedderData").flatMap(CdpObject::objectMap);
         }
         /**
          * Sets the targetId field.
@@ -211,16 +206,7 @@ public final class Target {
         }
         /**
          * Id of the parent target, if any. For example, &quot;iframe&quot; target may have a &quot;page&quot; parent.
-         * @param parentId field value; empty omits the value
-         * @return this model
-         */
-        public TargetInfo parentId(Optional<Target.TargetID> parentId) {
-            set("parentId", parentId.orElse(null));
-            return this;
-        }
-        /**
-         * Id of the parent target, if any. For example, &quot;iframe&quot; target may have a &quot;page&quot; parent.
-         * @param parentId field value; null removes the value
+         * @param parentId field value
          * @return this model
          */
         public TargetInfo parentId(Target.TargetID parentId) {
@@ -229,16 +215,7 @@ public final class Target {
         }
         /**
          * Opener target Id
-         * @param openerId field value; empty omits the value
-         * @return this model
-         */
-        public TargetInfo openerId(Optional<Target.TargetID> openerId) {
-            set("openerId", openerId.orElse(null));
-            return this;
-        }
-        /**
-         * Opener target Id
-         * @param openerId field value; null removes the value
+         * @param openerId field value
          * @return this model
          */
         public TargetInfo openerId(Target.TargetID openerId) {
@@ -258,17 +235,7 @@ public final class Target {
         /**
          * Frame id of originating window (is only set if target has an opener).
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param openerFrameId field value; empty omits the value
-         * @return this model
-         */
-        public TargetInfo openerFrameId(Optional<Page.FrameId> openerFrameId) {
-            set("openerFrameId", openerFrameId.orElse(null));
-            return this;
-        }
-        /**
-         * Frame id of originating window (is only set if target has an opener).
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param openerFrameId field value; null removes the value
+         * @param openerFrameId field value
          * @return this model
          */
         public TargetInfo openerFrameId(Page.FrameId openerFrameId) {
@@ -278,17 +245,7 @@ public final class Target {
         /**
          * Id of the parent frame, present for &quot;iframe&quot; and &quot;worker&quot; targets. For nested workers, this is the &quot;ancestor&quot; frame that created the first worker in the nested chain.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param parentFrameId field value; empty omits the value
-         * @return this model
-         */
-        public TargetInfo parentFrameId(Optional<Page.FrameId> parentFrameId) {
-            set("parentFrameId", parentFrameId.orElse(null));
-            return this;
-        }
-        /**
-         * Id of the parent frame, present for &quot;iframe&quot; and &quot;worker&quot; targets. For nested workers, this is the &quot;ancestor&quot; frame that created the first worker in the nested chain.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param parentFrameId field value; null removes the value
+         * @param parentFrameId field value
          * @return this model
          */
         public TargetInfo parentFrameId(Page.FrameId parentFrameId) {
@@ -298,17 +255,7 @@ public final class Target {
         /**
          * Sets the browserContextId field.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param browserContextId field value; empty omits the value
-         * @return this model
-         */
-        public TargetInfo browserContextId(Optional<Browser.BrowserContextID> browserContextId) {
-            set("browserContextId", browserContextId.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the browserContextId field.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param browserContextId field value; null removes the value
+         * @param browserContextId field value
          * @return this model
          */
         public TargetInfo browserContextId(Browser.BrowserContextID browserContextId) {
@@ -318,17 +265,7 @@ public final class Target {
         /**
          * Provides additional details for specific target types. For example, for the type of &quot;page&quot;, this may be set to &quot;prerender&quot;.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param subtype field value; empty omits the value
-         * @return this model
-         */
-        public TargetInfo subtype(Optional<String> subtype) {
-            set("subtype", subtype.orElse(null));
-            return this;
-        }
-        /**
-         * Provides additional details for specific target types. For example, for the type of &quot;page&quot;, this may be set to &quot;prerender&quot;.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param subtype field value; null removes the value
+         * @param subtype field value
          * @return this model
          */
         public TargetInfo subtype(String subtype) {
@@ -338,17 +275,7 @@ public final class Target {
         /**
          * Embedder-specific target metadata. This is only set for targets of type &quot;tab&quot;.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param embedderData field value; empty omits the value
-         * @return this model
-         */
-        public TargetInfo embedderData(Optional<java.util.Map<String, Object>> embedderData) {
-            set("embedderData", embedderData.orElse(null));
-            return this;
-        }
-        /**
-         * Embedder-specific target metadata. This is only set for targets of type &quot;tab&quot;.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param embedderData field value; null removes the value
+         * @param embedderData field value
          * @return this model
          */
         public TargetInfo embedderData(java.util.Map<String, Object> embedderData) {
@@ -371,47 +298,27 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> exclude() {
-            Object value = raw("exclude");
-            return Optional.ofNullable((Boolean) value);
+            return raw("exclude").map(value -> (Boolean) value);
         }
         /**
          * If not present, matches any type.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> type() {
-            Object value = raw("type");
-            return Optional.ofNullable((String) value);
+            return raw("type").map(value -> (String) value);
         }
         /**
          * If set, causes exclusion of matching targets from the list.
-         * @param exclude field value; empty omits the value
+         * @param exclude field value
          * @return this model
          */
-        public FilterEntry exclude(Optional<Boolean> exclude) {
-            set("exclude", exclude.orElse(null));
-            return this;
-        }
-        /**
-         * If set, causes exclusion of matching targets from the list.
-         * @param exclude field value; null removes the value
-         * @return this model
-         */
-        public FilterEntry exclude(Boolean exclude) {
+        public FilterEntry exclude(boolean exclude) {
             set("exclude", exclude);
             return this;
         }
         /**
          * If not present, matches any type.
-         * @param type field value; empty omits the value
-         * @return this model
-         */
-        public FilterEntry type(Optional<String> type) {
-            set("type", type.orElse(null));
-            return this;
-        }
-        /**
-         * If not present, matches any type.
-         * @param type field value; null removes the value
+         * @param type field value
          * @return this model
          */
         public FilterEntry type(String type) {
@@ -472,7 +379,7 @@ public final class Target {
         FULLSCREEN("fullscreen");
         public final String value;
         WindowState(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static WindowState of(String value) {
             for (WindowState constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -490,10 +397,10 @@ public final class Target {
          * @param targetId protocol value
          */
         public ActivateTargetRequest(Target.TargetID targetId) {
-            set("targetId", targetId);
+            targetId(targetId);
         }
         public static ActivateTargetRequest fromMap(Map<String, Object> values) {
-            ActivateTargetRequest instance_ = new ActivateTargetRequest();
+            final ActivateTargetRequest instance_ = new ActivateTargetRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -524,10 +431,10 @@ public final class Target {
          * @param targetId protocol value
          */
         public AttachToTargetRequest(Target.TargetID targetId) {
-            set("targetId", targetId);
+            targetId(targetId);
         }
         public static AttachToTargetRequest fromMap(Map<String, Object> values) {
-            AttachToTargetRequest instance_ = new AttachToTargetRequest();
+            final AttachToTargetRequest instance_ = new AttachToTargetRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -543,8 +450,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> flatten() {
-            Object value = raw("flatten");
-            return Optional.ofNullable((Boolean) value);
+            return raw("flatten").map(value -> (Boolean) value);
         }
         /**
          * Sets the targetId field.
@@ -557,19 +463,10 @@ public final class Target {
         }
         /**
          * Enables &quot;flat&quot; access to the session via specifying sessionId attribute in the commands. We plan to make this the default, deprecate non-flattened mode, and eventually retire it. See crbug.com/991325.
-         * @param flatten field value; empty omits the value
+         * @param flatten field value
          * @return this model
          */
-        public AttachToTargetRequest flatten(Optional<Boolean> flatten) {
-            set("flatten", flatten.orElse(null));
-            return this;
-        }
-        /**
-         * Enables &quot;flat&quot; access to the session via specifying sessionId attribute in the commands. We plan to make this the default, deprecate non-flattened mode, and eventually retire it. See crbug.com/991325.
-         * @param flatten field value; null removes the value
-         * @return this model
-         */
-        public AttachToTargetRequest flatten(Boolean flatten) {
+        public AttachToTargetRequest flatten(boolean flatten) {
             set("flatten", flatten);
             return this;
         }
@@ -584,10 +481,10 @@ public final class Target {
          * @param targetId protocol value
          */
         public CloseTargetRequest(Target.TargetID targetId) {
-            set("targetId", targetId);
+            targetId(targetId);
         }
         public static CloseTargetRequest fromMap(Map<String, Object> values) {
-            CloseTargetRequest instance_ = new CloseTargetRequest();
+            final CloseTargetRequest instance_ = new CloseTargetRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -624,10 +521,10 @@ public final class Target {
          * @param targetId protocol value
          */
         public ExposeDevToolsProtocolRequest(Target.TargetID targetId) {
-            set("targetId", targetId);
+            targetId(targetId);
         }
         public static ExposeDevToolsProtocolRequest fromMap(Map<String, Object> values) {
-            ExposeDevToolsProtocolRequest instance_ = new ExposeDevToolsProtocolRequest();
+            final ExposeDevToolsProtocolRequest instance_ = new ExposeDevToolsProtocolRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -643,16 +540,14 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> bindingName() {
-            Object value = raw("bindingName");
-            return Optional.ofNullable((String) value);
+            return raw("bindingName").map(value -> (String) value);
         }
         /**
          * If true, inherits the current root session&#x27;s permissions (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> inheritPermissions() {
-            Object value = raw("inheritPermissions");
-            return Optional.ofNullable((Boolean) value);
+            return raw("inheritPermissions").map(value -> (Boolean) value);
         }
         /**
          * Sets the targetId field.
@@ -665,16 +560,7 @@ public final class Target {
         }
         /**
          * Binding name, &#x27;cdp&#x27; if not specified.
-         * @param bindingName field value; empty omits the value
-         * @return this model
-         */
-        public ExposeDevToolsProtocolRequest bindingName(Optional<String> bindingName) {
-            set("bindingName", bindingName.orElse(null));
-            return this;
-        }
-        /**
-         * Binding name, &#x27;cdp&#x27; if not specified.
-         * @param bindingName field value; null removes the value
+         * @param bindingName field value
          * @return this model
          */
         public ExposeDevToolsProtocolRequest bindingName(String bindingName) {
@@ -683,19 +569,10 @@ public final class Target {
         }
         /**
          * If true, inherits the current root session&#x27;s permissions (default: false).
-         * @param inheritPermissions field value; empty omits the value
+         * @param inheritPermissions field value
          * @return this model
          */
-        public ExposeDevToolsProtocolRequest inheritPermissions(Optional<Boolean> inheritPermissions) {
-            set("inheritPermissions", inheritPermissions.orElse(null));
-            return this;
-        }
-        /**
-         * If true, inherits the current root session&#x27;s permissions (default: false).
-         * @param inheritPermissions field value; null removes the value
-         * @return this model
-         */
-        public ExposeDevToolsProtocolRequest inheritPermissions(Boolean inheritPermissions) {
+        public ExposeDevToolsProtocolRequest inheritPermissions(boolean inheritPermissions) {
             set("inheritPermissions", inheritPermissions);
             return this;
         }
@@ -706,7 +583,7 @@ public final class Target {
     public static final class CreateBrowserContextRequest extends CdpObject {
         public CreateBrowserContextRequest() {}
         public static CreateBrowserContextRequest fromMap(Map<String, Object> values) {
-            CreateBrowserContextRequest instance_ = new CreateBrowserContextRequest();
+            final CreateBrowserContextRequest instance_ = new CreateBrowserContextRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -716,8 +593,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> disposeOnDetach() {
-            Object value = raw("disposeOnDetach");
-            return Optional.ofNullable((Boolean) value);
+            return raw("disposeOnDetach").map(value -> (Boolean) value);
         }
         /**
          * Proxy server, similar to the one passed to --proxy-server
@@ -725,8 +601,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> proxyServer() {
-            Object value = raw("proxyServer");
-            return Optional.ofNullable((String) value);
+            return raw("proxyServer").map(value -> (String) value);
         }
         /**
          * Proxy bypass list, similar to the one passed to --proxy-bypass-list
@@ -734,8 +609,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> proxyBypassList() {
-            Object value = raw("proxyBypassList");
-            return Optional.ofNullable((String) value);
+            return raw("proxyBypassList").map(value -> (String) value);
         }
         /**
          * An optional list of origins to grant unlimited cross-origin access to. Parts of the URL other than those constituting origin are ignored.
@@ -743,43 +617,22 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> originsWithUniversalNetworkAccess() {
-            Object value = raw("originsWithUniversalNetworkAccess");
-            return Optional.ofNullable(list(value, element0 -> (String) element0));
+            return raw("originsWithUniversalNetworkAccess").flatMap(value -> list(value, element0 -> (String) element0));
         }
         /**
          * If specified, disposes this context when debugging session disconnects.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param disposeOnDetach field value; empty omits the value
+         * @param disposeOnDetach field value
          * @return this model
          */
-        public CreateBrowserContextRequest disposeOnDetach(Optional<Boolean> disposeOnDetach) {
-            set("disposeOnDetach", disposeOnDetach.orElse(null));
-            return this;
-        }
-        /**
-         * If specified, disposes this context when debugging session disconnects.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param disposeOnDetach field value; null removes the value
-         * @return this model
-         */
-        public CreateBrowserContextRequest disposeOnDetach(Boolean disposeOnDetach) {
+        public CreateBrowserContextRequest disposeOnDetach(boolean disposeOnDetach) {
             set("disposeOnDetach", disposeOnDetach);
             return this;
         }
         /**
          * Proxy server, similar to the one passed to --proxy-server
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param proxyServer field value; empty omits the value
-         * @return this model
-         */
-        public CreateBrowserContextRequest proxyServer(Optional<String> proxyServer) {
-            set("proxyServer", proxyServer.orElse(null));
-            return this;
-        }
-        /**
-         * Proxy server, similar to the one passed to --proxy-server
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param proxyServer field value; null removes the value
+         * @param proxyServer field value
          * @return this model
          */
         public CreateBrowserContextRequest proxyServer(String proxyServer) {
@@ -789,17 +642,7 @@ public final class Target {
         /**
          * Proxy bypass list, similar to the one passed to --proxy-bypass-list
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param proxyBypassList field value; empty omits the value
-         * @return this model
-         */
-        public CreateBrowserContextRequest proxyBypassList(Optional<String> proxyBypassList) {
-            set("proxyBypassList", proxyBypassList.orElse(null));
-            return this;
-        }
-        /**
-         * Proxy bypass list, similar to the one passed to --proxy-bypass-list
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param proxyBypassList field value; null removes the value
+         * @param proxyBypassList field value
          * @return this model
          */
         public CreateBrowserContextRequest proxyBypassList(String proxyBypassList) {
@@ -809,17 +652,7 @@ public final class Target {
         /**
          * An optional list of origins to grant unlimited cross-origin access to. Parts of the URL other than those constituting origin are ignored.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param originsWithUniversalNetworkAccess field value; empty omits the value
-         * @return this model
-         */
-        public CreateBrowserContextRequest originsWithUniversalNetworkAccess(Optional<java.util.List<String>> originsWithUniversalNetworkAccess) {
-            set("originsWithUniversalNetworkAccess", originsWithUniversalNetworkAccess.orElse(null));
-            return this;
-        }
-        /**
-         * An optional list of origins to grant unlimited cross-origin access to. Parts of the URL other than those constituting origin are ignored.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param originsWithUniversalNetworkAccess field value; null removes the value
+         * @param originsWithUniversalNetworkAccess field value
          * @return this model
          */
         public CreateBrowserContextRequest originsWithUniversalNetworkAccess(java.util.List<String> originsWithUniversalNetworkAccess) {
@@ -837,10 +670,10 @@ public final class Target {
          * @param url protocol value
          */
         public CreateTargetRequest(String url) {
-            set("url", url);
+            url(url);
         }
         public static CreateTargetRequest fromMap(Map<String, Object> values) {
-            CreateTargetRequest instance_ = new CreateTargetRequest();
+            final CreateTargetRequest instance_ = new CreateTargetRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -857,8 +690,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong left() {
-            Long value = CdpObject.numberAsLong(raw("left"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("left").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Frame top origin in DIP (requires newWindow to be true or headless shell).
@@ -866,32 +698,28 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong top() {
-            Long value = CdpObject.numberAsLong(raw("top"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("top").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Frame width in DIP (requires newWindow to be true or headless shell).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong width() {
-            Long value = CdpObject.numberAsLong(raw("width"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("width").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Frame height in DIP (requires newWindow to be true or headless shell).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong height() {
-            Long value = CdpObject.numberAsLong(raw("height"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("height").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Frame window state (requires newWindow to be true or headless shell). Default is normal.
          * @return the protocol field value, empty when absent
          */
         public Optional<Target.WindowState> windowState() {
-            Object value = raw("windowState");
-            return Optional.ofNullable(value == null ? null : Target.WindowState.of((String) value));
+            return raw("windowState").map(value -> Target.WindowState.of((String) value));
         }
         /**
          * The browser context to create the page in.
@@ -899,8 +727,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            Object value = raw("browserContextId");
-            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
+            return raw("browserContextId").map(value -> new Browser.BrowserContextID((String) value));
         }
         /**
          * Whether BeginFrames for this target will be controlled via DevTools (headless shell only, not supported on MacOS yet, false by default).
@@ -908,24 +735,21 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> enableBeginFrameControl() {
-            Object value = raw("enableBeginFrameControl");
-            return Optional.ofNullable((Boolean) value);
+            return raw("enableBeginFrameControl").map(value -> (Boolean) value);
         }
         /**
          * Whether to create a new Window or Tab (false by default, not supported by headless shell).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> newWindow() {
-            Object value = raw("newWindow");
-            return Optional.ofNullable((Boolean) value);
+            return raw("newWindow").map(value -> (Boolean) value);
         }
         /**
          * Whether to create the target in background or foreground (false by default, not supported by headless shell).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> background() {
-            Object value = raw("background");
-            return Optional.ofNullable((Boolean) value);
+            return raw("background").map(value -> (Boolean) value);
         }
         /**
          * Whether to create the target of type &quot;tab&quot;.
@@ -933,8 +757,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> forTab() {
-            Object value = raw("forTab");
-            return Optional.ofNullable((Boolean) value);
+            return raw("forTab").map(value -> (Boolean) value);
         }
         /**
          * Whether to create a hidden target. The hidden target is observable via protocol, but not present in the tab UI strip. Cannot be created with {@code forTab: true}, {@code newWindow: true} or {@code background: false}. The life-time of the tab is limited to the life-time of the session.
@@ -942,8 +765,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> hidden() {
-            Object value = raw("hidden");
-            return Optional.ofNullable((Boolean) value);
+            return raw("hidden").map(value -> (Boolean) value);
         }
         /**
          * If specified, the option is used to determine if the new target should be focused or not. By default, the focus behavior depends on the value of the background field. For example, background=false and focus=false will result in the target tab being opened but the browser window remain unchanged (if it was in the background, it will remain in the background) and background=false with focus=undefined will result in the window being focused. Using background: true and focus: true is not supported and will result in an error.
@@ -951,8 +773,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> focus() {
-            Object value = raw("focus");
-            return Optional.ofNullable((Boolean) value);
+            return raw("focus").map(value -> (Boolean) value);
         }
         /**
          * The initial URL the page will be navigated to. An empty string indicates about:blank.
@@ -966,91 +787,44 @@ public final class Target {
         /**
          * Frame left origin in DIP (requires newWindow to be true or headless shell).
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param left field value; empty omits the value
+         * @param left field value
          * @return this model
          */
-        public CreateTargetRequest left(OptionalLong left) {
-            set("left", left.isPresent() ? left.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Frame left origin in DIP (requires newWindow to be true or headless shell).
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param left field value; null removes the value
-         * @return this model
-         */
-        public CreateTargetRequest left(Long left) {
+        public CreateTargetRequest left(long left) {
             set("left", left);
             return this;
         }
         /**
          * Frame top origin in DIP (requires newWindow to be true or headless shell).
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param top field value; empty omits the value
+         * @param top field value
          * @return this model
          */
-        public CreateTargetRequest top(OptionalLong top) {
-            set("top", top.isPresent() ? top.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Frame top origin in DIP (requires newWindow to be true or headless shell).
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param top field value; null removes the value
-         * @return this model
-         */
-        public CreateTargetRequest top(Long top) {
+        public CreateTargetRequest top(long top) {
             set("top", top);
             return this;
         }
         /**
          * Frame width in DIP (requires newWindow to be true or headless shell).
-         * @param width field value; empty omits the value
+         * @param width field value
          * @return this model
          */
-        public CreateTargetRequest width(OptionalLong width) {
-            set("width", width.isPresent() ? width.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Frame width in DIP (requires newWindow to be true or headless shell).
-         * @param width field value; null removes the value
-         * @return this model
-         */
-        public CreateTargetRequest width(Long width) {
+        public CreateTargetRequest width(long width) {
             set("width", width);
             return this;
         }
         /**
          * Frame height in DIP (requires newWindow to be true or headless shell).
-         * @param height field value; empty omits the value
+         * @param height field value
          * @return this model
          */
-        public CreateTargetRequest height(OptionalLong height) {
-            set("height", height.isPresent() ? height.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Frame height in DIP (requires newWindow to be true or headless shell).
-         * @param height field value; null removes the value
-         * @return this model
-         */
-        public CreateTargetRequest height(Long height) {
+        public CreateTargetRequest height(long height) {
             set("height", height);
             return this;
         }
         /**
          * Frame window state (requires newWindow to be true or headless shell). Default is normal.
-         * @param windowState field value; empty omits the value
-         * @return this model
-         */
-        public CreateTargetRequest windowState(Optional<Target.WindowState> windowState) {
-            set("windowState", windowState.orElse(null));
-            return this;
-        }
-        /**
-         * Frame window state (requires newWindow to be true or headless shell). Default is normal.
-         * @param windowState field value; null removes the value
+         * @param windowState field value
          * @return this model
          */
         public CreateTargetRequest windowState(Target.WindowState windowState) {
@@ -1060,17 +834,7 @@ public final class Target {
         /**
          * The browser context to create the page in.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param browserContextId field value; empty omits the value
-         * @return this model
-         */
-        public CreateTargetRequest browserContextId(Optional<Browser.BrowserContextID> browserContextId) {
-            set("browserContextId", browserContextId.orElse(null));
-            return this;
-        }
-        /**
-         * The browser context to create the page in.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param browserContextId field value; null removes the value
+         * @param browserContextId field value
          * @return this model
          */
         public CreateTargetRequest browserContextId(Browser.BrowserContextID browserContextId) {
@@ -1080,116 +844,58 @@ public final class Target {
         /**
          * Whether BeginFrames for this target will be controlled via DevTools (headless shell only, not supported on MacOS yet, false by default).
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param enableBeginFrameControl field value; empty omits the value
+         * @param enableBeginFrameControl field value
          * @return this model
          */
-        public CreateTargetRequest enableBeginFrameControl(Optional<Boolean> enableBeginFrameControl) {
-            set("enableBeginFrameControl", enableBeginFrameControl.orElse(null));
-            return this;
-        }
-        /**
-         * Whether BeginFrames for this target will be controlled via DevTools (headless shell only, not supported on MacOS yet, false by default).
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param enableBeginFrameControl field value; null removes the value
-         * @return this model
-         */
-        public CreateTargetRequest enableBeginFrameControl(Boolean enableBeginFrameControl) {
+        public CreateTargetRequest enableBeginFrameControl(boolean enableBeginFrameControl) {
             set("enableBeginFrameControl", enableBeginFrameControl);
             return this;
         }
         /**
          * Whether to create a new Window or Tab (false by default, not supported by headless shell).
-         * @param newWindow field value; empty omits the value
+         * @param newWindow field value
          * @return this model
          */
-        public CreateTargetRequest newWindow(Optional<Boolean> newWindow) {
-            set("newWindow", newWindow.orElse(null));
-            return this;
-        }
-        /**
-         * Whether to create a new Window or Tab (false by default, not supported by headless shell).
-         * @param newWindow field value; null removes the value
-         * @return this model
-         */
-        public CreateTargetRequest newWindow(Boolean newWindow) {
+        public CreateTargetRequest newWindow(boolean newWindow) {
             set("newWindow", newWindow);
             return this;
         }
         /**
          * Whether to create the target in background or foreground (false by default, not supported by headless shell).
-         * @param background field value; empty omits the value
+         * @param background field value
          * @return this model
          */
-        public CreateTargetRequest background(Optional<Boolean> background) {
-            set("background", background.orElse(null));
-            return this;
-        }
-        /**
-         * Whether to create the target in background or foreground (false by default, not supported by headless shell).
-         * @param background field value; null removes the value
-         * @return this model
-         */
-        public CreateTargetRequest background(Boolean background) {
+        public CreateTargetRequest background(boolean background) {
             set("background", background);
             return this;
         }
         /**
          * Whether to create the target of type &quot;tab&quot;.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param forTab field value; empty omits the value
+         * @param forTab field value
          * @return this model
          */
-        public CreateTargetRequest forTab(Optional<Boolean> forTab) {
-            set("forTab", forTab.orElse(null));
-            return this;
-        }
-        /**
-         * Whether to create the target of type &quot;tab&quot;.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param forTab field value; null removes the value
-         * @return this model
-         */
-        public CreateTargetRequest forTab(Boolean forTab) {
+        public CreateTargetRequest forTab(boolean forTab) {
             set("forTab", forTab);
             return this;
         }
         /**
          * Whether to create a hidden target. The hidden target is observable via protocol, but not present in the tab UI strip. Cannot be created with {@code forTab: true}, {@code newWindow: true} or {@code background: false}. The life-time of the tab is limited to the life-time of the session.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param hidden field value; empty omits the value
+         * @param hidden field value
          * @return this model
          */
-        public CreateTargetRequest hidden(Optional<Boolean> hidden) {
-            set("hidden", hidden.orElse(null));
-            return this;
-        }
-        /**
-         * Whether to create a hidden target. The hidden target is observable via protocol, but not present in the tab UI strip. Cannot be created with {@code forTab: true}, {@code newWindow: true} or {@code background: false}. The life-time of the tab is limited to the life-time of the session.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param hidden field value; null removes the value
-         * @return this model
-         */
-        public CreateTargetRequest hidden(Boolean hidden) {
+        public CreateTargetRequest hidden(boolean hidden) {
             set("hidden", hidden);
             return this;
         }
         /**
          * If specified, the option is used to determine if the new target should be focused or not. By default, the focus behavior depends on the value of the background field. For example, background=false and focus=false will result in the target tab being opened but the browser window remain unchanged (if it was in the background, it will remain in the background) and background=false with focus=undefined will result in the window being focused. Using background: true and focus: true is not supported and will result in an error.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param focus field value; empty omits the value
+         * @param focus field value
          * @return this model
          */
-        public CreateTargetRequest focus(Optional<Boolean> focus) {
-            set("focus", focus.orElse(null));
-            return this;
-        }
-        /**
-         * If specified, the option is used to determine if the new target should be focused or not. By default, the focus behavior depends on the value of the background field. For example, background=false and focus=false will result in the target tab being opened but the browser window remain unchanged (if it was in the background, it will remain in the background) and background=false with focus=undefined will result in the window being focused. Using background: true and focus: true is not supported and will result in an error.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param focus field value; null removes the value
-         * @return this model
-         */
-        public CreateTargetRequest focus(Boolean focus) {
+        public CreateTargetRequest focus(boolean focus) {
             set("focus", focus);
             return this;
         }
@@ -1200,7 +906,7 @@ public final class Target {
     public static final class DetachFromTargetRequest extends CdpObject {
         public DetachFromTargetRequest() {}
         public static DetachFromTargetRequest fromMap(Map<String, Object> values) {
-            DetachFromTargetRequest instance_ = new DetachFromTargetRequest();
+            final DetachFromTargetRequest instance_ = new DetachFromTargetRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1209,8 +915,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Target.SessionID> sessionId() {
-            Object value = raw("sessionId");
-            return Optional.ofNullable(value == null ? null : new Target.SessionID((String) value));
+            return raw("sessionId").map(value -> new Target.SessionID((String) value));
         }
         /**
          * Deprecated.
@@ -1219,21 +924,11 @@ public final class Target {
          */
         @Deprecated
         public Optional<Target.TargetID> targetId() {
-            Object value = raw("targetId");
-            return Optional.ofNullable(value == null ? null : new Target.TargetID((String) value));
+            return raw("targetId").map(value -> new Target.TargetID((String) value));
         }
         /**
          * Session to detach.
-         * @param sessionId field value; empty omits the value
-         * @return this model
-         */
-        public DetachFromTargetRequest sessionId(Optional<Target.SessionID> sessionId) {
-            set("sessionId", sessionId.orElse(null));
-            return this;
-        }
-        /**
-         * Session to detach.
-         * @param sessionId field value; null removes the value
+         * @param sessionId field value
          * @return this model
          */
         public DetachFromTargetRequest sessionId(Target.SessionID sessionId) {
@@ -1242,18 +937,7 @@ public final class Target {
         }
         /**
          * Deprecated.
-         * @param targetId field value; empty omits the value
-         * @return this model
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public DetachFromTargetRequest targetId(Optional<Target.TargetID> targetId) {
-            set("targetId", targetId.orElse(null));
-            return this;
-        }
-        /**
-         * Deprecated.
-         * @param targetId field value; null removes the value
+         * @param targetId field value
          * @return this model
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
@@ -1273,10 +957,10 @@ public final class Target {
          * @param browserContextId protocol value
          */
         public DisposeBrowserContextRequest(Browser.BrowserContextID browserContextId) {
-            set("browserContextId", browserContextId);
+            browserContextId(browserContextId);
         }
         public static DisposeBrowserContextRequest fromMap(Map<String, Object> values) {
-            DisposeBrowserContextRequest instance_ = new DisposeBrowserContextRequest();
+            final DisposeBrowserContextRequest instance_ = new DisposeBrowserContextRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1304,7 +988,7 @@ public final class Target {
     public static final class GetTargetInfoRequest extends CdpObject {
         public GetTargetInfoRequest() {}
         public static GetTargetInfoRequest fromMap(Map<String, Object> values) {
-            GetTargetInfoRequest instance_ = new GetTargetInfoRequest();
+            final GetTargetInfoRequest instance_ = new GetTargetInfoRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1313,21 +997,11 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Target.TargetID> targetId() {
-            Object value = raw("targetId");
-            return Optional.ofNullable(value == null ? null : new Target.TargetID((String) value));
+            return raw("targetId").map(value -> new Target.TargetID((String) value));
         }
         /**
          * Sets the targetId field.
-         * @param targetId field value; empty omits the value
-         * @return this model
-         */
-        public GetTargetInfoRequest targetId(Optional<Target.TargetID> targetId) {
-            set("targetId", targetId.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the targetId field.
-         * @param targetId field value; null removes the value
+         * @param targetId field value
          * @return this model
          */
         public GetTargetInfoRequest targetId(Target.TargetID targetId) {
@@ -1341,7 +1015,7 @@ public final class Target {
     public static final class GetTargetsRequest extends CdpObject {
         public GetTargetsRequest() {}
         public static GetTargetsRequest fromMap(Map<String, Object> values) {
-            GetTargetsRequest instance_ = new GetTargetsRequest();
+            final GetTargetsRequest instance_ = new GetTargetsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1351,23 +1025,12 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Target.FilterEntry>> filter() {
-            Object value = raw("filter");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Target.FilterEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("filter").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Target.FilterEntry.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Only targets matching filter will be reported. If filter is not specified and target discovery is currently enabled, a filter used for target discovery is used for consistency.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param filter field value; empty omits the value
-         * @return this model
-         */
-        public GetTargetsRequest filter(Optional<java.util.List<Target.FilterEntry>> filter) {
-            set("filter", filter.orElse(null));
-            return this;
-        }
-        /**
-         * Only targets matching filter will be reported. If filter is not specified and target discovery is currently enabled, a filter used for target discovery is used for consistency.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param filter field value; null removes the value
+         * @param filter field value
          * @return this model
          */
         public GetTargetsRequest filter(java.util.List<Target.FilterEntry> filter) {
@@ -1389,10 +1052,10 @@ public final class Target {
          */
         @Deprecated
         public SendMessageToTargetRequest(String message) {
-            set("message", message);
+            message(message);
         }
         public static SendMessageToTargetRequest fromMap(Map<String, Object> values) {
-            SendMessageToTargetRequest instance_ = new SendMessageToTargetRequest();
+            final SendMessageToTargetRequest instance_ = new SendMessageToTargetRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1408,8 +1071,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Target.SessionID> sessionId() {
-            Object value = raw("sessionId");
-            return Optional.ofNullable(value == null ? null : new Target.SessionID((String) value));
+            return raw("sessionId").map(value -> new Target.SessionID((String) value));
         }
         /**
          * Deprecated.
@@ -1418,8 +1080,7 @@ public final class Target {
          */
         @Deprecated
         public Optional<Target.TargetID> targetId() {
-            Object value = raw("targetId");
-            return Optional.ofNullable(value == null ? null : new Target.TargetID((String) value));
+            return raw("targetId").map(value -> new Target.TargetID((String) value));
         }
         /**
          * Sets the message field.
@@ -1432,16 +1093,7 @@ public final class Target {
         }
         /**
          * Identifier of the session.
-         * @param sessionId field value; empty omits the value
-         * @return this model
-         */
-        public SendMessageToTargetRequest sessionId(Optional<Target.SessionID> sessionId) {
-            set("sessionId", sessionId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the session.
-         * @param sessionId field value; null removes the value
+         * @param sessionId field value
          * @return this model
          */
         public SendMessageToTargetRequest sessionId(Target.SessionID sessionId) {
@@ -1450,18 +1102,7 @@ public final class Target {
         }
         /**
          * Deprecated.
-         * @param targetId field value; empty omits the value
-         * @return this model
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public SendMessageToTargetRequest targetId(Optional<Target.TargetID> targetId) {
-            set("targetId", targetId.orElse(null));
-            return this;
-        }
-        /**
-         * Deprecated.
-         * @param targetId field value; null removes the value
+         * @param targetId field value
          * @return this model
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
@@ -1482,11 +1123,10 @@ public final class Target {
          * @param waitForDebuggerOnStart protocol value
          */
         public SetAutoAttachRequest(boolean autoAttach, boolean waitForDebuggerOnStart) {
-            set("autoAttach", autoAttach);
-            set("waitForDebuggerOnStart", waitForDebuggerOnStart);
+            autoAttach(autoAttach).waitForDebuggerOnStart(waitForDebuggerOnStart);
         }
         public static SetAutoAttachRequest fromMap(Map<String, Object> values) {
-            SetAutoAttachRequest instance_ = new SetAutoAttachRequest();
+            final SetAutoAttachRequest instance_ = new SetAutoAttachRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1510,8 +1150,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> flatten() {
-            Object value = raw("flatten");
-            return Optional.ofNullable((Boolean) value);
+            return raw("flatten").map(value -> (Boolean) value);
         }
         /**
          * Only targets matching filter will be attached.
@@ -1519,8 +1158,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Target.FilterEntry>> filter() {
-            Object value = raw("filter");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Target.FilterEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("filter").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Target.FilterEntry.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Whether to auto-attach to related targets.
@@ -1543,37 +1181,17 @@ public final class Target {
         /**
          * Enables &quot;flat&quot; access to the session via specifying sessionId attribute in the commands. We plan to make this the default, deprecate non-flattened mode, and eventually retire it. See crbug.com/991325.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param flatten field value; empty omits the value
+         * @param flatten field value
          * @return this model
          */
-        public SetAutoAttachRequest flatten(Optional<Boolean> flatten) {
-            set("flatten", flatten.orElse(null));
-            return this;
-        }
-        /**
-         * Enables &quot;flat&quot; access to the session via specifying sessionId attribute in the commands. We plan to make this the default, deprecate non-flattened mode, and eventually retire it. See crbug.com/991325.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param flatten field value; null removes the value
-         * @return this model
-         */
-        public SetAutoAttachRequest flatten(Boolean flatten) {
+        public SetAutoAttachRequest flatten(boolean flatten) {
             set("flatten", flatten);
             return this;
         }
         /**
          * Only targets matching filter will be attached.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param filter field value; empty omits the value
-         * @return this model
-         */
-        public SetAutoAttachRequest filter(Optional<java.util.List<Target.FilterEntry>> filter) {
-            set("filter", filter.orElse(null));
-            return this;
-        }
-        /**
-         * Only targets matching filter will be attached.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param filter field value; null removes the value
+         * @param filter field value
          * @return this model
          */
         public SetAutoAttachRequest filter(java.util.List<Target.FilterEntry> filter) {
@@ -1594,11 +1212,10 @@ public final class Target {
          * @param waitForDebuggerOnStart protocol value
          */
         public AutoAttachRelatedRequest(Target.TargetID targetId, boolean waitForDebuggerOnStart) {
-            set("targetId", targetId);
-            set("waitForDebuggerOnStart", waitForDebuggerOnStart);
+            targetId(targetId).waitForDebuggerOnStart(waitForDebuggerOnStart);
         }
         public static AutoAttachRelatedRequest fromMap(Map<String, Object> values) {
-            AutoAttachRelatedRequest instance_ = new AutoAttachRelatedRequest();
+            final AutoAttachRelatedRequest instance_ = new AutoAttachRelatedRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1622,8 +1239,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Target.FilterEntry>> filter() {
-            Object value = raw("filter");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Target.FilterEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("filter").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Target.FilterEntry.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Sets the targetId field.
@@ -1646,17 +1262,7 @@ public final class Target {
         /**
          * Only targets matching filter will be attached.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param filter field value; empty omits the value
-         * @return this model
-         */
-        public AutoAttachRelatedRequest filter(Optional<java.util.List<Target.FilterEntry>> filter) {
-            set("filter", filter.orElse(null));
-            return this;
-        }
-        /**
-         * Only targets matching filter will be attached.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param filter field value; null removes the value
+         * @param filter field value
          * @return this model
          */
         public AutoAttachRelatedRequest filter(java.util.List<Target.FilterEntry> filter) {
@@ -1674,10 +1280,10 @@ public final class Target {
          * @param discover protocol value
          */
         public SetDiscoverTargetsRequest(boolean discover) {
-            set("discover", discover);
+            discover(discover);
         }
         public static SetDiscoverTargetsRequest fromMap(Map<String, Object> values) {
-            SetDiscoverTargetsRequest instance_ = new SetDiscoverTargetsRequest();
+            final SetDiscoverTargetsRequest instance_ = new SetDiscoverTargetsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1694,8 +1300,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Target.FilterEntry>> filter() {
-            Object value = raw("filter");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Target.FilterEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("filter").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Target.FilterEntry.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Whether to discover available targets.
@@ -1709,17 +1314,7 @@ public final class Target {
         /**
          * Only targets matching filter will be attached. If {@code discover} is false, {@code filter} must be omitted or empty.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param filter field value; empty omits the value
-         * @return this model
-         */
-        public SetDiscoverTargetsRequest filter(Optional<java.util.List<Target.FilterEntry>> filter) {
-            set("filter", filter.orElse(null));
-            return this;
-        }
-        /**
-         * Only targets matching filter will be attached. If {@code discover} is false, {@code filter} must be omitted or empty.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param filter field value; null removes the value
+         * @param filter field value
          * @return this model
          */
         public SetDiscoverTargetsRequest filter(java.util.List<Target.FilterEntry> filter) {
@@ -1739,10 +1334,10 @@ public final class Target {
          * @param locations protocol value
          */
         public SetRemoteLocationsRequest(java.util.List<Target.RemoteLocation> locations) {
-            set("locations", locations);
+            locations(locations);
         }
         public static SetRemoteLocationsRequest fromMap(Map<String, Object> values) {
-            SetRemoteLocationsRequest instance_ = new SetRemoteLocationsRequest();
+            final SetRemoteLocationsRequest instance_ = new SetRemoteLocationsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1751,7 +1346,7 @@ public final class Target {
          * @return the protocol field value
          */
         public java.util.List<Target.RemoteLocation> locations() {
-            return CdpObject.requireList(require("locations"), element0 -> java.util.Objects.requireNonNull(Target.RemoteLocation.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("locations"), element0 -> java.util.Objects.requireNonNull(Target.RemoteLocation.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * List of remote locations.
@@ -1775,10 +1370,10 @@ public final class Target {
          * @param targetId protocol value
          */
         public GetDevToolsTargetRequest(Target.TargetID targetId) {
-            set("targetId", targetId);
+            targetId(targetId);
         }
         public static GetDevToolsTargetRequest fromMap(Map<String, Object> values) {
-            GetDevToolsTargetRequest instance_ = new GetDevToolsTargetRequest();
+            final GetDevToolsTargetRequest instance_ = new GetDevToolsTargetRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1811,10 +1406,10 @@ public final class Target {
          * @param targetId protocol value
          */
         public OpenDevToolsRequest(Target.TargetID targetId) {
-            set("targetId", targetId);
+            targetId(targetId);
         }
         public static OpenDevToolsRequest fromMap(Map<String, Object> values) {
-            OpenDevToolsRequest instance_ = new OpenDevToolsRequest();
+            final OpenDevToolsRequest instance_ = new OpenDevToolsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1830,8 +1425,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> panelId() {
-            Object value = raw("panelId");
-            return Optional.ofNullable((String) value);
+            return raw("panelId").map(value -> (String) value);
         }
         /**
          * This can be the page or tab target ID.
@@ -1844,16 +1438,7 @@ public final class Target {
         }
         /**
          * The id of the panel we want DevTools to open initially. Currently supported panels are elements, console, network, sources, resources, timeline, chrome-recorder, heap-profiler, lighthouse, and security.
-         * @param panelId field value; empty omits the value
-         * @return this model
-         */
-        public OpenDevToolsRequest panelId(Optional<String> panelId) {
-            set("panelId", panelId.orElse(null));
-            return this;
-        }
-        /**
-         * The id of the panel we want DevTools to open initially. Currently supported panels are elements, console, network, sources, resources, timeline, chrome-recorder, heap-profiler, lighthouse, and security.
-         * @param panelId field value; null removes the value
+         * @param panelId field value
          * @return this model
          */
         public OpenDevToolsRequest panelId(String panelId) {
@@ -1883,8 +1468,7 @@ public final class Target {
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> defaultBrowserContextId() {
-            Object value = raw("defaultBrowserContextId");
-            return Optional.ofNullable(value == null ? null : new Browser.BrowserContextID((String) value));
+            return raw("defaultBrowserContextId").map(value -> new Browser.BrowserContextID((String) value));
         }
         /**
          * An array of browser context ids.
@@ -1898,17 +1482,7 @@ public final class Target {
         /**
          * The id of the default browser context if available.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param defaultBrowserContextId field value; empty omits the value
-         * @return this model
-         */
-        public GetBrowserContextsResult defaultBrowserContextId(Optional<Browser.BrowserContextID> defaultBrowserContextId) {
-            set("defaultBrowserContextId", defaultBrowserContextId.orElse(null));
-            return this;
-        }
-        /**
-         * The id of the default browser context if available.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param defaultBrowserContextId field value; null removes the value
+         * @param defaultBrowserContextId field value
          * @return this model
          */
         public GetBrowserContextsResult defaultBrowserContextId(Browser.BrowserContextID defaultBrowserContextId) {
@@ -1938,7 +1512,7 @@ public final class Target {
          * @return the protocol field value
          */
         public Target.TargetInfo targetInfo() {
-            return java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("targetInfo")))));
+            return java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(CdpObject.requireObjectMap(require("targetInfo"))));
         }
         /**
          * Returns the waitingForDebugger field.
@@ -1999,8 +1573,7 @@ public final class Target {
          */
         @Deprecated
         public Optional<Target.TargetID> targetId() {
-            Object value = raw("targetId");
-            return Optional.ofNullable(value == null ? null : new Target.TargetID((String) value));
+            return raw("targetId").map(value -> new Target.TargetID((String) value));
         }
         /**
          * Detached session identifier.
@@ -2013,18 +1586,7 @@ public final class Target {
         }
         /**
          * Deprecated.
-         * @param targetId field value; empty omits the value
-         * @return this model
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public DetachedFromTargetEvent targetId(Optional<Target.TargetID> targetId) {
-            set("targetId", targetId.orElse(null));
-            return this;
-        }
-        /**
-         * Deprecated.
-         * @param targetId field value; null removes the value
+         * @param targetId field value
          * @return this model
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
@@ -2064,8 +1626,7 @@ public final class Target {
          */
         @Deprecated
         public Optional<Target.TargetID> targetId() {
-            Object value = raw("targetId");
-            return Optional.ofNullable(value == null ? null : new Target.TargetID((String) value));
+            return raw("targetId").map(value -> new Target.TargetID((String) value));
         }
         /**
          * Identifier of a session which sends a message.
@@ -2087,18 +1648,7 @@ public final class Target {
         }
         /**
          * Deprecated.
-         * @param targetId field value; empty omits the value
-         * @return this model
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public ReceivedMessageFromTargetEvent targetId(Optional<Target.TargetID> targetId) {
-            set("targetId", targetId.orElse(null));
-            return this;
-        }
-        /**
-         * Deprecated.
-         * @param targetId field value; null removes the value
+         * @param targetId field value
          * @return this model
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
@@ -2122,7 +1672,7 @@ public final class Target {
          * @return the protocol field value
          */
         public Target.TargetInfo targetInfo() {
-            return java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("targetInfo")))));
+            return java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(CdpObject.requireObjectMap(require("targetInfo"))));
         }
         /**
          * Sets the targetInfo field.
@@ -2232,7 +1782,7 @@ public final class Target {
          * @return the protocol field value
          */
         public Target.TargetInfo targetInfo() {
-            return java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("targetInfo")))));
+            return java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(CdpObject.requireObjectMap(require("targetInfo"))));
         }
         /**
          * Sets the targetInfo field.
@@ -2253,7 +1803,7 @@ public final class Target {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> activateTarget(Target.TargetID targetId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("targetId", CdpObject.json(targetId));
             return client.call("Target.activateTarget", params);
         }
@@ -2271,10 +1821,10 @@ public final class Target {
          * @param flatten protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<Target.SessionID> attachToTarget(Target.TargetID targetId, Optional<Boolean> flatten) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Target.SessionID> attachToTarget(Target.TargetID targetId, boolean flatten) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("targetId", CdpObject.json(targetId));
-            flatten.ifPresent(value_ -> params.put("flatten", value_));
+            params.put("flatten", CdpObject.json(flatten));
             return client.call("Target.attachToTarget", params, result_ -> new Target.SessionID((String) java.util.Objects.requireNonNull(result_.get("sessionId"))));
         }
         /**
@@ -2283,7 +1833,9 @@ public final class Target {
          * @return a stage completing with the command result
          */
         public CompletionStage<Target.SessionID> attachToTarget(Target.TargetID targetId) {
-            return attachToTarget(targetId, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("targetId", CdpObject.json(targetId));
+            return client.call("Target.attachToTarget", params, result_ -> new Target.SessionID((String) java.util.Objects.requireNonNull(result_.get("sessionId"))));
         }
         /**
          * Attaches to the target with given id.
@@ -2307,7 +1859,7 @@ public final class Target {
          * @return a stage completing with the command result
          */
         public CompletionStage<Boolean> closeTarget(Target.TargetID targetId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("targetId", CdpObject.json(targetId));
             return client.call("Target.closeTarget", params, result_ -> (Boolean) java.util.Objects.requireNonNull(result_.get("success")));
         }
@@ -2329,11 +1881,11 @@ public final class Target {
          * @param inheritPermissions protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> exposeDevToolsProtocol(Target.TargetID targetId, Optional<String> bindingName, Optional<Boolean> inheritPermissions) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> exposeDevToolsProtocol(Target.TargetID targetId, @Nullable String bindingName, @Nullable Boolean inheritPermissions) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("targetId", CdpObject.json(targetId));
-            bindingName.ifPresent(value_ -> params.put("bindingName", CdpObject.json(value_)));
-            inheritPermissions.ifPresent(value_ -> params.put("inheritPermissions", value_));
+            if (bindingName != null) params.put("bindingName", CdpObject.json(bindingName));
+            if (inheritPermissions != null) params.put("inheritPermissions", CdpObject.json(inheritPermissions));
             return client.call("Target.exposeDevToolsProtocol", params);
         }
         /**
@@ -2345,7 +1897,9 @@ public final class Target {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> exposeDevToolsProtocol(Target.TargetID targetId) {
-            return exposeDevToolsProtocol(targetId, Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("targetId", CdpObject.json(targetId));
+            return client.call("Target.exposeDevToolsProtocol", params);
         }
         /**
          * Inject object to the target&#x27;s main frame that provides a communication channel with browser target.
@@ -2366,12 +1920,12 @@ public final class Target {
          * @param originsWithUniversalNetworkAccess protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<Browser.BrowserContextID> createBrowserContext(Optional<Boolean> disposeOnDetach, Optional<String> proxyServer, Optional<String> proxyBypassList, Optional<java.util.List<String>> originsWithUniversalNetworkAccess) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            disposeOnDetach.ifPresent(value_ -> params.put("disposeOnDetach", value_));
-            proxyServer.ifPresent(value_ -> params.put("proxyServer", CdpObject.json(value_)));
-            proxyBypassList.ifPresent(value_ -> params.put("proxyBypassList", CdpObject.json(value_)));
-            originsWithUniversalNetworkAccess.ifPresent(value_ -> params.put("originsWithUniversalNetworkAccess", CdpObject.json(value_)));
+        public CompletionStage<Browser.BrowserContextID> createBrowserContext(@Nullable Boolean disposeOnDetach, @Nullable String proxyServer, @Nullable String proxyBypassList, java.util.@Nullable List<String> originsWithUniversalNetworkAccess) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (disposeOnDetach != null) params.put("disposeOnDetach", CdpObject.json(disposeOnDetach));
+            if (proxyServer != null) params.put("proxyServer", CdpObject.json(proxyServer));
+            if (proxyBypassList != null) params.put("proxyBypassList", CdpObject.json(proxyBypassList));
+            if (originsWithUniversalNetworkAccess != null) params.put("originsWithUniversalNetworkAccess", CdpObject.json(originsWithUniversalNetworkAccess));
             return client.call("Target.createBrowserContext", params, result_ -> new Browser.BrowserContextID((String) java.util.Objects.requireNonNull(result_.get("browserContextId"))));
         }
         /**
@@ -2379,7 +1933,7 @@ public final class Target {
          * @return a stage completing with the command result
          */
         public CompletionStage<Browser.BrowserContextID> createBrowserContext() {
-            return createBrowserContext(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+            return client.call("Target.createBrowserContext", null, result_ -> new Browser.BrowserContextID((String) java.util.Objects.requireNonNull(result_.get("browserContextId"))));
         }
         /**
          * Creates a new empty BrowserContext. Similar to an incognito profile but you can have more than one.
@@ -2413,21 +1967,21 @@ public final class Target {
          * @param focus protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<Target.TargetID> createTarget(String url, OptionalLong left, OptionalLong top, OptionalLong width, OptionalLong height, Optional<Target.WindowState> windowState, Optional<Browser.BrowserContextID> browserContextId, Optional<Boolean> enableBeginFrameControl, Optional<Boolean> newWindow, Optional<Boolean> background, Optional<Boolean> forTab, Optional<Boolean> hidden, Optional<Boolean> focus) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Target.TargetID> createTarget(String url, @Nullable Long left, @Nullable Long top, @Nullable Long width, @Nullable Long height, Target.@Nullable WindowState windowState, Browser.@Nullable BrowserContextID browserContextId, @Nullable Boolean enableBeginFrameControl, @Nullable Boolean newWindow, @Nullable Boolean background, @Nullable Boolean forTab, @Nullable Boolean hidden, @Nullable Boolean focus) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("url", CdpObject.json(url));
-            left.ifPresent(value_ -> params.put("left", value_));
-            top.ifPresent(value_ -> params.put("top", value_));
-            width.ifPresent(value_ -> params.put("width", value_));
-            height.ifPresent(value_ -> params.put("height", value_));
-            windowState.ifPresent(value_ -> params.put("windowState", CdpObject.json(value_)));
-            browserContextId.ifPresent(value_ -> params.put("browserContextId", CdpObject.json(value_)));
-            enableBeginFrameControl.ifPresent(value_ -> params.put("enableBeginFrameControl", value_));
-            newWindow.ifPresent(value_ -> params.put("newWindow", value_));
-            background.ifPresent(value_ -> params.put("background", value_));
-            forTab.ifPresent(value_ -> params.put("forTab", value_));
-            hidden.ifPresent(value_ -> params.put("hidden", value_));
-            focus.ifPresent(value_ -> params.put("focus", value_));
+            if (left != null) params.put("left", CdpObject.json(left));
+            if (top != null) params.put("top", CdpObject.json(top));
+            if (width != null) params.put("width", CdpObject.json(width));
+            if (height != null) params.put("height", CdpObject.json(height));
+            if (windowState != null) params.put("windowState", CdpObject.json(windowState));
+            if (browserContextId != null) params.put("browserContextId", CdpObject.json(browserContextId));
+            if (enableBeginFrameControl != null) params.put("enableBeginFrameControl", CdpObject.json(enableBeginFrameControl));
+            if (newWindow != null) params.put("newWindow", CdpObject.json(newWindow));
+            if (background != null) params.put("background", CdpObject.json(background));
+            if (forTab != null) params.put("forTab", CdpObject.json(forTab));
+            if (hidden != null) params.put("hidden", CdpObject.json(hidden));
+            if (focus != null) params.put("focus", CdpObject.json(focus));
             return client.call("Target.createTarget", params, result_ -> new Target.TargetID((String) java.util.Objects.requireNonNull(result_.get("targetId"))));
         }
         /**
@@ -2436,7 +1990,9 @@ public final class Target {
          * @return a stage completing with the command result
          */
         public CompletionStage<Target.TargetID> createTarget(String url) {
-            return createTarget(url, OptionalLong.empty(), OptionalLong.empty(), OptionalLong.empty(), OptionalLong.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("url", CdpObject.json(url));
+            return client.call("Target.createTarget", params, result_ -> new Target.TargetID((String) java.util.Objects.requireNonNull(result_.get("targetId"))));
         }
         /**
          * Creates a new page.
@@ -2452,10 +2008,10 @@ public final class Target {
          * @param targetId protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> detachFromTarget(Optional<Target.SessionID> sessionId, Optional<Target.TargetID> targetId) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            sessionId.ifPresent(value_ -> params.put("sessionId", CdpObject.json(value_)));
-            targetId.ifPresent(value_ -> params.put("targetId", CdpObject.json(value_)));
+        public CompletionStage<Void> detachFromTarget(Target.@Nullable SessionID sessionId, Target.@Nullable TargetID targetId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (sessionId != null) params.put("sessionId", CdpObject.json(sessionId));
+            if (targetId != null) params.put("targetId", CdpObject.json(targetId));
             return client.call("Target.detachFromTarget", params);
         }
         /**
@@ -2463,7 +2019,7 @@ public final class Target {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> detachFromTarget() {
-            return detachFromTarget(Optional.empty(), Optional.empty());
+            return client.call("Target.detachFromTarget", null);
         }
         /**
          * Detaches session with given id.
@@ -2479,7 +2035,7 @@ public final class Target {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disposeBrowserContext(Browser.BrowserContextID browserContextId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("browserContextId", CdpObject.json(browserContextId));
             return client.call("Target.disposeBrowserContext", params);
         }
@@ -2497,10 +2053,10 @@ public final class Target {
          * @param targetId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<Target.TargetInfo> getTargetInfo(Optional<Target.TargetID> targetId) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            targetId.ifPresent(value_ -> params.put("targetId", CdpObject.json(value_)));
-            return client.call("Target.getTargetInfo", params, result_ -> java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("targetInfo")))))));
+        public CompletionStage<Target.TargetInfo> getTargetInfo(Target.TargetID targetId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("targetId", CdpObject.json(targetId));
+            return client.call("Target.getTargetInfo", params, result_ -> java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("targetInfo"))))));
         }
         /**
          * Returns information about a target.
@@ -2508,7 +2064,7 @@ public final class Target {
          * @return a stage completing with the command result
          */
         public CompletionStage<Target.TargetInfo> getTargetInfo() {
-            return getTargetInfo(Optional.empty());
+            return client.call("Target.getTargetInfo", null, result_ -> java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("targetInfo"))))));
         }
         /**
          * Returns information about a target.
@@ -2517,24 +2073,24 @@ public final class Target {
          * @return a stage completing with the command result
          */
         public CompletionStage<Target.TargetInfo> getTargetInfo(GetTargetInfoRequest request) {
-            return client.call("Target.getTargetInfo", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("targetInfo")))))));
+            return client.call("Target.getTargetInfo", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("targetInfo"))))));
         }
         /**
          * Retrieves a list of available targets.
          * @param filter protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<java.util.List<Target.TargetInfo>> getTargets(Optional<java.util.List<Target.FilterEntry>> filter) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            filter.ifPresent(value_ -> params.put("filter", CdpObject.json(value_)));
-            return client.call("Target.getTargets", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("targetInfos")), element0 -> java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        public CompletionStage<java.util.List<Target.TargetInfo>> getTargets(java.util.List<Target.FilterEntry> filter) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("filter", CdpObject.json(filter));
+            return client.call("Target.getTargets", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("targetInfos")), element0 -> java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Retrieves a list of available targets.
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Target.TargetInfo>> getTargets() {
-            return getTargets(Optional.empty());
+            return client.call("Target.getTargets", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("targetInfos")), element0 -> java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Retrieves a list of available targets.
@@ -2542,7 +2098,7 @@ public final class Target {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Target.TargetInfo>> getTargets(GetTargetsRequest request) {
-            return client.call("Target.getTargets", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("targetInfos")), element0 -> java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("Target.getTargets", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("targetInfos")), element0 -> java.util.Objects.requireNonNull(Target.TargetInfo.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Sends protocol message over session with given id. Consider using flat mode instead; see commands attachToTarget, setAutoAttach, and crbug.com/991325.
@@ -2553,11 +2109,11 @@ public final class Target {
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
         @Deprecated
-        public CompletionStage<Void> sendMessageToTarget(String message, Optional<Target.SessionID> sessionId, Optional<Target.TargetID> targetId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> sendMessageToTarget(String message, Target.@Nullable SessionID sessionId, Target.@Nullable TargetID targetId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("message", CdpObject.json(message));
-            sessionId.ifPresent(value_ -> params.put("sessionId", CdpObject.json(value_)));
-            targetId.ifPresent(value_ -> params.put("targetId", CdpObject.json(value_)));
+            if (sessionId != null) params.put("sessionId", CdpObject.json(sessionId));
+            if (targetId != null) params.put("targetId", CdpObject.json(targetId));
             return client.call("Target.sendMessageToTarget", params);
         }
         /**
@@ -2568,7 +2124,9 @@ public final class Target {
          */
         @Deprecated
         public CompletionStage<Void> sendMessageToTarget(String message) {
-            return sendMessageToTarget(message, Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("message", CdpObject.json(message));
+            return client.call("Target.sendMessageToTarget", params);
         }
         /**
          * Sends protocol message over session with given id. Consider using flat mode instead; see commands attachToTarget, setAutoAttach, and crbug.com/991325.
@@ -2588,12 +2146,12 @@ public final class Target {
          * @param filter protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setAutoAttach(boolean autoAttach, boolean waitForDebuggerOnStart, Optional<Boolean> flatten, Optional<java.util.List<Target.FilterEntry>> filter) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> setAutoAttach(boolean autoAttach, boolean waitForDebuggerOnStart, @Nullable Boolean flatten, java.util.@Nullable List<Target.FilterEntry> filter) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("autoAttach", CdpObject.json(autoAttach));
             params.put("waitForDebuggerOnStart", CdpObject.json(waitForDebuggerOnStart));
-            flatten.ifPresent(value_ -> params.put("flatten", value_));
-            filter.ifPresent(value_ -> params.put("filter", CdpObject.json(value_)));
+            if (flatten != null) params.put("flatten", CdpObject.json(flatten));
+            if (filter != null) params.put("filter", CdpObject.json(filter));
             return client.call("Target.setAutoAttach", params);
         }
         /**
@@ -2603,7 +2161,10 @@ public final class Target {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAutoAttach(boolean autoAttach, boolean waitForDebuggerOnStart) {
-            return setAutoAttach(autoAttach, waitForDebuggerOnStart, Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("autoAttach", CdpObject.json(autoAttach));
+            params.put("waitForDebuggerOnStart", CdpObject.json(waitForDebuggerOnStart));
+            return client.call("Target.setAutoAttach", params);
         }
         /**
          * Controls whether to automatically attach to new targets which are considered to be directly related to this one (for example, iframes or workers). When turned on, attaches to all existing related targets as well. When turned off, automatically detaches from all currently attached targets. This also clears all targets added by {@code autoAttachRelated} from the list of targets to watch for creation of related targets. You might want to call this recursively for auto-attached targets to attach to all available targets.
@@ -2621,11 +2182,11 @@ public final class Target {
          * @param filter protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> autoAttachRelated(Target.TargetID targetId, boolean waitForDebuggerOnStart, Optional<java.util.List<Target.FilterEntry>> filter) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> autoAttachRelated(Target.TargetID targetId, boolean waitForDebuggerOnStart, java.util.List<Target.FilterEntry> filter) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("targetId", CdpObject.json(targetId));
             params.put("waitForDebuggerOnStart", CdpObject.json(waitForDebuggerOnStart));
-            filter.ifPresent(value_ -> params.put("filter", CdpObject.json(value_)));
+            params.put("filter", CdpObject.json(filter));
             return client.call("Target.autoAttachRelated", params);
         }
         /**
@@ -2636,7 +2197,10 @@ public final class Target {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> autoAttachRelated(Target.TargetID targetId, boolean waitForDebuggerOnStart) {
-            return autoAttachRelated(targetId, waitForDebuggerOnStart, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("targetId", CdpObject.json(targetId));
+            params.put("waitForDebuggerOnStart", CdpObject.json(waitForDebuggerOnStart));
+            return client.call("Target.autoAttachRelated", params);
         }
         /**
          * Adds the specified target to the list of targets that will be monitored for any related target creation (such as child frames, child workers and new versions of service worker) and reported through {@code attachedToTarget}. The specified target is also auto-attached. This cancels the effect of any previous {@code setAutoAttach} and is also cancelled by subsequent {@code setAutoAttach}. Only available at the Browser target.
@@ -2653,10 +2217,10 @@ public final class Target {
          * @param filter protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setDiscoverTargets(boolean discover, Optional<java.util.List<Target.FilterEntry>> filter) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> setDiscoverTargets(boolean discover, java.util.List<Target.FilterEntry> filter) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("discover", CdpObject.json(discover));
-            filter.ifPresent(value_ -> params.put("filter", CdpObject.json(value_)));
+            params.put("filter", CdpObject.json(filter));
             return client.call("Target.setDiscoverTargets", params);
         }
         /**
@@ -2665,7 +2229,9 @@ public final class Target {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDiscoverTargets(boolean discover) {
-            return setDiscoverTargets(discover, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("discover", CdpObject.json(discover));
+            return client.call("Target.setDiscoverTargets", params);
         }
         /**
          * Controls whether to discover available targets and notify via {@code targetCreated/targetInfoChanged/targetDestroyed} events.
@@ -2682,7 +2248,7 @@ public final class Target {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setRemoteLocations(java.util.List<Target.RemoteLocation> locations) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("locations", CdpObject.json(locations));
             return client.call("Target.setRemoteLocations", params);
         }
@@ -2702,9 +2268,9 @@ public final class Target {
          * @return a stage completing with the command result
          */
         public CompletionStage<Optional<Target.TargetID>> getDevToolsTarget(Target.TargetID targetId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("targetId", CdpObject.json(targetId));
-            return client.call("Target.getDevToolsTarget", params, result_ -> Optional.ofNullable(result_.get("targetId") == null ? null : new Target.TargetID((String) result_.get("targetId"))));
+            return client.call("Target.getDevToolsTarget", params, result_ -> Optional.ofNullable(result_.get("targetId")).map(value -> new Target.TargetID((String) value)));
         }
         /**
          * Gets the targetId of the DevTools page target opened for the given target (if any).
@@ -2713,7 +2279,7 @@ public final class Target {
          * @return a stage completing with the command result
          */
         public CompletionStage<Optional<Target.TargetID>> getDevToolsTarget(GetDevToolsTargetRequest request) {
-            return client.call("Target.getDevToolsTarget", request == null ? null : request.toMap(), result_ -> Optional.ofNullable(result_.get("targetId") == null ? null : new Target.TargetID((String) result_.get("targetId"))));
+            return client.call("Target.getDevToolsTarget", request == null ? null : request.toMap(), result_ -> Optional.ofNullable(result_.get("targetId")).map(value -> new Target.TargetID((String) value)));
         }
         /**
          * Opens a DevTools window for the target.
@@ -2722,10 +2288,10 @@ public final class Target {
          * @param panelId protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<Target.TargetID> openDevTools(Target.TargetID targetId, Optional<String> panelId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Target.TargetID> openDevTools(Target.TargetID targetId, String panelId) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("targetId", CdpObject.json(targetId));
-            panelId.ifPresent(value_ -> params.put("panelId", CdpObject.json(value_)));
+            params.put("panelId", CdpObject.json(panelId));
             return client.call("Target.openDevTools", params, result_ -> new Target.TargetID((String) java.util.Objects.requireNonNull(result_.get("targetId"))));
         }
         /**
@@ -2735,7 +2301,9 @@ public final class Target {
          * @return a stage completing with the command result
          */
         public CompletionStage<Target.TargetID> openDevTools(Target.TargetID targetId) {
-            return openDevTools(targetId, Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("targetId", CdpObject.json(targetId));
+            return client.call("Target.openDevTools", params, result_ -> new Target.TargetID((String) java.util.Objects.requireNonNull(result_.get("targetId"))));
         }
         /**
          * Opens a DevTools window for the target.

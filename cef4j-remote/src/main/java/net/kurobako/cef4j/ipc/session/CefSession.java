@@ -2,11 +2,10 @@ package net.kurobako.cef4j.ipc.session;
 
 import java.io.Closeable;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import net.kurobako.cef4j.policy.NullableBoundary;
-import org.jspecify.annotations.Nullable;
 
 /**
  * Correlation, routing, and intercept layer above {@link net.kurobako.cef4j.ipc.transport.CefTransport}. Hides the
@@ -14,6 +13,10 @@ import org.jspecify.annotations.Nullable;
  *
  * <p>This transport-neutral boundary and its lifecycle constraints are documented in the project {@code README.md}.
  */
+// The three parameters of on and onLatest are the subscription the API takes, which the middleware of a session
+// forwards; a parameter object would change the signature of every subscription in the build to name the same three
+// values.
+@SuppressWarnings("baumkuchen:data-clump")
 public interface CefSession extends Closeable {
 
     /**
@@ -59,9 +62,9 @@ public interface CefSession extends Closeable {
     /** Returned from {@link #on}/{@link #intercept}; call {@link #unregister} to stop delivery. */
     interface HandlerRegistration extends AutoCloseable {
         static HandlerRegistration combine(HandlerRegistration... registrations) {
-            HandlerRegistration[] owned = registrations.clone();
+            final HandlerRegistration[] owned = registrations.clone();
             for (HandlerRegistration registration : owned) Objects.requireNonNull(registration, "registration");
-            AtomicBoolean closed = new AtomicBoolean();
+            final AtomicBoolean closed = new AtomicBoolean();
             return () -> {
                 if (!closed.compareAndSet(false, true)) return;
                 RuntimeException failure = null;
@@ -85,11 +88,9 @@ public interface CefSession extends Closeable {
         }
     }
 
-    /** Synchronous-return intercept handler; return {@code null} to signal "default action" (empty response). */
+    /** Synchronous-return intercept handler; return empty to signal "default action" (empty response). */
     @FunctionalInterface
     interface InterceptHandler<E extends CefMessageView> {
-        @NullableBoundary("null selects the CEF default action")
-        @Nullable
-        CefMessageEncoder onIntercept(E event);
+        Optional<? extends CefMessageEncoder> onIntercept(E event);
     }
 }

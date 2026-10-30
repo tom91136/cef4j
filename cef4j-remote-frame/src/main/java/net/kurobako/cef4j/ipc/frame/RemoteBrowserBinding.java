@@ -105,7 +105,7 @@ public final class RemoteBrowserBinding implements AutoCloseable {
         }
         if (setupFailure != null || this.session != session) {
             registration.unregister();
-            RuntimeException failure = setupFailure;
+            final RuntimeException failure = setupFailure;
             setupFailure = null;
             this.session = null;
             throw Objects.requireNonNull(failure, "frame transport setup failure");
@@ -123,7 +123,7 @@ public final class RemoteBrowserBinding implements AutoCloseable {
     }
 
     private synchronized void installBrowser(CefSession expectedSession, RemoteHandle browser) {
-        CompletableFuture<RemoteHandle> pendingBrowser = browserHandle;
+        final CompletableFuture<RemoteHandle> pendingBrowser = browserHandle;
         if (session != expectedSession || pendingBrowser.isDone()) return;
         FrameTransport created = null;
         try {
@@ -143,7 +143,7 @@ public final class RemoteBrowserBinding implements AutoCloseable {
             frameTransport = null;
             readyBrowser = null;
             setupFailure = failure;
-            HandlerRegistration registration = lifecycleRegistration;
+            final HandlerRegistration registration = lifecycleRegistration;
             lifecycleRegistration = null;
             session = null;
             attachedOnce = false;
@@ -152,9 +152,9 @@ public final class RemoteBrowserBinding implements AutoCloseable {
         }
     }
 
-    /** Whether a session is attached; frames delivered after release must not be presented. */
-    public boolean isAttached() {
-        return session != null;
+    /** Whether a session is detached; frames delivered after release must not be presented. */
+    public boolean isDetached() {
+        return session == null;
     }
 
     /** Browser host for input forwarding; empty before the browser is ready or after release. */
@@ -182,7 +182,7 @@ public final class RemoteBrowserBinding implements AutoCloseable {
      */
     public CompletableFuture<String> evaluateJavascript(String script) {
         return browserHandle.thenCompose(handle -> {
-            CefSession current = requireSession();
+            final CefSession current = requireSession();
             return new Browser(current, handle)
                     .getMainFrame()
                     .thenCompose(frame -> current.request(
@@ -195,13 +195,13 @@ public final class RemoteBrowserBinding implements AutoCloseable {
     /** Requests a viewport resize after queued UI work and completes once the remote runtime acknowledges it. */
     public CompletableFuture<Void> resizeViewport(int width, int height) {
         RemoteViewportConstraints.validate(width, height);
-        CompletableFuture<Void> queuedUiWork = new CompletableFuture<>();
+        final CompletableFuture<Void> queuedUiWork = new CompletableFuture<>();
         try {
             uiThread.execute(() -> queuedUiWork.complete(null));
         } catch (RuntimeException failure) {
             queuedUiWork.completeExceptionally(failure);
         }
-        long desired = packSize(width, height);
+        final long desired = packSize(width, height);
         return queuedUiWork
                 .orTimeout(UI_BARRIER_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                 .thenCompose(ignored -> browserHandle.thenCompose(handle -> {
@@ -221,22 +221,22 @@ public final class RemoteBrowserBinding implements AutoCloseable {
             return;
         }
         desiredSize.set(packSize(width, height));
-        CefSession current = session;
-        RemoteHandle handle = readyBrowser;
+        final CefSession current = session;
+        final RemoteHandle handle = readyBrowser;
         if (current != null && handle != null) observe(flushViewportSize(current, handle), "resize viewport");
     }
 
     private CompletableFuture<Void> flushViewportSize(CefSession expectedSession, RemoteHandle handle) {
         if (session != expectedSession) return CompletableFuture.completedFuture(null);
-        long desired = desiredSize.get();
+        final long desired = desiredSize.get();
         if (reportedSize.getAndSet(desired) == desired) return CompletableFuture.completedFuture(null);
         return requestViewportSize(expectedSession, handle, desired);
     }
 
     private CompletableFuture<Void> requestViewportSize(CefSession expectedSession, RemoteHandle handle, long desired) {
         if (session != expectedSession) return CompletableFuture.completedFuture(null);
-        int width = (int) (desired >>> 32);
-        int height = (int) desired;
+        final int width = (int) (desired >>> 32);
+        final int height = (int) desired;
         reportedSize.set(desired);
         return expectedSession
                 .request(new SetViewportSizeRequest(handle, width, height), SetViewportSizeResponse.DECODER)
@@ -263,7 +263,7 @@ public final class RemoteBrowserBinding implements AutoCloseable {
     public synchronized void release() {
         if (!attachedOnce) return;
         RuntimeException failure = null;
-        FrameTransport transport = frameTransport;
+        final FrameTransport transport = frameTransport;
         frameTransport = null;
         if (transport != null) {
             try {
@@ -295,7 +295,7 @@ public final class RemoteBrowserBinding implements AutoCloseable {
     }
 
     private CefSession requireSession() {
-        CefSession current = session;
+        final CefSession current = session;
         if (current == null) throw new IllegalStateException(owner + " has not been attach()ed to a session");
         return current;
     }

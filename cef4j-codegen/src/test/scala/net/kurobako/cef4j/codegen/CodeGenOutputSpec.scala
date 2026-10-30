@@ -1,6 +1,12 @@
 package net.kurobako.cef4j.codegen
 
+import java.nio.file.Files
+import java.nio.file.Path
+
 class CodeGenOutputSpec extends TempDirectorySuite {
+
+  private type NamingCtx = Naming.Context
+  private type DocCtx    = DocComments.Context
 
   test("CLI rejects unknown arguments before generating output") {
     intercept[IllegalArgumentException](Main.main(Array("--not-a-real-option=true")))
@@ -8,8 +14,8 @@ class CodeGenOutputSpec extends TempDirectorySuite {
 
   private given Banners = Banners.forCefVersion("test")
 
-  private val codegen        = new JniCppCodeGen(Map.empty)
-  private val byValueCodegen = new JniCppCodeGen(
+  private val codegen        = JniCppCodeGen(Map.empty)
+  private val byValueCodegen = JniCppCodeGen(
     Map(
       "cef_size_t" -> CefDecl.DataStruct(
         "cef_size_t",
@@ -22,7 +28,7 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   )
 
   test("Windows ARM64 distribution name selects Windows code generation") {
-    assertEquals(CodegenPlatform.parse("windowsarm64"), Some(CodegenPlatform.Windows))
+    assertEquals(Platform.parse("windowsarm64"), Some(Platform.Windows))
   }
 
   test("Java native codegen produces correct JNI export macro") {
@@ -259,7 +265,7 @@ class CodeGenOutputSpec extends TempDirectorySuite {
     )
     val tmpDir = tempDirectory("cef4j-test")
     JavaEnumCodeGen.emit(decl, tmpDir)
-    val javaCode = java.nio.file.Files.readString(tmpDir.resolve("CefResourceType.java"))
+    val javaCode = Files.readString(tmpDir.resolve("CefResourceType.java"))
     assert(
       javaCode.contains("public final class CefResourceType implements CefEnum<CefResourceType>"),
       s"Missing class decl in:\n$javaCode"
@@ -288,7 +294,7 @@ class CodeGenOutputSpec extends TempDirectorySuite {
     )
     val tmpDir = tempDirectory("cef4j-enum-canonical")
     JavaEnumCodeGen.emit(decl, tmpDir)
-    val javaCode = java.nio.file.Files.readString(tmpDir.resolve("CefDragOperationsMask.java"))
+    val javaCode = Files.readString(tmpDir.resolve("CefDragOperationsMask.java"))
     assert(
       javaCode.contains("""EVERY(0xffffffffL, "0xffffffff", "DRAG_OPERATION_EVERY")"""),
       s"Missing canonical numeric expr text in:\n$javaCode"
@@ -318,7 +324,7 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   }
 
   test("class doc source refs keep Doxygen links in @see tags") {
-    given DocComments.Context = DocComments.baseContext(146, 0)
+    given DocCtx = DocComments.baseContext(cefMajor = 146, cefMinor = 0)
 
     val result = JavaCodeGen.renderClassDoc(
       classDoc = "Reads data from a stream.\n@_cefsrc:cef_stream.h:42"
@@ -333,13 +339,12 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   }
 
   test("method doc source refs keep Doxygen links in @see tags") {
-    given namingContext: Naming.Context   = Naming.Context.empty
-    given docContext: DocComments.Context = DocComments.baseContext(146, 0)
+    given Naming.Context = Naming.Context.empty
+    given DocCtx         = DocComments.baseContext(cefMajor = 146, cefMinor = 0)
 
     val fn     = FnPtr("read", CType.Long, List(Param("buffer", CType.Buffer("size"))))
     val result = DocComments.forMethod(
-      fn = fn,
-      docs = Map("read" -> "Reads from a stream.\n@_cefsrc:cef_stream.h:42"),
+      DocComments.MethodDoc(fn, Map("read" -> "Reads from a stream.\n@_cefsrc:cef_stream.h:42")),
       capiSource = "cef_stream_capi.h",
       cPrototype = "size_t (CEF_CALLBACK* read)(struct _cef_read_handler_t* self, void* ptr, size_t size, size_t n);"
     )
@@ -353,7 +358,7 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   }
 
   test("Doxygen URL for subdirectory header strips directory prefix") {
-    given DocComments.Context = DocComments.baseContext(146, 0)
+    given DocCtx = DocComments.baseContext(cefMajor = 146, cefMinor = 0)
 
     val result = JavaCodeGen.renderClassDoc(
       classDoc = "A scroll view.\n@_cefsrc:views/cef_scroll_view.h:10"
@@ -370,8 +375,8 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   }
 
   test("method doc cross references keep Javadoc links") {
-    given namingContext: Naming.Context   = Naming.Context.empty
-    given docContext: DocComments.Context = DocComments.Context(
+    given Naming.Context = Naming.Context.empty
+    given DocCtx         = DocComments.Context(
       docsBaseUrl = "https://cef-builds.spotifycdn.com/docs/146.0",
       classNameMap = Map("CefLifeSpanHandler" -> "CefLifeSpanHandler"),
       methodSigMap = Map(
@@ -381,10 +386,12 @@ class CodeGenOutputSpec extends TempDirectorySuite {
 
     val fn     = FnPtr("get_main_frame", CType.ObjectPtr("cef_frame_t"), Nil)
     val result = DocComments.forMethod(
-      fn = fn,
-      docs = Map(
-        "get_main_frame" ->
-          "Returns the main frame after CefLifeSpanHandler::OnBeforeClose() is called.\n@_cefsrc:cef_browser.h:152"
+      DocComments.MethodDoc(
+        fn,
+        Map(
+          "get_main_frame" ->
+            "Returns the main frame after CefLifeSpanHandler::OnBeforeClose() is called.\n@_cefsrc:cef_browser.h:152"
+        )
       ),
       capiSource = "cef_browser_capi.h",
       cPrototype = "cef_frame_t* (CEF_CALLBACK* get_main_frame)(struct _cef_browser_t* self);"
@@ -397,12 +404,12 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   }
 
   test("method doc lookup prefers owner-qualified capi_name matches over unqualified aliases") {
-    given namingContext: Naming.Context = Naming.Context(
+    given NamingCtx = Naming.Context(
       cppClassNames = Map("cef_before_download_callback_t" -> "CefBeforeDownloadCallback"),
       compoundSegments = Map.empty,
       javaPackage = "net.kurobako.cef4j.gen"
     )
-    given docContext: DocComments.Context = DocComments.baseContext(146, 0)
+    given DocCtx = DocComments.baseContext(cefMajor = 146, cefMinor = 0)
 
     val fn = FnPtr(
       name = "cont",
@@ -419,12 +426,10 @@ class CodeGenOutputSpec extends TempDirectorySuite {
     )
 
     val result = DocComments.forMethod(
-      fn = fn,
-      docs = docs,
+      DocComments.MethodDoc(fn, docs, "cef_before_download_callback_t"),
       capiSource = "cef_download_handler_capi.h",
       cPrototype =
-        "void (CEF_CALLBACK* cont)(struct _cef_before_download_callback_t* self, const cef_string_t* download_path, int show_dialog);",
-      cefStructName = "cef_before_download_callback_t"
+        "void (CEF_CALLBACK* cont)(struct _cef_before_download_callback_t* self, const cef_string_t* download_path, int show_dialog);"
     )
 
     assert(result.contains("Call to continue the download."), s"Expected owner-qualified download doc in:\n$result")
@@ -436,14 +441,14 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   }
 
   test("static free function docs prefer owner-qualified create over unrelated create") {
-    given namingContext: Naming.Context = Naming.Context(
+    given NamingCtx = Naming.Context(
       cppClassNames = Map("cef_shared_process_message_builder_t" -> "CefSharedProcessMessageBuilder"),
       compoundSegments = Map.empty,
       javaPackage = "net.kurobako.cef4j.gen"
     )
-    given docContext: DocComments.Context = DocComments.baseContext(146, 0)
+    given DocCtx = DocComments.baseContext(cefMajor = 146, cefMinor = 0)
 
-    val tmpDir: java.nio.file.Path              = tempDirectory("cef4j-doc-test")
+    val tmpDir: Path                            = tempDirectory("cef4j-doc-test")
     val objectDecl: CefDecl.ObjectStruct        = CefDecl.ObjectStruct("cef_shared_process_message_builder_t", Nil)
     val freeMethods: List[CefDecl.FreeFunction] = List(
       CefDecl.FreeFunction(
@@ -465,7 +470,7 @@ class CodeGenOutputSpec extends TempDirectorySuite {
     )
 
     JavaInterfaceCodeGen.emitObject(objectDecl, tmpDir, docs = docs, freeFunctions = freeMethods)
-    val javaCode = java.nio.file.Files.readString(tmpDir.resolve("CefSharedProcessMessageBuilder.java"))
+    val javaCode = Files.readString(tmpDir.resolve("CefSharedProcessMessageBuilder.java"))
 
     assert(
       javaCode.contains("Creates a new CefSharedProcessMessageBuilder"),
@@ -482,14 +487,14 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   }
 
   test("free function docs prefer owner-qualified create variants over generic create docs") {
-    given namingContext: Naming.Context = Naming.Context(
+    given NamingCtx = Naming.Context(
       cppClassNames = Map("cef_scroll_view_t" -> "CefScrollView"),
       compoundSegments = Map.empty,
       javaPackage = "net.kurobako.cef4j.gen"
     )
-    given docContext: DocComments.Context = DocComments.baseContext(146, 0)
+    given DocCtx = DocComments.baseContext(cefMajor = 146, cefMinor = 0)
 
-    val tmpDir: java.nio.file.Path              = tempDirectory("cef4j-doc-test")
+    val tmpDir: Path                            = tempDirectory("cef4j-doc-test")
     val objectDecl: CefDecl.ObjectStruct        = CefDecl.ObjectStruct("cef_scroll_view_t", Nil)
     val freeMethods: List[CefDecl.FreeFunction] = List(
       CefDecl.FreeFunction(
@@ -511,7 +516,7 @@ class CodeGenOutputSpec extends TempDirectorySuite {
     )
 
     JavaInterfaceCodeGen.emitObject(objectDecl, tmpDir, docs = docs, freeFunctions = freeMethods)
-    val javaCode = java.nio.file.Files.readString(tmpDir.resolve("CefScrollView.java"))
+    val javaCode = Files.readString(tmpDir.resolve("CefScrollView.java"))
 
     assert(
       javaCode.contains("Create a new ScrollView."),
@@ -528,8 +533,8 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   }
 
   test("doc conversion escapes shift expressions inside generated C prototypes") {
-    given namingContext: Naming.Context   = Naming.Context.empty
-    given docContext: DocComments.Context = DocComments.Context.empty
+    given Naming.Context = Naming.Context.empty
+    given DocCtx         = DocComments.Context.empty
 
     val result = DocComments.convertCefDoc(
       "Flags used to customize the behavior of CefURLRequest.",
@@ -541,8 +546,8 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   }
 
   test("doc comment conversion escapes literal self-closing tags in prose") {
-    given namingContext: Naming.Context   = Naming.Context.empty
-    given docContext: DocComments.Context = DocComments.Context.empty
+    given Naming.Context = Naming.Context.empty
+    given DocCtx         = DocComments.Context.empty
 
     val result = DocComments.convertCefDoc(
       """Returns {@code true} if the node represents an empty element. "<a/>" is considered empty."""
@@ -552,8 +557,8 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   }
 
   test("doc comment conversion escapes literal closing tags in prose") {
-    given namingContext: Naming.Context   = Naming.Context.empty
-    given docContext: DocComments.Context = DocComments.Context.empty
+    given Naming.Context = Naming.Context.empty
+    given DocCtx         = DocComments.Context.empty
 
     val result = DocComments.convertCefDoc(
       """"<a>" is considered empty while "</a>" is not."""
@@ -563,8 +568,8 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   }
 
   test("doc comment conversion escapes literal placeholder tags in prose") {
-    given namingContext: Naming.Context   = Naming.Context.empty
-    given docContext: DocComments.Context = DocComments.Context.empty
+    given Naming.Context = Naming.Context.empty
+    given DocCtx         = DocComments.Context.empty
 
     val result = DocComments.convertCefDoc(
       """Pass the `--devtools-protocol-log-file=<path>` command-line flag."""
@@ -574,8 +579,8 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   }
 
   test("doc comment conversion escapes ampersands in prose") {
-    given namingContext: Naming.Context   = Naming.Context.empty
-    given docContext: DocComments.Context = DocComments.Context.empty
+    given Naming.Context = Naming.Context.empty
+    given DocCtx         = DocComments.Context.empty
 
     val result = DocComments.convertCefDoc(
       "Called during a drag & drop operation."
@@ -585,8 +590,8 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   }
 
   test("doc comment conversion escapes comparison operators in prose") {
-    given namingContext: Naming.Context   = Naming.Context.empty
-    given docContext: DocComments.Context = DocComments.Context.empty
+    given Naming.Context = Naming.Context.empty
+    given DocCtx         = DocComments.Context.empty
 
     val result = DocComments.convertCefDoc(
       "If delay_ms is <= 0 then the callback should happen soon."
@@ -607,8 +612,8 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   }
 
   test("collapsed upstream names use Java word boundaries") {
-    val cppNames                  = Map("cef_basetime_t" -> "CefBaseTime", "cef_textfield_t" -> "CefTextfield")
-    given context: Naming.Context = Naming.Context.fromCppClassNames(cppNames, Map.empty, "example")
+    val cppNames    = Map("cef_basetime_t" -> "CefBaseTime", "cef_textfield_t" -> "CefTextfield")
+    given NamingCtx = Naming.Context.fromCppClassNames(cppNames, Map.empty, "example")
 
     assertEquals(Naming.structToJavaName("cef_basetime_t"), "CefBaseTime")
     assertEquals(Naming.structToJavaName("cef_postdataelement_type_t"), "CefPostDataElementType")
@@ -636,8 +641,8 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   }
 
   test("generated Java package is configurable through Naming context") {
-    given configuredNamingContext: Naming.Context = Naming.Context(Map.empty, Map.empty, "com.example.cef.gen")
-    given emptyDocContext: DocComments.Context    = DocComments.Context.empty
+    given Naming.Context = Naming.Context(Map.empty, Map.empty, "com.example.cef.gen")
+    given DocCtx         = DocComments.Context.empty
 
     val java = JavaCodeGen.renderJavaFile(
       declaration = "public final class Example",
@@ -648,13 +653,13 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   }
 
   test("Java record codegen writes platform-specific structs into configured sub-package") {
-    given namingContext: Naming.Context = Naming.Context(
+    given NamingCtx = Naming.Context(
       cppClassNames = Map.empty,
       compoundSegments = Map.empty,
       javaPackage = "net.kurobako.cef4j.gen",
       subPackages = Map("cef_window_info_t" -> "mac")
     )
-    given docContext: DocComments.Context = DocComments.Context.empty
+    given DocCtx = DocComments.Context.empty
 
     val tmpDir = tempDirectory("cef4j-record-subpkg")
     JavaRecordCodeGen.emit(
@@ -666,13 +671,13 @@ class CodeGenOutputSpec extends TempDirectorySuite {
     )
 
     val javaPath = tmpDir.resolve("mac").resolve("CefWindowInfo.java")
-    val javaCode = java.nio.file.Files.readString(javaPath)
+    val javaCode = Files.readString(javaPath)
     assert(javaCode.contains("package net.kurobako.cef4j.gen.mac;"), s"Expected mac sub-package in:\n$javaCode")
   }
 
   test("Java record codegen treats raw pointer handles as Java primitives") {
-    given namingContext: Naming.Context   = Naming.Context.empty
-    given docContext: DocComments.Context = DocComments.Context.empty
+    given Naming.Context = Naming.Context.empty
+    given DocCtx         = DocComments.Context.empty
 
     val tmpDir = tempDirectory("cef4j-record-pointer")
     JavaRecordCodeGen.emit(
@@ -680,19 +685,19 @@ class CodeGenOutputSpec extends TempDirectorySuite {
       tmpDir
     )
 
-    val javaCode = java.nio.file.Files.readString(tmpDir.resolve("CefStringUtf16.java"))
+    val javaCode = Files.readString(tmpDir.resolve("CefStringUtf16.java"))
     assert(javaCode.contains("public final long str;"), s"Expected primitive pointer field in:\n$javaCode")
     assert(javaCode.contains("this.str == other.str"), s"Expected primitive pointer equality in:\n$javaCode")
     assert(!javaCode.contains("@Nullable long"), s"Unexpected nullability annotation in:\n$javaCode")
   }
 
   test("Java record codegen can emit shared platform interface with implementation links") {
-    given namingContext: Naming.Context = Naming.Context(
+    given NamingCtx = Naming.Context(
       cppClassNames = Map.empty,
       compoundSegments = Map.empty,
       javaPackage = "net.kurobako.cef4j.gen"
     )
-    given docContext: DocComments.Context = DocComments.Context.empty
+    given DocCtx = DocComments.Context.empty
 
     val tmpDir = tempDirectory("cef4j-record-platform-interface")
     JavaRecordCodeGen.emit(
@@ -706,7 +711,7 @@ class CodeGenOutputSpec extends TempDirectorySuite {
     )
 
     val javaPath = tmpDir.resolve("CefAcceleratedPaintInfo.java")
-    val javaCode = java.nio.file.Files.readString(javaPath)
+    val javaCode = Files.readString(javaPath)
     assert(
       javaCode.contains("public interface CefAcceleratedPaintInfo"),
       s"Expected interface declaration in:\n$javaCode"
@@ -726,13 +731,13 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   }
 
   test("Java record codegen can make sub-package implementation implement shared root type") {
-    given namingContext: Naming.Context = Naming.Context(
+    given NamingCtx = Naming.Context(
       cppClassNames = Map.empty,
       compoundSegments = Map.empty,
       javaPackage = "net.kurobako.cef4j.gen",
       subPackages = Map("cef_accelerated_paint_info_t" -> "linux")
     )
-    given docContext: DocComments.Context = DocComments.Context.empty
+    given DocCtx = DocComments.Context.empty
 
     val tmpDir = tempDirectory("cef4j-record-platform-impl")
     JavaRecordCodeGen.emit(
@@ -745,7 +750,7 @@ class CodeGenOutputSpec extends TempDirectorySuite {
     )
 
     val javaPath = tmpDir.resolve("linux").resolve("CefAcceleratedPaintInfo.java")
-    val javaCode = java.nio.file.Files.readString(javaPath)
+    val javaCode = Files.readString(javaPath)
     assert(
       javaCode.contains("implements net.kurobako.cef4j.gen.CefAcceleratedPaintInfo"),
       s"Expected shared-type implementation in:\n$javaCode"
@@ -753,13 +758,13 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   }
 
   test("Java enum codegen writes platform-specific enums into configured sub-package") {
-    given namingContext: Naming.Context = Naming.Context(
+    given NamingCtx = Naming.Context(
       cppClassNames = Map.empty,
       compoundSegments = Map.empty,
       javaPackage = "net.kurobako.cef4j.gen",
       subPackages = Map("cef_platform_mode_t" -> "win")
     )
-    given docContext: DocComments.Context = DocComments.Context.empty
+    given DocCtx = DocComments.Context.empty
 
     val tmpDir = tempDirectory("cef4j-enum-subpkg")
     JavaEnumCodeGen.emit(
@@ -771,12 +776,12 @@ class CodeGenOutputSpec extends TempDirectorySuite {
     )
 
     val javaPath = tmpDir.resolve("win").resolve("CefPlatformMode.java")
-    val javaCode = java.nio.file.Files.readString(javaPath)
+    val javaCode = Files.readString(javaPath)
     assert(javaCode.contains("package net.kurobako.cef4j.gen.win;"), s"Expected win sub-package in:\n$javaCode")
   }
 
   test("JNI symbols track configured generated package") {
-    given configuredNamingContext: Naming.Context = Naming.Context(Map.empty, Map.empty, "com.example.cef.gen")
+    given NamingCtx = Naming.Context(Map.empty, Map.empty, "com.example.cef.gen")
 
     val fn  = FnPtr("go_back", CType.Void, Nil)
     val sym = Naming.jniSymbol("cef_browser_t", fn)
@@ -786,7 +791,7 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   }
 
   test("jniSig for const data-struct pointers uses shared root package descriptor") {
-    given namingContext: Naming.Context = Naming.Context(
+    given NamingCtx = Naming.Context(
       cppClassNames = Map.empty,
       compoundSegments = Map.empty,
       javaPackage = "net.kurobako.cef4j.gen",
@@ -966,11 +971,11 @@ class CodeGenOutputSpec extends TempDirectorySuite {
     val cpp = byValueCodegen.emitHandlerToString(decl)
 
     assert(
-      cpp.contains("()Lnet/kurobako/cef4j/gen/CefSize;"),
-      s"Expected DataStruct return descriptor to use CefSize, not Object, in:\n$cpp"
+      cpp.contains("()Ljava/util/Optional;") && cpp.contains("net/kurobako/cef4j/gen/CefSize"),
+      s"Expected DataStruct return descriptor to use Optional of CefSize, not Object, in:\n$cpp"
     )
     assert(
-      !cpp.contains("Ljava/lang/Object;"),
+      !cpp.contains("()Ljava/lang/Object;"),
       s"DataStruct return descriptor must not fall back to Object in:\n$cpp"
     )
   }
@@ -997,11 +1002,11 @@ class CodeGenOutputSpec extends TempDirectorySuite {
       )
     )
 
-    given namingContext: Naming.Context   = Naming.Context.empty
-    given docContext: DocComments.Context = DocComments.Context.empty
-    val tmpDir                            = tempDirectory("codegen-test")
+    given Naming.Context = Naming.Context.empty
+    given DocCtx         = DocComments.Context.empty
+    val tmpDir           = tempDirectory("codegen-test")
     JavaInterfaceCodeGen.emitHandler(handlerDecl, tmpDir)
-    val javaCode = java.nio.file.Files.readString(tmpDir.resolve("CefResourceBundleHandler.java"))
+    val javaCode = Files.readString(tmpDir.resolve("CefResourceBundleHandler.java"))
     assert(
       javaCode.contains("default boolean getLocalizedString("),
       s"Expected boolean return type in Java interface:\n$javaCode"
@@ -1042,11 +1047,11 @@ class CodeGenOutputSpec extends TempDirectorySuite {
       )
     )
 
-    given namingContext: Naming.Context   = Naming.Context.empty
-    given docContext: DocComments.Context = DocComments.Context.empty
-    val tmpDir                            = tempDirectory("codegen-test")
+    given Naming.Context = Naming.Context.empty
+    given DocCtx         = DocComments.Context.empty
+    val tmpDir           = tempDirectory("codegen-test")
     JavaInterfaceCodeGen.emitHandler(handlerDecl, tmpDir)
-    val javaCode = java.nio.file.Files.readString(tmpDir.resolve("CefResourceHandler.java"))
+    val javaCode = Files.readString(tmpDir.resolve("CefResourceHandler.java"))
     assert(javaCode.contains("bytesRead[0] = -1;"), javaCode)
   }
 
@@ -1185,7 +1190,7 @@ class CodeGenOutputSpec extends TempDirectorySuite {
   }
 
   test("handler ptr return unwraps Optional and calls factory") {
-    val handlerCodegen              = new JniCppCodeGen(Map.empty, Set("cef_render_handler_t"))
+    val handlerCodegen              = JniCppCodeGen(Map.empty, Set("cef_render_handler_t"))
     val decl: CefDecl.HandlerStruct = CefDecl.HandlerStruct(
       "cef_client_t",
       List(FnPtr("get_render_handler", CType.Ptr("_cef_render_handler_t"), Nil))

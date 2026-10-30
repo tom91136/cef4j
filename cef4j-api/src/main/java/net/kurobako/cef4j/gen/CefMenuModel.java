@@ -22,7 +22,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:44</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefMenuModel extends CefLibraryObject {
 
@@ -241,6 +240,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:184</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setCommandIdAt(long index, int commandId);
 
     /**
@@ -264,6 +264,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:203</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setLabel(int commandId, @Nullable String label);
 
     /**
@@ -276,6 +277,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:209</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setLabelAt(long index, @Nullable String label);
 
     /**
@@ -321,6 +323,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:239</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setGroupId(int commandId, int groupId);
 
     /**
@@ -332,6 +335,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:245</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setGroupIdAt(long index, int groupId);
 
     /**
@@ -387,6 +391,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:275</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setVisible(int commandId, boolean visible);
 
     /**
@@ -398,6 +403,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:282</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setVisibleAt(long index, boolean visible);
 
     /**
@@ -431,6 +437,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:300</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setEnabled(int commandId, boolean enabled);
 
     /**
@@ -442,6 +449,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:307</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setEnabledAt(long index, boolean enabled);
 
     /**
@@ -475,6 +483,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:328</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setChecked(int commandId, boolean checked);
 
     /**
@@ -486,6 +495,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:335</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setCheckedAt(long index, boolean checked);
 
     /**
@@ -522,6 +532,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:355</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setAccelerator(int commandId, int keyCode, boolean shiftPressed, boolean ctrlPressed, boolean altPressed);
 
     /**
@@ -536,6 +547,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:366</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setAcceleratorAt(long index, int keyCode, boolean shiftPressed, boolean ctrlPressed, boolean altPressed);
 
     /**
@@ -599,6 +611,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:413</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setColor(int commandId, CefMenuColorType colorType, int color);
 
     /**
@@ -615,6 +628,7 @@ public interface CefMenuModel extends CefLibraryObject {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:424</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setColorAt(int index, CefMenuColorType colorType, int color);
 
     /**
@@ -677,6 +691,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * @param fontList may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:457</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setFontList(int commandId, @Nullable String fontList);
 
     /**
@@ -711,6 +726,7 @@ public interface CefMenuModel extends CefLibraryObject {
      * @param fontList may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:473</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setFontListAt(int index, @Nullable String fontList);
     /**
      * Create a new MenuModel with the specified {@code delegate}.

@@ -21,7 +21,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -72,8 +71,7 @@ final class WebSocketTransportTest extends CefTransportContractTest {
                     executor);
             try (WebSocketTransport client = WebSocketTransport.connect(
                             "ws://127.0.0.1:" + server.getLocalPort() + "/cef4j",
-                            Optional.of("secret-token"),
-                            Optional.empty());
+                            WebSocketTransport.Options.defaults().withBearerToken("secret-token"));
                     RawWebSocketPeer peer = accepted.get(10, TimeUnit.SECONDS)) {
                 assertThat(client.isConnected()).isTrue();
                 assertThat(peer.headers).containsEntry("authorization", "Bearer secret-token");
@@ -106,8 +104,8 @@ final class WebSocketTransportTest extends CefTransportContractTest {
         @Nullable
         private volatile Runnable disconnectHandler;
 
-        private volatile boolean closed;
-        private volatile boolean disconnected;
+        private volatile boolean closed = false;
+        private volatile boolean disconnected = false;
 
         private RawWebSocketPeer(Socket socket, Map<String, String> headers, InputStream input, OutputStream output) {
             this.socket = socket;
@@ -217,7 +215,7 @@ final class WebSocketTransportTest extends CefTransportContractTest {
                 try {
                     writeFrame(0x8, new byte[] {0x03, (byte) 0xE8});
                 } catch (IOException ignored) {
-                    return;
+                    /* The failure is expected or cannot be handled here. */
                 }
             }
         }
@@ -226,7 +224,7 @@ final class WebSocketTransportTest extends CefTransportContractTest {
             try {
                 socket.close();
             } catch (IOException ignored) {
-                return;
+                /* The failure is expected or cannot be handled here. */
             }
         }
 
@@ -274,7 +272,7 @@ final class WebSocketTransportTest extends CefTransportContractTest {
                     if (fin) accept(message.toByteArray());
                 }
             } catch (IOException ignored) {
-                return;
+                /* The failure is expected or cannot be handled here. */
             } finally {
                 markDisconnected();
                 closeSocket();
@@ -327,7 +325,7 @@ final class WebSocketTransportTest extends CefTransportContractTest {
                 bytes.write(value);
                 int expected = "\r\n\r\n".charAt(matched);
                 matched = value == expected ? matched + 1 : (value == '\r' ? 1 : 0);
-                if (matched == 4) return bytes.toString(StandardCharsets.US_ASCII.name());
+                if (matched == 4) return bytes.toString(StandardCharsets.US_ASCII);
             }
             throw new IOException("WebSocket handshake is too large");
         }

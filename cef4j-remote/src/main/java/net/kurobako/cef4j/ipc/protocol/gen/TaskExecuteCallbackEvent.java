@@ -3,11 +3,13 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class TaskExecuteCallbackEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 495556200;
@@ -34,7 +36,7 @@ public final class TaskExecuteCallbackEvent implements CefMessageView, CefMessag
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(callbackId);
@@ -44,10 +46,9 @@ public final class TaskExecuteCallbackEvent implements CefMessageView, CefMessag
     }
 
     public static final CefMessageDecoder<TaskExecuteCallbackEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "callbackId");
-        int callbackId = __buf.getInt();
+        final int callbackId = WireDecoder.int32(__buf, "callbackId");
         WireDecoder.requireFullyConsumed(__buf, "TaskExecuteCallbackEvent");
         return new TaskExecuteCallbackEvent(callbackId);
     };

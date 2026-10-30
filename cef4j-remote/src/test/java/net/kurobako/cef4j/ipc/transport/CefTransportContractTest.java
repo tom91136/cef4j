@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -207,7 +208,7 @@ public abstract class CefTransportContractTest {
             assertThat(done.await(30, TimeUnit.SECONDS)).isTrue();
 
             int[] lastSeq = new int[threads];
-            for (int i = 0; i < threads; i++) lastSeq[i] = -1;
+            Arrays.fill(lastSeq, -1);
             for (byte[] frame : received) {
                 ByteBuffer v = ByteBuffer.wrap(frame);
                 int tid = v.getInt();

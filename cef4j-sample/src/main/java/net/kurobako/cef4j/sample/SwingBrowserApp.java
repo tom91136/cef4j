@@ -8,8 +8,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -38,31 +36,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Sample Swing browser using {@link CefBrowserPanel} with tabbed browsing, zoom, and keyboard shortcuts. */
-@SuppressWarnings("NullAway.Init")
+@SuppressWarnings({"NullAway.Init", "baumkuchen:not-null-field"})
 public final class SwingBrowserApp {
 
     private static final Logger log = LoggerFactory.getLogger(SwingBrowserApp.class);
     private static final String DEFAULT_URL = "https://microsoft.github.io/monaco-editor/";
 
-    private static volatile boolean shutdownRequested;
+    private static volatile boolean shutdownRequested = false;
     private static final CountDownLatch shutdownLatch = new CountDownLatch(1);
     private static JFrame window;
     private static JTabbedPane tabbedPane;
     private static JPanel newTabPlaceholder;
     private static JLabel statusLabel;
     private static JProgressBar progressBar;
-    private static boolean creatingTab;
+    private static boolean creatingTab = false;
 
     public static void main(String[] args) throws Exception {
         log.info("cef4j Swing Browser starting");
 
-        Path cacheDir = Files.createTempDirectory("cef4j-swing-");
-        cacheDir.toFile().deleteOnExit();
-
-        CefSettings.Mutable settings = new CefSettings.Mutable();
-        settings.noSandbox = 1;
-        settings.cachePath = cacheDir.toAbsolutePath().toString();
-        CefBrowserPanel.initialise(settings, List.of(), Optional.empty());
+        final CefSettings.Mutable settings = SampleSettings.newSettings("cef4j-swing-");
+        CefBrowserPanel.initialise(settings, List.of());
 
         SwingUtilities.invokeAndWait(SwingBrowserApp::createUI);
         SigintHelper.install(SwingBrowserApp::requestShutdown);
@@ -74,8 +67,8 @@ public final class SwingBrowserApp {
     private static void createUI() {
         com.formdev.flatlaf.FlatLightLaf.setup();
 
-        float userScale = com.formdev.flatlaf.util.UIScale.getUserScaleFactor();
-        double systemScale =
+        final float userScale = com.formdev.flatlaf.util.UIScale.getUserScaleFactor();
+        final double systemScale =
                 com.formdev.flatlaf.util.UIScale.getSystemScaleFactor(GraphicsEnvironment.getLocalGraphicsEnvironment()
                         .getDefaultScreenDevice()
                         .getDefaultConfiguration());
@@ -93,14 +86,14 @@ public final class SwingBrowserApp {
         progressBar = new JProgressBar(0, 100);
         progressBar.setPreferredSize(new Dimension(120, progressBar.getPreferredSize().height));
         progressBar.setVisible(false);
-        JPanel statusBar = new JPanel(new BorderLayout());
+        final JPanel statusBar = new JPanel(new BorderLayout());
         statusBar.add(statusLabel, BorderLayout.CENTER);
         statusBar.add(progressBar, BorderLayout.EAST);
 
         tabbedPane = new JTabbedPane();
         newTabPlaceholder = new JPanel();
         tabbedPane.addTab("+", newTabPlaceholder);
-        JLabel plusLabel = new JLabel("+");
+        final JLabel plusLabel = new JLabel("+");
         plusLabel.setToolTipText("New Tab");
         tabbedPane.setTabComponentAt(0, plusLabel);
 
@@ -109,13 +102,13 @@ public final class SwingBrowserApp {
                 createTab(DEFAULT_URL);
                 return;
             }
-            BrowserTab tab = selectedTab();
-            if (tab != null) {
-                tab.updateWindowTitle();
-                tab.updateStatusBar();
-            } else {
-                window.setTitle("cef4j Browser (Swing)");
-            }
+            selectedTab()
+                    .ifPresentOrElse(
+                            tab -> {
+                                tab.updateWindowTitle();
+                                tab.updateStatusBar();
+                            },
+                            () -> window.setTitle("cef4j Browser (Swing)"));
         });
 
         tabbedPane.addMouseListener(new MouseAdapter() {
@@ -138,9 +131,9 @@ public final class SwingBrowserApp {
             }
         });
 
-        int shortcutMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
-        InputMap inputMap = window.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        ActionMap actionMap = window.getRootPane().getActionMap();
+        final int shortcutMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
+        final InputMap inputMap = window.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        final ActionMap actionMap = window.getRootPane().getActionMap();
 
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_T, shortcutMask), "newTab");
         actionMap.put("newTab", new AbstractAction() {
@@ -164,17 +157,16 @@ public final class SwingBrowserApp {
         window.requestFocus();
     }
 
-    @Nullable
-    private static BrowserTab selectedTab() {
-        Component sel = tabbedPane.getSelectedComponent();
-        return sel instanceof BrowserTab ? (BrowserTab) sel : null;
+    private static Optional<BrowserTab> selectedTab() {
+        final Component sel = tabbedPane.getSelectedComponent();
+        return sel instanceof BrowserTab ? Optional.of((BrowserTab) sel) : Optional.empty();
     }
 
     private static void createTab(String url) {
         if (creatingTab) return;
         creatingTab = true;
         try {
-            BrowserTab tab = new BrowserTab(url);
+            final BrowserTab tab = new BrowserTab(url);
             int insertAt = tabbedPane.indexOfComponent(newTabPlaceholder);
             if (insertAt < 0) insertAt = tabbedPane.getTabCount();
             tabbedPane.insertTab("New Tab", null, tab, null, insertAt);
@@ -186,14 +178,11 @@ public final class SwingBrowserApp {
     }
 
     private static void closeSelectedTab() {
-        BrowserTab tab = selectedTab();
-        if (tab != null) {
-            closeTab(tab);
-        }
+        selectedTab().ifPresent(SwingBrowserApp::closeTab);
     }
 
     private static void closeTab(BrowserTab tab) {
-        int index = tabbedPane.indexOfComponent(tab);
+        final int index = tabbedPane.indexOfComponent(tab);
         if (index >= 0) {
             tabbedPane.removeTabAt(index);
             tab.release();
@@ -214,9 +203,9 @@ public final class SwingBrowserApp {
         if (shutdownRequested) return;
         shutdownRequested = true;
         log.info("Shutting down");
-        Runnable disposeBrowsers = () -> {
+        final Runnable disposeBrowsers = () -> {
             for (int i = tabbedPane.getTabCount() - 1; i >= 0; i--) {
-                Component c = tabbedPane.getComponentAt(i);
+                final Component c = tabbedPane.getComponentAt(i);
                 if (c instanceof BrowserTab) {
                     ((BrowserTab) c).release();
                 }
@@ -239,11 +228,7 @@ public final class SwingBrowserApp {
         private final JTextField urlBar;
         private final JButton backBtn;
         private final JButton fwdBtn;
-        private final JButton reloadBtn;
-        private final JButton zoomOutBtn;
         private final JButton zoomResetBtn;
-        private final JButton zoomInBtn;
-        private final JButton devToolsBtn;
 
         @Nullable
         private transient volatile CefBrowser browser;
@@ -257,27 +242,27 @@ public final class SwingBrowserApp {
             urlBar = new JTextField(initialUrl);
             backBtn = new JButton("\u25C0");
             fwdBtn = new JButton("\u25B6");
-            reloadBtn = new JButton("\u21BB");
-            zoomOutBtn = new JButton("-");
+            final JButton reloadBtn = new JButton("\u21BB");
+            final JButton zoomOutBtn = new JButton("-");
             zoomResetBtn = new JButton("100%");
-            zoomInBtn = new JButton("+");
-            devToolsBtn = new JButton("\u2699");
+            final JButton zoomInBtn = new JButton("+");
+            final JButton devToolsBtn = new JButton("\u2699");
 
             backBtn.setEnabled(false);
             fwdBtn.setEnabled(false);
 
-            JPanel leftButtons = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
+            final JPanel leftButtons = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
             leftButtons.add(backBtn);
             leftButtons.add(fwdBtn);
             leftButtons.add(reloadBtn);
 
-            JPanel rightButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 0));
+            final JPanel rightButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 0));
             rightButtons.add(zoomOutBtn);
             rightButtons.add(zoomResetBtn);
             rightButtons.add(zoomInBtn);
             rightButtons.add(devToolsBtn);
 
-            JPanel navBar = new JPanel(new BorderLayout(4, 0));
+            final JPanel navBar = new JPanel(new BorderLayout(4, 0));
             navBar.add(leftButtons, BorderLayout.WEST);
             navBar.add(urlBar, BorderLayout.CENTER);
             navBar.add(rightButtons, BorderLayout.EAST);
@@ -287,15 +272,15 @@ public final class SwingBrowserApp {
             add(surface, BorderLayout.CENTER);
 
             backBtn.addActionListener(e -> {
-                CefBrowser b = browser;
+                final CefBrowser b = browser;
                 if (b != null) b.goBack();
             });
             fwdBtn.addActionListener(e -> {
-                CefBrowser b = browser;
+                final CefBrowser b = browser;
                 if (b != null) b.goForward();
             });
             reloadBtn.addActionListener(e -> {
-                CefBrowser b = browser;
+                final CefBrowser b = browser;
                 if (b != null) b.reload();
             });
             zoomOutBtn.addActionListener(e -> setZoom(zoomLevel / 1.2));
@@ -303,26 +288,26 @@ public final class SwingBrowserApp {
             zoomInBtn.addActionListener(e -> setZoom(zoomLevel * 1.2));
             devToolsBtn.addActionListener(e -> toggleDevTools());
             urlBar.addActionListener(e -> {
-                CefBrowser b = browser;
+                final CefBrowser b = browser;
                 if (b != null) {
                     b.getMainFrame()
                             .ifPresent(frame -> frame.loadUrl(urlBar.getText().trim()));
                 }
             });
 
-            int shortcutMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
-            InputMap im = surface.getInputMap(JComponent.WHEN_FOCUSED);
-            ActionMap am = surface.getActionMap();
+            final int shortcutMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
+            final InputMap im = surface.getInputMap(JComponent.WHEN_FOCUSED);
+            final ActionMap am = surface.getActionMap();
 
             im.put(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0), "reload");
             am.put("reload", action(() -> {
-                CefBrowser b = browser;
+                final CefBrowser b = browser;
                 if (b != null) b.reload();
             }));
 
             im.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "stop");
             am.put("stop", action(() -> {
-                CefBrowser b = browser;
+                final CefBrowser b = browser;
                 if (b != null) b.stopLoad();
             }));
 
@@ -331,7 +316,7 @@ public final class SwingBrowserApp {
 
             im.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, shortcutMask), "ctrlReload");
             am.put("ctrlReload", action(() -> {
-                CefBrowser b = browser;
+                final CefBrowser b = browser;
                 if (b != null) b.reload();
             }));
 
@@ -349,13 +334,13 @@ public final class SwingBrowserApp {
 
             im.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, InputEvent.ALT_DOWN_MASK), "historyBack");
             am.put("historyBack", action(() -> {
-                CefBrowser b = browser;
+                final CefBrowser b = browser;
                 if (b != null) b.goBack();
             }));
 
             im.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.ALT_DOWN_MASK), "historyForward");
             am.put("historyForward", action(() -> {
-                CefBrowser b = browser;
+                final CefBrowser b = browser;
                 if (b != null) b.goForward();
             }));
 
@@ -375,9 +360,9 @@ public final class SwingBrowserApp {
         }
 
         private void createBrowser(String initialUrl) {
-            CefRenderHandler renderHandler = surface.createRenderHandler();
+            final CefRenderHandler renderHandler = surface.createRenderHandler();
 
-            CefClient client = new CefClient() {
+            final CefClient client = new CefClient() {
                 @Override
                 public Optional<CefRenderHandler> getRenderHandler() {
                     return Optional.of(renderHandler);
@@ -443,7 +428,7 @@ public final class SwingBrowserApp {
 
                         @Override
                         public void onBeforeClose(@Nullable CefBrowser b) {
-                            CefBrowser current = browser;
+                            final CefBrowser current = browser;
                             if (b != null && current != null && current.isSame(b)) {
                                 browser = null;
                             }
@@ -537,7 +522,7 @@ public final class SwingBrowserApp {
 
                         private boolean onCursorChangeCompat(@Nullable CefCursorType type) {
                             if (type == null) return false;
-                            Cursor awtCursor = surface.mapCursor(type);
+                            final Cursor awtCursor = surface.mapCursor(type);
                             SwingUtilities.invokeLater(() -> surface.setCursor(awtCursor));
                             return true;
                         }
@@ -555,17 +540,17 @@ public final class SwingBrowserApp {
                                 net.kurobako.cef4j.gen.@Nullable CefMenuModel model,
                                 net.kurobako.cef4j.gen.@Nullable CefRunContextMenuCallback callback) {
                             if (model == null || callback == null) return false;
-                            List<MenuEntry> entries = extractMenuEntries(model);
-                            int menuX = params != null ? params.getXCoord() : 0;
-                            int menuY = params != null ? params.getYCoord() : 0;
+                            final List<MenuEntry> entries = extractMenuEntries(model);
+                            final int menuX = params != null ? params.getXCoord() : 0;
+                            final int menuY = params != null ? params.getYCoord() : 0;
                             if (entries.isEmpty()) {
                                 callback.cancel();
                                 return true;
                             }
-                            java.util.concurrent.atomic.AtomicBoolean dispatched =
+                            final java.util.concurrent.atomic.AtomicBoolean dispatched =
                                     new java.util.concurrent.atomic.AtomicBoolean();
                             SwingUtilities.invokeLater(() -> {
-                                JPopupMenu menu = buildPopupMenu(entries, callback, dispatched);
+                                final JPopupMenu menu = buildPopupMenu(entries, callback, dispatched);
                                 menu.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
                                     @Override
                                     public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e) {}
@@ -588,18 +573,18 @@ public final class SwingBrowserApp {
                 }
             };
 
-            CefWindowInfo windowInfo = Cef.createWindowlessInfo(
+            final CefWindowInfo windowInfo = Cef.createWindowlessInfo(
                     new CefRect(0, 0, Math.max(1, surface.getWidth()), Math.max(1, surface.getHeight())));
-            CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
+            final CefBrowserSettings.Mutable browserSettings = new CefBrowserSettings.Mutable();
             browserSettings.windowlessFrameRate = 60;
             Cef.createBrowserAsync(windowInfo, client, initialUrl, browserSettings.toImmutable());
         }
 
         JComponent createTabHeader() {
-            JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+            final JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
             header.setOpaque(false);
-            JLabel label = new JLabel("New Tab");
-            JButton closeBtn = new JButton("\u00D7");
+            final JLabel label = new JLabel("New Tab");
+            final JButton closeBtn = new JButton("\u00D7");
             closeBtn.setMargin(new Insets(0, 2, 0, 2));
             closeBtn.setBorderPainted(false);
             closeBtn.setContentAreaFilled(false);
@@ -615,9 +600,9 @@ public final class SwingBrowserApp {
         }
 
         String getTabTitle() {
-            int index = tabbedPane.indexOfComponent(this);
+            final int index = tabbedPane.indexOfComponent(this);
             if (index < 0) return "";
-            Component tabComponent = tabbedPane.getTabComponentAt(index);
+            final Component tabComponent = tabbedPane.getTabComponentAt(index);
             if (tabComponent instanceof JPanel) {
                 for (Component c : ((JPanel) tabComponent).getComponents()) {
                     if (c instanceof JLabel) {
@@ -628,13 +613,13 @@ public final class SwingBrowserApp {
             return tabbedPane.getTitleAt(index);
         }
 
-        void updateTabTitle(String value) {
+        void updateTabTitle(@Nullable String value) {
             if (value == null || value.isEmpty()) return;
-            String display = value.length() > 24 ? value.substring(0, 24) + "\u2026" : value;
-            int index = tabbedPane.indexOfComponent(this);
+            final String display = value.length() > 24 ? value.substring(0, 24) + "\u2026" : value;
+            final int index = tabbedPane.indexOfComponent(this);
             if (index >= 0) {
                 tabbedPane.setTitleAt(index, display);
-                Component tabComponent = tabbedPane.getTabComponentAt(index);
+                final Component tabComponent = tabbedPane.getTabComponentAt(index);
                 if (tabComponent instanceof JPanel) {
                     for (Component c : ((JPanel) tabComponent).getComponents()) {
                         if (c instanceof JLabel) {
@@ -647,9 +632,9 @@ public final class SwingBrowserApp {
         }
 
         void updateWindowTitle() {
-            String title = getTabTitle();
-            String url = urlBar.getText();
-            String display = (title != null && !title.isEmpty() && !"New Tab".equals(title)) ? title : url;
+            final String title = getTabTitle();
+            final String url = urlBar.getText();
+            final String display = (!title.isEmpty() && !"New Tab".equals(title)) ? title : url;
             window.setTitle(Objects.requireNonNullElse(display, "") + " - cef4j (Swing)");
         }
 
@@ -664,14 +649,14 @@ public final class SwingBrowserApp {
         void setZoom(double factor) {
             zoomLevel = Math.max(0.25, Math.min(5.0, factor));
             zoomResetBtn.setText(Math.round(zoomLevel * 100) + "%");
-            CefBrowser b = browser;
+            final CefBrowser b = browser;
             if (b != null) {
                 b.getHost().ifPresent(host -> host.setZoomLevel(Math.log(zoomLevel) / Math.log(1.2)));
             }
         }
 
         void toggleDevTools() {
-            CefBrowser b = browser;
+            final CefBrowser b = browser;
             if (b == null) return;
             b.getHost().ifPresent(host -> {
                 if (host.hasDevTools()) {
@@ -720,26 +705,28 @@ public final class SwingBrowserApp {
         }
 
         private static List<MenuEntry> extractMenuEntries(net.kurobako.cef4j.gen.CefMenuModel model) {
-            List<MenuEntry> entries = new ArrayList<>();
-            int count = Math.toIntExact(model.getCount());
+            final List<MenuEntry> entries = new ArrayList<>();
+            final int count = Math.toIntExact(model.getCount());
             for (int i = 0; i < count; i++) {
-                int commandId = model.getCommandIdAt(i);
-                net.kurobako.cef4j.gen.CefMenuItemType.Kind kind =
+                final int commandId = model.getCommandIdAt(i);
+                final net.kurobako.cef4j.gen.CefMenuItemType.Kind kind =
                         model.getType(commandId).kind().orElse(net.kurobako.cef4j.gen.CefMenuItemType.Kind.NONE);
                 switch (kind) {
                     case SEPARATOR:
                         entries.add(new MenuEntry(MenuEntry.Type.SEPARATOR, 0, "", false, false, List.of()));
                         break;
                     case SUBMENU: {
-                        String label = model.getLabel(commandId).orElse("").replace("&", "");
-                        List<MenuEntry> children = model.getSubMenuAt(i)
+                        final String label =
+                                model.getLabel(commandId).orElse("").replace("&", "");
+                        final List<MenuEntry> children = model.getSubMenuAt(i)
                                 .map(BrowserTab::extractMenuEntries)
                                 .orElse(List.of());
                         entries.add(new MenuEntry(MenuEntry.Type.SUBMENU, commandId, label, true, false, children));
                         break;
                     }
                     case CHECK: {
-                        String label = model.getLabel(commandId).orElse("").replace("&", "");
+                        final String label =
+                                model.getLabel(commandId).orElse("").replace("&", "");
                         entries.add(new MenuEntry(
                                 MenuEntry.Type.CHECK,
                                 commandId,
@@ -750,7 +737,8 @@ public final class SwingBrowserApp {
                         break;
                     }
                     default: {
-                        String label = model.getLabel(commandId).orElse("").replace("&", "");
+                        final String label =
+                                model.getLabel(commandId).orElse("").replace("&", "");
                         if (label.isEmpty() && kind == net.kurobako.cef4j.gen.CefMenuItemType.Kind.NONE) break;
                         entries.add(new MenuEntry(
                                 MenuEntry.Type.ITEM, commandId, label, model.isEnabled(commandId), false, List.of()));
@@ -765,15 +753,15 @@ public final class SwingBrowserApp {
                 List<MenuEntry> entries,
                 net.kurobako.cef4j.gen.CefRunContextMenuCallback callback,
                 java.util.concurrent.atomic.AtomicBoolean dispatched) {
-            JPopupMenu popup = new JPopupMenu();
+            final JPopupMenu popup = new JPopupMenu();
             for (MenuEntry entry : entries) {
                 switch (entry.type) {
                     case SEPARATOR:
                         popup.addSeparator();
                         break;
                     case SUBMENU: {
-                        JMenu sub = new JMenu(entry.label);
-                        JPopupMenu subPopup = buildPopupMenu(entry.children, callback, dispatched);
+                        final JMenu sub = new JMenu(entry.label);
+                        final JPopupMenu subPopup = buildPopupMenu(entry.children, callback, dispatched);
                         for (int j = 0; j < subPopup.getComponentCount(); j++) {
                             sub.add(subPopup.getComponent(j));
                         }
@@ -781,39 +769,34 @@ public final class SwingBrowserApp {
                         break;
                     }
                     case CHECK: {
-                        JCheckBoxMenuItem ci = new JCheckBoxMenuItem(entry.label);
+                        final JCheckBoxMenuItem ci = new JCheckBoxMenuItem(entry.label);
                         ci.setSelected(entry.checked);
-                        ci.setEnabled(entry.enabled);
-                        int cmdId = entry.commandId;
-                        ci.addActionListener(e -> {
-                            if (dispatched.compareAndSet(false, true)) {
-                                callback.cont(
-                                        cmdId,
-                                        net.kurobako.cef4j.gen.CefEventFlags.of(
-                                                net.kurobako.cef4j.gen.CefEventFlags.Kind.NONE));
-                            }
-                        });
-                        popup.add(ci);
+                        popup.add(commandItem(ci, entry, callback, dispatched));
                         break;
                     }
                     case ITEM: {
-                        JMenuItem mi = new JMenuItem(entry.label);
-                        mi.setEnabled(entry.enabled);
-                        int cmdId = entry.commandId;
-                        mi.addActionListener(e -> {
-                            if (dispatched.compareAndSet(false, true)) {
-                                callback.cont(
-                                        cmdId,
-                                        net.kurobako.cef4j.gen.CefEventFlags.of(
-                                                net.kurobako.cef4j.gen.CefEventFlags.Kind.NONE));
-                            }
-                        });
-                        popup.add(mi);
+                        popup.add(commandItem(new JMenuItem(entry.label), entry, callback, dispatched));
                         break;
                     }
                 }
             }
             return popup;
+        }
+
+        private static JMenuItem commandItem(
+                JMenuItem item,
+                MenuEntry entry,
+                net.kurobako.cef4j.gen.CefRunContextMenuCallback callback,
+                java.util.concurrent.atomic.AtomicBoolean dispatched) {
+            item.setEnabled(entry.enabled);
+            item.addActionListener(e -> {
+                if (dispatched.compareAndSet(false, true)) {
+                    callback.cont(
+                            entry.commandId,
+                            net.kurobako.cef4j.gen.CefEventFlags.of(net.kurobako.cef4j.gen.CefEventFlags.Kind.NONE));
+                }
+            });
+            return item;
         }
 
         private static AbstractAction action(Runnable r) {

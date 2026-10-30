@@ -4,6 +4,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
@@ -11,6 +12,7 @@ import net.kurobako.cef4j.ipc.session.WireDecoder;
  * to facade methods (or factory requests) that take this struct. The dispatcher decodes them on the
  * runtime-server side and fills the matching {@code cef_media_sink_device_info_t} before invoking CEF.
  */
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class MediaSinkDeviceInfo {
 
     private final long size;
@@ -46,15 +48,15 @@ public final class MediaSinkDeviceInfo {
     }
 
     public void encodeInto(ByteBuffer dst) {
-        ByteOrder originalOrder = dst.order();
+        final ByteOrder originalOrder = dst.order();
         try {
             dst.order(ByteOrder.LITTLE_ENDIAN);
             dst.putLong(size);
-            byte[] ipAddressBytes = ipAddress.getBytes(StandardCharsets.UTF_8);
+            final byte[] ipAddressBytes = ipAddress.getBytes(StandardCharsets.UTF_8);
             dst.putInt(ipAddressBytes.length);
             dst.put(ipAddressBytes);
             dst.putInt(port);
-            byte[] modelNameBytes = modelName.getBytes(StandardCharsets.UTF_8);
+            final byte[] modelNameBytes = modelName.getBytes(StandardCharsets.UTF_8);
             dst.putInt(modelNameBytes.length);
             dst.put(modelNameBytes);
         } finally {
@@ -68,18 +70,10 @@ public final class MediaSinkDeviceInfo {
       * configured the buffer.
       */
     public static MediaSinkDeviceInfo decode(ByteBuffer __buf) {
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "size");
-        long size = __buf.getLong();
-        int ipAddressLen = WireDecoder.length(__buf, "ipAddress");
-        byte[] ipAddressBuf = new byte[ipAddressLen];
-        __buf.get(ipAddressBuf);
-        String ipAddress = new String(ipAddressBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "port");
-        int port = __buf.getInt();
-        int modelNameLen = WireDecoder.length(__buf, "modelName");
-        byte[] modelNameBuf = new byte[modelNameLen];
-        __buf.get(modelNameBuf);
-        String modelName = new String(modelNameBuf, StandardCharsets.UTF_8);
+        final long size = WireDecoder.int64(__buf, "size");
+        final String ipAddress = WireDecoder.utf8(__buf, "ipAddress");
+        final int port = WireDecoder.int32(__buf, "port");
+        final String modelName = WireDecoder.utf8(__buf, "modelName");
         return new MediaSinkDeviceInfo(size, ipAddress, port, modelName);
     }
 
@@ -90,28 +84,28 @@ public final class MediaSinkDeviceInfo {
     /** Lombok-style builder. */
     public static final class Builder {
 
-        private long size = 0L;
+        private long size;
         private String ipAddress = "";
-        private int port = 0;
+        private int port;
         private String modelName = "";
 
-        public Builder size(long size) {
-            this.size = size;
+        public Builder size(long value) {
+            this.size = value;
             return this;
         }
 
-        public Builder ipAddress(String ipAddress) {
-            this.ipAddress = ipAddress;
+        public Builder ipAddress(String value) {
+            this.ipAddress = value;
             return this;
         }
 
-        public Builder port(int port) {
-            this.port = port;
+        public Builder port(int value) {
+            this.port = value;
             return this;
         }
 
-        public Builder modelName(String modelName) {
-            this.modelName = modelName;
+        public Builder modelName(String value) {
+            this.modelName = value;
             return this;
         }
 

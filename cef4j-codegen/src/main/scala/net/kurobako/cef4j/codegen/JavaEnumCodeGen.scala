@@ -14,11 +14,15 @@ object JavaEnumCodeGen {
   ): Unit = {
     val javaName = Naming.structToJavaName(decl.name)
     val subPkg   = summon[Naming.Context].subPackages.getOrElse(decl.name, "")
-    val content  = render(javaName, decl.name, decl.values, decl.doc, decl.valueDocs, sourceHeader, subPkg)
+    val content  =
+      render(Naming.FileContext(javaName, sourceHeader, subPkg), decl.name, decl.values, decl.doc, decl.valueDocs)
     JavaCodeGen.writeJavaFile(outDir, javaName, content, subPkg)
   }
 
-  private val SimpleLiteralRe = """0[xX][0-9A-Fa-f]+[UuLl]*|[0-9]+[UuLl]*""".r
+  private val SimpleLiteralRe  = """0[xX][0-9A-Fa-f]+[UuLl]*|[0-9]+[UuLl]*""".r
+  private val IdentifierRe     = """[A-Za-z_]\w*""".r
+  private val DecimalLiteralRe = """\d+[UuLl]*""".r
+  private val HexLiteralRe     = """0[xX][0-9A-Fa-f]+[UuLl]*""".r
 
   private def canonicalJavaLongLiteral(value: Long): String =
     if (java.lang.Long.compareUnsigned(value, 0x7fffffffL) > 0) s"0x${java.lang.Long.toUnsignedString(value, 16)}L"
@@ -68,11 +72,11 @@ object JavaEnumCodeGen {
           t == "<<" || t == ">>" || t == "+" || t == "-" || t == "*" || t == "/" || t == "|" || t == "&" || t == "^"
         )
       val hasArithmetic = tokens.exists(t => t == "+" || t == "-" || t == "*" || t == "/")
-      val hasIdentifier = tokens.exists(_.matches("""[A-Za-z_]\w*"""))
+      val hasIdentifier = tokens.exists(IdentifierRe.matches)
       val isUnaryMinus  =
         tokens.length == 2 &&
           tokens.head == "-" &&
-          (tokens(1).matches("""\d+[UuLl]*""") || tokens(1).matches("""0[xX][0-9A-Fa-f]+[UuLl]*"""))
+          (DecimalLiteralRe.matches(tokens(1)) || HexLiteralRe.matches(tokens(1)))
       if (tokens.isEmpty || tokens.mkString != noWs) trimmed
       else if (hasArithmetic && !hasIdentifier && !isUnaryMinus) canonicalLargeLiteral(evaluated)
       else
@@ -85,15 +89,16 @@ object JavaEnumCodeGen {
   }
 
   private def render(
-      javaName: String,
+      file: Naming.FileContext,
       cefName: String,
       values: List[(String, Long, String)],
       doc: String,
-      valueDocs: Map[String, String],
-      sourceHeader: String,
-      subPackage: String
+      valueDocs: Map[String, String]
   )(using Naming.Context, DocComments.Context, Banners): String = {
-    val deduped = values.foldLeft((Set.empty[String], List.empty[(String, Long, String)])) {
+    val javaName     = file.javaName
+    val sourceHeader = file.sourceHeader
+    val subPackage   = file.subPackage
+    val deduped      = values.foldLeft((Set.empty[String], List.empty[(String, Long, String)])) {
       case ((seen, acc), (name, _, _)) if seen.contains(name) => (seen, acc)
       case ((seen, acc), entry @ (name, _, _))                => (seen + name, entry :: acc)
     }._2.reverse

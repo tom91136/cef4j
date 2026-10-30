@@ -6,17 +6,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 
 final class MappedBufferCleaner {
 
     @Nullable
-    private static final ForeignMapper FOREIGN_MAPPER = ForeignMapper.load();
+    private static final ForeignMapper FOREIGN_MAPPER = ForeignMapper.load().orElse(null);
 
     static Mapping map(FileChannel channel, long size) throws IOException {
-        ForeignMapper foreignMapper = FOREIGN_MAPPER;
+        final ForeignMapper foreignMapper = FOREIGN_MAPPER;
         if (foreignMapper != null) return foreignMapper.map(channel, size);
-        ByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, size);
+        final ByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, size);
         return new Mapping(buffer, false, () -> UnsafeCleaner.clean(buffer));
     }
 
@@ -73,20 +74,19 @@ final class MappedBufferCleaner {
             this.closeArena = closeArena;
         }
 
-        @Nullable
-        private static ForeignMapper load() {
+        private static Optional<ForeignMapper> load() {
             try {
-                Class<?> arenaClass = Class.forName("java.lang.foreign.Arena");
-                Class<?> segmentClass = Class.forName("java.lang.foreign.MemorySegment");
-                return new ForeignMapper(
+                final Class<?> arenaClass = Class.forName("java.lang.foreign.Arena");
+                final Class<?> segmentClass = Class.forName("java.lang.foreign.MemorySegment");
+                return Optional.of(new ForeignMapper(
                         arenaClass,
                         arenaClass.getMethod("ofShared"),
                         FileChannel.class.getMethod(
                                 "map", FileChannel.MapMode.class, long.class, long.class, arenaClass),
                         segmentClass.getMethod("asByteBuffer"),
-                        arenaClass.getMethod("close"));
-            } catch (ReflectiveOperationException | RuntimeException unavailable) {
-                return null;
+                        arenaClass.getMethod("close")));
+            } catch (ReflectiveOperationException | RuntimeException ignored) {
+                return Optional.empty();
             }
         }
 
@@ -98,12 +98,12 @@ final class MappedBufferCleaner {
                 throw new IOException("failed to create a shared foreign-memory arena", e);
             }
             try {
-                Object segment = map.invoke(channel, FileChannel.MapMode.READ_ONLY, 0L, size, arena);
-                ByteBuffer buffer = (ByteBuffer) asByteBuffer.invoke(segment);
+                final Object segment = map.invoke(channel, FileChannel.MapMode.READ_ONLY, 0L, size, arena);
+                final ByteBuffer buffer = (ByteBuffer) asByteBuffer.invoke(segment);
                 return new Mapping(buffer, true, () -> close(arena));
             } catch (InvocationTargetException e) {
                 close(arena);
-                Throwable cause = e.getCause();
+                final Throwable cause = e.getCause();
                 if (cause instanceof IOException) throw (IOException) cause;
                 if (cause instanceof RuntimeException) throw (RuntimeException) cause;
                 if (cause instanceof Error) throw (Error) cause;
@@ -119,12 +119,15 @@ final class MappedBufferCleaner {
             try {
                 closeArena.invoke(arena);
                 return true;
-            } catch (ReflectiveOperationException | RuntimeException e) {
+            } catch (ReflectiveOperationException | RuntimeException ignored) {
                 return false;
             }
         }
     }
 
+    // releasing a mapping before it is collected needs sun.misc.Unsafe.invokeCleaner on Java 11, and without it the
+    // mapping is only unmapped once its buffer is collected
+    @SuppressWarnings("baumkuchen:jdk-internal-api")
     private static final class UnsafeCleaner {
         @Nullable
         private static final Object UNSAFE;
@@ -136,12 +139,12 @@ final class MappedBufferCleaner {
             Object unsafe;
             Method invokeCleaner;
             try {
-                Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
-                Field theUnsafe = unsafeClass.getDeclaredField("theUnsafe");
+                final Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
+                final Field theUnsafe = unsafeClass.getDeclaredField("theUnsafe");
                 theUnsafe.setAccessible(true);
                 unsafe = theUnsafe.get(null);
                 invokeCleaner = unsafeClass.getMethod("invokeCleaner", ByteBuffer.class);
-            } catch (ReflectiveOperationException | RuntimeException unavailable) {
+            } catch (ReflectiveOperationException | RuntimeException ignored) {
                 unsafe = null;
                 invokeCleaner = null;
             }
@@ -154,7 +157,7 @@ final class MappedBufferCleaner {
             try {
                 INVOKE_CLEANER.invoke(UNSAFE, buffer);
                 return true;
-            } catch (IllegalAccessException | InvocationTargetException | RuntimeException failure) {
+            } catch (IllegalAccessException | InvocationTargetException | RuntimeException ignored) {
                 return false;
             }
         }

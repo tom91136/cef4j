@@ -311,7 +311,7 @@ struct JniCefBrowserViewDelegate : public cef_browser_view_delegate_t {
                                                                          struct _cef_browser_view_t *browser_view) {
     auto *h = reinterpret_cast<JniCefBrowserViewDelegate *>(self);
     ScopedJNIEnv env(h->jvm);
-    if (env->PushLocalFrame(9) < 0) {
+    if (env->PushLocalFrame(12) < 0) {
       return cef_chrome_toolbar_type_t::CEF_CTT_NONE;
     }
     cef_browser_view_t *_p_browser_view = browser_view;
@@ -324,17 +324,19 @@ struct JniCefBrowserViewDelegate : public cef_browser_view_delegate_t {
     auto j_browser_view =
         _p_browser_view ? env->NewObject(j_browser_view_cls, j_browser_view_ctor, reinterpret_cast<jlong>(_p_browser_view)) : nullptr;
     auto cls = env->GetObjectClass(h->javaHandler);
-    auto mid = env->GetMethodID(cls, "getChromeToolbarType",
-                                "(Lnet/kurobako/cef4j/gen/views/CefBrowserView;)Lnet/kurobako/cef4j/gen/CefChromeToolbarType;");
+    auto mid = env->GetMethodID(cls, "getChromeToolbarType", "(Lnet/kurobako/cef4j/gen/views/CefBrowserView;)Ljava/util/Optional;");
     if (!mid) {
       env->PopLocalFrame(nullptr);
       return cef_chrome_toolbar_type_t::CEF_CTT_NONE;
     }
-    auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_browser_view);
+    auto jOptional = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_browser_view);
     if (CheckJNIException(env)) {
       env->PopLocalFrame(nullptr);
       return cef_chrome_toolbar_type_t::CEF_CTT_NONE;
     }
+    auto _optCls = FindClassCached(env, "java/util/Optional");
+    auto _orElseMid = env->GetMethodID(_optCls, "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    auto jResult = jOptional ? (jobject)env->CallObjectMethod(jOptional, _orElseMid, (jobject) nullptr) : nullptr;
     cef_chrome_toolbar_type_t nativeResult = static_cast<cef_chrome_toolbar_type_t>(
         jResult ? env->GetLongField(jResult, env->GetFieldID(env->GetObjectClass(jResult), "value", "J")) : 0);
     env->PopLocalFrame(nullptr);
@@ -411,20 +413,23 @@ struct JniCefBrowserViewDelegate : public cef_browser_view_delegate_t {
   static cef_runtime_style_t CEF_CALLBACK _get_browser_runtime_style(cef_browser_view_delegate_t *self) {
     auto *h = reinterpret_cast<JniCefBrowserViewDelegate *>(self);
     ScopedJNIEnv env(h->jvm);
-    if (env->PushLocalFrame(6) < 0) {
+    if (env->PushLocalFrame(9) < 0) {
       return cef_runtime_style_t::CEF_RUNTIME_STYLE_DEFAULT;
     }
     auto cls = env->GetObjectClass(h->javaHandler);
-    auto mid = env->GetMethodID(cls, "getBrowserRuntimeStyle", "()Lnet/kurobako/cef4j/gen/CefRuntimeStyle;");
+    auto mid = env->GetMethodID(cls, "getBrowserRuntimeStyle", "()Ljava/util/Optional;");
     if (!mid) {
       env->PopLocalFrame(nullptr);
       return cef_runtime_style_t::CEF_RUNTIME_STYLE_DEFAULT;
     }
-    auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid);
+    auto jOptional = (jobject)env->CallObjectMethod(h->javaHandler, mid);
     if (CheckJNIException(env)) {
       env->PopLocalFrame(nullptr);
       return cef_runtime_style_t::CEF_RUNTIME_STYLE_DEFAULT;
     }
+    auto _optCls = FindClassCached(env, "java/util/Optional");
+    auto _orElseMid = env->GetMethodID(_optCls, "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    auto jResult = jOptional ? (jobject)env->CallObjectMethod(jOptional, _orElseMid, (jobject) nullptr) : nullptr;
     cef_runtime_style_t nativeResult = static_cast<cef_runtime_style_t>(
         jResult ? env->GetLongField(jResult, env->GetFieldID(env->GetObjectClass(jResult), "value", "J")) : 0);
     env->PopLocalFrame(nullptr);

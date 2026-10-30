@@ -3,7 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
@@ -11,6 +11,7 @@ import net.kurobako.cef4j.ipc.session.WireDecoder;
  * to facade methods (or factory requests) that take this struct. The dispatcher decodes them on the
  * runtime-server side and fills the matching {@code cef_time_t} before invoking CEF.
  */
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class Time {
 
     private final int year;
@@ -65,12 +66,13 @@ public final class Time {
         return millisecond;
     }
 
+    @SuppressWarnings("SameReturnValue")
     public int encodedSize() {
         return 32;
     }
 
     public void encodeInto(ByteBuffer dst) {
-        ByteOrder originalOrder = dst.order();
+        final ByteOrder originalOrder = dst.order();
         try {
             dst.order(ByteOrder.LITTLE_ENDIAN);
             dst.putInt(year);
@@ -92,22 +94,14 @@ public final class Time {
       * configured the buffer.
       */
     public static Time decode(ByteBuffer __buf) {
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "year");
-        int year = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "month");
-        int month = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "dayOfWeek");
-        int dayOfWeek = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "dayOfMonth");
-        int dayOfMonth = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "hour");
-        int hour = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "minute");
-        int minute = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "second");
-        int second = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "millisecond");
-        int millisecond = __buf.getInt();
+        final int year = WireDecoder.int32(__buf, "year");
+        final int month = WireDecoder.int32(__buf, "month");
+        final int dayOfWeek = WireDecoder.int32(__buf, "dayOfWeek");
+        final int dayOfMonth = WireDecoder.int32(__buf, "dayOfMonth");
+        final int hour = WireDecoder.int32(__buf, "hour");
+        final int minute = WireDecoder.int32(__buf, "minute");
+        final int second = WireDecoder.int32(__buf, "second");
+        final int millisecond = WireDecoder.int32(__buf, "millisecond");
         return new Time(year, month, dayOfWeek, dayOfMonth, hour, minute, second, millisecond);
     }
 
@@ -118,52 +112,52 @@ public final class Time {
     /** Lombok-style builder. */
     public static final class Builder {
 
-        private int year = 0;
-        private int month = 0;
-        private int dayOfWeek = 0;
-        private int dayOfMonth = 0;
-        private int hour = 0;
-        private int minute = 0;
-        private int second = 0;
-        private int millisecond = 0;
+        private int year;
+        private int month;
+        private int dayOfWeek;
+        private int dayOfMonth;
+        private int hour;
+        private int minute;
+        private int second;
+        private int millisecond;
 
-        public Builder year(int year) {
-            this.year = year;
+        public Builder year(int value) {
+            this.year = value;
             return this;
         }
 
-        public Builder month(int month) {
-            this.month = month;
+        public Builder month(int value) {
+            this.month = value;
             return this;
         }
 
-        public Builder dayOfWeek(int dayOfWeek) {
-            this.dayOfWeek = dayOfWeek;
+        public Builder dayOfWeek(int value) {
+            this.dayOfWeek = value;
             return this;
         }
 
-        public Builder dayOfMonth(int dayOfMonth) {
-            this.dayOfMonth = dayOfMonth;
+        public Builder dayOfMonth(int value) {
+            this.dayOfMonth = value;
             return this;
         }
 
-        public Builder hour(int hour) {
-            this.hour = hour;
+        public Builder hour(int value) {
+            this.hour = value;
             return this;
         }
 
-        public Builder minute(int minute) {
-            this.minute = minute;
+        public Builder minute(int value) {
+            this.minute = value;
             return this;
         }
 
-        public Builder second(int second) {
-            this.second = second;
+        public Builder second(int value) {
+            this.second = value;
             return this;
         }
 
-        public Builder millisecond(int millisecond) {
-            this.millisecond = millisecond;
+        public Builder millisecond(int value) {
+            this.millisecond = value;
             return this;
         }
 

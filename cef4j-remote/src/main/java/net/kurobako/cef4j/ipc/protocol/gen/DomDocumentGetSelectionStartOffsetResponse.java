@@ -3,11 +3,13 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class DomDocumentGetSelectionStartOffsetResponse implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 977002428;
@@ -34,7 +36,7 @@ public final class DomDocumentGetSelectionStartOffsetResponse implements CefMess
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(result);
@@ -44,10 +46,9 @@ public final class DomDocumentGetSelectionStartOffsetResponse implements CefMess
     }
 
     public static final CefMessageDecoder<DomDocumentGetSelectionStartOffsetResponse> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "result");
-        int result = __buf.getInt();
+        final int result = WireDecoder.int32(__buf, "result");
         WireDecoder.requireFullyConsumed(__buf, "DomDocumentGetSelectionStartOffsetResponse");
         return new DomDocumentGetSelectionStartOffsetResponse(result);
     };

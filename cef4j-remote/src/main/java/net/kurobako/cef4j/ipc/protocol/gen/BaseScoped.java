@@ -3,7 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
@@ -11,6 +11,7 @@ import net.kurobako.cef4j.ipc.session.WireDecoder;
  * to facade methods (or factory requests) that take this struct. The dispatcher decodes them on the
  * runtime-server side and fills the matching {@code cef_base_scoped_t} before invoking CEF.
  */
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class BaseScoped {
 
     private final long size;
@@ -23,12 +24,13 @@ public final class BaseScoped {
         return size;
     }
 
+    @SuppressWarnings("SameReturnValue")
     public int encodedSize() {
         return 8;
     }
 
     public void encodeInto(ByteBuffer dst) {
-        ByteOrder originalOrder = dst.order();
+        final ByteOrder originalOrder = dst.order();
         try {
             dst.order(ByteOrder.LITTLE_ENDIAN);
             dst.putLong(size);
@@ -43,8 +45,7 @@ public final class BaseScoped {
       * configured the buffer.
       */
     public static BaseScoped decode(ByteBuffer __buf) {
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "size");
-        long size = __buf.getLong();
+        final long size = WireDecoder.int64(__buf, "size");
         return new BaseScoped(size);
     }
 
@@ -55,10 +56,10 @@ public final class BaseScoped {
     /** Lombok-style builder. */
     public static final class Builder {
 
-        private long size = 0L;
+        private long size;
 
-        public Builder size(long size) {
-            this.size = size;
+        public Builder size(long value) {
+            this.size = value;
             return this;
         }
 

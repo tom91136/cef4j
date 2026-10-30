@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ServiceLoader;
 import net.kurobako.cef4j.cdp.CdpCodec;
 import net.kurobako.cef4j.policy.NullableBoundary;
@@ -28,7 +29,7 @@ public final class WebDriverJsonCodec {
     }
 
     public JsonElement decode(byte[] json) {
-        return toJsonElement(codec.decode(json));
+        return toJsonElement(codec.decode(json).orElse(null));
     }
 
     public JsonElement decode(String json) {
@@ -36,17 +37,16 @@ public final class WebDriverJsonCodec {
     }
 
     public byte[] encode(JsonElement value) {
-        Object raw = fromJsonElement(value);
-        return raw == null ? "null".getBytes(StandardCharsets.UTF_8) : codec.encode(raw);
+        return fromJsonElement(value).map(codec::encode).orElseGet(() -> "null".getBytes(StandardCharsets.UTF_8));
     }
 
     /** Wraps the installed {@link CdpCodec} provider. Prefer explicit injection when multiple codecs are present. */
     public static WebDriverJsonCodec installed() {
-        Iterator<CdpCodec> providers = ServiceLoader.load(CdpCodec.class).iterator();
+        final Iterator<CdpCodec> providers = ServiceLoader.load(CdpCodec.class).iterator();
         if (!providers.hasNext()) {
             throw new IllegalStateException("No JSON codec installed; add cef4j-codecs-gson or cef4j-codecs-jackson");
         }
-        CdpCodec provider = providers.next();
+        final CdpCodec provider = providers.next();
         if (providers.hasNext()) {
             throw new IllegalStateException("Multiple JSON codecs installed ("
                     + provider.getClass().getName() + ", "
@@ -61,14 +61,14 @@ public final class WebDriverJsonCodec {
         if (value == null) return JsonNull.INSTANCE;
         if (value instanceof JsonElement) return (JsonElement) value;
         if (value instanceof Map) {
-            JsonObject object = new JsonObject();
+            final JsonObject object = new JsonObject();
             for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
                 object.add(String.valueOf(entry.getKey()), toJsonElement(entry.getValue()));
             }
             return object;
         }
         if (value instanceof List) {
-            JsonArray array = new JsonArray();
+            final JsonArray array = new JsonArray();
             for (Object item : (List<?>) value) array.add(toJsonElement(item));
             return array;
         }
@@ -78,21 +78,21 @@ public final class WebDriverJsonCodec {
         throw new IllegalArgumentException("unsupported JSON value: " + value.getClass());
     }
 
-    @Nullable
-    static Object fromJsonElement(JsonElement value) {
-        if (value.isNull()) return null;
+    static Optional<Object> fromJsonElement(JsonElement value) {
+        if (value.isNull()) return Optional.empty();
         if (value.isObject()) {
-            Map<String, Object> object = new LinkedHashMap<>();
+            final Map<String, Object> object = new LinkedHashMap<>();
             for (Map.Entry<String, JsonElement> entry : value.asObject().entrySet()) {
-                object.put(entry.getKey(), fromJsonElement(entry.getValue()));
+                object.put(entry.getKey(), fromJsonElement(entry.getValue()).orElse(null));
             }
-            return object;
+            return Optional.of(object);
         }
         if (value.isArray()) {
-            List<Object> array = new ArrayList<>();
-            for (JsonElement item : value.asArray()) array.add(fromJsonElement(item));
-            return array;
+            final List<Object> array = new ArrayList<>();
+            for (JsonElement item : value.asArray())
+                array.add(fromJsonElement(item).orElse(null));
+            return Optional.of(array);
         }
-        return value.asPrimitive().value();
+        return Optional.of(value.asPrimitive().value());
     }
 }

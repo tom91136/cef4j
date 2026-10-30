@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class PreferenceRegistrarAddPreferenceRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 1852985148;
@@ -50,7 +52,7 @@ public final class PreferenceRegistrarAddPreferenceRequest implements CefMessage
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
@@ -63,16 +65,11 @@ public final class PreferenceRegistrarAddPreferenceRequest implements CefMessage
     }
 
     public static final CefMessageDecoder<PreferenceRegistrarAddPreferenceRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int nameLen = WireDecoder.length(__buf, "name");
-        byte[] nameBuf = new byte[nameLen];
-        __buf.get(nameBuf);
-        String name = new String(nameBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "defaultValue");
-        RemoteHandle defaultValue = new RemoteHandle(__buf.getInt());
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final String name = WireDecoder.utf8(__buf, "name");
+        final RemoteHandle defaultValue = WireDecoder.handle(__buf, "defaultValue");
         WireDecoder.requireFullyConsumed(__buf, "PreferenceRegistrarAddPreferenceRequest");
         return new PreferenceRegistrarAddPreferenceRequest(self, name, defaultValue);
     };

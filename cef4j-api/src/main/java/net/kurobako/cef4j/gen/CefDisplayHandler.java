@@ -22,7 +22,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:46</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefDisplayHandler extends CefClientHandler {
 
@@ -269,8 +268,8 @@ public interface CefDisplayHandler extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefDisplayHandler {
         private final java.util.List<CefDisplayHandler> delegates;
@@ -281,27 +280,27 @@ public interface CefDisplayHandler extends CefClientHandler {
 
         @Override
         public void onAddressChange(@Nullable CefBrowser browser, @Nullable CefFrame frame, @Nullable String url) {
-            for (CefDisplayHandler d : delegates) d.onAddressChange(browser, frame, url);
+            for (final CefDisplayHandler d : delegates) d.onAddressChange(browser, frame, url);
         }
 
         @Override
         public void onTitleChange(@Nullable CefBrowser browser, @Nullable String title) {
-            for (CefDisplayHandler d : delegates) d.onTitleChange(browser, title);
+            for (final CefDisplayHandler d : delegates) d.onTitleChange(browser, title);
         }
 
         @Override
         public void onFaviconUrlChange(@Nullable CefBrowser browser, @Nullable List<String> iconUrls) {
-            for (CefDisplayHandler d : delegates) d.onFaviconUrlChange(browser, iconUrls);
+            for (final CefDisplayHandler d : delegates) d.onFaviconUrlChange(browser, iconUrls);
         }
 
         @Override
         public void onFullscreenModeChange(@Nullable CefBrowser browser, boolean fullscreen) {
-            for (CefDisplayHandler d : delegates) d.onFullscreenModeChange(browser, fullscreen);
+            for (final CefDisplayHandler d : delegates) d.onFullscreenModeChange(browser, fullscreen);
         }
 
         @Override
         public boolean onTooltip(@Nullable CefBrowser browser, @Nullable String text) {
-            for (CefDisplayHandler d : delegates) {
+            for (final CefDisplayHandler d : delegates) {
                 if (d.onTooltip(browser, text)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -310,7 +309,7 @@ public interface CefDisplayHandler extends CefClientHandler {
 
         @Override
         public void onStatusMessage(@Nullable CefBrowser browser, @Nullable String value) {
-            for (CefDisplayHandler d : delegates) d.onStatusMessage(browser, value);
+            for (final CefDisplayHandler d : delegates) d.onStatusMessage(browser, value);
         }
 
         @Override
@@ -320,7 +319,7 @@ public interface CefDisplayHandler extends CefClientHandler {
                 @Nullable String message,
                 @Nullable String source,
                 int line) {
-            for (CefDisplayHandler d : delegates) {
+            for (final CefDisplayHandler d : delegates) {
                 if (d.onConsoleMessage(browser, level, message, source, line)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -329,7 +328,7 @@ public interface CefDisplayHandler extends CefClientHandler {
 
         @Override
         public boolean onAutoResize(@Nullable CefBrowser browser, CefSize newSize) {
-            for (CefDisplayHandler d : delegates) {
+            for (final CefDisplayHandler d : delegates) {
                 if (d.onAutoResize(browser, newSize)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -338,7 +337,7 @@ public interface CefDisplayHandler extends CefClientHandler {
 
         @Override
         public void onLoadingProgressChange(@Nullable CefBrowser browser, double progress) {
-            for (CefDisplayHandler d : delegates) d.onLoadingProgressChange(browser, progress);
+            for (final CefDisplayHandler d : delegates) d.onLoadingProgressChange(browser, progress);
         }
 
         @Override
@@ -347,7 +346,7 @@ public interface CefDisplayHandler extends CefClientHandler {
                 long cursor,
                 CefCursorType type,
                 @Nullable CefCursorInfo customCursorInfo) {
-            for (CefDisplayHandler d : delegates) {
+            for (final CefDisplayHandler d : delegates) {
                 if (d.onCursorChange(browser, cursor, type, customCursorInfo)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -356,12 +355,12 @@ public interface CefDisplayHandler extends CefClientHandler {
 
         @Override
         public void onMediaAccessChange(@Nullable CefBrowser browser, boolean hasVideoAccess, boolean hasAudioAccess) {
-            for (CefDisplayHandler d : delegates) d.onMediaAccessChange(browser, hasVideoAccess, hasAudioAccess);
+            for (final CefDisplayHandler d : delegates) d.onMediaAccessChange(browser, hasVideoAccess, hasAudioAccess);
         }
 
         @Override
         public boolean onContentsBoundsChange(@Nullable CefBrowser browser, CefRect newBounds) {
-            for (CefDisplayHandler d : delegates) {
+            for (final CefDisplayHandler d : delegates) {
                 if (d.onContentsBoundsChange(browser, newBounds)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -370,7 +369,7 @@ public interface CefDisplayHandler extends CefClientHandler {
 
         @Override
         public boolean getRootWindowScreenRect(@Nullable CefBrowser browser, CefRect.Mutable rect) {
-            for (CefDisplayHandler d : delegates) {
+            for (final CefDisplayHandler d : delegates) {
                 if (d.getRootWindowScreenRect(browser, rect)) return true;
             }
             if (!delegates.isEmpty()) return false;

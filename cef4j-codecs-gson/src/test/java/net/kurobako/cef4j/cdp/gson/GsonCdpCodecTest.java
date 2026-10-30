@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
@@ -27,19 +26,20 @@ final class GsonCdpCodecTest {
     void typedCallUsesCodecNeutralTransport() {
         FakeTransport transport = new FakeTransport(
                 "{\"result\":{\"type\":\"string\",\"value\":\"hello\"}}".getBytes(StandardCharsets.UTF_8));
-        CdpClient client = new CdpClient(transport, new GsonCdpCodec());
-        Runtime.EvaluateResult result = client.domains()
-                .runtime()
-                .evaluate(new Runtime.EvaluateRequest("'hello'").returnByValue(true))
-                .toCompletableFuture()
-                .join();
+        try (CdpClient client = new CdpClient(transport, new GsonCdpCodec())) {
+            Runtime.EvaluateResult result = client.domains()
+                    .runtime()
+                    .evaluate(new Runtime.EvaluateRequest("'hello'").returnByValue(true))
+                    .toCompletableFuture()
+                    .join();
 
-        assertThat(transport.method).isEqualTo("Runtime.evaluate");
-        assertThat(JsonParser.parseString(new String(transport.params, StandardCharsets.UTF_8)))
-                .isEqualTo(JsonParser.parseString("{\"expression\":\"'hello'\",\"returnByValue\":true}"));
-        Runtime.RemoteObject remoteObject = result.result();
-        assertThat(remoteObject.type()).isEqualTo(Runtime.RemoteObject.TypeValues.STRING);
-        assertThat(remoteObject.value()).isEqualTo(Optional.of("hello"));
+            assertThat(transport.method).isEqualTo("Runtime.evaluate");
+            assertThat(JsonParser.parseString(new String(transport.params, StandardCharsets.UTF_8)))
+                    .isEqualTo(JsonParser.parseString("{\"expression\":\"'hello'\",\"returnByValue\":true}"));
+            Runtime.RemoteObject remoteObject = result.result();
+            assertThat(remoteObject.type()).isEqualTo(Runtime.RemoteObject.TypeValues.STRING);
+            assertThat(remoteObject.value().orElse(null)).isEqualTo("hello");
+        }
     }
 
     @Test
@@ -74,25 +74,26 @@ final class GsonCdpCodecTest {
     @Test
     void typedEventsDecodeNestedValuesAndCanBeUnsubscribed() {
         FakeTransport transport = new FakeTransport(new byte[0]);
-        CdpClient client = new CdpClient(transport, new GsonCdpCodec());
-        List<Runtime.ConsoleAPICalledEvent> events = new ArrayList<>();
+        try (CdpClient client = new CdpClient(transport, new GsonCdpCodec())) {
+            List<Runtime.ConsoleAPICalledEvent> events = new ArrayList<>();
 
-        CdpSubscription subscription = client.domains().runtime().onConsoleAPICalled(events::add);
-        transport.emit("{\"type\":\"log\",\"args\":[{\"type\":\"string\",\"value\":\"ready\"}],"
-                + "\"executionContextId\":7,\"timestamp\":12.5}");
+            CdpSubscription subscription = client.domains().runtime().onConsoleAPICalled(events::add);
+            transport.emit("{\"type\":\"log\",\"args\":[{\"type\":\"string\",\"value\":\"ready\"}],"
+                    + "\"executionContextId\":7,\"timestamp\":12.5}");
 
-        assertThat(transport.subscribedMethod).isEqualTo("Runtime.consoleAPICalled");
-        assertThat(events).singleElement().satisfies(event -> {
-            assertThat(event.type()).isEqualTo(Runtime.ConsoleAPICalledEvent.TypeValues.LOG);
-            assertThat(event.executionContextId()).isEqualTo(new Runtime.ExecutionContextId(7));
-            assertThat(event.args()).singleElement().satisfies(argument -> {
-                assertThat(argument.type()).isEqualTo(Runtime.RemoteObject.TypeValues.STRING);
-                assertThat(argument.value()).isEqualTo(Optional.of("ready"));
+            assertThat(transport.subscribedMethod).isEqualTo("Runtime.consoleAPICalled");
+            assertThat(events).singleElement().satisfies(event -> {
+                assertThat(event.type()).isEqualTo(Runtime.ConsoleAPICalledEvent.TypeValues.LOG);
+                assertThat(event.executionContextId()).isEqualTo(new Runtime.ExecutionContextId(7));
+                assertThat(event.args()).singleElement().satisfies(argument -> {
+                    assertThat(argument.type()).isEqualTo(Runtime.RemoteObject.TypeValues.STRING);
+                    assertThat(argument.value().orElse(null)).isEqualTo("ready");
+                });
             });
-        });
 
-        subscription.close();
-        assertThat(transport.subscriptionClosed).isTrue();
+            subscription.close();
+            assertThat(transport.subscriptionClosed).isTrue();
+        }
     }
 
     private static final class FakeTransport implements CdpTransport {

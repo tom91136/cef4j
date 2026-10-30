@@ -3,7 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
@@ -11,6 +11,7 @@ import net.kurobako.cef4j.ipc.session.WireDecoder;
  * to facade methods (or factory requests) that take this struct. The dispatcher decodes them on the
  * runtime-server side and fills the matching {@code cef_mouse_event_t} before invoking CEF.
  */
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class MouseEvent {
 
     private final int x;
@@ -35,12 +36,13 @@ public final class MouseEvent {
         return modifiers;
     }
 
+    @SuppressWarnings("SameReturnValue")
     public int encodedSize() {
         return 12;
     }
 
     public void encodeInto(ByteBuffer dst) {
-        ByteOrder originalOrder = dst.order();
+        final ByteOrder originalOrder = dst.order();
         try {
             dst.order(ByteOrder.LITTLE_ENDIAN);
             dst.putInt(x);
@@ -57,12 +59,9 @@ public final class MouseEvent {
       * configured the buffer.
       */
     public static MouseEvent decode(ByteBuffer __buf) {
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "x");
-        int x = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "y");
-        int y = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "modifiers");
-        int modifiers = __buf.getInt();
+        final int x = WireDecoder.int32(__buf, "x");
+        final int y = WireDecoder.int32(__buf, "y");
+        final int modifiers = WireDecoder.int32(__buf, "modifiers");
         return new MouseEvent(x, y, modifiers);
     }
 
@@ -73,22 +72,22 @@ public final class MouseEvent {
     /** Lombok-style builder. */
     public static final class Builder {
 
-        private int x = 0;
-        private int y = 0;
-        private int modifiers = 0;
+        private int x;
+        private int y;
+        private int modifiers;
 
-        public Builder x(int x) {
-            this.x = x;
+        public Builder x(int value) {
+            this.x = value;
             return this;
         }
 
-        public Builder y(int y) {
-            this.y = y;
+        public Builder y(int value) {
+            this.y = value;
             return this;
         }
 
-        public Builder modifiers(int modifiers) {
-            this.modifiers = modifiers;
+        public Builder modifiers(int value) {
+            this.modifiers = value;
             return this;
         }
 

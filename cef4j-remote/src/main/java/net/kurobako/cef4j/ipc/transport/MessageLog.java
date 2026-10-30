@@ -75,9 +75,9 @@ public final class MessageLog {
 
     /** Open a log for writing. Truncates if the file exists. */
     public static Writer writer(Path file) throws IOException {
-        OutputStream raw = Files.newOutputStream(
+        final OutputStream raw = Files.newOutputStream(
                 file, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
-        DataOutputStream out = new DataOutputStream(new BufferedOutputStream(raw));
+        final DataOutputStream out = new DataOutputStream(new BufferedOutputStream(raw));
         out.write(MAGIC);
         out.writeInt(VERSION);
         out.writeInt(0); // flags
@@ -86,16 +86,16 @@ public final class MessageLog {
 
     /** Open a log for reading. */
     public static Reader reader(Path file) throws IOException {
-        InputStream raw = Files.newInputStream(file, StandardOpenOption.READ);
-        DataInputStream in = new DataInputStream(new BufferedInputStream(raw));
-        byte[] magic = new byte[MAGIC.length];
+        final InputStream raw = Files.newInputStream(file, StandardOpenOption.READ);
+        final DataInputStream in = new DataInputStream(new BufferedInputStream(raw));
+        final byte[] magic = new byte[MAGIC.length];
         in.readFully(magic);
         for (int i = 0; i < MAGIC.length; i++) {
             if (magic[i] != MAGIC[i]) throw new IOException("bad magic in " + file);
         }
-        int version = in.readInt();
+        final int version = in.readInt();
         if (version != VERSION) throw new IOException("unsupported MessageLog version " + version);
-        int flags = in.readInt();
+        final int flags = in.readInt();
         if (flags != 0) throw new IOException("unsupported MessageLog flags 0x" + Integer.toHexString(flags));
         return new Reader(in);
     }
@@ -104,7 +104,7 @@ public final class MessageLog {
     public static final class Writer implements Closeable {
         private final DataOutputStream out;
         private final Object lock = new Object();
-        private boolean closed = false;
+        private boolean closed;
 
         Writer(DataOutputStream out) {
             this.out = out;
@@ -134,7 +134,7 @@ public final class MessageLog {
     /** Streaming reader. Returns one entry per call to {@link #next}; {@code null} on EOF. */
     public static final class Reader implements Closeable {
         private final DataInputStream in;
-        private boolean closed = false;
+        private boolean closed;
 
         Reader(DataInputStream in) {
             this.in = in;
@@ -145,15 +145,15 @@ public final class MessageLog {
             int dirByte;
             try {
                 dirByte = in.read();
-            } catch (EOFException eof) {
+            } catch (EOFException ignored) {
                 return Optional.empty();
             }
             if (dirByte < 0) return Optional.empty();
-            Direction dir = Direction.of((byte) dirByte);
-            long ts = in.readLong();
-            int len = in.readInt();
+            final Direction dir = Direction.of((byte) dirByte);
+            final long ts = in.readLong();
+            final int len = in.readInt();
             if (len < 0 || len > MAX_PAYLOAD_BYTES) throw new IOException("invalid payload length: " + len);
-            byte[] payload = new byte[len];
+            final byte[] payload = new byte[len];
             in.readFully(payload);
             return Optional.of(new Entry(dir, ts, payload));
         }

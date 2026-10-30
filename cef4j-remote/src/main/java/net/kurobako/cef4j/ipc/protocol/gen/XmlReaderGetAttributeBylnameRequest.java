@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class XmlReaderGetAttributeBylnameRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 1753070967;
@@ -52,7 +54,7 @@ public final class XmlReaderGetAttributeBylnameRequest implements CefMessageView
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
@@ -66,18 +68,11 @@ public final class XmlReaderGetAttributeBylnameRequest implements CefMessageView
     }
 
     public static final CefMessageDecoder<XmlReaderGetAttributeBylnameRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int localNameLen = WireDecoder.length(__buf, "localName");
-        byte[] localNameBuf = new byte[localNameLen];
-        __buf.get(localNameBuf);
-        String localName = new String(localNameBuf, StandardCharsets.UTF_8);
-        int namespaceURILen = WireDecoder.length(__buf, "namespaceURI");
-        byte[] namespaceURIBuf = new byte[namespaceURILen];
-        __buf.get(namespaceURIBuf);
-        String namespaceURI = new String(namespaceURIBuf, StandardCharsets.UTF_8);
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final String localName = WireDecoder.utf8(__buf, "localName");
+        final String namespaceURI = WireDecoder.utf8(__buf, "namespaceURI");
         WireDecoder.requireFullyConsumed(__buf, "XmlReaderGetAttributeBylnameRequest");
         return new XmlReaderGetAttributeBylnameRequest(self, localName, namespaceURI);
     };

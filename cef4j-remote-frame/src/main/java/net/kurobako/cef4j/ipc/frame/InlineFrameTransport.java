@@ -38,16 +38,16 @@ public final class InlineFrameTransport implements FrameTransport {
     private CefSession session;
 
     private final AtomicReference<@Nullable CompletableFuture<Void>> repaintRequest = new AtomicReference<>();
-    private volatile boolean closed;
+    private volatile boolean closed = false;
 
     public static InlineFrameTransport bind(CefSession session, RemoteHandle browser) {
-        InlineFrameTransport transport = new InlineFrameTransport(browser);
+        final InlineFrameTransport transport = new InlineFrameTransport(browser);
         transport.subscribe(session);
         return transport;
     }
 
     public static InlineFrameTransport bindAll(CefSession session) {
-        InlineFrameTransport transport = new InlineFrameTransport(null);
+        final InlineFrameTransport transport = new InlineFrameTransport(null);
         transport.subscribe(session);
         return transport;
     }
@@ -65,10 +65,10 @@ public final class InlineFrameTransport implements FrameTransport {
 
     private void onPaint(InlinePaintEvent event) {
         if (closed || (browser != null && browser.id() != event.browser().id())) return;
-        FrameConsumer current = consumer;
+        final FrameConsumer current = consumer;
         if (current == null) return;
-        long expectedBytes = (long) event.width() * event.height() * BYTES_PER_PIXEL;
-        byte[] pixels = event.pixels();
+        final long expectedBytes = (long) event.width() * event.height() * BYTES_PER_PIXEL;
+        final byte[] pixels = event.pixels();
         if (event.width() <= 0
                 || event.height() <= 0
                 || expectedBytes > Integer.MAX_VALUE
@@ -83,8 +83,8 @@ public final class InlineFrameTransport implements FrameTransport {
         }
         // Coalescing may skip intermediate paints, so the latest event's dirty rectangle cannot safely describe all
         // changes since the last delivered frame. The payload is a complete snapshot; advertise a full-frame update.
-        Rect dirty = new Rect(0, 0, event.width(), event.height());
-        FrameMetadata metadata = new FrameMetadata(
+        final Rect dirty = new Rect(0, 0, event.width(), event.height());
+        final FrameMetadata metadata = new FrameMetadata(
                 sequence.incrementAndGet(),
                 event.frameSequence(),
                 System.nanoTime(),
@@ -113,10 +113,10 @@ public final class InlineFrameTransport implements FrameTransport {
     }
 
     private void requestScopedRepaint() {
-        CefSession current = session;
-        RemoteHandle scopedBrowser = browser;
+        final CefSession current = session;
+        final RemoteHandle scopedBrowser = browser;
         if (closed || current == null || scopedBrowser == null || !repaintRequested.compareAndSet(false, true)) return;
-        int generation = repaintGeneration.incrementAndGet();
+        final int generation = repaintGeneration.incrementAndGet();
         CompletableFuture<Void> repaint;
         try {
             repaint = CefFutures.flatMap(new Browser(current, scopedBrowser).getHost(), host -> host.invalidate(0));
@@ -140,7 +140,7 @@ public final class InlineFrameTransport implements FrameTransport {
 
     private void cancelRepaint() {
         repaintGeneration.incrementAndGet();
-        CompletableFuture<Void> repaint = repaintRequest.getAndSet(null);
+        final CompletableFuture<Void> repaint = repaintRequest.getAndSet(null);
         if (repaint != null) repaint.cancel(true);
     }
 
@@ -151,7 +151,7 @@ public final class InlineFrameTransport implements FrameTransport {
         consumer = null;
         session = null;
         cancelRepaint();
-        HandlerRegistration current = registration;
+        final HandlerRegistration current = registration;
         if (current != null) current.unregister();
         registration = null;
     }

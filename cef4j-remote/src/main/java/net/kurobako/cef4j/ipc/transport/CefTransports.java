@@ -30,23 +30,23 @@ public final class CefTransports {
     }
 
     private static CefTransportProvider provider(String name) throws CefTransportException {
-        CefTransportProvider provider = providers().get(name.toLowerCase(Locale.ROOT));
+        final CefTransportProvider provider = providers().get(name.toLowerCase(Locale.ROOT));
         if (provider != null) return provider;
         throw new CefTransportException(
                 "No cef4j transport provider named '" + name + "' is present; available: " + available());
     }
 
     public static List<String> available() {
-        List<String> names = new ArrayList<>(providers().keySet());
+        final List<String> names = new ArrayList<>(providers().keySet());
         Collections.sort(names);
         return Collections.unmodifiableList(names);
     }
 
     private static Map<String, CefTransportProvider> providers() {
-        Map<String, CefTransportProvider> providers = new LinkedHashMap<>();
+        final Map<String, CefTransportProvider> providers = new LinkedHashMap<>();
         for (CefTransportProvider provider : ServiceLoader.load(CefTransportProvider.class)) {
-            String name = provider.name().toLowerCase(Locale.ROOT);
-            CefTransportProvider previous = providers.putIfAbsent(name, provider);
+            final String name = provider.name().toLowerCase(Locale.ROOT);
+            final CefTransportProvider previous = providers.putIfAbsent(name, provider);
             if (previous != null) {
                 throw new IllegalStateException("Duplicate cef4j transport provider name '" + name + "': "
                         + previous.getClass().getName() + ", "

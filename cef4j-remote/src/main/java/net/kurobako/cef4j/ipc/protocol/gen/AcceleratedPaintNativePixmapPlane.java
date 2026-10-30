@@ -3,7 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
@@ -11,6 +11,7 @@ import net.kurobako.cef4j.ipc.session.WireDecoder;
  * to facade methods (or factory requests) that take this struct. The dispatcher decodes them on the
  * runtime-server side and fills the matching {@code cef_accelerated_paint_native_pixmap_plane_t} before invoking CEF.
  */
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class AcceleratedPaintNativePixmapPlane {
 
     private final int stride;
@@ -41,12 +42,13 @@ public final class AcceleratedPaintNativePixmapPlane {
         return fd;
     }
 
+    @SuppressWarnings("SameReturnValue")
     public int encodedSize() {
         return 24;
     }
 
     public void encodeInto(ByteBuffer dst) {
-        ByteOrder originalOrder = dst.order();
+        final ByteOrder originalOrder = dst.order();
         try {
             dst.order(ByteOrder.LITTLE_ENDIAN);
             dst.putInt(stride);
@@ -64,14 +66,10 @@ public final class AcceleratedPaintNativePixmapPlane {
       * configured the buffer.
       */
     public static AcceleratedPaintNativePixmapPlane decode(ByteBuffer __buf) {
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "stride");
-        int stride = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "offset");
-        long offset = __buf.getLong();
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "size");
-        long size = __buf.getLong();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "fd");
-        int fd = __buf.getInt();
+        final int stride = WireDecoder.int32(__buf, "stride");
+        final long offset = WireDecoder.int64(__buf, "offset");
+        final long size = WireDecoder.int64(__buf, "size");
+        final int fd = WireDecoder.int32(__buf, "fd");
         return new AcceleratedPaintNativePixmapPlane(stride, offset, size, fd);
     }
 
@@ -82,28 +80,28 @@ public final class AcceleratedPaintNativePixmapPlane {
     /** Lombok-style builder. */
     public static final class Builder {
 
-        private int stride = 0;
-        private long offset = 0L;
-        private long size = 0L;
-        private int fd = 0;
+        private int stride;
+        private long offset;
+        private long size;
+        private int fd;
 
-        public Builder stride(int stride) {
-            this.stride = stride;
+        public Builder stride(int value) {
+            this.stride = value;
             return this;
         }
 
-        public Builder offset(long offset) {
-            this.offset = offset;
+        public Builder offset(long value) {
+            this.offset = value;
             return this;
         }
 
-        public Builder size(long size) {
-            this.size = size;
+        public Builder size(long value) {
+            this.size = value;
             return this;
         }
 
-        public Builder fd(int fd) {
-            this.fd = fd;
+        public Builder fd(int value) {
+            this.fd = value;
             return this;
         }
 

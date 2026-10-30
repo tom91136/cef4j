@@ -204,7 +204,7 @@ struct JniCefPrintHandler : public cef_print_handler_t {
   static cef_size_t CEF_CALLBACK _get_pdf_paper_size(cef_print_handler_t *self, struct _cef_browser_t *browser, int device_units_per_inch) {
     auto *h = reinterpret_cast<JniCefPrintHandler *>(self);
     ScopedJNIEnv env(h->jvm);
-    if (env->PushLocalFrame(8) < 0) {
+    if (env->PushLocalFrame(12) < 0) {
       return cef_size_t{};
     }
     cef_browser_t *_p_browser = browser;
@@ -216,16 +216,19 @@ struct JniCefPrintHandler : public cef_print_handler_t {
     auto j_browser_ctor = env->GetMethodID(j_browser_cls, "<init>", "(J)V");
     auto j_browser = _p_browser ? env->NewObject(j_browser_cls, j_browser_ctor, reinterpret_cast<jlong>(_p_browser)) : nullptr;
     auto cls = env->GetObjectClass(h->javaHandler);
-    auto mid = env->GetMethodID(cls, "getPdfPaperSize", "(Lnet/kurobako/cef4j/gen/CefBrowser;I)Lnet/kurobako/cef4j/gen/CefSize;");
+    auto mid = env->GetMethodID(cls, "getPdfPaperSize", "(Lnet/kurobako/cef4j/gen/CefBrowser;I)Ljava/util/Optional;");
     if (!mid) {
       env->PopLocalFrame(nullptr);
       return cef_size_t{};
     }
-    auto jResult = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_browser, static_cast<jint>(device_units_per_inch));
+    auto jOptional = (jobject)env->CallObjectMethod(h->javaHandler, mid, j_browser, static_cast<jint>(device_units_per_inch));
     if (CheckJNIException(env)) {
       env->PopLocalFrame(nullptr);
       return cef_size_t{};
     }
+    auto _optCls = FindClassCached(env, "java/util/Optional");
+    auto _orElseMid = env->GetMethodID(_optCls, "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    auto jResult = jOptional ? (jobject)env->CallObjectMethod(jOptional, _orElseMid, (jobject) nullptr) : nullptr;
     cef_size_t nativeResult = ([&]() {
       cef_size_t _result = {};
       if (jResult) {

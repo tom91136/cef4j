@@ -4,15 +4,13 @@ package net.kurobako.cef4j.cdp.generated;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
-import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * A domain for interacting with Cast, Presentation API, and Remote Playback API functionalities.
@@ -21,6 +19,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Cast {
     private Cast() {}
     /**
@@ -50,8 +49,7 @@ public final class Cast {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> session() {
-            Object value = raw("session");
-            return Optional.ofNullable((String) value);
+            return raw("session").map(value -> (String) value);
         }
         /**
          * Sets the name field.
@@ -73,16 +71,7 @@ public final class Cast {
         }
         /**
          * Text describing the current session. Present only if there is an active session on the sink.
-         * @param session field value; empty omits the value
-         * @return this model
-         */
-        public Sink session(Optional<String> session) {
-            set("session", session.orElse(null));
-            return this;
-        }
-        /**
-         * Text describing the current session. Present only if there is an active session on the sink.
-         * @param session field value; null removes the value
+         * @param session field value
          * @return this model
          */
         public Sink session(String session) {
@@ -96,7 +85,7 @@ public final class Cast {
     public static final class EnableRequest extends CdpObject {
         public EnableRequest() {}
         public static EnableRequest fromMap(Map<String, Object> values) {
-            EnableRequest instance_ = new EnableRequest();
+            final EnableRequest instance_ = new EnableRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -105,21 +94,11 @@ public final class Cast {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> presentationUrl() {
-            Object value = raw("presentationUrl");
-            return Optional.ofNullable((String) value);
+            return raw("presentationUrl").map(value -> (String) value);
         }
         /**
          * Sets the presentationUrl field.
-         * @param presentationUrl field value; empty omits the value
-         * @return this model
-         */
-        public EnableRequest presentationUrl(Optional<String> presentationUrl) {
-            set("presentationUrl", presentationUrl.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the presentationUrl field.
-         * @param presentationUrl field value; null removes the value
+         * @param presentationUrl field value
          * @return this model
          */
         public EnableRequest presentationUrl(String presentationUrl) {
@@ -137,10 +116,10 @@ public final class Cast {
          * @param sinkName protocol value
          */
         public SetSinkToUseRequest(String sinkName) {
-            set("sinkName", sinkName);
+            sinkName(sinkName);
         }
         public static SetSinkToUseRequest fromMap(Map<String, Object> values) {
-            SetSinkToUseRequest instance_ = new SetSinkToUseRequest();
+            final SetSinkToUseRequest instance_ = new SetSinkToUseRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -171,10 +150,10 @@ public final class Cast {
          * @param sinkName protocol value
          */
         public StartDesktopMirroringRequest(String sinkName) {
-            set("sinkName", sinkName);
+            sinkName(sinkName);
         }
         public static StartDesktopMirroringRequest fromMap(Map<String, Object> values) {
-            StartDesktopMirroringRequest instance_ = new StartDesktopMirroringRequest();
+            final StartDesktopMirroringRequest instance_ = new StartDesktopMirroringRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -205,10 +184,10 @@ public final class Cast {
          * @param sinkName protocol value
          */
         public StartTabMirroringRequest(String sinkName) {
-            set("sinkName", sinkName);
+            sinkName(sinkName);
         }
         public static StartTabMirroringRequest fromMap(Map<String, Object> values) {
-            StartTabMirroringRequest instance_ = new StartTabMirroringRequest();
+            final StartTabMirroringRequest instance_ = new StartTabMirroringRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -239,10 +218,10 @@ public final class Cast {
          * @param sinkName protocol value
          */
         public StopCastingRequest(String sinkName) {
-            set("sinkName", sinkName);
+            sinkName(sinkName);
         }
         public static StopCastingRequest fromMap(Map<String, Object> values) {
-            StopCastingRequest instance_ = new StopCastingRequest();
+            final StopCastingRequest instance_ = new StopCastingRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -277,7 +256,7 @@ public final class Cast {
          * @return the protocol field value
          */
         public java.util.List<Cast.Sink> sinks() {
-            return CdpObject.requireList(require("sinks"), element0 -> java.util.Objects.requireNonNull(Cast.Sink.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("sinks"), element0 -> java.util.Objects.requireNonNull(Cast.Sink.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Sets the sinks field.
@@ -323,9 +302,9 @@ public final class Cast {
          * @param presentationUrl protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> enable(Optional<String> presentationUrl) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            presentationUrl.ifPresent(value_ -> params.put("presentationUrl", CdpObject.json(value_)));
+        public CompletionStage<Void> enable(String presentationUrl) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("presentationUrl", CdpObject.json(presentationUrl));
             return client.call("Cast.enable", params);
         }
         /**
@@ -333,7 +312,7 @@ public final class Cast {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return enable(Optional.empty());
+            return client.call("Cast.enable", null);
         }
         /**
          * Starts observing for sinks that can be used for tab mirroring, and if set, sinks compatible with |presentationUrl| as well. When sinks are found, a |sinksUpdated| event is fired. Also starts observing for issue messages. When an issue is added or removed, an |issueUpdated| event is fired.
@@ -356,7 +335,7 @@ public final class Cast {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSinkToUse(String sinkName) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("sinkName", CdpObject.json(sinkName));
             return client.call("Cast.setSinkToUse", params);
         }
@@ -374,7 +353,7 @@ public final class Cast {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startDesktopMirroring(String sinkName) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("sinkName", CdpObject.json(sinkName));
             return client.call("Cast.startDesktopMirroring", params);
         }
@@ -392,7 +371,7 @@ public final class Cast {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startTabMirroring(String sinkName) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("sinkName", CdpObject.json(sinkName));
             return client.call("Cast.startTabMirroring", params);
         }
@@ -410,7 +389,7 @@ public final class Cast {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopCasting(String sinkName) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("sinkName", CdpObject.json(sinkName));
             return client.call("Cast.stopCasting", params);
         }

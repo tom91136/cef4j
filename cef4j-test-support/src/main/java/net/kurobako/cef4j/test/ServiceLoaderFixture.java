@@ -21,9 +21,9 @@ public final class ServiceLoaderFixture implements AutoCloseable {
         Objects.requireNonNull(root, "root");
         Objects.requireNonNull(service, "service");
         Objects.requireNonNull(providers, "providers");
-        Path serviceFile = root.resolve("META-INF/services").resolve(service.getName());
+        final Path serviceFile = root.resolve("META-INF/services").resolve(service.getName());
         Files.createDirectories(Objects.requireNonNull(serviceFile.getParent()));
-        String providerNames = Arrays.stream(providers)
+        final String providerNames = Arrays.stream(providers)
                 .map(provider -> Objects.requireNonNull(provider, "provider"))
                 .map(Class::getName)
                 .collect(Collectors.joining(System.lineSeparator(), "", System.lineSeparator()));
@@ -31,7 +31,7 @@ public final class ServiceLoaderFixture implements AutoCloseable {
 
         thread = Thread.currentThread();
         previousLoader = thread.getContextClassLoader();
-        java.net.URL serviceRoot = root.toUri().toURL();
+        final java.net.URL serviceRoot = root.toUri().toURL();
         serviceLoader = AccessController.doPrivileged((PrivilegedAction<URLClassLoader>)
                 () -> new URLClassLoader(new java.net.URL[] {serviceRoot}, previousLoader));
         thread.setContextClassLoader(serviceLoader);

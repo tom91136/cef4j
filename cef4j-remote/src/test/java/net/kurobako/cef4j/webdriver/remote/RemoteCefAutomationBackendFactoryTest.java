@@ -3,6 +3,7 @@ package net.kurobako.cef4j.webdriver.remote;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import net.kurobako.cef4j.cdp.CdpCodec;
@@ -63,7 +64,7 @@ class RemoteCefAutomationBackendFactoryTest {
         }
 
         @Override
-        public Object decode(byte[] json) {
+        public Optional<Object> decode(byte[] json) {
             throw new AssertionError("unexpected decode");
         }
     }

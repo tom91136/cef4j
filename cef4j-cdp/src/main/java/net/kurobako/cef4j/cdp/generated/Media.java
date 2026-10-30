@@ -1,11 +1,8 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
@@ -13,6 +10,7 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * This domain allows detailed inspection of media elements.
@@ -21,6 +19,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Media {
     private Media() {}
     /**
@@ -29,7 +28,7 @@ public final class Media {
     public static final class PlayerId implements CdpValue<String> {
         public final String value;
         public PlayerId(String value) { this.value = java.util.Objects.requireNonNull(value); }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof PlayerId)) return false;
@@ -44,7 +43,7 @@ public final class Media {
     public static final class Timestamp implements CdpValue<Double> {
         public final double value;
         public Timestamp(double value) { this.value = value; }
-        public Double value() { return value; }
+        @Override public Double value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof Timestamp)) return false;
@@ -72,7 +71,7 @@ public final class Media {
             DEBUG("debug");
             public final String value;
             LevelValues(String value) { this.value = value; }
-            public String value() { return value; }
+            @Override public String value() { return value; }
             public static LevelValues of(String value) {
                 for (LevelValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
@@ -267,21 +266,21 @@ public final class Media {
          * @return the protocol field value
          */
         public java.util.List<Media.PlayerErrorSourceLocation> stack() {
-            return CdpObject.requireList(require("stack"), element0 -> java.util.Objects.requireNonNull(Media.PlayerErrorSourceLocation.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("stack"), element0 -> java.util.Objects.requireNonNull(Media.PlayerErrorSourceLocation.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Errors potentially have a root cause error, ie, a DecoderError might be caused by an WindowsError
          * @return the protocol field value
          */
         public java.util.List<Media.PlayerError> cause() {
-            return CdpObject.requireList(require("cause"), element0 -> java.util.Objects.requireNonNull(Media.PlayerError.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("cause"), element0 -> java.util.Objects.requireNonNull(Media.PlayerError.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Extra data attached to an error, such as an HRESULT, Video Codec, etc.
          * @return the protocol field value
          */
         public java.util.Map<String, Object> data() {
-            return java.util.Objects.requireNonNull(CdpObject.objectMap(require("data")));
+            return CdpObject.requireObjectMap(require("data"));
         }
         /**
          * Sets the errorType field.
@@ -349,8 +348,7 @@ public final class Media {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> domNodeId() {
-            Object value = raw("domNodeId");
-            return Optional.ofNullable(value == null ? null : new DOM.BackendNodeId(((Number) value).longValue()));
+            return raw("domNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
         }
         /**
          * Sets the playerId field.
@@ -363,16 +361,7 @@ public final class Media {
         }
         /**
          * Sets the domNodeId field.
-         * @param domNodeId field value; empty omits the value
-         * @return this model
-         */
-        public Player domNodeId(Optional<DOM.BackendNodeId> domNodeId) {
-            set("domNodeId", domNodeId.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the domNodeId field.
-         * @param domNodeId field value; null removes the value
+         * @param domNodeId field value
          * @return this model
          */
         public Player domNodeId(DOM.BackendNodeId domNodeId) {
@@ -401,7 +390,7 @@ public final class Media {
          * @return the protocol field value
          */
         public java.util.List<Media.PlayerProperty> properties() {
-            return CdpObject.requireList(require("properties"), element0 -> java.util.Objects.requireNonNull(Media.PlayerProperty.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("properties"), element0 -> java.util.Objects.requireNonNull(Media.PlayerProperty.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Sets the playerId field.
@@ -443,7 +432,7 @@ public final class Media {
          * @return the protocol field value
          */
         public java.util.List<Media.PlayerEvent> events() {
-            return CdpObject.requireList(require("events"), element0 -> java.util.Objects.requireNonNull(Media.PlayerEvent.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("events"), element0 -> java.util.Objects.requireNonNull(Media.PlayerEvent.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Sets the playerId field.
@@ -485,7 +474,7 @@ public final class Media {
          * @return the protocol field value
          */
         public java.util.List<Media.PlayerMessage> messages() {
-            return CdpObject.requireList(require("messages"), element0 -> java.util.Objects.requireNonNull(Media.PlayerMessage.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("messages"), element0 -> java.util.Objects.requireNonNull(Media.PlayerMessage.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Sets the playerId field.
@@ -527,7 +516,7 @@ public final class Media {
          * @return the protocol field value
          */
         public java.util.List<Media.PlayerError> errors() {
-            return CdpObject.requireList(require("errors"), element0 -> java.util.Objects.requireNonNull(Media.PlayerError.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("errors"), element0 -> java.util.Objects.requireNonNull(Media.PlayerError.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Sets the playerId field.
@@ -562,7 +551,7 @@ public final class Media {
          * @return the protocol field value
          */
         public Media.Player player() {
-            return java.util.Objects.requireNonNull(Media.Player.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("player")))));
+            return java.util.Objects.requireNonNull(Media.Player.fromMap(CdpObject.requireObjectMap(require("player"))));
         }
         /**
          * Sets the player field.

@@ -77,16 +77,16 @@ public final class ZmqTransport implements CefTransport {
 
     private volatile boolean closed = false;
     private volatile boolean disconnected = false;
-    private boolean tcpConnected = false;
-    private boolean zmtpHandshaken = false;
-    private boolean peerEstablished = false;
-    private boolean disconnectBeforeFirstFrame = false;
-    private long handshakeDeadlineNanos = 0;
-    private long reconnectDeadlineNanos = 0;
+    private boolean tcpConnected;
+    private boolean zmtpHandshaken;
+    private boolean peerEstablished;
+    private boolean disconnectBeforeFirstFrame;
+    private long handshakeDeadlineNanos;
+    private long reconnectDeadlineNanos;
     private final AtomicBoolean disconnectNotified = new AtomicBoolean();
-    private int sentFrames = 0;
-    private int receivedFrames = 0;
-    private boolean sendBlocked = false;
+    private int sentFrames;
+    private int receivedFrames;
+    private boolean sendBlocked;
 
     /** Bind to the given endpoint (e.g. {@code tcp://127.0.0.1:0} for OS-assigned port). */
     public static ZmqTransport bind(String endpoint) {
@@ -142,7 +142,7 @@ public final class ZmqTransport implements CefTransport {
 
     private static int timeoutMillis(Duration timeout) {
         java.util.Objects.requireNonNull(timeout, "timeout");
-        long millis = timeout.toMillis();
+        final long millis = timeout.toMillis();
         if (millis <= 0 || millis > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("timeout must be between 1ms and " + Integer.MAX_VALUE + "ms");
         }
@@ -181,13 +181,13 @@ public final class ZmqTransport implements CefTransport {
         this.reconnectTimeoutNanos = TimeUnit.MILLISECONDS.toNanos(reconnectTimeoutMs);
         this.workerProbe = workerProbe;
         this.endpoint = requestedEndpoint;
-        int id = INSTANCE.incrementAndGet();
-        CompletableFuture<String> setup = new CompletableFuture<>();
+        final int id = INSTANCE.incrementAndGet();
+        final CompletableFuture<String> setup = new CompletableFuture<>();
         this.worker = new Thread(() -> workerLoop(isBind, requestedEndpoint, setup), "zmq-worker-" + id);
         worker.setDaemon(true);
         worker.start();
         try {
-            this.endpoint = setup.get(handshakeTimeoutMs, TimeUnit.MILLISECONDS);
+            endpoint = setup.get(handshakeTimeoutMs, TimeUnit.MILLISECONDS);
         } catch (ExecutionException e) {
             closed = true;
             joinQuietly(worker);
@@ -208,21 +208,21 @@ public final class ZmqTransport implements CefTransport {
     }
 
     private void workerLoop(boolean isBind, String requestedEndpoint, CompletableFuture<String> setup) {
-        ZContext context = SharedContext.INSTANCE;
+        final ZContext context = SharedContext.INSTANCE;
         ZMQ.Socket main = null;
         ZMQ.Poller poller = null;
         try {
             main = context.createSocket(SocketType.DEALER);
             configureLiveness(main, handshakeTimeoutMs);
 
-            int eventMask = ZMQ.EVENT_CONNECTED
+            final int eventMask = ZMQ.EVENT_CONNECTED
                     | ZMQ.EVENT_ACCEPTED
                     | ZMQ.EVENT_DISCONNECTED
                     | ZMQ.EVENT_HANDSHAKE_PROTOCOL
                     | ZMQ.HANDSHAKE_SUCCEEDED;
             if (!main.setEventHook(
                     event -> {
-                        ZMonitor.Event monitored = event.getEvent();
+                        final ZMonitor.Event monitored = event.getEvent();
                         monitorEvents.add(monitored);
                         if (workerProbe != null) workerProbe.onMonitorEvent(monitored);
                     },
@@ -243,7 +243,7 @@ public final class ZmqTransport implements CefTransport {
             LOG.debug("worker on {} started", endpoint);
             boolean probedFirstReceive = false;
             while (!closed) {
-                int n = poller.poll(POLL_TIMEOUT_MS);
+                final int n = poller.poll(POLL_TIMEOUT_MS);
                 if (n < 0) break;
                 if (!probedFirstReceive && workerProbe != null && runtimeServerClient && poller.pollin(0)) {
                     probedFirstReceive = true;
@@ -318,7 +318,7 @@ public final class ZmqTransport implements CefTransport {
     public void send(ByteBuffer frame) throws CefTransportException {
         if (closed) throw new CefTransportException(endpoint + ": send on closed transport");
         if (disconnected) throw new CefTransportException(endpoint + ": peer disconnected");
-        byte[] copy = new byte[frame.remaining()];
+        final byte[] copy = new byte[frame.remaining()];
         frame.get(copy);
         if (!outbound.offer(copy)) {
             throw new CefTransportException(endpoint + ": outbound queue full (max " + MAX_QUEUED_FRAMES + " frames)");
@@ -327,12 +327,12 @@ public final class ZmqTransport implements CefTransport {
 
     @Override
     public void onReceive(Consumer<ByteBuffer> handler) {
-        this.receiveHandler = handler;
+        receiveHandler = handler;
     }
 
     @Override
     public void onDisconnect(Runnable handler) {
-        this.disconnectHandler = handler;
+        disconnectHandler = handler;
         fireDisconnectIfReady();
     }
 
@@ -364,7 +364,7 @@ public final class ZmqTransport implements CefTransport {
                     handshakeDeadlineNanos = System.nanoTime() + handshakeTimeoutNanos;
                 }
             } else if (event == ZMonitor.Event.HANDSHAKE_SUCCEEDED) {
-                if (!acceptReconnection()) continue;
+                if (rejectReconnection()) continue;
                 zmtpHandshaken = true;
                 peerEstablished = true;
                 disconnectBeforeFirstFrame = false;
@@ -399,11 +399,11 @@ public final class ZmqTransport implements CefTransport {
         }
     }
 
-    private boolean acceptReconnection() {
-        if (reconnectDeadlineNanos == 0) return true;
-        if (reconnectContinuity.getAsBoolean()) return true;
+    private boolean rejectReconnection() {
+        if (reconnectDeadlineNanos == 0) return false;
+        if (reconnectContinuity.getAsBoolean()) return false;
         markTerminalDisconnected();
-        return false;
+        return true;
     }
 
     private boolean reconnectExpired() {
@@ -437,7 +437,7 @@ public final class ZmqTransport implements CefTransport {
     private boolean drainIncoming(ZMQ.Socket main) {
         byte[] frame;
         while ((frame = main.recv(ZMQ.DONTWAIT)) != null) {
-            if (!acceptReconnection()) return true;
+            if (rejectReconnection()) return true;
             receivedFrames++;
             zmtpHandshaken = true;
             peerEstablished = true;
@@ -474,20 +474,19 @@ public final class ZmqTransport implements CefTransport {
     }
 
     private void dispatchPendingIfReady() {
-        Consumer<ByteBuffer> h = receiveHandler;
+        final Consumer<ByteBuffer> h = receiveHandler;
         if (h == null || pending.isEmpty()) return;
-        byte[] f;
-        while ((f = pending.poll()) != null) {
+        pending.drain(f -> {
             try {
                 h.accept(ByteBuffer.wrap(f));
             } catch (RuntimeException e) {
                 LOG.warn("receive handler on {} threw", endpoint, e);
             }
-        }
+        });
     }
 
     private void fireDisconnectIfReady() {
-        Runnable handler = disconnectHandler;
+        final Runnable handler = disconnectHandler;
         if (disconnected && !closed && handler != null && disconnectNotified.compareAndSet(false, true)) {
             try {
                 handler.run();
@@ -500,7 +499,7 @@ public final class ZmqTransport implements CefTransport {
     private static void joinQuietly(Thread t) {
         try {
             t.join(CLOSE_JOIN_TIMEOUT_MS);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt();
         }
     }

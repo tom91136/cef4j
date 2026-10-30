@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class BrowserHostFindRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 861131453;
@@ -62,7 +64,7 @@ public final class BrowserHostFindRequest implements CefMessageView, CefMessageE
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
@@ -77,20 +79,13 @@ public final class BrowserHostFindRequest implements CefMessageView, CefMessageE
     }
 
     public static final CefMessageDecoder<BrowserHostFindRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int searchTextLen = WireDecoder.length(__buf, "searchText");
-        byte[] searchTextBuf = new byte[searchTextLen];
-        __buf.get(searchTextBuf);
-        String searchText = new String(searchTextBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "forward");
-        int forward = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "matchCase");
-        int matchCase = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "findNext");
-        int findNext = __buf.getInt();
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final String searchText = WireDecoder.utf8(__buf, "searchText");
+        final int forward = WireDecoder.int32(__buf, "forward");
+        final int matchCase = WireDecoder.int32(__buf, "matchCase");
+        final int findNext = WireDecoder.int32(__buf, "findNext");
         WireDecoder.requireFullyConsumed(__buf, "BrowserHostFindRequest");
         return new BrowserHostFindRequest(self, searchText, forward, matchCase, findNext);
     };

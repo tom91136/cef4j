@@ -4,6 +4,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
@@ -11,6 +12,7 @@ import net.kurobako.cef4j.ipc.session.WireDecoder;
  * to facade methods (or factory requests) that take this struct. The dispatcher decodes them on the
  * runtime-server side and fills the matching {@code cef_browser_settings_t} before invoking CEF.
  */
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class BrowserSettings {
 
     private final long size;
@@ -190,34 +192,34 @@ public final class BrowserSettings {
     }
 
     public void encodeInto(ByteBuffer dst) {
-        ByteOrder originalOrder = dst.order();
+        final ByteOrder originalOrder = dst.order();
         try {
             dst.order(ByteOrder.LITTLE_ENDIAN);
             dst.putLong(size);
             dst.putInt(windowlessFrameRate);
-            byte[] standardFontFamilyBytes = standardFontFamily.getBytes(StandardCharsets.UTF_8);
+            final byte[] standardFontFamilyBytes = standardFontFamily.getBytes(StandardCharsets.UTF_8);
             dst.putInt(standardFontFamilyBytes.length);
             dst.put(standardFontFamilyBytes);
-            byte[] fixedFontFamilyBytes = fixedFontFamily.getBytes(StandardCharsets.UTF_8);
+            final byte[] fixedFontFamilyBytes = fixedFontFamily.getBytes(StandardCharsets.UTF_8);
             dst.putInt(fixedFontFamilyBytes.length);
             dst.put(fixedFontFamilyBytes);
-            byte[] serifFontFamilyBytes = serifFontFamily.getBytes(StandardCharsets.UTF_8);
+            final byte[] serifFontFamilyBytes = serifFontFamily.getBytes(StandardCharsets.UTF_8);
             dst.putInt(serifFontFamilyBytes.length);
             dst.put(serifFontFamilyBytes);
-            byte[] sansSerifFontFamilyBytes = sansSerifFontFamily.getBytes(StandardCharsets.UTF_8);
+            final byte[] sansSerifFontFamilyBytes = sansSerifFontFamily.getBytes(StandardCharsets.UTF_8);
             dst.putInt(sansSerifFontFamilyBytes.length);
             dst.put(sansSerifFontFamilyBytes);
-            byte[] cursiveFontFamilyBytes = cursiveFontFamily.getBytes(StandardCharsets.UTF_8);
+            final byte[] cursiveFontFamilyBytes = cursiveFontFamily.getBytes(StandardCharsets.UTF_8);
             dst.putInt(cursiveFontFamilyBytes.length);
             dst.put(cursiveFontFamilyBytes);
-            byte[] fantasyFontFamilyBytes = fantasyFontFamily.getBytes(StandardCharsets.UTF_8);
+            final byte[] fantasyFontFamilyBytes = fantasyFontFamily.getBytes(StandardCharsets.UTF_8);
             dst.putInt(fantasyFontFamilyBytes.length);
             dst.put(fantasyFontFamilyBytes);
             dst.putInt(defaultFontSize);
             dst.putInt(defaultFixedFontSize);
             dst.putInt(minimumFontSize);
             dst.putInt(minimumLogicalFontSize);
-            byte[] defaultEncodingBytes = defaultEncoding.getBytes(StandardCharsets.UTF_8);
+            final byte[] defaultEncodingBytes = defaultEncoding.getBytes(StandardCharsets.UTF_8);
             dst.putInt(defaultEncodingBytes.length);
             dst.put(defaultEncodingBytes);
             dst.putInt(remoteFonts);
@@ -246,76 +248,34 @@ public final class BrowserSettings {
       * configured the buffer.
       */
     public static BrowserSettings decode(ByteBuffer __buf) {
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "size");
-        long size = __buf.getLong();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "windowlessFrameRate");
-        int windowlessFrameRate = __buf.getInt();
-        int standardFontFamilyLen = WireDecoder.length(__buf, "standardFontFamily");
-        byte[] standardFontFamilyBuf = new byte[standardFontFamilyLen];
-        __buf.get(standardFontFamilyBuf);
-        String standardFontFamily = new String(standardFontFamilyBuf, StandardCharsets.UTF_8);
-        int fixedFontFamilyLen = WireDecoder.length(__buf, "fixedFontFamily");
-        byte[] fixedFontFamilyBuf = new byte[fixedFontFamilyLen];
-        __buf.get(fixedFontFamilyBuf);
-        String fixedFontFamily = new String(fixedFontFamilyBuf, StandardCharsets.UTF_8);
-        int serifFontFamilyLen = WireDecoder.length(__buf, "serifFontFamily");
-        byte[] serifFontFamilyBuf = new byte[serifFontFamilyLen];
-        __buf.get(serifFontFamilyBuf);
-        String serifFontFamily = new String(serifFontFamilyBuf, StandardCharsets.UTF_8);
-        int sansSerifFontFamilyLen = WireDecoder.length(__buf, "sansSerifFontFamily");
-        byte[] sansSerifFontFamilyBuf = new byte[sansSerifFontFamilyLen];
-        __buf.get(sansSerifFontFamilyBuf);
-        String sansSerifFontFamily = new String(sansSerifFontFamilyBuf, StandardCharsets.UTF_8);
-        int cursiveFontFamilyLen = WireDecoder.length(__buf, "cursiveFontFamily");
-        byte[] cursiveFontFamilyBuf = new byte[cursiveFontFamilyLen];
-        __buf.get(cursiveFontFamilyBuf);
-        String cursiveFontFamily = new String(cursiveFontFamilyBuf, StandardCharsets.UTF_8);
-        int fantasyFontFamilyLen = WireDecoder.length(__buf, "fantasyFontFamily");
-        byte[] fantasyFontFamilyBuf = new byte[fantasyFontFamilyLen];
-        __buf.get(fantasyFontFamilyBuf);
-        String fantasyFontFamily = new String(fantasyFontFamilyBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "defaultFontSize");
-        int defaultFontSize = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "defaultFixedFontSize");
-        int defaultFixedFontSize = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "minimumFontSize");
-        int minimumFontSize = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "minimumLogicalFontSize");
-        int minimumLogicalFontSize = __buf.getInt();
-        int defaultEncodingLen = WireDecoder.length(__buf, "defaultEncoding");
-        byte[] defaultEncodingBuf = new byte[defaultEncodingLen];
-        __buf.get(defaultEncodingBuf);
-        String defaultEncoding = new String(defaultEncodingBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "remoteFonts");
-        int remoteFonts = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "javascript");
-        int javascript = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "javascriptCloseWindows");
-        int javascriptCloseWindows = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "javascriptAccessClipboard");
-        int javascriptAccessClipboard = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "javascriptDomPaste");
-        int javascriptDomPaste = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "imageLoading");
-        int imageLoading = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "imageShrinkStandaloneToFit");
-        int imageShrinkStandaloneToFit = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "textAreaResize");
-        int textAreaResize = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "tabToLinks");
-        int tabToLinks = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "localStorage");
-        int localStorage = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "databasesDeprecated");
-        int databasesDeprecated = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "webgl");
-        int webgl = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "backgroundColor");
-        int backgroundColor = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "chromeStatusBubble");
-        int chromeStatusBubble = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "chromeZoomBubble");
-        int chromeZoomBubble = __buf.getInt();
+        final long size = WireDecoder.int64(__buf, "size");
+        final int windowlessFrameRate = WireDecoder.int32(__buf, "windowlessFrameRate");
+        final String standardFontFamily = WireDecoder.utf8(__buf, "standardFontFamily");
+        final String fixedFontFamily = WireDecoder.utf8(__buf, "fixedFontFamily");
+        final String serifFontFamily = WireDecoder.utf8(__buf, "serifFontFamily");
+        final String sansSerifFontFamily = WireDecoder.utf8(__buf, "sansSerifFontFamily");
+        final String cursiveFontFamily = WireDecoder.utf8(__buf, "cursiveFontFamily");
+        final String fantasyFontFamily = WireDecoder.utf8(__buf, "fantasyFontFamily");
+        final int defaultFontSize = WireDecoder.int32(__buf, "defaultFontSize");
+        final int defaultFixedFontSize = WireDecoder.int32(__buf, "defaultFixedFontSize");
+        final int minimumFontSize = WireDecoder.int32(__buf, "minimumFontSize");
+        final int minimumLogicalFontSize = WireDecoder.int32(__buf, "minimumLogicalFontSize");
+        final String defaultEncoding = WireDecoder.utf8(__buf, "defaultEncoding");
+        final int remoteFonts = WireDecoder.int32(__buf, "remoteFonts");
+        final int javascript = WireDecoder.int32(__buf, "javascript");
+        final int javascriptCloseWindows = WireDecoder.int32(__buf, "javascriptCloseWindows");
+        final int javascriptAccessClipboard = WireDecoder.int32(__buf, "javascriptAccessClipboard");
+        final int javascriptDomPaste = WireDecoder.int32(__buf, "javascriptDomPaste");
+        final int imageLoading = WireDecoder.int32(__buf, "imageLoading");
+        final int imageShrinkStandaloneToFit = WireDecoder.int32(__buf, "imageShrinkStandaloneToFit");
+        final int textAreaResize = WireDecoder.int32(__buf, "textAreaResize");
+        final int tabToLinks = WireDecoder.int32(__buf, "tabToLinks");
+        final int localStorage = WireDecoder.int32(__buf, "localStorage");
+        final int databasesDeprecated = WireDecoder.int32(__buf, "databasesDeprecated");
+        final int webgl = WireDecoder.int32(__buf, "webgl");
+        final int backgroundColor = WireDecoder.int32(__buf, "backgroundColor");
+        final int chromeStatusBubble = WireDecoder.int32(__buf, "chromeStatusBubble");
+        final int chromeZoomBubble = WireDecoder.int32(__buf, "chromeZoomBubble");
         return new BrowserSettings(size, windowlessFrameRate, standardFontFamily, fixedFontFamily, serifFontFamily, sansSerifFontFamily, cursiveFontFamily, fantasyFontFamily, defaultFontSize, defaultFixedFontSize, minimumFontSize, minimumLogicalFontSize, defaultEncoding, remoteFonts, javascript, javascriptCloseWindows, javascriptAccessClipboard, javascriptDomPaste, imageLoading, imageShrinkStandaloneToFit, textAreaResize, tabToLinks, localStorage, databasesDeprecated, webgl, backgroundColor, chromeStatusBubble, chromeZoomBubble);
     }
 
@@ -326,172 +286,172 @@ public final class BrowserSettings {
     /** Lombok-style builder. */
     public static final class Builder {
 
-        private long size = 0L;
-        private int windowlessFrameRate = 0;
+        private long size;
+        private int windowlessFrameRate;
         private String standardFontFamily = "";
         private String fixedFontFamily = "";
         private String serifFontFamily = "";
         private String sansSerifFontFamily = "";
         private String cursiveFontFamily = "";
         private String fantasyFontFamily = "";
-        private int defaultFontSize = 0;
-        private int defaultFixedFontSize = 0;
-        private int minimumFontSize = 0;
-        private int minimumLogicalFontSize = 0;
+        private int defaultFontSize;
+        private int defaultFixedFontSize;
+        private int minimumFontSize;
+        private int minimumLogicalFontSize;
         private String defaultEncoding = "";
-        private int remoteFonts = 0;
-        private int javascript = 0;
-        private int javascriptCloseWindows = 0;
-        private int javascriptAccessClipboard = 0;
-        private int javascriptDomPaste = 0;
-        private int imageLoading = 0;
-        private int imageShrinkStandaloneToFit = 0;
-        private int textAreaResize = 0;
-        private int tabToLinks = 0;
-        private int localStorage = 0;
-        private int databasesDeprecated = 0;
-        private int webgl = 0;
-        private int backgroundColor = 0;
-        private int chromeStatusBubble = 0;
-        private int chromeZoomBubble = 0;
+        private int remoteFonts;
+        private int javascript;
+        private int javascriptCloseWindows;
+        private int javascriptAccessClipboard;
+        private int javascriptDomPaste;
+        private int imageLoading;
+        private int imageShrinkStandaloneToFit;
+        private int textAreaResize;
+        private int tabToLinks;
+        private int localStorage;
+        private int databasesDeprecated;
+        private int webgl;
+        private int backgroundColor;
+        private int chromeStatusBubble;
+        private int chromeZoomBubble;
 
-        public Builder size(long size) {
-            this.size = size;
+        public Builder size(long value) {
+            this.size = value;
             return this;
         }
 
-        public Builder windowlessFrameRate(int windowlessFrameRate) {
-            this.windowlessFrameRate = windowlessFrameRate;
+        public Builder windowlessFrameRate(int value) {
+            this.windowlessFrameRate = value;
             return this;
         }
 
-        public Builder standardFontFamily(String standardFontFamily) {
-            this.standardFontFamily = standardFontFamily;
+        public Builder standardFontFamily(String value) {
+            this.standardFontFamily = value;
             return this;
         }
 
-        public Builder fixedFontFamily(String fixedFontFamily) {
-            this.fixedFontFamily = fixedFontFamily;
+        public Builder fixedFontFamily(String value) {
+            this.fixedFontFamily = value;
             return this;
         }
 
-        public Builder serifFontFamily(String serifFontFamily) {
-            this.serifFontFamily = serifFontFamily;
+        public Builder serifFontFamily(String value) {
+            this.serifFontFamily = value;
             return this;
         }
 
-        public Builder sansSerifFontFamily(String sansSerifFontFamily) {
-            this.sansSerifFontFamily = sansSerifFontFamily;
+        public Builder sansSerifFontFamily(String value) {
+            this.sansSerifFontFamily = value;
             return this;
         }
 
-        public Builder cursiveFontFamily(String cursiveFontFamily) {
-            this.cursiveFontFamily = cursiveFontFamily;
+        public Builder cursiveFontFamily(String value) {
+            this.cursiveFontFamily = value;
             return this;
         }
 
-        public Builder fantasyFontFamily(String fantasyFontFamily) {
-            this.fantasyFontFamily = fantasyFontFamily;
+        public Builder fantasyFontFamily(String value) {
+            this.fantasyFontFamily = value;
             return this;
         }
 
-        public Builder defaultFontSize(int defaultFontSize) {
-            this.defaultFontSize = defaultFontSize;
+        public Builder defaultFontSize(int value) {
+            this.defaultFontSize = value;
             return this;
         }
 
-        public Builder defaultFixedFontSize(int defaultFixedFontSize) {
-            this.defaultFixedFontSize = defaultFixedFontSize;
+        public Builder defaultFixedFontSize(int value) {
+            this.defaultFixedFontSize = value;
             return this;
         }
 
-        public Builder minimumFontSize(int minimumFontSize) {
-            this.minimumFontSize = minimumFontSize;
+        public Builder minimumFontSize(int value) {
+            this.minimumFontSize = value;
             return this;
         }
 
-        public Builder minimumLogicalFontSize(int minimumLogicalFontSize) {
-            this.minimumLogicalFontSize = minimumLogicalFontSize;
+        public Builder minimumLogicalFontSize(int value) {
+            this.minimumLogicalFontSize = value;
             return this;
         }
 
-        public Builder defaultEncoding(String defaultEncoding) {
-            this.defaultEncoding = defaultEncoding;
+        public Builder defaultEncoding(String value) {
+            this.defaultEncoding = value;
             return this;
         }
 
-        public Builder remoteFonts(int remoteFonts) {
-            this.remoteFonts = remoteFonts;
+        public Builder remoteFonts(int value) {
+            this.remoteFonts = value;
             return this;
         }
 
-        public Builder javascript(int javascript) {
-            this.javascript = javascript;
+        public Builder javascript(int value) {
+            this.javascript = value;
             return this;
         }
 
-        public Builder javascriptCloseWindows(int javascriptCloseWindows) {
-            this.javascriptCloseWindows = javascriptCloseWindows;
+        public Builder javascriptCloseWindows(int value) {
+            this.javascriptCloseWindows = value;
             return this;
         }
 
-        public Builder javascriptAccessClipboard(int javascriptAccessClipboard) {
-            this.javascriptAccessClipboard = javascriptAccessClipboard;
+        public Builder javascriptAccessClipboard(int value) {
+            this.javascriptAccessClipboard = value;
             return this;
         }
 
-        public Builder javascriptDomPaste(int javascriptDomPaste) {
-            this.javascriptDomPaste = javascriptDomPaste;
+        public Builder javascriptDomPaste(int value) {
+            this.javascriptDomPaste = value;
             return this;
         }
 
-        public Builder imageLoading(int imageLoading) {
-            this.imageLoading = imageLoading;
+        public Builder imageLoading(int value) {
+            this.imageLoading = value;
             return this;
         }
 
-        public Builder imageShrinkStandaloneToFit(int imageShrinkStandaloneToFit) {
-            this.imageShrinkStandaloneToFit = imageShrinkStandaloneToFit;
+        public Builder imageShrinkStandaloneToFit(int value) {
+            this.imageShrinkStandaloneToFit = value;
             return this;
         }
 
-        public Builder textAreaResize(int textAreaResize) {
-            this.textAreaResize = textAreaResize;
+        public Builder textAreaResize(int value) {
+            this.textAreaResize = value;
             return this;
         }
 
-        public Builder tabToLinks(int tabToLinks) {
-            this.tabToLinks = tabToLinks;
+        public Builder tabToLinks(int value) {
+            this.tabToLinks = value;
             return this;
         }
 
-        public Builder localStorage(int localStorage) {
-            this.localStorage = localStorage;
+        public Builder localStorage(int value) {
+            this.localStorage = value;
             return this;
         }
 
-        public Builder databasesDeprecated(int databasesDeprecated) {
-            this.databasesDeprecated = databasesDeprecated;
+        public Builder databasesDeprecated(int value) {
+            this.databasesDeprecated = value;
             return this;
         }
 
-        public Builder webgl(int webgl) {
-            this.webgl = webgl;
+        public Builder webgl(int value) {
+            this.webgl = value;
             return this;
         }
 
-        public Builder backgroundColor(int backgroundColor) {
-            this.backgroundColor = backgroundColor;
+        public Builder backgroundColor(int value) {
+            this.backgroundColor = value;
             return this;
         }
 
-        public Builder chromeStatusBubble(int chromeStatusBubble) {
-            this.chromeStatusBubble = chromeStatusBubble;
+        public Builder chromeStatusBubble(int value) {
+            this.chromeStatusBubble = value;
             return this;
         }
 
-        public Builder chromeZoomBubble(int chromeZoomBubble) {
-            this.chromeZoomBubble = chromeZoomBubble;
+        public Builder chromeZoomBubble(int value) {
+            this.chromeZoomBubble = value;
             return this;
         }
 

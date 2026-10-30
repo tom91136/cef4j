@@ -14,6 +14,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 
 final class CefArchiveResolver {
     static final URI DEFAULT_BASE_URI = URI.create("https://cef-builds.spotifycdn.com/");
@@ -48,9 +49,10 @@ final class CefArchiveResolver {
             URI indexUri)
             throws IOException, InterruptedException {
         Files.createDirectories(cacheDirectory);
-        String archiveName = platform.archiveName(version, buildType);
-        Path archive = explicitArchive == null ? cacheDirectory.resolve(archiveName) : explicitArchive;
-        String upstreamSha1 = readCachedSha1(cacheDirectory.resolve(archiveName + ".sha1"));
+        final String archiveName = platform.archiveName(version, buildType);
+        final Path archive = explicitArchive == null ? cacheDirectory.resolve(archiveName) : explicitArchive;
+        String upstreamSha1 =
+                readCachedSha1(cacheDirectory.resolve(archiveName + ".sha1")).orElse(null);
 
         if (!Files.isRegularFile(archive)) {
             if (explicitArchive != null) {
@@ -67,11 +69,11 @@ final class CefArchiveResolver {
             Files.writeString(cacheDirectory.resolve(archiveName + ".sha1"), upstreamSha1 + System.lineSeparator());
         }
 
-        String actualSha1 = Digests.digest(archive, "SHA-1");
+        final String actualSha1 = Digests.digest(archive, "SHA-1");
         if (upstreamSha1 != null && !upstreamSha1.equalsIgnoreCase(actualSha1)) {
             throw new IOException("CEF archive SHA-1 mismatch: expected " + upstreamSha1 + ", got " + actualSha1);
         }
-        String actualSha256 = Digests.digest(archive, "SHA-256");
+        final String actualSha256 = Digests.digest(archive, "SHA-256");
         if (expectedSha256 != null && !expectedSha256.equalsIgnoreCase(actualSha256)) {
             throw new IOException("CEF archive SHA-256 mismatch: expected " + expectedSha256 + ", got " + actualSha256);
         }
@@ -80,22 +82,23 @@ final class CefArchiveResolver {
 
     private String findUpstreamSha1(URI indexUri, CefPlatform platform, String version, String archiveName)
             throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder(indexUri)
+        final HttpRequest request = HttpRequest.newBuilder(indexUri)
                 .timeout(Duration.ofMinutes(2))
                 .GET()
                 .build();
-        HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+        final HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
         if (response.statusCode() != 200) {
             response.body().close();
             throw new IOException("CEF index returned HTTP " + response.statusCode() + ": " + indexUri);
         }
         try (InputStream input = response.body()) {
-            JsonNode versions = mapper.readTree(input).path(platform.cefName()).path("versions");
+            final JsonNode versions =
+                    mapper.readTree(input).path(platform.cefName()).path("versions");
             for (JsonNode candidate : versions) {
                 if (!version.equals(candidate.path("cef_version").asText())) continue;
                 for (JsonNode file : candidate.path("files")) {
                     if (archiveName.equals(file.path("name").asText())) {
-                        String sha1 = file.path("sha1").asText();
+                        final String sha1 = file.path("sha1").asText();
                         if (sha1.matches("(?i)[0-9a-f]{40}")) return sha1.toLowerCase(Locale.ROOT);
                     }
                 }
@@ -108,18 +111,18 @@ final class CefArchiveResolver {
         if (!"https".equalsIgnoreCase(uri.getScheme())) {
             throw new IOException("Refusing non-HTTPS CEF download: " + uri);
         }
-        Path parent = destination.toAbsolutePath().getParent();
+        final Path parent = destination.toAbsolutePath().getParent();
         if (parent == null) throw new IOException("CEF archive has no parent directory: " + destination);
-        Path fileName = destination.getFileName();
+        final Path fileName = destination.getFileName();
         if (fileName == null) throw new IOException("CEF archive has no file name: " + destination);
         Files.createDirectories(parent);
-        Path temporary = Files.createTempFile(parent, fileName.toString(), ".part");
+        final Path temporary = Files.createTempFile(parent, fileName.toString(), ".part");
         try {
-            HttpRequest request = HttpRequest.newBuilder(uri)
+            final HttpRequest request = HttpRequest.newBuilder(uri)
                     .timeout(Duration.ofMinutes(10))
                     .GET()
                     .build();
-            HttpResponse<Path> response = client.send(request, HttpResponse.BodyHandlers.ofFile(temporary));
+            final HttpResponse<Path> response = client.send(request, HttpResponse.BodyHandlers.ofFile(temporary));
             if (response.statusCode() != 200) {
                 throw new IOException("CEF archive returned HTTP " + response.statusCode() + ": " + uri);
             }
@@ -129,10 +132,10 @@ final class CefArchiveResolver {
         }
     }
 
-    private static String readCachedSha1(Path sidecar) throws IOException {
-        if (!Files.isRegularFile(sidecar)) return null;
-        String value = Files.readString(sidecar).trim();
-        return value.matches("(?i)[0-9a-f]{40}") ? value.toLowerCase(Locale.ROOT) : null;
+    private static Optional<String> readCachedSha1(Path sidecar) throws IOException {
+        if (!Files.isRegularFile(sidecar)) return Optional.empty();
+        final String value = Files.readString(sidecar).trim();
+        return value.matches("(?i)[0-9a-f]{40}") ? Optional.of(value.toLowerCase(Locale.ROOT)) : Optional.empty();
     }
 
     static final class ResolvedArchive {

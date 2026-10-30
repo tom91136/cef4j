@@ -2,6 +2,7 @@ package net.kurobako.cef4j;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Objects;
 import java.util.Optional;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.policy.NullableBoundary;
@@ -62,19 +63,32 @@ public final class CefFrameBuffer<I> {
     public interface ImageWriter<I> {
 
         /**
+         * Stamp pixel data into a new image when there is no previous frame.
+         *
+         * @param pixels ARGB pixel data; at least {@code width * height} elements are valid
+         * @param width frame width in pixels
+         * @param height frame height in pixels
+         * @param dirtyRects regions that changed, or {@code null} for a full-frame update
+         * @return the newly created image containing the stamped pixels
+         */
+        default I stamp(int[] pixels, int width, int height, CefRect @Nullable [] dirtyRects) {
+            return stamp(null, pixels, width, height, dirtyRects);
+        }
+
+        /**
          * Stamp pixel data into an image.
          *
          * <p>When {@code dirtyRects} is non-null, only those regions have been updated in the {@code pixels} array -
          * the implementation may choose to blit only those regions into the image for better performance.
          *
-         * @param prev the previous image, or empty if this is the first frame
+         * @param prev the previous image, or {@code null} if this is the first frame
          * @param pixels ARGB pixel data; at least {@code width * height} elements are valid
          * @param width frame width in pixels
          * @param height frame height in pixels
          * @param dirtyRects regions that changed, or {@code null} for a full-frame update
          * @return the image containing the stamped pixels (may be {@code prev} reused, or a new instance)
          */
-        I stamp(Optional<I> prev, int[] pixels, int width, int height, CefRect @Nullable [] dirtyRects);
+        I stamp(@Nullable I prev, int[] pixels, int width, int height, CefRect @Nullable [] dirtyRects);
     }
 
     private int[] pixelBuffer;
@@ -102,9 +116,7 @@ public final class CefFrameBuffer<I> {
         if (maxWidth <= 0 || maxHeight <= 0) {
             throw new IllegalArgumentException("maxWidth and maxHeight must be positive");
         }
-        if (writer == null) {
-            throw new IllegalArgumentException("writer must not be null");
-        }
+        Objects.requireNonNull(writer, "writer");
         this.pixelBuffer = new int[checkedPixelCount(maxWidth, maxHeight)];
         this.writer = writer;
     }
@@ -124,12 +136,12 @@ public final class CefFrameBuffer<I> {
      * @param height frame height in pixels
      * @return the stamped image, or empty if the frame was skipped
      */
-    public Optional<I> onPaint(ByteBuffer buffer, int width, int height) {
+    public Optional<I> onPaint(@Nullable ByteBuffer buffer, int width, int height) {
         return onPaint(buffer, width, height, null);
     }
 
     /** Copies a complete validated CEF BGRA frame, or returns empty for invalid dimensions or truncated input. */
-    public static Optional<int[]> copyBgraPixels(ByteBuffer buffer, int width, int height) {
+    public static Optional<int[]> copyBgraPixels(@Nullable ByteBuffer buffer, int width, int height) {
         if (buffer == null || width <= 0 || height <= 0) return Optional.empty();
         int pixelCount;
         try {
@@ -138,7 +150,7 @@ public final class CefFrameBuffer<I> {
             return Optional.empty();
         }
         if (buffer.remaining() < (long) pixelCount * Integer.BYTES) return Optional.empty();
-        int[] pixels = new int[pixelCount];
+        final int[] pixels = new int[pixelCount];
         buffer.duplicate().order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().get(pixels);
         return Optional.of(pixels);
     }
@@ -156,7 +168,7 @@ public final class CefFrameBuffer<I> {
      * @param dirtyRects array of dirty rectangles, or {@code null} for a full-frame copy
      * @return the stamped image, or empty if the frame was skipped
      */
-    public Optional<I> onPaint(ByteBuffer buffer, int width, int height, CefRect @Nullable [] dirtyRects) {
+    public Optional<I> onPaint(@Nullable ByteBuffer buffer, int width, int height, CefRect @Nullable [] dirtyRects) {
         if (width <= 0 || height <= 0 || buffer == null) return Optional.empty();
 
         int pixelCount;
@@ -165,7 +177,7 @@ public final class CefFrameBuffer<I> {
         } catch (IllegalArgumentException ignored) {
             return Optional.empty();
         }
-        long requiredBytes = (long) pixelCount * Integer.BYTES;
+        final long requiredBytes = (long) pixelCount * Integer.BYTES;
         if (buffer.remaining() < requiredBytes) return Optional.empty();
 
         if (!ready) {
@@ -174,9 +186,10 @@ public final class CefFrameBuffer<I> {
         }
         ready = false;
 
+        boolean stamped = false;
         try {
             if (pixelCount > pixelBuffer.length) pixelBuffer = new int[pixelCount];
-            java.nio.IntBuffer src = buffer.order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
+            final java.nio.IntBuffer src = buffer.order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
             CefRect[] stampRects = null;
 
             if (dirtyRects == null
@@ -189,10 +202,11 @@ public final class CefFrameBuffer<I> {
             } else {
                 for (CefRect rect : dirtyRects) copyRect(src, rect, width, height);
                 if (hasPending) {
-                    CefRect pending = new CefRect(pendingX1, pendingY1, pendingX2 - pendingX1, pendingY2 - pendingY1);
+                    final CefRect pending =
+                            new CefRect(pendingX1, pendingY1, pendingX2 - pendingX1, pendingY2 - pendingY1);
                     hasPending = false;
                     copyRect(src, pending, width, height);
-                    CefRect[] merged = new CefRect[dirtyRects.length + 1];
+                    final CefRect[] merged = new CefRect[dirtyRects.length + 1];
                     System.arraycopy(dirtyRects, 0, merged, 0, dirtyRects.length);
                     merged[dirtyRects.length] = pending;
                     stampRects = merged;
@@ -204,13 +218,16 @@ public final class CefFrameBuffer<I> {
             lastWidth = width;
             lastHeight = height;
 
-            I image = writer.stamp(Optional.ofNullable(backImage), pixelBuffer, width, height, stampRects);
+            final I image = backImage == null
+                    ? writer.stamp(pixelBuffer, width, height, stampRects)
+                    : writer.stamp(backImage, pixelBuffer, width, height, stampRects);
             backImage = frontImage;
             frontImage = image;
+            stamped = true;
             return Optional.of(image);
-        } catch (RuntimeException | Error failure) {
-            ready = true;
-            throw failure;
+        } finally {
+            // The back-pressure is released when the stamp fails, so that the next frame is painted again.
+            if (!stamped) ready = true;
         }
     }
 
@@ -237,7 +254,7 @@ public final class CefFrameBuffer<I> {
     }
 
     private static int checkedPixelCount(int width, int height) {
-        long count = (long) width * height;
+        final long count = (long) width * height;
         if (count <= 0 || count > MAX_PIXEL_COUNT) {
             throw new IllegalArgumentException("pixel count exceeds supported maximum: " + count);
         }
@@ -247,8 +264,8 @@ public final class CefFrameBuffer<I> {
     private void accumulateRects(CefRect @Nullable [] rects) {
         if (rects == null) return;
         for (CefRect r : rects) {
-            int rx2 = r.x + r.width;
-            int ry2 = r.y + r.height;
+            final int rx2 = r.x + r.width;
+            final int ry2 = r.y + r.height;
             if (!hasPending) {
                 pendingX1 = r.x;
                 pendingY1 = r.y;
@@ -269,14 +286,14 @@ public final class CefFrameBuffer<I> {
     }
 
     private void copyRect(java.nio.IntBuffer src, int x, int y, int w, int h, int frameW, int frameH) {
-        int rx = Math.max(0, x);
-        int ry = Math.max(0, y);
-        int rw = Math.min(w, frameW - rx);
-        int rh = Math.min(h, frameH - ry);
+        final int rx = Math.max(0, x);
+        final int ry = Math.max(0, y);
+        final int rw = Math.min(w, frameW - rx);
+        final int rh = Math.min(h, frameH - ry);
         if (rw <= 0 || rh <= 0) return;
 
         for (int row = ry; row < ry + rh; row++) {
-            int offset = row * frameW + rx;
+            final int offset = row * frameW + rx;
             src.position(offset);
             src.get(pixelBuffer, offset, rw);
         }

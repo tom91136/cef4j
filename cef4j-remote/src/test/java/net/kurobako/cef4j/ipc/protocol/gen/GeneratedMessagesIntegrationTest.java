@@ -62,7 +62,7 @@ class GeneratedMessagesIntegrationTest {
             CefTransport peer, Envelope.Kind kind, int corrId, int messageId, CefMessageEncoder enc) throws Exception {
         ByteBuffer buf =
                 ByteBuffer.allocate(Envelope.HEADER_SIZE + enc.encodedSize()).order(ByteOrder.LITTLE_ENDIAN);
-        Envelope.writeHeader(buf, kind, 0, corrId, messageId, enc.encodedSize());
+        Envelope.writeHeader(buf, new Envelope.Header(enc.encodedSize(), kind, 0, corrId, messageId));
         enc.encodeInto(buf);
         buf.flip();
         peer.send(buf);

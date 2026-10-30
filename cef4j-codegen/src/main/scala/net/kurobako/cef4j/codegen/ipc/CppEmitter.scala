@@ -96,7 +96,7 @@ object CppEmitter {
 
   private def renderEncodedSizeBody(spec: MessageSpec): String = {
     val fixed    = spec.fields.map(f => fixedSize(f.ty)).sum
-    val variable = spec.fields.flatMap(variableSizeExpr).mkString(" + ")
+    val variable = spec.fields.flatMap(variableSizeExpr(_)).mkString(" + ")
     if (variable.isEmpty) fixed.toString else s"$fixed + $variable"
   }
 

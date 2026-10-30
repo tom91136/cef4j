@@ -4,8 +4,6 @@ package net.kurobako.cef4j.cdp.generated;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
@@ -13,6 +11,7 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Query and modify DOM storage.
@@ -21,6 +20,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class DOMStorage {
     private DOMStorage() {}
     /**
@@ -29,7 +29,7 @@ public final class DOMStorage {
     public static final class SerializedStorageKey implements CdpValue<String> {
         public final String value;
         public SerializedStorageKey(String value) { this.value = java.util.Objects.requireNonNull(value); }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof SerializedStorageKey)) return false;
@@ -52,16 +52,14 @@ public final class DOMStorage {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> securityOrigin() {
-            Object value = raw("securityOrigin");
-            return Optional.ofNullable((String) value);
+            return raw("securityOrigin").map(value -> (String) value);
         }
         /**
          * Represents a key by which DOM Storage keys its CachedStorageAreas
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMStorage.SerializedStorageKey> storageKey() {
-            Object value = raw("storageKey");
-            return Optional.ofNullable(value == null ? null : new DOMStorage.SerializedStorageKey((String) value));
+            return raw("storageKey").map(value -> new DOMStorage.SerializedStorageKey((String) value));
         }
         /**
          * Whether the storage is local storage (not session storage).
@@ -72,16 +70,7 @@ public final class DOMStorage {
         }
         /**
          * Security origin for the storage.
-         * @param securityOrigin field value; empty omits the value
-         * @return this model
-         */
-        public StorageId securityOrigin(Optional<String> securityOrigin) {
-            set("securityOrigin", securityOrigin.orElse(null));
-            return this;
-        }
-        /**
-         * Security origin for the storage.
-         * @param securityOrigin field value; null removes the value
+         * @param securityOrigin field value
          * @return this model
          */
         public StorageId securityOrigin(String securityOrigin) {
@@ -90,16 +79,7 @@ public final class DOMStorage {
         }
         /**
          * Represents a key by which DOM Storage keys its CachedStorageAreas
-         * @param storageKey field value; empty omits the value
-         * @return this model
-         */
-        public StorageId storageKey(Optional<DOMStorage.SerializedStorageKey> storageKey) {
-            set("storageKey", storageKey.orElse(null));
-            return this;
-        }
-        /**
-         * Represents a key by which DOM Storage keys its CachedStorageAreas
-         * @param storageKey field value; null removes the value
+         * @param storageKey field value
          * @return this model
          */
         public StorageId storageKey(DOMStorage.SerializedStorageKey storageKey) {
@@ -126,10 +106,10 @@ public final class DOMStorage {
          * @param storageId protocol value
          */
         public ClearRequest(DOMStorage.StorageId storageId) {
-            set("storageId", storageId);
+            storageId(storageId);
         }
         public static ClearRequest fromMap(Map<String, Object> values) {
-            ClearRequest instance_ = new ClearRequest();
+            final ClearRequest instance_ = new ClearRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -138,7 +118,7 @@ public final class DOMStorage {
          * @return the protocol field value
          */
         public DOMStorage.StorageId storageId() {
-            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("storageId")))));
+            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(CdpObject.requireObjectMap(require("storageId"))));
         }
         /**
          * Sets the storageId field.
@@ -160,10 +140,10 @@ public final class DOMStorage {
          * @param storageId protocol value
          */
         public GetDOMStorageItemsRequest(DOMStorage.StorageId storageId) {
-            set("storageId", storageId);
+            storageId(storageId);
         }
         public static GetDOMStorageItemsRequest fromMap(Map<String, Object> values) {
-            GetDOMStorageItemsRequest instance_ = new GetDOMStorageItemsRequest();
+            final GetDOMStorageItemsRequest instance_ = new GetDOMStorageItemsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -172,7 +152,7 @@ public final class DOMStorage {
          * @return the protocol field value
          */
         public DOMStorage.StorageId storageId() {
-            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("storageId")))));
+            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(CdpObject.requireObjectMap(require("storageId"))));
         }
         /**
          * Sets the storageId field.
@@ -195,11 +175,10 @@ public final class DOMStorage {
          * @param key protocol value
          */
         public RemoveDOMStorageItemRequest(DOMStorage.StorageId storageId, String key) {
-            set("storageId", storageId);
-            set("key", key);
+            storageId(storageId).key(key);
         }
         public static RemoveDOMStorageItemRequest fromMap(Map<String, Object> values) {
-            RemoveDOMStorageItemRequest instance_ = new RemoveDOMStorageItemRequest();
+            final RemoveDOMStorageItemRequest instance_ = new RemoveDOMStorageItemRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -208,7 +187,7 @@ public final class DOMStorage {
          * @return the protocol field value
          */
         public DOMStorage.StorageId storageId() {
-            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("storageId")))));
+            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(CdpObject.requireObjectMap(require("storageId"))));
         }
         /**
          * Returns the key field.
@@ -248,12 +227,10 @@ public final class DOMStorage {
          * @param value protocol value
          */
         public SetDOMStorageItemRequest(DOMStorage.StorageId storageId, String key, String value) {
-            set("storageId", storageId);
-            set("key", key);
-            set("value", value);
+            storageId(storageId).key(key).value(value);
         }
         public static SetDOMStorageItemRequest fromMap(Map<String, Object> values) {
-            SetDOMStorageItemRequest instance_ = new SetDOMStorageItemRequest();
+            final SetDOMStorageItemRequest instance_ = new SetDOMStorageItemRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -262,7 +239,7 @@ public final class DOMStorage {
          * @return the protocol field value
          */
         public DOMStorage.StorageId storageId() {
-            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("storageId")))));
+            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(CdpObject.requireObjectMap(require("storageId"))));
         }
         /**
          * Returns the key field.
@@ -320,7 +297,7 @@ public final class DOMStorage {
          * @return the protocol field value
          */
         public DOMStorage.StorageId storageId() {
-            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("storageId")))));
+            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(CdpObject.requireObjectMap(require("storageId"))));
         }
         /**
          * Returns the key field.
@@ -378,7 +355,7 @@ public final class DOMStorage {
          * @return the protocol field value
          */
         public DOMStorage.StorageId storageId() {
-            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("storageId")))));
+            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(CdpObject.requireObjectMap(require("storageId"))));
         }
         /**
          * Returns the key field.
@@ -420,7 +397,7 @@ public final class DOMStorage {
          * @return the protocol field value
          */
         public DOMStorage.StorageId storageId() {
-            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("storageId")))));
+            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(CdpObject.requireObjectMap(require("storageId"))));
         }
         /**
          * Returns the key field.
@@ -494,7 +471,7 @@ public final class DOMStorage {
          * @return the protocol field value
          */
         public DOMStorage.StorageId storageId() {
-            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("storageId")))));
+            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(CdpObject.requireObjectMap(require("storageId"))));
         }
         /**
          * Sets the storageId field.
@@ -515,7 +492,7 @@ public final class DOMStorage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clear(DOMStorage.StorageId storageId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("storageId", CdpObject.json(storageId));
             return client.call("DOMStorage.clear", params);
         }
@@ -547,7 +524,7 @@ public final class DOMStorage {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<java.util.List<String>>> getDOMStorageItems(DOMStorage.StorageId storageId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("storageId", CdpObject.json(storageId));
             return client.call("DOMStorage.getDOMStorageItems", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("entries")), element0 -> CdpObject.requireList(element0, element1 -> (String) element1)));
         }
@@ -566,7 +543,7 @@ public final class DOMStorage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeDOMStorageItem(DOMStorage.StorageId storageId, String key) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("storageId", CdpObject.json(storageId));
             params.put("key", CdpObject.json(key));
             return client.call("DOMStorage.removeDOMStorageItem", params);
@@ -587,7 +564,7 @@ public final class DOMStorage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDOMStorageItem(DOMStorage.StorageId storageId, String key, String value) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("storageId", CdpObject.json(storageId));
             params.put("key", CdpObject.json(key));
             params.put("value", CdpObject.json(value));

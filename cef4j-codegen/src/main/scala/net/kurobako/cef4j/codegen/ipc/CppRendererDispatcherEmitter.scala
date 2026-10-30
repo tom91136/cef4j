@@ -19,9 +19,7 @@ object CppRendererDispatcherEmitter {
         .filter(_._2.nonEmpty)
 
     val capiIncludes = in.capiHeaders.sorted.map(h => s"""#include "$h"""").mkString("\n")
-    val genIncludes  = dispatchableByFac.flatMap { case (_, ms) =>
-      ms.flatMap(m => List(m.requestClassName, m.responseClassName))
-    }.distinct.sorted.map(c => s"""#include "$c.h"""").mkString("\n")
+    val genIncludes  = CppDispatcherEmitter.renderGenIncludes(dispatchableByFac)
 
     val cases = dispatchableByFac.flatMap { case (f, ms) =>
       ms.map(m => renderCase(f, m, ns, in.messageSpecs))
@@ -144,7 +142,7 @@ object CppRendererDispatcherEmitter {
 
   private def tableFieldName(cefStruct: String): String = {
     val core = cefStruct.stripPrefix("cef_").stripSuffix("_t")
-    core.split('_').iterator.zipWithIndex.map { case (p, i) =>
+    core.split('_').view.zipWithIndex.map { case (p, i) =>
       if (i == 0) p else p.headOption.fold("")(_.toUpper.toString) + p.drop(1)
     }.mkString
   }

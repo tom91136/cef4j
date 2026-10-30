@@ -21,7 +21,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dialog__handler_8h.html">cef_dialog_handler.h:65</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefDialogHandler extends CefClientHandler {
 
@@ -68,8 +67,8 @@ public interface CefDialogHandler extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefDialogHandler {
         private final java.util.List<CefDialogHandler> delegates;
@@ -88,7 +87,7 @@ public interface CefDialogHandler extends CefClientHandler {
                 @Nullable List<String> acceptExtensions,
                 @Nullable List<String> acceptDescriptions,
                 @Nullable CefFileDialogCallback callback) {
-            for (CefDialogHandler d : delegates) {
+            for (final CefDialogHandler d : delegates) {
                 if (d.onFileDialog(
                         browser,
                         mode,

@@ -19,6 +19,7 @@ import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -33,7 +34,7 @@ public final class NamedPipeTransport implements CefTransport {
     private static final AtomicInteger INSTANCE = new AtomicInteger();
     private static final Executor CLOSE_EXECUTOR =
             Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), task -> {
-                Thread thread = new Thread(task, "named-pipe-closer-" + INSTANCE.incrementAndGet());
+                final Thread thread = new Thread(task, "named-pipe-closer-" + INSTANCE.incrementAndGet());
                 thread.setDaemon(true);
                 return thread;
             });
@@ -54,8 +55,8 @@ public final class NamedPipeTransport implements CefTransport {
     @Nullable
     private volatile Runnable disconnectHandler;
 
-    private volatile boolean closed;
-    private volatile boolean disconnected;
+    private volatile boolean closed = false;
+    private volatile boolean disconnected = false;
 
     public static NamedPipeTransport connect(String endpoint) throws CefTransportException {
         return connect(endpoint, CLOSE_EXECUTOR);
@@ -66,11 +67,11 @@ public final class NamedPipeTransport implements CefTransport {
         if (!System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("win")) {
             throw new CefTransportException("Windows named pipes are unavailable on " + System.getProperty("os.name"));
         }
-        String path = pathOf(endpoint);
+        final String path = pathOf(endpoint);
         RandomAccessFile pipe = null;
         try {
             pipe = new RandomAccessFile(path, "rw");
-            FileDescriptor descriptor = pipe.getFD();
+            final FileDescriptor descriptor = pipe.getFD();
             return new NamedPipeTransport(
                     endpointOf(path),
                     pipe,
@@ -94,7 +95,7 @@ public final class NamedPipeTransport implements CefTransport {
         this.input = new DataInputStream(new BufferedInputStream(inputPipe));
         this.output = new DataOutputStream(new BufferedOutputStream(outputPipe));
         this.closeExecutor = Objects.requireNonNull(closeExecutor, "closeExecutor");
-        Thread reader = new Thread(this::readLoop, "named-pipe-reader-" + INSTANCE.incrementAndGet());
+        final Thread reader = new Thread(this::readLoop, "named-pipe-reader-" + INSTANCE.incrementAndGet());
         reader.setDaemon(true);
         reader.start();
     }
@@ -102,7 +103,7 @@ public final class NamedPipeTransport implements CefTransport {
     @Override
     public void send(ByteBuffer frame) throws CefTransportException {
         if (closed || disconnected) throw new CefTransportException(endpoint + ": pipe is disconnected");
-        byte[] bytes = new byte[frame.remaining()];
+        final byte[] bytes = new byte[frame.remaining()];
         frame.get(bytes);
         if (bytes.length > MAX_FRAME_SIZE) throw new CefTransportException(endpoint + ": frame is too large");
         synchronized (ioLock) {
@@ -121,8 +122,7 @@ public final class NamedPipeTransport implements CefTransport {
     public void onReceive(Consumer<ByteBuffer> handler) {
         synchronized (receiveLock) {
             receiveHandler = handler;
-            byte[] frame;
-            while ((frame = pending.poll()) != null) dispatch(handler, frame);
+            pending.drain(frame -> dispatch(handler, frame));
         }
     }
 
@@ -152,7 +152,7 @@ public final class NamedPipeTransport implements CefTransport {
     }
 
     static void closeAsync(String endpoint, Closeable resource, Executor executor) {
-        Runnable close = () -> closeResource(endpoint, resource);
+        final Runnable close = () -> closeResource(endpoint, resource);
         try {
             executor.execute(close);
         } catch (RejectedExecutionException rejection) {
@@ -177,7 +177,7 @@ public final class NamedPipeTransport implements CefTransport {
                 // XXX: Windows serializes synchronous ReadFile and WriteFile on one handle; remove with overlapped I/O.
                 synchronized (ioLock) {
                     if (input.available() >= Integer.BYTES) {
-                        int length = input.readInt();
+                        final int length = input.readInt();
                         if (length < 0 || length > MAX_FRAME_SIZE) {
                             throw new IOException("invalid frame length " + length);
                         }
@@ -186,11 +186,17 @@ public final class NamedPipeTransport implements CefTransport {
                     }
                 }
                 if (frame == null) {
-                    Thread.sleep(2L);
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(2L);
+                    } catch (InterruptedException interrupted) {
+                        Thread.currentThread().interrupt();
+                        markDisconnected();
+                        return;
+                    }
                     continue;
                 }
                 synchronized (receiveLock) {
-                    Consumer<ByteBuffer> handler = receiveHandler;
+                    final Consumer<ByteBuffer> handler = receiveHandler;
                     if (handler == null) {
                         if (!pending.offer(frame)) throw new IOException("pending receive queue full");
                     } else {
@@ -198,10 +204,7 @@ public final class NamedPipeTransport implements CefTransport {
                     }
                 }
             }
-        } catch (InterruptedException failure) {
-            Thread.currentThread().interrupt();
-            markDisconnected();
-        } catch (EOFException failure) {
+        } catch (EOFException ignored) {
             markDisconnected();
         } catch (IOException failure) {
             if (!closed) LOG.debug("reader on {} failed", endpoint, failure);
@@ -224,7 +227,7 @@ public final class NamedPipeTransport implements CefTransport {
     }
 
     private void fireDisconnectIfReady() {
-        Runnable handler = disconnectHandler;
+        final Runnable handler = disconnectHandler;
         if (disconnected && !closed && handler != null && disconnectNotified.compareAndSet(false, true)) {
             try {
                 handler.run();
@@ -235,14 +238,14 @@ public final class NamedPipeTransport implements CefTransport {
     }
 
     static String pathOf(String endpoint) throws CefTransportException {
-        String name = endpoint.startsWith("pipe://") ? endpoint.substring("pipe://".length()) : endpoint;
+        final String name = endpoint.startsWith("pipe://") ? endpoint.substring("pipe://".length()) : endpoint;
         if (name.startsWith("\\\\.\\pipe\\")) return name;
         if (!name.matches("[A-Za-z0-9._-]+")) throw new CefTransportException("invalid named-pipe endpoint");
         return "\\\\.\\pipe\\" + name;
     }
 
     private static String endpointOf(String path) {
-        String prefix = "\\\\.\\pipe\\";
+        final String prefix = "\\\\.\\pipe\\";
         return path.startsWith(prefix) ? "pipe://" + path.substring(prefix.length()) : path;
     }
 }

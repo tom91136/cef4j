@@ -20,7 +20,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:48</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefDomVisitor extends CefClientHandler {
 
@@ -39,8 +38,8 @@ public interface CefDomVisitor extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefDomVisitor {
         private final java.util.List<CefDomVisitor> delegates;
@@ -51,7 +50,7 @@ public interface CefDomVisitor extends CefClientHandler {
 
         @Override
         public void visit(@Nullable CefDomDocument document) {
-            for (CefDomVisitor d : delegates) d.visit(document);
+            for (final CefDomVisitor d : delegates) d.visit(document);
         }
     }
 }

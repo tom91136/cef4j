@@ -68,9 +68,9 @@ public enum CefPlatform {
         return cefName.startsWith("windows");
     }
 
-    /** Returns whether this target is Linux. */
-    public boolean isLinux() {
-        return cefName.startsWith("linux");
+    /** Returns whether this target is not Linux. */
+    public boolean isNotLinux() {
+        return !cefName.startsWith("linux");
     }
 
     /** Returns the official minimal-distribution archive name for an exact CEF version. */
@@ -80,13 +80,13 @@ public enum CefPlatform {
 
     /** Returns the upstream archive containing the selected CEF binary configuration. */
     public String archiveName(String cefVersion, CefBuildType buildType) {
-        String suffix = buildType.usesMinimalArchive() ? "_minimal" : "";
+        final String suffix = buildType.usesMinimalArchive() ? "_minimal" : "";
         return "cef_binary_" + cefVersion + "_" + cefName + suffix + ".tar.bz2";
     }
 
     /** Parses either a public or upstream platform name. */
     public static CefPlatform parse(String value) {
-        String normalized = normalize(value);
+        final String normalized = normalize(value);
         return Arrays.stream(values())
                 .filter(platform -> normalize(platform.externalName).equals(normalized)
                         || normalize(platform.cefName).equals(normalized)
@@ -99,8 +99,8 @@ public enum CefPlatform {
 
     /** Detects a supported host without silently substituting another operating system or architecture. */
     public static CefPlatform detectHost(String osName, String osArch) {
-        String os = osName.toLowerCase(Locale.ROOT).trim();
-        String arch = normalize(osArch);
+        final String os = osName.toLowerCase(Locale.ROOT).trim();
+        final String arch = normalize(osArch);
         boolean arm64;
         if (arch.equals("aarch64") || arch.equals("arm64")) {
             arm64 = true;

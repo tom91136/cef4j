@@ -4,7 +4,6 @@ package net.kurobako.cef4j.cdp.generated;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
@@ -13,6 +12,7 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Provides access to log entries.
@@ -20,6 +20,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Log {
     private Log() {}
     /**
@@ -50,7 +51,7 @@ public final class Log {
             OTHER("other");
             public final String value;
             SourceValues(String value) { this.value = value; }
-            public String value() { return value; }
+            @Override public String value() { return value; }
             public static SourceValues of(String value) {
                 for (SourceValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
@@ -68,7 +69,7 @@ public final class Log {
             ERROR("error");
             public final String value;
             LevelValues(String value) { this.value = value; }
-            public String value() { return value; }
+            @Override public String value() { return value; }
             public static LevelValues of(String value) {
                 for (LevelValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
@@ -83,7 +84,7 @@ public final class Log {
             CORS("cors");
             public final String value;
             CategoryValues(String value) { this.value = value; }
-            public String value() { return value; }
+            @Override public String value() { return value; }
             public static CategoryValues of(String value) {
                 for (CategoryValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
@@ -117,8 +118,7 @@ public final class Log {
          * @return the protocol field value, empty when absent
          */
         public Optional<LogEntry.CategoryValues> category() {
-            Object value = raw("category");
-            return Optional.ofNullable(value == null ? null : LogEntry.CategoryValues.of((String) value));
+            return raw("category").map(value -> LogEntry.CategoryValues.of((String) value));
         }
         /**
          * Timestamp when this entry was added.
@@ -132,48 +132,42 @@ public final class Log {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            Object value = raw("url");
-            return Optional.ofNullable((String) value);
+            return raw("url").map(value -> (String) value);
         }
         /**
          * Line number in the resource.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong lineNumber() {
-            Long value = CdpObject.numberAsLong(raw("lineNumber"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("lineNumber").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * JavaScript stack trace.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.StackTrace> stackTrace() {
-            Object value = raw("stackTrace");
-            return Optional.ofNullable(value == null ? null : Runtime.StackTrace.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("stackTrace").flatMap(CdpObject::objectMap).map(Runtime.StackTrace::fromMap);
         }
         /**
          * Identifier of the network request associated with this entry.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.RequestId> networkRequestId() {
-            Object value = raw("networkRequestId");
-            return Optional.ofNullable(value == null ? null : new Network.RequestId((String) value));
+            return raw("networkRequestId").map(value -> new Network.RequestId((String) value));
         }
         /**
          * Identifier of the worker associated with this entry.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> workerId() {
-            Object value = raw("workerId");
-            return Optional.ofNullable((String) value);
+            return raw("workerId").map(value -> (String) value);
         }
         /**
          * Call arguments.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Runtime.RemoteObject>> args() {
-            Object value = raw("args");
-            return Optional.ofNullable(list(value, element0 -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return raw("args").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Log entry source.
@@ -204,16 +198,7 @@ public final class Log {
         }
         /**
          * Sets the category field.
-         * @param category field value; empty omits the value
-         * @return this model
-         */
-        public LogEntry category(Optional<LogEntry.CategoryValues> category) {
-            set("category", category.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the category field.
-         * @param category field value; null removes the value
+         * @param category field value
          * @return this model
          */
         public LogEntry category(LogEntry.CategoryValues category) {
@@ -231,16 +216,7 @@ public final class Log {
         }
         /**
          * URL of the resource if known.
-         * @param url field value; empty omits the value
-         * @return this model
-         */
-        public LogEntry url(Optional<String> url) {
-            set("url", url.orElse(null));
-            return this;
-        }
-        /**
-         * URL of the resource if known.
-         * @param url field value; null removes the value
+         * @param url field value
          * @return this model
          */
         public LogEntry url(String url) {
@@ -249,34 +225,16 @@ public final class Log {
         }
         /**
          * Line number in the resource.
-         * @param lineNumber field value; empty omits the value
+         * @param lineNumber field value
          * @return this model
          */
-        public LogEntry lineNumber(OptionalLong lineNumber) {
-            set("lineNumber", lineNumber.isPresent() ? lineNumber.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Line number in the resource.
-         * @param lineNumber field value; null removes the value
-         * @return this model
-         */
-        public LogEntry lineNumber(Long lineNumber) {
+        public LogEntry lineNumber(long lineNumber) {
             set("lineNumber", lineNumber);
             return this;
         }
         /**
          * JavaScript stack trace.
-         * @param stackTrace field value; empty omits the value
-         * @return this model
-         */
-        public LogEntry stackTrace(Optional<Runtime.StackTrace> stackTrace) {
-            set("stackTrace", stackTrace.orElse(null));
-            return this;
-        }
-        /**
-         * JavaScript stack trace.
-         * @param stackTrace field value; null removes the value
+         * @param stackTrace field value
          * @return this model
          */
         public LogEntry stackTrace(Runtime.StackTrace stackTrace) {
@@ -285,16 +243,7 @@ public final class Log {
         }
         /**
          * Identifier of the network request associated with this entry.
-         * @param networkRequestId field value; empty omits the value
-         * @return this model
-         */
-        public LogEntry networkRequestId(Optional<Network.RequestId> networkRequestId) {
-            set("networkRequestId", networkRequestId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the network request associated with this entry.
-         * @param networkRequestId field value; null removes the value
+         * @param networkRequestId field value
          * @return this model
          */
         public LogEntry networkRequestId(Network.RequestId networkRequestId) {
@@ -303,16 +252,7 @@ public final class Log {
         }
         /**
          * Identifier of the worker associated with this entry.
-         * @param workerId field value; empty omits the value
-         * @return this model
-         */
-        public LogEntry workerId(Optional<String> workerId) {
-            set("workerId", workerId.orElse(null));
-            return this;
-        }
-        /**
-         * Identifier of the worker associated with this entry.
-         * @param workerId field value; null removes the value
+         * @param workerId field value
          * @return this model
          */
         public LogEntry workerId(String workerId) {
@@ -321,16 +261,7 @@ public final class Log {
         }
         /**
          * Call arguments.
-         * @param args field value; empty omits the value
-         * @return this model
-         */
-        public LogEntry args(Optional<java.util.List<Runtime.RemoteObject>> args) {
-            set("args", args.orElse(null));
-            return this;
-        }
-        /**
-         * Call arguments.
-         * @param args field value; null removes the value
+         * @param args field value
          * @return this model
          */
         public LogEntry args(java.util.List<Runtime.RemoteObject> args) {
@@ -360,7 +291,7 @@ public final class Log {
             RECURRINGHANDLER("recurringHandler");
             public final String value;
             NameValues(String value) { this.value = value; }
-            public String value() { return value; }
+            @Override public String value() { return value; }
             public static NameValues of(String value) {
                 for (NameValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
@@ -411,10 +342,10 @@ public final class Log {
          * @param config protocol value
          */
         public StartViolationsReportRequest(java.util.List<Log.ViolationSetting> config) {
-            set("config", config);
+            config(config);
         }
         public static StartViolationsReportRequest fromMap(Map<String, Object> values) {
-            StartViolationsReportRequest instance_ = new StartViolationsReportRequest();
+            final StartViolationsReportRequest instance_ = new StartViolationsReportRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -423,7 +354,7 @@ public final class Log {
          * @return the protocol field value
          */
         public java.util.List<Log.ViolationSetting> config() {
-            return CdpObject.requireList(require("config"), element0 -> java.util.Objects.requireNonNull(Log.ViolationSetting.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("config"), element0 -> java.util.Objects.requireNonNull(Log.ViolationSetting.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Configuration for violations.
@@ -449,7 +380,7 @@ public final class Log {
          * @return the protocol field value
          */
         public Log.LogEntry entry() {
-            return java.util.Objects.requireNonNull(Log.LogEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("entry")))));
+            return java.util.Objects.requireNonNull(Log.LogEntry.fromMap(CdpObject.requireObjectMap(require("entry"))));
         }
         /**
          * The entry.
@@ -491,7 +422,7 @@ public final class Log {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startViolationsReport(java.util.List<Log.ViolationSetting> config) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("config", CdpObject.json(config));
             return client.call("Log.startViolationsReport", params);
         }

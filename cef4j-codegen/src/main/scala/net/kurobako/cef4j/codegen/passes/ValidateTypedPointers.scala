@@ -2,6 +2,7 @@ package net.kurobako.cef4j.codegen.passes
 
 import net.kurobako.cef4j.codegen.CType
 import net.kurobako.cef4j.codegen.CefDecl
+import net.kurobako.cef4j.codegen.Param
 import net.kurobako.cef4j.codegen.RefinedTree
 import net.kurobako.cef4j.codegen.UntypedPtrWarning
 
@@ -13,7 +14,7 @@ object ValidateTypedPointers {
     ).distinct
 
     if (warnings.nonEmpty) {
-      System.err.println(s"\n====================================")
+      System.err.println("\n====================================")
       System.err.println(
         s"ERROR: ${warnings.size} unresolved pointer parameter(s)/return(s) - all pointers must be typed:"
       )
@@ -24,7 +25,7 @@ object ValidateTypedPointers {
           System.err.println(s"    ${w.structName} :: ${w.fnName} ${w.position}")
         }
       }
-      System.err.println(s"====================================\n")
+      System.err.println("====================================\n")
       throw IllegalStateException(s"${warnings.size} unresolved CType.Ptr remaining; codegen cannot continue")
     }
 
@@ -44,7 +45,7 @@ object ValidateTypedPointers {
       owner: String,
       fnName: String,
       ret: CType,
-      params: List[net.kurobako.cef4j.codegen.Param],
+      params: List[Param],
       handlerNames: Set[String]
   ): List[UntypedPtrWarning] = {
     val retWarning = isUntypedPtr(ret, handlerNames).map(inner =>

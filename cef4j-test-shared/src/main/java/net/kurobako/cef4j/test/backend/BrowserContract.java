@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 import net.kurobako.cef4j.test.TestDeadline;
 import org.junit.jupiter.api.Assumptions;
@@ -29,20 +30,20 @@ public final class BrowserContract {
     }
 
     private static void verify(BrowserBackend backend, FixtureSite site) throws Exception {
-        Duration timeout = Duration.ofSeconds(40);
-        BrowserBackend.SessionConfig config = new BrowserBackend.SessionConfig(site.url("/first"), 640, 480, timeout);
+        final Duration timeout = Duration.ofSeconds(40);
+        final BrowserBackend.SessionConfig config =
+                new BrowserBackend.SessionConfig(site.url("/first"), 640, 480, timeout);
 
         try (BrowserSession session = backend.openSession(config)) {
-            TestDeadline deadline = TestDeadline.after(CONTRACT_TIMEOUT);
+            final TestDeadline deadline = TestDeadline.after(CONTRACT_TIMEOUT);
+            final PaintTarget initial = new PaintTarget(640, 480, deadline.remainingUpTo(timeout));
             assertPaint(
                     awaitInitialPaint(
                             session,
                             backend.capabilities().contains(BrowserBackend.Capability.VIEWPORT_RESIZE),
-                            640,
-                            480,
-                            deadline.remainingUpTo(timeout)),
-                    640,
-                    480);
+                            initial),
+                    initial.width,
+                    initial.height);
 
             assertThat(deadline.await(session.evaluateJavascript("1 + 2 + 3"), "evaluate arithmetic", timeout))
                     .isEqualTo("6");
@@ -72,7 +73,8 @@ public final class BrowserContract {
                     .isEqualTo("second");
 
             if (backend.capabilities().contains(BrowserBackend.Capability.VIEWPORT_RESIZE)) {
-                assertPaint(resizeUntilPaint(session, 512, 384, deadline.remainingUpTo(timeout)), 512, 384);
+                final PaintTarget resized = new PaintTarget(512, 384, deadline.remainingUpTo(timeout));
+                assertPaint(resizeUntilPaint(session, resized), resized.width, resized.height);
             }
         }
     }
@@ -85,7 +87,7 @@ public final class BrowserContract {
         }
 
         static FixtureSite start() throws IOException {
-            HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
+            final HttpServer server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0), 0);
             server.createContext(
                     "/first",
                     exchange -> respond(
@@ -108,7 +110,7 @@ public final class BrowserContract {
         }
 
         private static void respond(HttpExchange exchange, String html) throws IOException {
-            byte[] body = html.getBytes(StandardCharsets.UTF_8);
+            final byte[] body = html.getBytes(StandardCharsets.UTF_8);
             exchange.getResponseHeaders().set("Content-Type", "text/html; charset=utf-8");
             exchange.sendResponseHeaders(200, body.length);
             try (java.io.OutputStream response = exchange.getResponseBody()) {
@@ -129,31 +131,32 @@ public final class BrowserContract {
     }
 
     static BrowserSession.PaintInfo awaitInitialPaint(
-            BrowserSession session, boolean supportsResize, int width, int height, Duration timeout) throws Exception {
-        return supportsResize
-                ? resizeUntilPaint(session, width, height, timeout)
-                : session.awaitPaint(width, height, timeout);
+            BrowserSession session, boolean supportsResize, PaintTarget target) throws Exception {
+        return supportsResize ? resizeUntilPaint(session, target) : session.awaitPaint(target);
     }
 
-    static BrowserSession.PaintInfo resizeUntilPaint(BrowserSession session, int width, int height, Duration timeout)
-            throws Exception {
-        TestDeadline deadline = TestDeadline.after(timeout);
+    static BrowserSession.PaintInfo resizeUntilPaint(BrowserSession session, PaintTarget target) throws Exception {
+        final TestDeadline deadline = TestDeadline.after(target.timeout);
         TimeoutException lastTimeout = null;
-        String expectedViewport = width + "x" + height;
-        while (!deadline.isExpired()) {
+        final int width = target.width;
+        final int height = target.height;
+        final String expectedViewport = width + "x" + height;
+        while (deadline.hasTimeRemaining()) {
             try {
                 deadline.await(session.resizeViewport(width, height), "resize viewport", MAX_PAINT_ATTEMPT);
-                BrowserSession.PaintInfo paint =
-                        session.awaitPaint(width, height, deadline.remainingUpTo(MAX_PAINT_ATTEMPT));
-                String viewport = unquote(deadline.await(
-                        session.evaluateJavascript("window.innerWidth + 'x' + window.innerHeight"),
-                        "verify resized viewport",
-                        MAX_PAINT_ATTEMPT));
+                final BrowserSession.PaintInfo paint =
+                        session.awaitPaint(new PaintTarget(width, height, deadline.remainingUpTo(MAX_PAINT_ATTEMPT)));
+                final String viewport = unquote(Objects.requireNonNull(
+                        deadline.await(
+                                session.evaluateJavascript("window.innerWidth + 'x' + window.innerHeight"),
+                                "verify resized viewport",
+                                MAX_PAINT_ATTEMPT),
+                        "verify resized viewport: the future completed with null"));
                 if (expectedViewport.equals(viewport)) return paint;
             } catch (TimeoutException timeoutException) {
                 lastTimeout = timeoutException;
-                if (!deadline.isExpired()) {
-                    int alternateWidth = width == 1 ? 2 : width - 1;
+                if (deadline.hasTimeRemaining()) {
+                    final int alternateWidth = width == 1 ? 2 : width - 1;
                     try {
                         deadline.await(
                                 session.resizeViewport(alternateWidth, height),
@@ -166,15 +169,16 @@ public final class BrowserContract {
                 }
             }
         }
-        TimeoutException exhausted = new TimeoutException("no " + width + "x" + height + " paint within " + timeout);
+        final TimeoutException exhausted =
+                new TimeoutException("no " + target.width + "x" + target.height + " paint within " + target.timeout);
         if (lastTimeout != null) exhausted.initCause(lastTimeout);
         throw exhausted;
     }
 
     static void awaitJavascriptReady(BrowserSession session, Duration timeout) throws Exception {
-        TestDeadline deadline = TestDeadline.after(timeout);
+        final TestDeadline deadline = TestDeadline.after(timeout);
         TimeoutException lastTimeout = null;
-        while (!deadline.isExpired()) {
+        while (deadline.hasTimeRemaining()) {
             try {
                 assertThat(deadline.await(
                                 session.evaluateJavascript("1"), "probe renderer script readiness", MAX_SCRIPT_ATTEMPT))
@@ -185,13 +189,14 @@ public final class BrowserContract {
                 lastTimeout = timeoutException;
             }
         }
-        TimeoutException exhausted = new TimeoutException("renderer script channel was not ready within " + timeout);
+        final TimeoutException exhausted =
+                new TimeoutException("renderer script channel was not ready within " + timeout);
         if (lastTimeout != null) exhausted.initCause(lastTimeout);
         throw exhausted;
     }
 
     private static String unquote(String value) {
-        if (value != null && value.length() >= 2 && value.startsWith("\"") && value.endsWith("\"")) {
+        if (value.length() >= 2 && value.startsWith("\"") && value.endsWith("\"")) {
             return value.substring(1, value.length() - 1);
         }
         return value;

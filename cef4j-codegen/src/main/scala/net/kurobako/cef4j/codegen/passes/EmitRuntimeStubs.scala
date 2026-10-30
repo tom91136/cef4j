@@ -21,16 +21,17 @@ object EmitRuntimeStubs {
   private val NativeMethodRe =
     """(?:(?:private|public|protected|static|final|synchronized)\s+)*native\s+(\S+(?:\[])?)\s+(\w+)\s*\(([^)]*)\)\s*;""".r
 
-  private val PackageRe = """package\s+([\w.]+)\s*;""".r
-  private val ClassRe   = """(?:public\s+)?(?:final\s+)?(?:class|enum)\s+(\w+)""".r
-  private val StaticRe  = """\bstatic\b""".r
+  private val PackageRe    = """package\s+([\w.]+)\s*;""".r
+  private val ClassRe      = """(?:public\s+)?(?:final\s+)?(?:class|enum)\s+(\w+)""".r
+  private val StaticRe     = """\bstatic\b""".r
+  private val WhitespaceRe = """\s+""".r
 
   def apply(javaSourceRoot: Path, generatedPackageDir: Path, outCpp: Path)(using Banners): Unit = {
     val javaFiles = FileSystem.descendants(javaSourceRoot)
       .filter(p => p.toString.endsWith(".java") && !p.startsWith(generatedPackageDir))
 
     val methods = javaFiles
-      .flatMap(scanFile)
+      .flatMap(scanFile(_))
       .sortBy(m =>
         (
           m.packageName,
@@ -98,7 +99,7 @@ object EmitRuntimeStubs {
           val params    = if (rawParams.isEmpty) Nil
           else
             rawParams.split(",").toList.map { p =>
-              val parts = p.trim.split("\\s+")
+              val parts = WhitespaceRe.split(p.trim)
               if (parts.length >= 2) (parts.init.mkString(" "), parts.last)
               else (parts.head, s"arg$line")
             }

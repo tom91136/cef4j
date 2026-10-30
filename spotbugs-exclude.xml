@@ -39,8 +39,23 @@
     </Match>
     <Match>
         <Class name="net.kurobako.cef4j.osr.jfx.CefWebView"/>
-        <Method name="~(getEngine|getScriptEngine|zoomProperty)"/>
+        <Method name="~(getEngine|getScriptEngine|.*Property)"/>
         <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Class name="~net\.kurobako\.cef4j\.osr\.jfx\.CefWebView\$.*"/>
+        <Method name="~(getBean|getCssMetaData)"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Class name="net.kurobako.cef4j.osr.jfx.CefWebView"/>
+        <Method name="getClassCssMetaData"/>
+        <Bug pattern="HSM_HIDING_METHOD"/>
+    </Match>
+    <Match>
+        <Class name="net.kurobako.cef4j.osr.jfx.CefWebView"/>
+        <Field name="paintObserver"/>
+        <Bug pattern="UWF_UNWRITTEN_FIELD"/>
     </Match>
     <Match>
         <Class name="net.kurobako.cef4j.osr.jfx.CefWebErrorEvent"/>

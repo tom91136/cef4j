@@ -4,11 +4,13 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class V8GetKeysResponse implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 21;
@@ -41,13 +43,13 @@ public final class V8GetKeysResponse implements CefMessageView, CefMessageEncode
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.put((byte) (ok ? 1 : 0));
             __dst.putInt(keys.length);
-            for (String __s : keys) {
-                byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
+            for (final String __s : keys) {
+                final byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
                 __dst.putInt(__b.length);
                 __dst.put(__b);
             }
@@ -57,18 +59,10 @@ public final class V8GetKeysResponse implements CefMessageView, CefMessageEncode
     }
 
     public static final CefMessageDecoder<V8GetKeysResponse> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, 1, "ok");
-        boolean ok = __buf.get() != 0;
-        int keysCount = WireDecoder.count(__buf, "keys");
-        String[] keys = new String[keysCount];
-        for (int __i = 0; __i < keysCount; __i++) {
-            int __slen = WireDecoder.length(__buf, "keys[" + __i + "]");
-            byte[] __sb = new byte[__slen];
-            __buf.get(__sb);
-            keys[__i] = new String(__sb, StandardCharsets.UTF_8);
-        }
+        final boolean ok = WireDecoder.bool(__buf, "ok");
+        final String[] keys = WireDecoder.utf8List(__buf, "keys");
         WireDecoder.requireFullyConsumed(__buf, "V8GetKeysResponse");
         return new V8GetKeysResponse(ok, keys);
     };

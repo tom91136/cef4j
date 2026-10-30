@@ -23,7 +23,7 @@ class SessionReplayTest {
     private static byte[] envelope(Envelope.Kind kind, int corrId, int messageId, byte[] payload) {
         ByteBuffer buf =
                 ByteBuffer.allocate(Envelope.HEADER_SIZE + payload.length).order(ByteOrder.LITTLE_ENDIAN);
-        Envelope.writeHeader(buf, kind, 0, corrId, messageId, payload.length);
+        Envelope.writeHeader(buf, new Envelope.Header(payload.length, kind, 0, corrId, messageId));
         buf.put(payload);
         return buf.array();
     }

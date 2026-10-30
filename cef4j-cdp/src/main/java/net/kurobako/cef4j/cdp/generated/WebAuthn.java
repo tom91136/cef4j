@@ -4,8 +4,6 @@ package net.kurobako.cef4j.cdp.generated;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
@@ -13,6 +11,8 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This domain allows configuring virtual authenticators to test the WebAuthn API.
@@ -21,6 +21,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class WebAuthn {
     private WebAuthn() {}
     /**
@@ -29,7 +30,7 @@ public final class WebAuthn {
     public static final class AuthenticatorId implements CdpValue<String> {
         public final String value;
         public AuthenticatorId(String value) { this.value = java.util.Objects.requireNonNull(value); }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof AuthenticatorId)) return false;
@@ -46,7 +47,7 @@ public final class WebAuthn {
         CTAP2("ctap2");
         public final String value;
         AuthenticatorProtocol(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static AuthenticatorProtocol of(String value) {
             for (AuthenticatorProtocol constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -63,7 +64,7 @@ public final class WebAuthn {
         CTAP2_2("ctap2_2");
         public final String value;
         Ctap2Version(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static Ctap2Version of(String value) {
             for (Ctap2Version constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -82,7 +83,7 @@ public final class WebAuthn {
         INTERNAL("internal");
         public final String value;
         AuthenticatorTransport(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static AuthenticatorTransport of(String value) {
             for (AuthenticatorTransport constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -110,8 +111,7 @@ public final class WebAuthn {
          * @return the protocol field value, empty when absent
          */
         public Optional<WebAuthn.Ctap2Version> ctap2Version() {
-            Object value = raw("ctap2Version");
-            return Optional.ofNullable(value == null ? null : WebAuthn.Ctap2Version.of((String) value));
+            return raw("ctap2Version").map(value -> WebAuthn.Ctap2Version.of((String) value));
         }
         /**
          * Returns the transport field.
@@ -125,96 +125,84 @@ public final class WebAuthn {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> hasResidentKey() {
-            Object value = raw("hasResidentKey");
-            return Optional.ofNullable((Boolean) value);
+            return raw("hasResidentKey").map(value -> (Boolean) value);
         }
         /**
          * Defaults to false.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> hasUserVerification() {
-            Object value = raw("hasUserVerification");
-            return Optional.ofNullable((Boolean) value);
+            return raw("hasUserVerification").map(value -> (Boolean) value);
         }
         /**
          * If set to true, the authenticator will support the largeBlob extension. https://w3c.github.io/webauthn#largeBlob Defaults to false.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> hasLargeBlob() {
-            Object value = raw("hasLargeBlob");
-            return Optional.ofNullable((Boolean) value);
+            return raw("hasLargeBlob").map(value -> (Boolean) value);
         }
         /**
          * If set to true, the authenticator will support the credBlob extension. https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension Defaults to false.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> hasCredBlob() {
-            Object value = raw("hasCredBlob");
-            return Optional.ofNullable((Boolean) value);
+            return raw("hasCredBlob").map(value -> (Boolean) value);
         }
         /**
          * If set to true, the authenticator will support the minPinLength extension. https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension Defaults to false.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> hasMinPinLength() {
-            Object value = raw("hasMinPinLength");
-            return Optional.ofNullable((Boolean) value);
+            return raw("hasMinPinLength").map(value -> (Boolean) value);
         }
         /**
          * If set to true, the authenticator will support the prf extension. https://w3c.github.io/webauthn/#prf-extension Defaults to false.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> hasPrf() {
-            Object value = raw("hasPrf");
-            return Optional.ofNullable((Boolean) value);
+            return raw("hasPrf").map(value -> (Boolean) value);
         }
         /**
          * If set to true, the authenticator will support the hmac-secret extension. https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-hmac-secret-extension Defaults to false.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> hasHmacSecret() {
-            Object value = raw("hasHmacSecret");
-            return Optional.ofNullable((Boolean) value);
+            return raw("hasHmacSecret").map(value -> (Boolean) value);
         }
         /**
          * If set to true, the authenticator will support the hmac-secret-mc extension. https://fidoalliance.org/specs/fido-v2.2-rd-20241003/fido-client-to-authenticator-protocol-v2.2-rd-20241003.html#sctn-hmac-secret-make-cred-extension Defaults to false.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> hasHmacSecretMc() {
-            Object value = raw("hasHmacSecretMc");
-            return Optional.ofNullable((Boolean) value);
+            return raw("hasHmacSecretMc").map(value -> (Boolean) value);
         }
         /**
          * If set to true, tests of user presence will succeed immediately. Otherwise, they will not be resolved. Defaults to true.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> automaticPresenceSimulation() {
-            Object value = raw("automaticPresenceSimulation");
-            return Optional.ofNullable((Boolean) value);
+            return raw("automaticPresenceSimulation").map(value -> (Boolean) value);
         }
         /**
          * Sets whether User Verification succeeds or fails for an authenticator. Defaults to false.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isUserVerified() {
-            Object value = raw("isUserVerified");
-            return Optional.ofNullable((Boolean) value);
+            return raw("isUserVerified").map(value -> (Boolean) value);
         }
         /**
          * Credentials created by this authenticator will have the backup eligibility (BE) flag set to this value. Defaults to false. https://w3c.github.io/webauthn/#sctn-credential-backup
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> defaultBackupEligibility() {
-            Object value = raw("defaultBackupEligibility");
-            return Optional.ofNullable((Boolean) value);
+            return raw("defaultBackupEligibility").map(value -> (Boolean) value);
         }
         /**
          * Credentials created by this authenticator will have the backup state (BS) flag set to this value. Defaults to false. https://w3c.github.io/webauthn/#sctn-credential-backup
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> defaultBackupState() {
-            Object value = raw("defaultBackupState");
-            return Optional.ofNullable((Boolean) value);
+            return raw("defaultBackupState").map(value -> (Boolean) value);
         }
         /**
          * Sets the protocol field.
@@ -227,16 +215,7 @@ public final class WebAuthn {
         }
         /**
          * Defaults to ctap2_0. Ignored if |protocol| == u2f.
-         * @param ctap2Version field value; empty omits the value
-         * @return this model
-         */
-        public VirtualAuthenticatorOptions ctap2Version(Optional<WebAuthn.Ctap2Version> ctap2Version) {
-            set("ctap2Version", ctap2Version.orElse(null));
-            return this;
-        }
-        /**
-         * Defaults to ctap2_0. Ignored if |protocol| == u2f.
-         * @param ctap2Version field value; null removes the value
+         * @param ctap2Version field value
          * @return this model
          */
         public VirtualAuthenticatorOptions ctap2Version(WebAuthn.Ctap2Version ctap2Version) {
@@ -254,217 +233,109 @@ public final class WebAuthn {
         }
         /**
          * Defaults to false.
-         * @param hasResidentKey field value; empty omits the value
+         * @param hasResidentKey field value
          * @return this model
          */
-        public VirtualAuthenticatorOptions hasResidentKey(Optional<Boolean> hasResidentKey) {
-            set("hasResidentKey", hasResidentKey.orElse(null));
-            return this;
-        }
-        /**
-         * Defaults to false.
-         * @param hasResidentKey field value; null removes the value
-         * @return this model
-         */
-        public VirtualAuthenticatorOptions hasResidentKey(Boolean hasResidentKey) {
+        public VirtualAuthenticatorOptions hasResidentKey(boolean hasResidentKey) {
             set("hasResidentKey", hasResidentKey);
             return this;
         }
         /**
          * Defaults to false.
-         * @param hasUserVerification field value; empty omits the value
+         * @param hasUserVerification field value
          * @return this model
          */
-        public VirtualAuthenticatorOptions hasUserVerification(Optional<Boolean> hasUserVerification) {
-            set("hasUserVerification", hasUserVerification.orElse(null));
-            return this;
-        }
-        /**
-         * Defaults to false.
-         * @param hasUserVerification field value; null removes the value
-         * @return this model
-         */
-        public VirtualAuthenticatorOptions hasUserVerification(Boolean hasUserVerification) {
+        public VirtualAuthenticatorOptions hasUserVerification(boolean hasUserVerification) {
             set("hasUserVerification", hasUserVerification);
             return this;
         }
         /**
          * If set to true, the authenticator will support the largeBlob extension. https://w3c.github.io/webauthn#largeBlob Defaults to false.
-         * @param hasLargeBlob field value; empty omits the value
+         * @param hasLargeBlob field value
          * @return this model
          */
-        public VirtualAuthenticatorOptions hasLargeBlob(Optional<Boolean> hasLargeBlob) {
-            set("hasLargeBlob", hasLargeBlob.orElse(null));
-            return this;
-        }
-        /**
-         * If set to true, the authenticator will support the largeBlob extension. https://w3c.github.io/webauthn#largeBlob Defaults to false.
-         * @param hasLargeBlob field value; null removes the value
-         * @return this model
-         */
-        public VirtualAuthenticatorOptions hasLargeBlob(Boolean hasLargeBlob) {
+        public VirtualAuthenticatorOptions hasLargeBlob(boolean hasLargeBlob) {
             set("hasLargeBlob", hasLargeBlob);
             return this;
         }
         /**
          * If set to true, the authenticator will support the credBlob extension. https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension Defaults to false.
-         * @param hasCredBlob field value; empty omits the value
+         * @param hasCredBlob field value
          * @return this model
          */
-        public VirtualAuthenticatorOptions hasCredBlob(Optional<Boolean> hasCredBlob) {
-            set("hasCredBlob", hasCredBlob.orElse(null));
-            return this;
-        }
-        /**
-         * If set to true, the authenticator will support the credBlob extension. https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension Defaults to false.
-         * @param hasCredBlob field value; null removes the value
-         * @return this model
-         */
-        public VirtualAuthenticatorOptions hasCredBlob(Boolean hasCredBlob) {
+        public VirtualAuthenticatorOptions hasCredBlob(boolean hasCredBlob) {
             set("hasCredBlob", hasCredBlob);
             return this;
         }
         /**
          * If set to true, the authenticator will support the minPinLength extension. https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension Defaults to false.
-         * @param hasMinPinLength field value; empty omits the value
+         * @param hasMinPinLength field value
          * @return this model
          */
-        public VirtualAuthenticatorOptions hasMinPinLength(Optional<Boolean> hasMinPinLength) {
-            set("hasMinPinLength", hasMinPinLength.orElse(null));
-            return this;
-        }
-        /**
-         * If set to true, the authenticator will support the minPinLength extension. https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension Defaults to false.
-         * @param hasMinPinLength field value; null removes the value
-         * @return this model
-         */
-        public VirtualAuthenticatorOptions hasMinPinLength(Boolean hasMinPinLength) {
+        public VirtualAuthenticatorOptions hasMinPinLength(boolean hasMinPinLength) {
             set("hasMinPinLength", hasMinPinLength);
             return this;
         }
         /**
          * If set to true, the authenticator will support the prf extension. https://w3c.github.io/webauthn/#prf-extension Defaults to false.
-         * @param hasPrf field value; empty omits the value
+         * @param hasPrf field value
          * @return this model
          */
-        public VirtualAuthenticatorOptions hasPrf(Optional<Boolean> hasPrf) {
-            set("hasPrf", hasPrf.orElse(null));
-            return this;
-        }
-        /**
-         * If set to true, the authenticator will support the prf extension. https://w3c.github.io/webauthn/#prf-extension Defaults to false.
-         * @param hasPrf field value; null removes the value
-         * @return this model
-         */
-        public VirtualAuthenticatorOptions hasPrf(Boolean hasPrf) {
+        public VirtualAuthenticatorOptions hasPrf(boolean hasPrf) {
             set("hasPrf", hasPrf);
             return this;
         }
         /**
          * If set to true, the authenticator will support the hmac-secret extension. https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-hmac-secret-extension Defaults to false.
-         * @param hasHmacSecret field value; empty omits the value
+         * @param hasHmacSecret field value
          * @return this model
          */
-        public VirtualAuthenticatorOptions hasHmacSecret(Optional<Boolean> hasHmacSecret) {
-            set("hasHmacSecret", hasHmacSecret.orElse(null));
-            return this;
-        }
-        /**
-         * If set to true, the authenticator will support the hmac-secret extension. https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-hmac-secret-extension Defaults to false.
-         * @param hasHmacSecret field value; null removes the value
-         * @return this model
-         */
-        public VirtualAuthenticatorOptions hasHmacSecret(Boolean hasHmacSecret) {
+        public VirtualAuthenticatorOptions hasHmacSecret(boolean hasHmacSecret) {
             set("hasHmacSecret", hasHmacSecret);
             return this;
         }
         /**
          * If set to true, the authenticator will support the hmac-secret-mc extension. https://fidoalliance.org/specs/fido-v2.2-rd-20241003/fido-client-to-authenticator-protocol-v2.2-rd-20241003.html#sctn-hmac-secret-make-cred-extension Defaults to false.
-         * @param hasHmacSecretMc field value; empty omits the value
+         * @param hasHmacSecretMc field value
          * @return this model
          */
-        public VirtualAuthenticatorOptions hasHmacSecretMc(Optional<Boolean> hasHmacSecretMc) {
-            set("hasHmacSecretMc", hasHmacSecretMc.orElse(null));
-            return this;
-        }
-        /**
-         * If set to true, the authenticator will support the hmac-secret-mc extension. https://fidoalliance.org/specs/fido-v2.2-rd-20241003/fido-client-to-authenticator-protocol-v2.2-rd-20241003.html#sctn-hmac-secret-make-cred-extension Defaults to false.
-         * @param hasHmacSecretMc field value; null removes the value
-         * @return this model
-         */
-        public VirtualAuthenticatorOptions hasHmacSecretMc(Boolean hasHmacSecretMc) {
+        public VirtualAuthenticatorOptions hasHmacSecretMc(boolean hasHmacSecretMc) {
             set("hasHmacSecretMc", hasHmacSecretMc);
             return this;
         }
         /**
          * If set to true, tests of user presence will succeed immediately. Otherwise, they will not be resolved. Defaults to true.
-         * @param automaticPresenceSimulation field value; empty omits the value
+         * @param automaticPresenceSimulation field value
          * @return this model
          */
-        public VirtualAuthenticatorOptions automaticPresenceSimulation(Optional<Boolean> automaticPresenceSimulation) {
-            set("automaticPresenceSimulation", automaticPresenceSimulation.orElse(null));
-            return this;
-        }
-        /**
-         * If set to true, tests of user presence will succeed immediately. Otherwise, they will not be resolved. Defaults to true.
-         * @param automaticPresenceSimulation field value; null removes the value
-         * @return this model
-         */
-        public VirtualAuthenticatorOptions automaticPresenceSimulation(Boolean automaticPresenceSimulation) {
+        public VirtualAuthenticatorOptions automaticPresenceSimulation(boolean automaticPresenceSimulation) {
             set("automaticPresenceSimulation", automaticPresenceSimulation);
             return this;
         }
         /**
          * Sets whether User Verification succeeds or fails for an authenticator. Defaults to false.
-         * @param isUserVerified field value; empty omits the value
+         * @param isUserVerified field value
          * @return this model
          */
-        public VirtualAuthenticatorOptions isUserVerified(Optional<Boolean> isUserVerified) {
-            set("isUserVerified", isUserVerified.orElse(null));
-            return this;
-        }
-        /**
-         * Sets whether User Verification succeeds or fails for an authenticator. Defaults to false.
-         * @param isUserVerified field value; null removes the value
-         * @return this model
-         */
-        public VirtualAuthenticatorOptions isUserVerified(Boolean isUserVerified) {
+        public VirtualAuthenticatorOptions isUserVerified(boolean isUserVerified) {
             set("isUserVerified", isUserVerified);
             return this;
         }
         /**
          * Credentials created by this authenticator will have the backup eligibility (BE) flag set to this value. Defaults to false. https://w3c.github.io/webauthn/#sctn-credential-backup
-         * @param defaultBackupEligibility field value; empty omits the value
+         * @param defaultBackupEligibility field value
          * @return this model
          */
-        public VirtualAuthenticatorOptions defaultBackupEligibility(Optional<Boolean> defaultBackupEligibility) {
-            set("defaultBackupEligibility", defaultBackupEligibility.orElse(null));
-            return this;
-        }
-        /**
-         * Credentials created by this authenticator will have the backup eligibility (BE) flag set to this value. Defaults to false. https://w3c.github.io/webauthn/#sctn-credential-backup
-         * @param defaultBackupEligibility field value; null removes the value
-         * @return this model
-         */
-        public VirtualAuthenticatorOptions defaultBackupEligibility(Boolean defaultBackupEligibility) {
+        public VirtualAuthenticatorOptions defaultBackupEligibility(boolean defaultBackupEligibility) {
             set("defaultBackupEligibility", defaultBackupEligibility);
             return this;
         }
         /**
          * Credentials created by this authenticator will have the backup state (BS) flag set to this value. Defaults to false. https://w3c.github.io/webauthn/#sctn-credential-backup
-         * @param defaultBackupState field value; empty omits the value
+         * @param defaultBackupState field value
          * @return this model
          */
-        public VirtualAuthenticatorOptions defaultBackupState(Optional<Boolean> defaultBackupState) {
-            set("defaultBackupState", defaultBackupState.orElse(null));
-            return this;
-        }
-        /**
-         * Credentials created by this authenticator will have the backup state (BS) flag set to this value. Defaults to false. https://w3c.github.io/webauthn/#sctn-credential-backup
-         * @param defaultBackupState field value; null removes the value
-         * @return this model
-         */
-        public VirtualAuthenticatorOptions defaultBackupState(Boolean defaultBackupState) {
+        public VirtualAuthenticatorOptions defaultBackupState(boolean defaultBackupState) {
             set("defaultBackupState", defaultBackupState);
             return this;
         }
@@ -496,8 +367,7 @@ public final class WebAuthn {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> rpId() {
-            Object value = raw("rpId");
-            return Optional.ofNullable((String) value);
+            return raw("rpId").map(value -> (String) value);
         }
         /**
          * The ECDSA P-256 private key in PKCS#8 format. (Encoded as a base64 string when passed over JSON)
@@ -511,8 +381,7 @@ public final class WebAuthn {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> userHandle() {
-            Object value = raw("userHandle");
-            return Optional.ofNullable((String) value);
+            return raw("userHandle").map(value -> (String) value);
         }
         /**
          * Signature counter. This is incremented by one for each successful assertion. See https://w3c.github.io/webauthn/#signature-counter
@@ -526,40 +395,35 @@ public final class WebAuthn {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> largeBlob() {
-            Object value = raw("largeBlob");
-            return Optional.ofNullable((String) value);
+            return raw("largeBlob").map(value -> (String) value);
         }
         /**
          * Assertions returned by this credential will have the backup eligibility (BE) flag set to this value. Defaults to the authenticator&#x27;s defaultBackupEligibility value.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> backupEligibility() {
-            Object value = raw("backupEligibility");
-            return Optional.ofNullable((Boolean) value);
+            return raw("backupEligibility").map(value -> (Boolean) value);
         }
         /**
          * Assertions returned by this credential will have the backup state (BS) flag set to this value. Defaults to the authenticator&#x27;s defaultBackupState value.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> backupState() {
-            Object value = raw("backupState");
-            return Optional.ofNullable((Boolean) value);
+            return raw("backupState").map(value -> (Boolean) value);
         }
         /**
          * The credential&#x27;s user.name property. Equivalent to empty if not set. https://w3c.github.io/webauthn/#dom-publickeycredentialentity-name
          * @return the protocol field value, empty when absent
          */
         public Optional<String> userName() {
-            Object value = raw("userName");
-            return Optional.ofNullable((String) value);
+            return raw("userName").map(value -> (String) value);
         }
         /**
          * The credential&#x27;s user.displayName property. Equivalent to empty if not set. https://w3c.github.io/webauthn/#dom-publickeycredentialuserentity-displayname
          * @return the protocol field value, empty when absent
          */
         public Optional<String> userDisplayName() {
-            Object value = raw("userDisplayName");
-            return Optional.ofNullable((String) value);
+            return raw("userDisplayName").map(value -> (String) value);
         }
         /**
          * Sets the credentialId field.
@@ -581,16 +445,7 @@ public final class WebAuthn {
         }
         /**
          * Relying Party ID the credential is scoped to. Must be set when adding a credential.
-         * @param rpId field value; empty omits the value
-         * @return this model
-         */
-        public Credential rpId(Optional<String> rpId) {
-            set("rpId", rpId.orElse(null));
-            return this;
-        }
-        /**
-         * Relying Party ID the credential is scoped to. Must be set when adding a credential.
-         * @param rpId field value; null removes the value
+         * @param rpId field value
          * @return this model
          */
         public Credential rpId(String rpId) {
@@ -608,16 +463,7 @@ public final class WebAuthn {
         }
         /**
          * An opaque byte sequence with a maximum size of 64 bytes mapping the credential to a specific user. (Encoded as a base64 string when passed over JSON)
-         * @param userHandle field value; empty omits the value
-         * @return this model
-         */
-        public Credential userHandle(Optional<String> userHandle) {
-            set("userHandle", userHandle.orElse(null));
-            return this;
-        }
-        /**
-         * An opaque byte sequence with a maximum size of 64 bytes mapping the credential to a specific user. (Encoded as a base64 string when passed over JSON)
-         * @param userHandle field value; null removes the value
+         * @param userHandle field value
          * @return this model
          */
         public Credential userHandle(String userHandle) {
@@ -635,16 +481,7 @@ public final class WebAuthn {
         }
         /**
          * The large blob associated with the credential. See https://w3c.github.io/webauthn/#sctn-large-blob-extension (Encoded as a base64 string when passed over JSON)
-         * @param largeBlob field value; empty omits the value
-         * @return this model
-         */
-        public Credential largeBlob(Optional<String> largeBlob) {
-            set("largeBlob", largeBlob.orElse(null));
-            return this;
-        }
-        /**
-         * The large blob associated with the credential. See https://w3c.github.io/webauthn/#sctn-large-blob-extension (Encoded as a base64 string when passed over JSON)
-         * @param largeBlob field value; null removes the value
+         * @param largeBlob field value
          * @return this model
          */
         public Credential largeBlob(String largeBlob) {
@@ -653,52 +490,25 @@ public final class WebAuthn {
         }
         /**
          * Assertions returned by this credential will have the backup eligibility (BE) flag set to this value. Defaults to the authenticator&#x27;s defaultBackupEligibility value.
-         * @param backupEligibility field value; empty omits the value
+         * @param backupEligibility field value
          * @return this model
          */
-        public Credential backupEligibility(Optional<Boolean> backupEligibility) {
-            set("backupEligibility", backupEligibility.orElse(null));
-            return this;
-        }
-        /**
-         * Assertions returned by this credential will have the backup eligibility (BE) flag set to this value. Defaults to the authenticator&#x27;s defaultBackupEligibility value.
-         * @param backupEligibility field value; null removes the value
-         * @return this model
-         */
-        public Credential backupEligibility(Boolean backupEligibility) {
+        public Credential backupEligibility(boolean backupEligibility) {
             set("backupEligibility", backupEligibility);
             return this;
         }
         /**
          * Assertions returned by this credential will have the backup state (BS) flag set to this value. Defaults to the authenticator&#x27;s defaultBackupState value.
-         * @param backupState field value; empty omits the value
+         * @param backupState field value
          * @return this model
          */
-        public Credential backupState(Optional<Boolean> backupState) {
-            set("backupState", backupState.orElse(null));
-            return this;
-        }
-        /**
-         * Assertions returned by this credential will have the backup state (BS) flag set to this value. Defaults to the authenticator&#x27;s defaultBackupState value.
-         * @param backupState field value; null removes the value
-         * @return this model
-         */
-        public Credential backupState(Boolean backupState) {
+        public Credential backupState(boolean backupState) {
             set("backupState", backupState);
             return this;
         }
         /**
          * The credential&#x27;s user.name property. Equivalent to empty if not set. https://w3c.github.io/webauthn/#dom-publickeycredentialentity-name
-         * @param userName field value; empty omits the value
-         * @return this model
-         */
-        public Credential userName(Optional<String> userName) {
-            set("userName", userName.orElse(null));
-            return this;
-        }
-        /**
-         * The credential&#x27;s user.name property. Equivalent to empty if not set. https://w3c.github.io/webauthn/#dom-publickeycredentialentity-name
-         * @param userName field value; null removes the value
+         * @param userName field value
          * @return this model
          */
         public Credential userName(String userName) {
@@ -707,16 +517,7 @@ public final class WebAuthn {
         }
         /**
          * The credential&#x27;s user.displayName property. Equivalent to empty if not set. https://w3c.github.io/webauthn/#dom-publickeycredentialuserentity-displayname
-         * @param userDisplayName field value; empty omits the value
-         * @return this model
-         */
-        public Credential userDisplayName(Optional<String> userDisplayName) {
-            set("userDisplayName", userDisplayName.orElse(null));
-            return this;
-        }
-        /**
-         * The credential&#x27;s user.displayName property. Equivalent to empty if not set. https://w3c.github.io/webauthn/#dom-publickeycredentialuserentity-displayname
-         * @param userDisplayName field value; null removes the value
+         * @param userDisplayName field value
          * @return this model
          */
         public Credential userDisplayName(String userDisplayName) {
@@ -730,7 +531,7 @@ public final class WebAuthn {
     public static final class EnableRequest extends CdpObject {
         public EnableRequest() {}
         public static EnableRequest fromMap(Map<String, Object> values) {
-            EnableRequest instance_ = new EnableRequest();
+            final EnableRequest instance_ = new EnableRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -739,24 +540,14 @@ public final class WebAuthn {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> enableUI() {
-            Object value = raw("enableUI");
-            return Optional.ofNullable((Boolean) value);
+            return raw("enableUI").map(value -> (Boolean) value);
         }
         /**
          * Whether to enable the WebAuthn user interface. Enabling the UI is recommended for debugging and demo purposes, as it is closer to the real experience. Disabling the UI is recommended for automated testing. Supported at the embedder&#x27;s discretion if UI is available. Defaults to false.
-         * @param enableUI field value; empty omits the value
+         * @param enableUI field value
          * @return this model
          */
-        public EnableRequest enableUI(Optional<Boolean> enableUI) {
-            set("enableUI", enableUI.orElse(null));
-            return this;
-        }
-        /**
-         * Whether to enable the WebAuthn user interface. Enabling the UI is recommended for debugging and demo purposes, as it is closer to the real experience. Disabling the UI is recommended for automated testing. Supported at the embedder&#x27;s discretion if UI is available. Defaults to false.
-         * @param enableUI field value; null removes the value
-         * @return this model
-         */
-        public EnableRequest enableUI(Boolean enableUI) {
+        public EnableRequest enableUI(boolean enableUI) {
             set("enableUI", enableUI);
             return this;
         }
@@ -771,10 +562,10 @@ public final class WebAuthn {
          * @param options protocol value
          */
         public AddVirtualAuthenticatorRequest(WebAuthn.VirtualAuthenticatorOptions options) {
-            set("options", options);
+            options(options);
         }
         public static AddVirtualAuthenticatorRequest fromMap(Map<String, Object> values) {
-            AddVirtualAuthenticatorRequest instance_ = new AddVirtualAuthenticatorRequest();
+            final AddVirtualAuthenticatorRequest instance_ = new AddVirtualAuthenticatorRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -783,7 +574,7 @@ public final class WebAuthn {
          * @return the protocol field value
          */
         public WebAuthn.VirtualAuthenticatorOptions options() {
-            return java.util.Objects.requireNonNull(WebAuthn.VirtualAuthenticatorOptions.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("options")))));
+            return java.util.Objects.requireNonNull(WebAuthn.VirtualAuthenticatorOptions.fromMap(CdpObject.requireObjectMap(require("options"))));
         }
         /**
          * Sets the options field.
@@ -805,10 +596,10 @@ public final class WebAuthn {
          * @param authenticatorId protocol value
          */
         public SetResponseOverrideBitsRequest(WebAuthn.AuthenticatorId authenticatorId) {
-            set("authenticatorId", authenticatorId);
+            authenticatorId(authenticatorId);
         }
         public static SetResponseOverrideBitsRequest fromMap(Map<String, Object> values) {
-            SetResponseOverrideBitsRequest instance_ = new SetResponseOverrideBitsRequest();
+            final SetResponseOverrideBitsRequest instance_ = new SetResponseOverrideBitsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -824,24 +615,21 @@ public final class WebAuthn {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isBogusSignature() {
-            Object value = raw("isBogusSignature");
-            return Optional.ofNullable((Boolean) value);
+            return raw("isBogusSignature").map(value -> (Boolean) value);
         }
         /**
          * If isBadUV is set, overrides the UV bit in the flags in the authenticator response to be zero. Defaults to false.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isBadUV() {
-            Object value = raw("isBadUV");
-            return Optional.ofNullable((Boolean) value);
+            return raw("isBadUV").map(value -> (Boolean) value);
         }
         /**
          * If isBadUP is set, overrides the UP bit in the flags in the authenticator response to be zero. Defaults to false.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isBadUP() {
-            Object value = raw("isBadUP");
-            return Optional.ofNullable((Boolean) value);
+            return raw("isBadUP").map(value -> (Boolean) value);
         }
         /**
          * Sets the authenticatorId field.
@@ -854,55 +642,28 @@ public final class WebAuthn {
         }
         /**
          * If isBogusSignature is set, overrides the signature in the authenticator response to be zero. Defaults to false.
-         * @param isBogusSignature field value; empty omits the value
+         * @param isBogusSignature field value
          * @return this model
          */
-        public SetResponseOverrideBitsRequest isBogusSignature(Optional<Boolean> isBogusSignature) {
-            set("isBogusSignature", isBogusSignature.orElse(null));
-            return this;
-        }
-        /**
-         * If isBogusSignature is set, overrides the signature in the authenticator response to be zero. Defaults to false.
-         * @param isBogusSignature field value; null removes the value
-         * @return this model
-         */
-        public SetResponseOverrideBitsRequest isBogusSignature(Boolean isBogusSignature) {
+        public SetResponseOverrideBitsRequest isBogusSignature(boolean isBogusSignature) {
             set("isBogusSignature", isBogusSignature);
             return this;
         }
         /**
          * If isBadUV is set, overrides the UV bit in the flags in the authenticator response to be zero. Defaults to false.
-         * @param isBadUV field value; empty omits the value
+         * @param isBadUV field value
          * @return this model
          */
-        public SetResponseOverrideBitsRequest isBadUV(Optional<Boolean> isBadUV) {
-            set("isBadUV", isBadUV.orElse(null));
-            return this;
-        }
-        /**
-         * If isBadUV is set, overrides the UV bit in the flags in the authenticator response to be zero. Defaults to false.
-         * @param isBadUV field value; null removes the value
-         * @return this model
-         */
-        public SetResponseOverrideBitsRequest isBadUV(Boolean isBadUV) {
+        public SetResponseOverrideBitsRequest isBadUV(boolean isBadUV) {
             set("isBadUV", isBadUV);
             return this;
         }
         /**
          * If isBadUP is set, overrides the UP bit in the flags in the authenticator response to be zero. Defaults to false.
-         * @param isBadUP field value; empty omits the value
+         * @param isBadUP field value
          * @return this model
          */
-        public SetResponseOverrideBitsRequest isBadUP(Optional<Boolean> isBadUP) {
-            set("isBadUP", isBadUP.orElse(null));
-            return this;
-        }
-        /**
-         * If isBadUP is set, overrides the UP bit in the flags in the authenticator response to be zero. Defaults to false.
-         * @param isBadUP field value; null removes the value
-         * @return this model
-         */
-        public SetResponseOverrideBitsRequest isBadUP(Boolean isBadUP) {
+        public SetResponseOverrideBitsRequest isBadUP(boolean isBadUP) {
             set("isBadUP", isBadUP);
             return this;
         }
@@ -917,10 +678,10 @@ public final class WebAuthn {
          * @param authenticatorId protocol value
          */
         public RemoveVirtualAuthenticatorRequest(WebAuthn.AuthenticatorId authenticatorId) {
-            set("authenticatorId", authenticatorId);
+            authenticatorId(authenticatorId);
         }
         public static RemoveVirtualAuthenticatorRequest fromMap(Map<String, Object> values) {
-            RemoveVirtualAuthenticatorRequest instance_ = new RemoveVirtualAuthenticatorRequest();
+            final RemoveVirtualAuthenticatorRequest instance_ = new RemoveVirtualAuthenticatorRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -952,11 +713,10 @@ public final class WebAuthn {
          * @param credential protocol value
          */
         public AddCredentialRequest(WebAuthn.AuthenticatorId authenticatorId, WebAuthn.Credential credential) {
-            set("authenticatorId", authenticatorId);
-            set("credential", credential);
+            authenticatorId(authenticatorId).credential(credential);
         }
         public static AddCredentialRequest fromMap(Map<String, Object> values) {
-            AddCredentialRequest instance_ = new AddCredentialRequest();
+            final AddCredentialRequest instance_ = new AddCredentialRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -972,7 +732,7 @@ public final class WebAuthn {
          * @return the protocol field value
          */
         public WebAuthn.Credential credential() {
-            return java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("credential")))));
+            return java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(CdpObject.requireObjectMap(require("credential"))));
         }
         /**
          * Sets the authenticatorId field.
@@ -1004,11 +764,10 @@ public final class WebAuthn {
          * @param credentialId protocol value
          */
         public GetCredentialRequest(WebAuthn.AuthenticatorId authenticatorId, String credentialId) {
-            set("authenticatorId", authenticatorId);
-            set("credentialId", credentialId);
+            authenticatorId(authenticatorId).credentialId(credentialId);
         }
         public static GetCredentialRequest fromMap(Map<String, Object> values) {
-            GetCredentialRequest instance_ = new GetCredentialRequest();
+            final GetCredentialRequest instance_ = new GetCredentialRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1055,10 +814,10 @@ public final class WebAuthn {
          * @param authenticatorId protocol value
          */
         public GetCredentialsRequest(WebAuthn.AuthenticatorId authenticatorId) {
-            set("authenticatorId", authenticatorId);
+            authenticatorId(authenticatorId);
         }
         public static GetCredentialsRequest fromMap(Map<String, Object> values) {
-            GetCredentialsRequest instance_ = new GetCredentialsRequest();
+            final GetCredentialsRequest instance_ = new GetCredentialsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1090,11 +849,10 @@ public final class WebAuthn {
          * @param credentialId protocol value
          */
         public RemoveCredentialRequest(WebAuthn.AuthenticatorId authenticatorId, String credentialId) {
-            set("authenticatorId", authenticatorId);
-            set("credentialId", credentialId);
+            authenticatorId(authenticatorId).credentialId(credentialId);
         }
         public static RemoveCredentialRequest fromMap(Map<String, Object> values) {
-            RemoveCredentialRequest instance_ = new RemoveCredentialRequest();
+            final RemoveCredentialRequest instance_ = new RemoveCredentialRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1141,10 +899,10 @@ public final class WebAuthn {
          * @param authenticatorId protocol value
          */
         public ClearCredentialsRequest(WebAuthn.AuthenticatorId authenticatorId) {
-            set("authenticatorId", authenticatorId);
+            authenticatorId(authenticatorId);
         }
         public static ClearCredentialsRequest fromMap(Map<String, Object> values) {
-            ClearCredentialsRequest instance_ = new ClearCredentialsRequest();
+            final ClearCredentialsRequest instance_ = new ClearCredentialsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1176,11 +934,10 @@ public final class WebAuthn {
          * @param isUserVerified protocol value
          */
         public SetUserVerifiedRequest(WebAuthn.AuthenticatorId authenticatorId, boolean isUserVerified) {
-            set("authenticatorId", authenticatorId);
-            set("isUserVerified", isUserVerified);
+            authenticatorId(authenticatorId).isUserVerified(isUserVerified);
         }
         public static SetUserVerifiedRequest fromMap(Map<String, Object> values) {
-            SetUserVerifiedRequest instance_ = new SetUserVerifiedRequest();
+            final SetUserVerifiedRequest instance_ = new SetUserVerifiedRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1228,11 +985,10 @@ public final class WebAuthn {
          * @param enabled protocol value
          */
         public SetAutomaticPresenceSimulationRequest(WebAuthn.AuthenticatorId authenticatorId, boolean enabled) {
-            set("authenticatorId", authenticatorId);
-            set("enabled", enabled);
+            authenticatorId(authenticatorId).enabled(enabled);
         }
         public static SetAutomaticPresenceSimulationRequest fromMap(Map<String, Object> values) {
-            SetAutomaticPresenceSimulationRequest instance_ = new SetAutomaticPresenceSimulationRequest();
+            final SetAutomaticPresenceSimulationRequest instance_ = new SetAutomaticPresenceSimulationRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1280,11 +1036,10 @@ public final class WebAuthn {
          * @param credentialId protocol value
          */
         public SetCredentialPropertiesRequest(WebAuthn.AuthenticatorId authenticatorId, String credentialId) {
-            set("authenticatorId", authenticatorId);
-            set("credentialId", credentialId);
+            authenticatorId(authenticatorId).credentialId(credentialId);
         }
         public static SetCredentialPropertiesRequest fromMap(Map<String, Object> values) {
-            SetCredentialPropertiesRequest instance_ = new SetCredentialPropertiesRequest();
+            final SetCredentialPropertiesRequest instance_ = new SetCredentialPropertiesRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1307,16 +1062,14 @@ public final class WebAuthn {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> backupEligibility() {
-            Object value = raw("backupEligibility");
-            return Optional.ofNullable((Boolean) value);
+            return raw("backupEligibility").map(value -> (Boolean) value);
         }
         /**
          * Returns the backupState field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> backupState() {
-            Object value = raw("backupState");
-            return Optional.ofNullable((Boolean) value);
+            return raw("backupState").map(value -> (Boolean) value);
         }
         /**
          * Sets the authenticatorId field.
@@ -1338,37 +1091,19 @@ public final class WebAuthn {
         }
         /**
          * Sets the backupEligibility field.
-         * @param backupEligibility field value; empty omits the value
+         * @param backupEligibility field value
          * @return this model
          */
-        public SetCredentialPropertiesRequest backupEligibility(Optional<Boolean> backupEligibility) {
-            set("backupEligibility", backupEligibility.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the backupEligibility field.
-         * @param backupEligibility field value; null removes the value
-         * @return this model
-         */
-        public SetCredentialPropertiesRequest backupEligibility(Boolean backupEligibility) {
+        public SetCredentialPropertiesRequest backupEligibility(boolean backupEligibility) {
             set("backupEligibility", backupEligibility);
             return this;
         }
         /**
          * Sets the backupState field.
-         * @param backupState field value; empty omits the value
+         * @param backupState field value
          * @return this model
          */
-        public SetCredentialPropertiesRequest backupState(Optional<Boolean> backupState) {
-            set("backupState", backupState.orElse(null));
-            return this;
-        }
-        /**
-         * Sets the backupState field.
-         * @param backupState field value; null removes the value
-         * @return this model
-         */
-        public SetCredentialPropertiesRequest backupState(Boolean backupState) {
+        public SetCredentialPropertiesRequest backupState(boolean backupState) {
             set("backupState", backupState);
             return this;
         }
@@ -1394,7 +1129,7 @@ public final class WebAuthn {
          * @return the protocol field value
          */
         public WebAuthn.Credential credential() {
-            return java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("credential")))));
+            return java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(CdpObject.requireObjectMap(require("credential"))));
         }
         /**
          * Sets the authenticatorId field.
@@ -1478,7 +1213,7 @@ public final class WebAuthn {
          * @return the protocol field value
          */
         public WebAuthn.Credential credential() {
-            return java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("credential")))));
+            return java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(CdpObject.requireObjectMap(require("credential"))));
         }
         /**
          * Sets the authenticatorId field.
@@ -1520,7 +1255,7 @@ public final class WebAuthn {
          * @return the protocol field value
          */
         public WebAuthn.Credential credential() {
-            return java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("credential")))));
+            return java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(CdpObject.requireObjectMap(require("credential"))));
         }
         /**
          * Sets the authenticatorId field.
@@ -1549,9 +1284,9 @@ public final class WebAuthn {
          * @param enableUI protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> enable(Optional<Boolean> enableUI) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            enableUI.ifPresent(value_ -> params.put("enableUI", value_));
+        public CompletionStage<Void> enable(boolean enableUI) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("enableUI", CdpObject.json(enableUI));
             return client.call("WebAuthn.enable", params);
         }
         /**
@@ -1559,7 +1294,7 @@ public final class WebAuthn {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return enable(Optional.empty());
+            return client.call("WebAuthn.enable", null);
         }
         /**
          * Enable the WebAuthn domain and start intercepting credential storage and retrieval with a virtual authenticator.
@@ -1582,7 +1317,7 @@ public final class WebAuthn {
          * @return a stage completing with the command result
          */
         public CompletionStage<WebAuthn.AuthenticatorId> addVirtualAuthenticator(WebAuthn.VirtualAuthenticatorOptions options) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("options", CdpObject.json(options));
             return client.call("WebAuthn.addVirtualAuthenticator", params, result_ -> new WebAuthn.AuthenticatorId((String) java.util.Objects.requireNonNull(result_.get("authenticatorId"))));
         }
@@ -1602,12 +1337,12 @@ public final class WebAuthn {
          * @param isBadUP protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setResponseOverrideBits(WebAuthn.AuthenticatorId authenticatorId, Optional<Boolean> isBogusSignature, Optional<Boolean> isBadUV, Optional<Boolean> isBadUP) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> setResponseOverrideBits(WebAuthn.AuthenticatorId authenticatorId, @Nullable Boolean isBogusSignature, @Nullable Boolean isBadUV, @Nullable Boolean isBadUP) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("authenticatorId", CdpObject.json(authenticatorId));
-            isBogusSignature.ifPresent(value_ -> params.put("isBogusSignature", value_));
-            isBadUV.ifPresent(value_ -> params.put("isBadUV", value_));
-            isBadUP.ifPresent(value_ -> params.put("isBadUP", value_));
+            if (isBogusSignature != null) params.put("isBogusSignature", CdpObject.json(isBogusSignature));
+            if (isBadUV != null) params.put("isBadUV", CdpObject.json(isBadUV));
+            if (isBadUP != null) params.put("isBadUP", CdpObject.json(isBadUP));
             return client.call("WebAuthn.setResponseOverrideBits", params);
         }
         /**
@@ -1616,7 +1351,9 @@ public final class WebAuthn {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setResponseOverrideBits(WebAuthn.AuthenticatorId authenticatorId) {
-            return setResponseOverrideBits(authenticatorId, Optional.empty(), Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("authenticatorId", CdpObject.json(authenticatorId));
+            return client.call("WebAuthn.setResponseOverrideBits", params);
         }
         /**
          * Resets parameters isBogusSignature, isBadUV, isBadUP to false if they are not present.
@@ -1632,7 +1369,7 @@ public final class WebAuthn {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeVirtualAuthenticator(WebAuthn.AuthenticatorId authenticatorId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("authenticatorId", CdpObject.json(authenticatorId));
             return client.call("WebAuthn.removeVirtualAuthenticator", params);
         }
@@ -1651,7 +1388,7 @@ public final class WebAuthn {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> addCredential(WebAuthn.AuthenticatorId authenticatorId, WebAuthn.Credential credential) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("authenticatorId", CdpObject.json(authenticatorId));
             params.put("credential", CdpObject.json(credential));
             return client.call("WebAuthn.addCredential", params);
@@ -1671,10 +1408,10 @@ public final class WebAuthn {
          * @return a stage completing with the command result
          */
         public CompletionStage<WebAuthn.Credential> getCredential(WebAuthn.AuthenticatorId authenticatorId, String credentialId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("authenticatorId", CdpObject.json(authenticatorId));
             params.put("credentialId", CdpObject.json(credentialId));
-            return client.call("WebAuthn.getCredential", params, result_ -> java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("credential")))))));
+            return client.call("WebAuthn.getCredential", params, result_ -> java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("credential"))))));
         }
         /**
          * Returns a single credential stored in the given virtual authenticator that matches the credential ID.
@@ -1682,7 +1419,7 @@ public final class WebAuthn {
          * @return a stage completing with the command result
          */
         public CompletionStage<WebAuthn.Credential> getCredential(GetCredentialRequest request) {
-            return client.call("WebAuthn.getCredential", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("credential")))))));
+            return client.call("WebAuthn.getCredential", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("credential"))))));
         }
         /**
          * Returns all the credentials stored in the given virtual authenticator.
@@ -1690,9 +1427,9 @@ public final class WebAuthn {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<WebAuthn.Credential>> getCredentials(WebAuthn.AuthenticatorId authenticatorId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("authenticatorId", CdpObject.json(authenticatorId));
-            return client.call("WebAuthn.getCredentials", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("credentials")), element0 -> java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("WebAuthn.getCredentials", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("credentials")), element0 -> java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Returns all the credentials stored in the given virtual authenticator.
@@ -1700,7 +1437,7 @@ public final class WebAuthn {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<WebAuthn.Credential>> getCredentials(GetCredentialsRequest request) {
-            return client.call("WebAuthn.getCredentials", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("credentials")), element0 -> java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("WebAuthn.getCredentials", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("credentials")), element0 -> java.util.Objects.requireNonNull(WebAuthn.Credential.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Removes a credential from the authenticator.
@@ -1709,7 +1446,7 @@ public final class WebAuthn {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeCredential(WebAuthn.AuthenticatorId authenticatorId, String credentialId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("authenticatorId", CdpObject.json(authenticatorId));
             params.put("credentialId", CdpObject.json(credentialId));
             return client.call("WebAuthn.removeCredential", params);
@@ -1728,7 +1465,7 @@ public final class WebAuthn {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearCredentials(WebAuthn.AuthenticatorId authenticatorId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("authenticatorId", CdpObject.json(authenticatorId));
             return client.call("WebAuthn.clearCredentials", params);
         }
@@ -1747,7 +1484,7 @@ public final class WebAuthn {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setUserVerified(WebAuthn.AuthenticatorId authenticatorId, boolean isUserVerified) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("authenticatorId", CdpObject.json(authenticatorId));
             params.put("isUserVerified", CdpObject.json(isUserVerified));
             return client.call("WebAuthn.setUserVerified", params);
@@ -1767,7 +1504,7 @@ public final class WebAuthn {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAutomaticPresenceSimulation(WebAuthn.AuthenticatorId authenticatorId, boolean enabled) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("authenticatorId", CdpObject.json(authenticatorId));
             params.put("enabled", CdpObject.json(enabled));
             return client.call("WebAuthn.setAutomaticPresenceSimulation", params);
@@ -1788,12 +1525,12 @@ public final class WebAuthn {
          * @param backupState protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> setCredentialProperties(WebAuthn.AuthenticatorId authenticatorId, String credentialId, Optional<Boolean> backupEligibility, Optional<Boolean> backupState) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<Void> setCredentialProperties(WebAuthn.AuthenticatorId authenticatorId, String credentialId, @Nullable Boolean backupEligibility, @Nullable Boolean backupState) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("authenticatorId", CdpObject.json(authenticatorId));
             params.put("credentialId", CdpObject.json(credentialId));
-            backupEligibility.ifPresent(value_ -> params.put("backupEligibility", value_));
-            backupState.ifPresent(value_ -> params.put("backupState", value_));
+            if (backupEligibility != null) params.put("backupEligibility", CdpObject.json(backupEligibility));
+            if (backupState != null) params.put("backupState", CdpObject.json(backupState));
             return client.call("WebAuthn.setCredentialProperties", params);
         }
         /**
@@ -1803,7 +1540,10 @@ public final class WebAuthn {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setCredentialProperties(WebAuthn.AuthenticatorId authenticatorId, String credentialId) {
-            return setCredentialProperties(authenticatorId, credentialId, Optional.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("authenticatorId", CdpObject.json(authenticatorId));
+            params.put("credentialId", CdpObject.json(credentialId));
+            return client.call("WebAuthn.setCredentialProperties", params);
         }
         /**
          * Allows setting credential properties. https://w3c.github.io/webauthn/#sctn-automation-set-credential-properties

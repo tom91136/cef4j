@@ -3,7 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
@@ -11,6 +11,7 @@ import net.kurobako.cef4j.ipc.session.WireDecoder;
  * to facade methods (or factory requests) that take this struct. The dispatcher decodes them on the
  * runtime-server side and fills the matching {@code cef_popup_features_t} before invoking CEF.
  */
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class PopupFeatures {
 
     private final long size;
@@ -77,12 +78,13 @@ public final class PopupFeatures {
         return isPopup;
     }
 
+    @SuppressWarnings("SameReturnValue")
     public int encodedSize() {
         return 44;
     }
 
     public void encodeInto(ByteBuffer dst) {
-        ByteOrder originalOrder = dst.order();
+        final ByteOrder originalOrder = dst.order();
         try {
             dst.order(ByteOrder.LITTLE_ENDIAN);
             dst.putLong(size);
@@ -106,26 +108,16 @@ public final class PopupFeatures {
       * configured the buffer.
       */
     public static PopupFeatures decode(ByteBuffer __buf) {
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "size");
-        long size = __buf.getLong();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "x");
-        int x = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "xSet");
-        int xSet = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "y");
-        int y = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "ySet");
-        int ySet = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "width");
-        int width = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "widthSet");
-        int widthSet = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "height");
-        int height = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "heightSet");
-        int heightSet = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "isPopup");
-        int isPopup = __buf.getInt();
+        final long size = WireDecoder.int64(__buf, "size");
+        final int x = WireDecoder.int32(__buf, "x");
+        final int xSet = WireDecoder.int32(__buf, "xSet");
+        final int y = WireDecoder.int32(__buf, "y");
+        final int ySet = WireDecoder.int32(__buf, "ySet");
+        final int width = WireDecoder.int32(__buf, "width");
+        final int widthSet = WireDecoder.int32(__buf, "widthSet");
+        final int height = WireDecoder.int32(__buf, "height");
+        final int heightSet = WireDecoder.int32(__buf, "heightSet");
+        final int isPopup = WireDecoder.int32(__buf, "isPopup");
         return new PopupFeatures(size, x, xSet, y, ySet, width, widthSet, height, heightSet, isPopup);
     }
 
@@ -136,64 +128,64 @@ public final class PopupFeatures {
     /** Lombok-style builder. */
     public static final class Builder {
 
-        private long size = 0L;
-        private int x = 0;
-        private int xSet = 0;
-        private int y = 0;
-        private int ySet = 0;
-        private int width = 0;
-        private int widthSet = 0;
-        private int height = 0;
-        private int heightSet = 0;
-        private int isPopup = 0;
+        private long size;
+        private int x;
+        private int xSet;
+        private int y;
+        private int ySet;
+        private int width;
+        private int widthSet;
+        private int height;
+        private int heightSet;
+        private int isPopup;
 
-        public Builder size(long size) {
-            this.size = size;
+        public Builder size(long value) {
+            this.size = value;
             return this;
         }
 
-        public Builder x(int x) {
-            this.x = x;
+        public Builder x(int value) {
+            this.x = value;
             return this;
         }
 
-        public Builder xSet(int xSet) {
-            this.xSet = xSet;
+        public Builder xSet(int value) {
+            this.xSet = value;
             return this;
         }
 
-        public Builder y(int y) {
-            this.y = y;
+        public Builder y(int value) {
+            this.y = value;
             return this;
         }
 
-        public Builder ySet(int ySet) {
-            this.ySet = ySet;
+        public Builder ySet(int value) {
+            this.ySet = value;
             return this;
         }
 
-        public Builder width(int width) {
-            this.width = width;
+        public Builder width(int value) {
+            this.width = value;
             return this;
         }
 
-        public Builder widthSet(int widthSet) {
-            this.widthSet = widthSet;
+        public Builder widthSet(int value) {
+            this.widthSet = value;
             return this;
         }
 
-        public Builder height(int height) {
-            this.height = height;
+        public Builder height(int value) {
+            this.height = value;
             return this;
         }
 
-        public Builder heightSet(int heightSet) {
-            this.heightSet = heightSet;
+        public Builder heightSet(int value) {
+            this.heightSet = value;
             return this;
         }
 
-        public Builder isPopup(int isPopup) {
-            this.isPopup = isPopup;
+        public Builder isPopup(int value) {
+            this.isPopup = value;
             return this;
         }
 

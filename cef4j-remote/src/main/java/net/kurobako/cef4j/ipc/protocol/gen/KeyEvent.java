@@ -3,7 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
 /**
@@ -11,6 +11,7 @@ import net.kurobako.cef4j.ipc.session.WireDecoder;
  * to facade methods (or factory requests) that take this struct. The dispatcher decodes them on the
  * runtime-server side and fills the matching {@code cef_key_event_t} before invoking CEF.
  */
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class KeyEvent {
 
     private final long size;
@@ -71,12 +72,13 @@ public final class KeyEvent {
         return focusOnEditableField;
     }
 
+    @SuppressWarnings("SameReturnValue")
     public int encodedSize() {
         return 40;
     }
 
     public void encodeInto(ByteBuffer dst) {
-        ByteOrder originalOrder = dst.order();
+        final ByteOrder originalOrder = dst.order();
         try {
             dst.order(ByteOrder.LITTLE_ENDIAN);
             dst.putLong(size);
@@ -99,24 +101,15 @@ public final class KeyEvent {
       * configured the buffer.
       */
     public static KeyEvent decode(ByteBuffer __buf) {
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "size");
-        long size = __buf.getLong();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "type");
-        int type = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "modifiers");
-        int modifiers = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "windowsKeyCode");
-        int windowsKeyCode = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "nativeKeyCode");
-        int nativeKeyCode = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "isSystemKey");
-        int isSystemKey = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "character");
-        int character = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "unmodifiedCharacter");
-        int unmodifiedCharacter = __buf.getInt();
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "focusOnEditableField");
-        int focusOnEditableField = __buf.getInt();
+        final long size = WireDecoder.int64(__buf, "size");
+        final int type = WireDecoder.int32(__buf, "type");
+        final int modifiers = WireDecoder.int32(__buf, "modifiers");
+        final int windowsKeyCode = WireDecoder.int32(__buf, "windowsKeyCode");
+        final int nativeKeyCode = WireDecoder.int32(__buf, "nativeKeyCode");
+        final int isSystemKey = WireDecoder.int32(__buf, "isSystemKey");
+        final int character = WireDecoder.int32(__buf, "character");
+        final int unmodifiedCharacter = WireDecoder.int32(__buf, "unmodifiedCharacter");
+        final int focusOnEditableField = WireDecoder.int32(__buf, "focusOnEditableField");
         return new KeyEvent(size, type, modifiers, windowsKeyCode, nativeKeyCode, isSystemKey, character, unmodifiedCharacter, focusOnEditableField);
     }
 
@@ -127,58 +120,58 @@ public final class KeyEvent {
     /** Lombok-style builder. */
     public static final class Builder {
 
-        private long size = 0L;
-        private int type = 0;
-        private int modifiers = 0;
-        private int windowsKeyCode = 0;
-        private int nativeKeyCode = 0;
-        private int isSystemKey = 0;
-        private int character = 0;
-        private int unmodifiedCharacter = 0;
-        private int focusOnEditableField = 0;
+        private long size;
+        private int type;
+        private int modifiers;
+        private int windowsKeyCode;
+        private int nativeKeyCode;
+        private int isSystemKey;
+        private int character;
+        private int unmodifiedCharacter;
+        private int focusOnEditableField;
 
-        public Builder size(long size) {
-            this.size = size;
+        public Builder size(long value) {
+            this.size = value;
             return this;
         }
 
-        public Builder type(int type) {
-            this.type = type;
+        public Builder type(int value) {
+            this.type = value;
             return this;
         }
 
-        public Builder modifiers(int modifiers) {
-            this.modifiers = modifiers;
+        public Builder modifiers(int value) {
+            this.modifiers = value;
             return this;
         }
 
-        public Builder windowsKeyCode(int windowsKeyCode) {
-            this.windowsKeyCode = windowsKeyCode;
+        public Builder windowsKeyCode(int value) {
+            this.windowsKeyCode = value;
             return this;
         }
 
-        public Builder nativeKeyCode(int nativeKeyCode) {
-            this.nativeKeyCode = nativeKeyCode;
+        public Builder nativeKeyCode(int value) {
+            this.nativeKeyCode = value;
             return this;
         }
 
-        public Builder isSystemKey(int isSystemKey) {
-            this.isSystemKey = isSystemKey;
+        public Builder isSystemKey(int value) {
+            this.isSystemKey = value;
             return this;
         }
 
-        public Builder character(int character) {
-            this.character = character;
+        public Builder character(int value) {
+            this.character = value;
             return this;
         }
 
-        public Builder unmodifiedCharacter(int unmodifiedCharacter) {
-            this.unmodifiedCharacter = unmodifiedCharacter;
+        public Builder unmodifiedCharacter(int value) {
+            this.unmodifiedCharacter = value;
             return this;
         }
 
-        public Builder focusOnEditableField(int focusOnEditableField) {
-            this.focusOnEditableField = focusOnEditableField;
+        public Builder focusOnEditableField(int value) {
+            this.focusOnEditableField = value;
             return this;
         }
 

@@ -22,7 +22,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:48</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefRenderHandler extends CefClientHandler {
 
@@ -350,8 +349,8 @@ public interface CefRenderHandler extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefRenderHandler {
         private final java.util.List<CefRenderHandler> delegates;
@@ -362,8 +361,9 @@ public interface CefRenderHandler extends CefClientHandler {
 
         @Override
         public Optional<CefAccessibilityHandler> getAccessibilityHandler() {
-            java.util.ArrayList<CefAccessibilityHandler> collected = new java.util.ArrayList<>();
-            for (CefRenderHandler d : delegates) d.getAccessibilityHandler().ifPresent(collected::add);
+            final java.util.ArrayList<CefAccessibilityHandler> collected = new java.util.ArrayList<>();
+            for (final CefRenderHandler d : delegates)
+                d.getAccessibilityHandler().ifPresent(collected::add);
             return collected.isEmpty()
                     ? Optional.empty()
                     : Optional.of(new CefAccessibilityHandler.Delegating(collected));
@@ -371,7 +371,7 @@ public interface CefRenderHandler extends CefClientHandler {
 
         @Override
         public boolean getRootScreenRect(@Nullable CefBrowser browser, CefRect.Mutable rect) {
-            for (CefRenderHandler d : delegates) {
+            for (final CefRenderHandler d : delegates) {
                 if (d.getRootScreenRect(browser, rect)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -380,13 +380,13 @@ public interface CefRenderHandler extends CefClientHandler {
 
         @Override
         public void getViewRect(@Nullable CefBrowser browser, CefRect.Mutable rect) {
-            for (CefRenderHandler d : delegates) d.getViewRect(browser, rect);
+            for (final CefRenderHandler d : delegates) d.getViewRect(browser, rect);
         }
 
         @Override
         public boolean getScreenPoint(
                 @Nullable CefBrowser browser, int viewX, int viewY, int[] screenX, int[] screenY) {
-            for (CefRenderHandler d : delegates) {
+            for (final CefRenderHandler d : delegates) {
                 if (d.getScreenPoint(browser, viewX, viewY, screenX, screenY)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -395,7 +395,7 @@ public interface CefRenderHandler extends CefClientHandler {
 
         @Override
         public boolean getScreenInfo(@Nullable CefBrowser browser, CefScreenInfo.Mutable screenInfo) {
-            for (CefRenderHandler d : delegates) {
+            for (final CefRenderHandler d : delegates) {
                 if (d.getScreenInfo(browser, screenInfo)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -404,12 +404,12 @@ public interface CefRenderHandler extends CefClientHandler {
 
         @Override
         public void onPopupShow(@Nullable CefBrowser browser, boolean show) {
-            for (CefRenderHandler d : delegates) d.onPopupShow(browser, show);
+            for (final CefRenderHandler d : delegates) d.onPopupShow(browser, show);
         }
 
         @Override
         public void onPopupSize(@Nullable CefBrowser browser, CefRect rect) {
-            for (CefRenderHandler d : delegates) d.onPopupSize(browser, rect);
+            for (final CefRenderHandler d : delegates) d.onPopupSize(browser, rect);
         }
 
         @Override
@@ -421,7 +421,7 @@ public interface CefRenderHandler extends CefClientHandler {
                 ByteBuffer buffer,
                 int width,
                 int height) {
-            for (CefRenderHandler d : delegates)
+            for (final CefRenderHandler d : delegates)
                 d.onPaint(browser, type, dirtyRectsCount, dirtyRects, buffer, width, height);
         }
 
@@ -432,18 +432,19 @@ public interface CefRenderHandler extends CefClientHandler {
                 long dirtyRectsCount,
                 CefRect[] dirtyRects,
                 @Nullable CefAcceleratedPaintInfo info) {
-            for (CefRenderHandler d : delegates) d.onAcceleratedPaint(browser, type, dirtyRectsCount, dirtyRects, info);
+            for (final CefRenderHandler d : delegates)
+                d.onAcceleratedPaint(browser, type, dirtyRectsCount, dirtyRects, info);
         }
 
         @Override
         public void getTouchHandleSize(
                 @Nullable CefBrowser browser, CefHorizontalAlignment orientation, CefSize.Mutable size) {
-            for (CefRenderHandler d : delegates) d.getTouchHandleSize(browser, orientation, size);
+            for (final CefRenderHandler d : delegates) d.getTouchHandleSize(browser, orientation, size);
         }
 
         @Override
         public void onTouchHandleStateChanged(@Nullable CefBrowser browser, CefTouchHandleState state) {
-            for (CefRenderHandler d : delegates) d.onTouchHandleStateChanged(browser, state);
+            for (final CefRenderHandler d : delegates) d.onTouchHandleStateChanged(browser, state);
         }
 
         @Override
@@ -453,7 +454,7 @@ public interface CefRenderHandler extends CefClientHandler {
                 CefDragOperationsMask allowedOps,
                 int x,
                 int y) {
-            for (CefRenderHandler d : delegates) {
+            for (final CefRenderHandler d : delegates) {
                 if (d.startDragging(browser, dragData, allowedOps, x, y)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -462,12 +463,12 @@ public interface CefRenderHandler extends CefClientHandler {
 
         @Override
         public void updateDragCursor(@Nullable CefBrowser browser, CefDragOperationsMask operation) {
-            for (CefRenderHandler d : delegates) d.updateDragCursor(browser, operation);
+            for (final CefRenderHandler d : delegates) d.updateDragCursor(browser, operation);
         }
 
         @Override
         public void onScrollOffsetChanged(@Nullable CefBrowser browser, double x, double y) {
-            for (CefRenderHandler d : delegates) d.onScrollOffsetChanged(browser, x, y);
+            for (final CefRenderHandler d : delegates) d.onScrollOffsetChanged(browser, x, y);
         }
 
         @Override
@@ -476,19 +477,19 @@ public interface CefRenderHandler extends CefClientHandler {
                 CefRange selectedRange,
                 long characterBoundsCount,
                 CefRect[] characterBounds) {
-            for (CefRenderHandler d : delegates)
+            for (final CefRenderHandler d : delegates)
                 d.onImeCompositionRangeChanged(browser, selectedRange, characterBoundsCount, characterBounds);
         }
 
         @Override
         public void onTextSelectionChanged(
                 @Nullable CefBrowser browser, @Nullable String selectedText, @Nullable CefRange selectedRange) {
-            for (CefRenderHandler d : delegates) d.onTextSelectionChanged(browser, selectedText, selectedRange);
+            for (final CefRenderHandler d : delegates) d.onTextSelectionChanged(browser, selectedText, selectedRange);
         }
 
         @Override
         public void onVirtualKeyboardRequested(@Nullable CefBrowser browser, CefTextInputMode inputMode) {
-            for (CefRenderHandler d : delegates) d.onVirtualKeyboardRequested(browser, inputMode);
+            for (final CefRenderHandler d : delegates) d.onVirtualKeyboardRequested(browser, inputMode);
         }
     }
 }

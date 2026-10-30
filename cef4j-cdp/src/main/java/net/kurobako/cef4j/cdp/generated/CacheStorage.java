@@ -4,15 +4,14 @@ package net.kurobako.cef4j.cdp.generated;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
-import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Chrome DevTools Protocol CacheStorage domain.
@@ -21,6 +20,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class CacheStorage {
     private CacheStorage() {}
     /**
@@ -29,7 +29,7 @@ public final class CacheStorage {
     public static final class CacheId implements CdpValue<String> {
         public final String value;
         public CacheId(String value) { this.value = java.util.Objects.requireNonNull(value); }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof CacheId)) return false;
@@ -50,7 +50,7 @@ public final class CacheStorage {
         OPAQUEREDIRECT("opaqueRedirect");
         public final String value;
         CachedResponseType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static CachedResponseType of(String value) {
             for (CachedResponseType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -86,7 +86,7 @@ public final class CacheStorage {
          * @return the protocol field value
          */
         public java.util.List<CacheStorage.Header> requestHeaders() {
-            return CdpObject.requireList(require("requestHeaders"), element0 -> java.util.Objects.requireNonNull(CacheStorage.Header.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("requestHeaders"), element0 -> java.util.Objects.requireNonNull(CacheStorage.Header.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Number of seconds since epoch.
@@ -121,7 +121,7 @@ public final class CacheStorage {
          * @return the protocol field value
          */
         public java.util.List<CacheStorage.Header> responseHeaders() {
-            return CdpObject.requireList(require("responseHeaders"), element0 -> java.util.Objects.requireNonNull(CacheStorage.Header.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("responseHeaders"), element0 -> java.util.Objects.requireNonNull(CacheStorage.Header.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Request URL.
@@ -231,8 +231,7 @@ public final class CacheStorage {
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.StorageBucket> storageBucket() {
-            Object value = raw("storageBucket");
-            return Optional.ofNullable(value == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("storageBucket").flatMap(CdpObject::objectMap).map(Storage.StorageBucket::fromMap);
         }
         /**
          * The name of the cache.
@@ -270,16 +269,7 @@ public final class CacheStorage {
         }
         /**
          * Storage bucket of the cache.
-         * @param storageBucket field value; empty omits the value
-         * @return this model
-         */
-        public Cache storageBucket(Optional<Storage.StorageBucket> storageBucket) {
-            set("storageBucket", storageBucket.orElse(null));
-            return this;
-        }
-        /**
-         * Storage bucket of the cache.
-         * @param storageBucket field value; null removes the value
+         * @param storageBucket field value
          * @return this model
          */
         public Cache storageBucket(Storage.StorageBucket storageBucket) {
@@ -373,10 +363,10 @@ public final class CacheStorage {
          * @param cacheId protocol value
          */
         public DeleteCacheRequest(CacheStorage.CacheId cacheId) {
-            set("cacheId", cacheId);
+            cacheId(cacheId);
         }
         public static DeleteCacheRequest fromMap(Map<String, Object> values) {
-            DeleteCacheRequest instance_ = new DeleteCacheRequest();
+            final DeleteCacheRequest instance_ = new DeleteCacheRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -408,11 +398,10 @@ public final class CacheStorage {
          * @param request protocol value
          */
         public DeleteEntryRequest(CacheStorage.CacheId cacheId, String request) {
-            set("cacheId", cacheId);
-            set("request", request);
+            cacheId(cacheId).request(request);
         }
         public static DeleteEntryRequest fromMap(Map<String, Object> values) {
-            DeleteEntryRequest instance_ = new DeleteEntryRequest();
+            final DeleteEntryRequest instance_ = new DeleteEntryRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -455,7 +444,7 @@ public final class CacheStorage {
     public static final class RequestCacheNamesRequest extends CdpObject {
         public RequestCacheNamesRequest() {}
         public static RequestCacheNamesRequest fromMap(Map<String, Object> values) {
-            RequestCacheNamesRequest instance_ = new RequestCacheNamesRequest();
+            final RequestCacheNamesRequest instance_ = new RequestCacheNamesRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -464,37 +453,25 @@ public final class CacheStorage {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> securityOrigin() {
-            Object value = raw("securityOrigin");
-            return Optional.ofNullable((String) value);
+            return raw("securityOrigin").map(value -> (String) value);
         }
         /**
          * Storage key.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> storageKey() {
-            Object value = raw("storageKey");
-            return Optional.ofNullable((String) value);
+            return raw("storageKey").map(value -> (String) value);
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.StorageBucket> storageBucket() {
-            Object value = raw("storageBucket");
-            return Optional.ofNullable(value == null ? null : Storage.StorageBucket.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("storageBucket").flatMap(CdpObject::objectMap).map(Storage.StorageBucket::fromMap);
         }
         /**
          * At least and at most one of securityOrigin, storageKey, storageBucket must be specified. Security origin.
-         * @param securityOrigin field value; empty omits the value
-         * @return this model
-         */
-        public RequestCacheNamesRequest securityOrigin(Optional<String> securityOrigin) {
-            set("securityOrigin", securityOrigin.orElse(null));
-            return this;
-        }
-        /**
-         * At least and at most one of securityOrigin, storageKey, storageBucket must be specified. Security origin.
-         * @param securityOrigin field value; null removes the value
+         * @param securityOrigin field value
          * @return this model
          */
         public RequestCacheNamesRequest securityOrigin(String securityOrigin) {
@@ -503,16 +480,7 @@ public final class CacheStorage {
         }
         /**
          * Storage key.
-         * @param storageKey field value; empty omits the value
-         * @return this model
-         */
-        public RequestCacheNamesRequest storageKey(Optional<String> storageKey) {
-            set("storageKey", storageKey.orElse(null));
-            return this;
-        }
-        /**
-         * Storage key.
-         * @param storageKey field value; null removes the value
+         * @param storageKey field value
          * @return this model
          */
         public RequestCacheNamesRequest storageKey(String storageKey) {
@@ -521,16 +489,7 @@ public final class CacheStorage {
         }
         /**
          * Storage bucket. If not specified, it uses the default bucket.
-         * @param storageBucket field value; empty omits the value
-         * @return this model
-         */
-        public RequestCacheNamesRequest storageBucket(Optional<Storage.StorageBucket> storageBucket) {
-            set("storageBucket", storageBucket.orElse(null));
-            return this;
-        }
-        /**
-         * Storage bucket. If not specified, it uses the default bucket.
-         * @param storageBucket field value; null removes the value
+         * @param storageBucket field value
          * @return this model
          */
         public RequestCacheNamesRequest storageBucket(Storage.StorageBucket storageBucket) {
@@ -550,12 +509,10 @@ public final class CacheStorage {
          * @param requestHeaders protocol value
          */
         public RequestCachedResponseRequest(CacheStorage.CacheId cacheId, String requestURL, java.util.List<CacheStorage.Header> requestHeaders) {
-            set("cacheId", cacheId);
-            set("requestURL", requestURL);
-            set("requestHeaders", requestHeaders);
+            cacheId(cacheId).requestURL(requestURL).requestHeaders(requestHeaders);
         }
         public static RequestCachedResponseRequest fromMap(Map<String, Object> values) {
-            RequestCachedResponseRequest instance_ = new RequestCachedResponseRequest();
+            final RequestCachedResponseRequest instance_ = new RequestCachedResponseRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -578,7 +535,7 @@ public final class CacheStorage {
          * @return the protocol field value
          */
         public java.util.List<CacheStorage.Header> requestHeaders() {
-            return CdpObject.requireList(require("requestHeaders"), element0 -> java.util.Objects.requireNonNull(CacheStorage.Header.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("requestHeaders"), element0 -> java.util.Objects.requireNonNull(CacheStorage.Header.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Id of cache that contains the entry.
@@ -618,10 +575,10 @@ public final class CacheStorage {
          * @param cacheId protocol value
          */
         public RequestEntriesRequest(CacheStorage.CacheId cacheId) {
-            set("cacheId", cacheId);
+            cacheId(cacheId);
         }
         public static RequestEntriesRequest fromMap(Map<String, Object> values) {
-            RequestEntriesRequest instance_ = new RequestEntriesRequest();
+            final RequestEntriesRequest instance_ = new RequestEntriesRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -637,24 +594,21 @@ public final class CacheStorage {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong skipCount() {
-            Long value = CdpObject.numberAsLong(raw("skipCount"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("skipCount").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Number of records to fetch.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong pageSize() {
-            Long value = CdpObject.numberAsLong(raw("pageSize"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("pageSize").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * If present, only return the entries containing this substring in the path
          * @return the protocol field value, empty when absent
          */
         public Optional<String> pathFilter() {
-            Object value = raw("pathFilter");
-            return Optional.ofNullable((String) value);
+            return raw("pathFilter").map(value -> (String) value);
         }
         /**
          * ID of cache to get entries from.
@@ -667,52 +621,25 @@ public final class CacheStorage {
         }
         /**
          * Number of records to skip.
-         * @param skipCount field value; empty omits the value
+         * @param skipCount field value
          * @return this model
          */
-        public RequestEntriesRequest skipCount(OptionalLong skipCount) {
-            set("skipCount", skipCount.isPresent() ? skipCount.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Number of records to skip.
-         * @param skipCount field value; null removes the value
-         * @return this model
-         */
-        public RequestEntriesRequest skipCount(Long skipCount) {
+        public RequestEntriesRequest skipCount(long skipCount) {
             set("skipCount", skipCount);
             return this;
         }
         /**
          * Number of records to fetch.
-         * @param pageSize field value; empty omits the value
+         * @param pageSize field value
          * @return this model
          */
-        public RequestEntriesRequest pageSize(OptionalLong pageSize) {
-            set("pageSize", pageSize.isPresent() ? pageSize.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Number of records to fetch.
-         * @param pageSize field value; null removes the value
-         * @return this model
-         */
-        public RequestEntriesRequest pageSize(Long pageSize) {
+        public RequestEntriesRequest pageSize(long pageSize) {
             set("pageSize", pageSize);
             return this;
         }
         /**
          * If present, only return the entries containing this substring in the path
-         * @param pathFilter field value; empty omits the value
-         * @return this model
-         */
-        public RequestEntriesRequest pathFilter(Optional<String> pathFilter) {
-            set("pathFilter", pathFilter.orElse(null));
-            return this;
-        }
-        /**
-         * If present, only return the entries containing this substring in the path
-         * @param pathFilter field value; null removes the value
+         * @param pathFilter field value
          * @return this model
          */
         public RequestEntriesRequest pathFilter(String pathFilter) {
@@ -734,7 +661,7 @@ public final class CacheStorage {
          * @return the protocol field value
          */
         public java.util.List<CacheStorage.DataEntry> cacheDataEntries() {
-            return CdpObject.requireList(require("cacheDataEntries"), element0 -> java.util.Objects.requireNonNull(CacheStorage.DataEntry.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("cacheDataEntries"), element0 -> java.util.Objects.requireNonNull(CacheStorage.DataEntry.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Count of returned entries from this storage. If pathFilter is empty, it is the count of all entries from this storage.
@@ -771,7 +698,7 @@ public final class CacheStorage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteCache(CacheStorage.CacheId cacheId) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("cacheId", CdpObject.json(cacheId));
             return client.call("CacheStorage.deleteCache", params);
         }
@@ -790,7 +717,7 @@ public final class CacheStorage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteEntry(CacheStorage.CacheId cacheId, String request) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("cacheId", CdpObject.json(cacheId));
             params.put("request", CdpObject.json(request));
             return client.call("CacheStorage.deleteEntry", params);
@@ -810,19 +737,19 @@ public final class CacheStorage {
          * @param storageBucket protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<java.util.List<CacheStorage.Cache>> requestCacheNames(Optional<String> securityOrigin, Optional<String> storageKey, Optional<Storage.StorageBucket> storageBucket) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            securityOrigin.ifPresent(value_ -> params.put("securityOrigin", CdpObject.json(value_)));
-            storageKey.ifPresent(value_ -> params.put("storageKey", CdpObject.json(value_)));
-            storageBucket.ifPresent(value_ -> params.put("storageBucket", CdpObject.json(value_)));
-            return client.call("CacheStorage.requestCacheNames", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("caches")), element0 -> java.util.Objects.requireNonNull(CacheStorage.Cache.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+        public CompletionStage<java.util.List<CacheStorage.Cache>> requestCacheNames(@Nullable String securityOrigin, @Nullable String storageKey, Storage.@Nullable StorageBucket storageBucket) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (securityOrigin != null) params.put("securityOrigin", CdpObject.json(securityOrigin));
+            if (storageKey != null) params.put("storageKey", CdpObject.json(storageKey));
+            if (storageBucket != null) params.put("storageBucket", CdpObject.json(storageBucket));
+            return client.call("CacheStorage.requestCacheNames", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("caches")), element0 -> java.util.Objects.requireNonNull(CacheStorage.Cache.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Requests cache names.
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CacheStorage.Cache>> requestCacheNames() {
-            return requestCacheNames(Optional.empty(), Optional.empty(), Optional.empty());
+            return client.call("CacheStorage.requestCacheNames", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("caches")), element0 -> java.util.Objects.requireNonNull(CacheStorage.Cache.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Requests cache names.
@@ -830,7 +757,7 @@ public final class CacheStorage {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CacheStorage.Cache>> requestCacheNames(RequestCacheNamesRequest request) {
-            return client.call("CacheStorage.requestCacheNames", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("caches")), element0 -> java.util.Objects.requireNonNull(CacheStorage.Cache.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("CacheStorage.requestCacheNames", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("caches")), element0 -> java.util.Objects.requireNonNull(CacheStorage.Cache.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Fetches cache entry.
@@ -840,11 +767,11 @@ public final class CacheStorage {
          * @return a stage completing with the command result
          */
         public CompletionStage<CacheStorage.CachedResponse> requestCachedResponse(CacheStorage.CacheId cacheId, String requestURL, java.util.List<CacheStorage.Header> requestHeaders) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("cacheId", CdpObject.json(cacheId));
             params.put("requestURL", CdpObject.json(requestURL));
             params.put("requestHeaders", CdpObject.json(requestHeaders));
-            return client.call("CacheStorage.requestCachedResponse", params, result_ -> java.util.Objects.requireNonNull(CacheStorage.CachedResponse.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("response")))))));
+            return client.call("CacheStorage.requestCachedResponse", params, result_ -> java.util.Objects.requireNonNull(CacheStorage.CachedResponse.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("response"))))));
         }
         /**
          * Fetches cache entry.
@@ -852,7 +779,7 @@ public final class CacheStorage {
          * @return a stage completing with the command result
          */
         public CompletionStage<CacheStorage.CachedResponse> requestCachedResponse(RequestCachedResponseRequest request) {
-            return client.call("CacheStorage.requestCachedResponse", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CacheStorage.CachedResponse.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("response")))))));
+            return client.call("CacheStorage.requestCachedResponse", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CacheStorage.CachedResponse.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("response"))))));
         }
         /**
          * Requests data from cache.
@@ -862,12 +789,12 @@ public final class CacheStorage {
          * @param pathFilter protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<RequestEntriesResult> requestEntries(CacheStorage.CacheId cacheId, OptionalLong skipCount, OptionalLong pageSize, Optional<String> pathFilter) {
-            Map<String, Object> params = new LinkedHashMap<>();
+        public CompletionStage<RequestEntriesResult> requestEntries(CacheStorage.CacheId cacheId, @Nullable Long skipCount, @Nullable Long pageSize, @Nullable String pathFilter) {
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("cacheId", CdpObject.json(cacheId));
-            skipCount.ifPresent(value_ -> params.put("skipCount", value_));
-            pageSize.ifPresent(value_ -> params.put("pageSize", value_));
-            pathFilter.ifPresent(value_ -> params.put("pathFilter", CdpObject.json(value_)));
+            if (skipCount != null) params.put("skipCount", CdpObject.json(skipCount));
+            if (pageSize != null) params.put("pageSize", CdpObject.json(pageSize));
+            if (pathFilter != null) params.put("pathFilter", CdpObject.json(pathFilter));
             return client.call("CacheStorage.requestEntries", params, result_ -> new RequestEntriesResult(result_));
         }
         /**
@@ -876,7 +803,9 @@ public final class CacheStorage {
          * @return a stage completing with the command result
          */
         public CompletionStage<RequestEntriesResult> requestEntries(CacheStorage.CacheId cacheId) {
-            return requestEntries(cacheId, OptionalLong.empty(), OptionalLong.empty(), Optional.empty());
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("cacheId", CdpObject.json(cacheId));
+            return client.call("CacheStorage.requestEntries", params, result_ -> new RequestEntriesResult(result_));
         }
         /**
          * Requests data from cache.

@@ -15,7 +15,7 @@ public final class UncaughtExceptionTracker implements Thread.UncaughtExceptionH
 
     /** Throws and clears the first recorded failure, if any. */
     public void throwIfPresent() {
-        Failure recorded = failure.getAndSet(null);
+        final Failure recorded = failure.getAndSet(null);
         if (recorded != null) {
             throw new AssertionError("Uncaught exception on " + recorded.threadName, recorded.throwable);
         }

@@ -40,10 +40,10 @@ class JsFunctionRegistrationTest {
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             JvmCallbackTable<JsFunctionCallback> jsCallbacks = new JvmCallbackTable<>();
-            session.on(JsFunctionCallEvent.MESSAGE_ID, JsFunctionCallEvent.DECODER, ev -> {
-                JsFunctionCallback cb = jsCallbacks.lookup(ev.callbackId());
-                if (cb != null) cb.invoke(ev.argsJson());
-            });
+            session.on(
+                    JsFunctionCallEvent.MESSAGE_ID,
+                    JsFunctionCallEvent.DECODER,
+                    ev -> jsCallbacks.lookup(ev.callbackId()).ifPresent(cb -> cb.invoke(ev.argsJson())));
 
             LinkedBlockingQueue<RemoteHandle> browsers = new LinkedBlockingQueue<>();
             session.onLatest(

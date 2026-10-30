@@ -21,12 +21,12 @@ public final class RemoteApiCompatibility {
      * metadata consistently uses the modern major/revision form ({@code 10900}).
      */
     public static boolean supports(int runtimeCefApiVersion) {
-        int normalized = runtimeCefApiVersion < 1_000 ? runtimeCefApiVersion * 100 : runtimeCefApiVersion;
+        final int normalized = runtimeCefApiVersion < 1_000 ? runtimeCefApiVersion * 100 : runtimeCefApiVersion;
         return normalized == CEF_API_VERSION;
     }
 
     private static int loadCefApiVersion() {
-        Properties properties = new Properties();
+        final Properties properties = new Properties();
         try (InputStream input = RemoteApiCompatibility.class.getResourceAsStream("version.properties")) {
             if (input == null) throw new IllegalStateException("missing Remote CEF version metadata");
             properties.load(input);

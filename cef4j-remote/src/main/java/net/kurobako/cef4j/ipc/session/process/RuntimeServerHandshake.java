@@ -42,39 +42,29 @@ public final class RuntimeServerHandshake {
     public static RuntimeServerHandshake parse(String line) {
         Objects.requireNonNull(line, "line");
         if (!line.startsWith(PREFIX)) throw new IllegalArgumentException("not a cef4j runtime server handshake");
-        Map<String, String> fields = new LinkedHashMap<>();
-        StringTokenizer tokens = new StringTokenizer(line.substring(PREFIX.length()), " ");
+        final Map<String, String> fields = new LinkedHashMap<>();
+        final StringTokenizer tokens = new StringTokenizer(line.substring(PREFIX.length()), " ");
         while (tokens.hasMoreTokens()) {
-            String token = tokens.nextToken();
-            int equals = token.indexOf('=');
+            final String token = tokens.nextToken();
+            final int equals = token.indexOf('=');
             if (equals <= 0 || equals == token.length() - 1) {
                 throw new IllegalArgumentException("malformed handshake field: " + token);
             }
-            String previous = fields.put(token.substring(0, equals), token.substring(equals + 1));
+            final String previous = fields.put(token.substring(0, equals), token.substring(equals + 1));
             if (previous != null) throw new IllegalArgumentException("duplicate handshake field: " + token);
         }
 
-        int protocol;
-        try {
-            protocol = Integer.parseInt(required(fields, "protocol"));
-        } catch (NumberFormatException failure) {
-            throw new IllegalArgumentException("invalid protocol version", failure);
-        }
+        final int protocol = requiredInt(fields, "protocol", "invalid protocol version");
         if (protocol != CURRENT_PROTOCOL_VERSION) {
             throw new IllegalArgumentException("unsupported runtime server protocol version: " + protocol);
         }
-        String api = required(fields, "api");
+        final String api = required(fields, "api");
         if (!REMOTE_CEF_API.equals(api)) throw new IllegalArgumentException("unsupported runtime server API: " + api);
-        int cefApiVersion;
-        try {
-            cefApiVersion = Integer.parseInt(required(fields, "cef-api"));
-        } catch (NumberFormatException failure) {
-            throw new IllegalArgumentException("invalid CEF API version", failure);
-        }
+        final int cefApiVersion = requiredInt(fields, "cef-api", "invalid CEF API version");
         if (cefApiVersion <= 0) throw new IllegalArgumentException("invalid CEF API version: " + cefApiVersion);
-        Set<String> capabilities = new LinkedHashSet<>();
-        String capabilityList = required(fields, "capabilities");
-        StringTokenizer capabilityTokens = new StringTokenizer(capabilityList, ",");
+        final Set<String> capabilities = new LinkedHashSet<>();
+        final String capabilityList = required(fields, "capabilities");
+        final StringTokenizer capabilityTokens = new StringTokenizer(capabilityList, ",");
         while (capabilityTokens.hasMoreTokens()) {
             capabilities.add(capabilityTokens.nextToken());
         }
@@ -91,8 +81,17 @@ public final class RuntimeServerHandshake {
                 capabilities);
     }
 
+    /** The number of the field, which the handshake has to hold. */
+    private static int requiredInt(Map<String, String> fields, String name, String invalidMessage) {
+        try {
+            return Integer.parseInt(required(fields, name));
+        } catch (NumberFormatException failure) {
+            throw new IllegalArgumentException(invalidMessage, failure);
+        }
+    }
+
     private static String required(Map<String, String> fields, String name) {
-        String value = fields.get(name);
+        final String value = fields.get(name);
         if (value == null || value.isEmpty()) throw new IllegalArgumentException("missing handshake field: " + name);
         return value;
     }

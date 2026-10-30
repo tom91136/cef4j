@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.process;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
@@ -38,9 +39,9 @@ class HandlerReturnIntegrationTest {
                 }
 
                 @Override
-                public Boolean doClose(RemoteHandle browser) {
+                public Optional<Boolean> doClose(RemoteHandle browser) {
                     if (!doCloseFuture.isDone()) doCloseFuture.complete(browser);
-                    return Boolean.FALSE;
+                    return Optional.of(Boolean.FALSE);
                 }
             });
 

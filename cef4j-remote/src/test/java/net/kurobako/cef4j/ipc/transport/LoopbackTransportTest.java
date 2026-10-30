@@ -15,7 +15,8 @@ class LoopbackTransportTest extends CefTransportContractTest {
     @Test
     void lateDisconnectRegistrationIsDeliveredExactlyOnce() {
         LoopbackTransport.Pair pair = LoopbackTransport.create();
-        try {
+        try (pair.b;
+                pair.a) {
             pair.b.close();
             AtomicInteger calls = new AtomicInteger();
 
@@ -23,9 +24,6 @@ class LoopbackTransportTest extends CefTransportContractTest {
             pair.a.close();
 
             assertThat(calls).hasValue(1);
-        } finally {
-            pair.a.close();
-            pair.b.close();
         }
     }
 }

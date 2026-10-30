@@ -1,5 +1,6 @@
 package net.kurobako.cef4j.codegen.ipc
 
+import net.kurobako.cef4j.codegen.Banners
 import net.kurobako.cef4j.codegen.Naming
 
 object JavaFacadeEmitter {
@@ -8,7 +9,7 @@ object JavaFacadeEmitter {
       spec: FacadeSpec,
       facadeByCefStruct: Map[String, String] = Map.empty,
       affinityByCefStruct: Map[String, ProcessAffinity] = Map.empty
-  )(using Naming.Context): String = {
+  )(using Naming.Context, Banners): String = {
     val pkg          = spec.packageName
     val cls          = spec.className
     val importsBlock = renderImports
@@ -37,6 +38,7 @@ object JavaFacadeEmitter {
        | * Each instance is a thin wrapper around a {@link RemoteHandle} that points at a runtime-server-side
        | * ref-counted CEF object.
        | */
+       |${Banners.javaGeneratedAnnotation}
        |public final class $cls implements AutoCloseable {
        |
        |    private final CefSession session;
@@ -86,13 +88,16 @@ object JavaFacadeEmitter {
        |    }""".stripMargin
   }
 
-  private def renderImports: String = List(
+  private val FacadeImports = List(
     "import java.util.concurrent.CompletableFuture;",
+    Banners.javaAnnotationImport,
     "import org.jspecify.annotations.Nullable;",
     "import net.kurobako.cef4j.ipc.session.CefFutures;",
     "import net.kurobako.cef4j.ipc.session.CefSession;",
     "import net.kurobako.cef4j.ipc.session.RemoteHandle;"
-  ).mkString("\n")
+  )
+
+  private def renderImports: String = FacadeImports.mkString("\n")
 
   private def renderConstructor(spec: FacadeSpec): String =
     if (spec.affinity == ProcessAffinity.Renderer)
@@ -132,7 +137,7 @@ object JavaFacadeEmitter {
                   else if (facade.cefStructName == "cef_frame_t") Some("handle")
                   else None
                 if (childAffinity == ProcessAffinity.Renderer && frameExprForChild.isEmpty) {
-                  (s"CompletableFuture<RemoteHandle>", s"${m.responseClassName}::${f.name}")
+                  rawHandleResult(m, f)
                 } else {
                   val childCtor = frameExprForChild match {
                     case Some(frameExpr) => s"new $facadeCls(session, $frameExpr, __r.${f.name}())"
@@ -141,20 +146,14 @@ object JavaFacadeEmitter {
                   (s"CompletableFuture<$facadeCls>", s"__r -> $childCtor")
                 }
               case None =>
-                (s"CompletableFuture<RemoteHandle>", s"${m.responseClassName}::${f.name}")
+                rawHandleResult(m, f)
             }
           case _ =>
             (s"CompletableFuture<${boxedType(f.ty)}>", s"${m.responseClassName}::${f.name}")
         }
     }
-    val paramAnnots = m.explicitParams.map { p =>
-      p.ty match {
-        case FieldType.Utf8String | FieldType.Bytes | FieldType.RemoteHandle =>
-          s"${javaParamType(p.ty)} ${p.name}"
-        case _ => s"${javaParamType(p.ty)} ${p.name}"
-      }
-    }.mkString(", ")
-    val methodDoc =
+    val paramAnnots = m.explicitParams.map(p => s"${JavaEmitter.javaType(p.ty)} ${p.name}").mkString(", ")
+    val methodDoc   =
       if (m.javadoc.nonEmpty) m.javadoc.linesIterator.mkString("\n") + "\n"
       else s"""    /** Dispatches {@code ${m.cefMethodName}} to the runtime server. */
               |""".stripMargin
@@ -167,16 +166,8 @@ object JavaFacadeEmitter {
        |    }""".stripMargin
   }
 
-  private def javaParamType(ty: FieldType)(using Naming.Context): String = ty match {
-    case FieldType.I32                 => "int"
-    case FieldType.I64                 => "long"
-    case FieldType.Bool                => "boolean"
-    case FieldType.Utf8String          => "String"
-    case FieldType.Bytes               => "byte[]"
-    case FieldType.StringList          => "String[]"
-    case FieldType.RemoteHandle        => "RemoteHandle"
-    case FieldType.DataStruct(cefName) => SpecDeriver.cefStructToClassName(cefName)
-  }
+  private def rawHandleResult(m: FacadeMethod, f: FieldSpec): (String, String) =
+    ("CompletableFuture<RemoteHandle>", s"${m.responseClassName}::${f.name}")
 
   private def boxedType(ty: FieldType)(using Naming.Context): String = ty match {
     case FieldType.I32                 => "Integer"

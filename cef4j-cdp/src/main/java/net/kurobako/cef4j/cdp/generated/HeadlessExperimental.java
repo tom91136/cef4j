@@ -7,12 +7,12 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
-import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * This domain provides experimental commands only supported in headless mode.
@@ -21,6 +21,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class HeadlessExperimental {
     private HeadlessExperimental() {}
     /**
@@ -41,7 +42,7 @@ public final class HeadlessExperimental {
             WEBP("webp");
             public final String value;
             FormatValues(String value) { this.value = value; }
-            public String value() { return value; }
+            @Override public String value() { return value; }
             public static FormatValues of(String value) {
                 for (FormatValues constant : values()) {
                     if (constant.value.equals(value)) return constant;
@@ -54,37 +55,25 @@ public final class HeadlessExperimental {
          * @return the protocol field value, empty when absent
          */
         public Optional<ScreenshotParams.FormatValues> format() {
-            Object value = raw("format");
-            return Optional.ofNullable(value == null ? null : ScreenshotParams.FormatValues.of((String) value));
+            return raw("format").map(value -> ScreenshotParams.FormatValues.of((String) value));
         }
         /**
          * Compression quality from range [0..100] (jpeg and webp only).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong quality() {
-            Long value = CdpObject.numberAsLong(raw("quality"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("quality").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Optimize image encoding for speed, not for resulting size (defaults to false)
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> optimizeForSpeed() {
-            Object value = raw("optimizeForSpeed");
-            return Optional.ofNullable((Boolean) value);
+            return raw("optimizeForSpeed").map(value -> (Boolean) value);
         }
         /**
          * Image compression format (defaults to png).
-         * @param format field value; empty omits the value
-         * @return this model
-         */
-        public ScreenshotParams format(Optional<ScreenshotParams.FormatValues> format) {
-            set("format", format.orElse(null));
-            return this;
-        }
-        /**
-         * Image compression format (defaults to png).
-         * @param format field value; null removes the value
+         * @param format field value
          * @return this model
          */
         public ScreenshotParams format(ScreenshotParams.FormatValues format) {
@@ -93,37 +82,19 @@ public final class HeadlessExperimental {
         }
         /**
          * Compression quality from range [0..100] (jpeg and webp only).
-         * @param quality field value; empty omits the value
+         * @param quality field value
          * @return this model
          */
-        public ScreenshotParams quality(OptionalLong quality) {
-            set("quality", quality.isPresent() ? quality.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Compression quality from range [0..100] (jpeg and webp only).
-         * @param quality field value; null removes the value
-         * @return this model
-         */
-        public ScreenshotParams quality(Long quality) {
+        public ScreenshotParams quality(long quality) {
             set("quality", quality);
             return this;
         }
         /**
          * Optimize image encoding for speed, not for resulting size (defaults to false)
-         * @param optimizeForSpeed field value; empty omits the value
+         * @param optimizeForSpeed field value
          * @return this model
          */
-        public ScreenshotParams optimizeForSpeed(Optional<Boolean> optimizeForSpeed) {
-            set("optimizeForSpeed", optimizeForSpeed.orElse(null));
-            return this;
-        }
-        /**
-         * Optimize image encoding for speed, not for resulting size (defaults to false)
-         * @param optimizeForSpeed field value; null removes the value
-         * @return this model
-         */
-        public ScreenshotParams optimizeForSpeed(Boolean optimizeForSpeed) {
+        public ScreenshotParams optimizeForSpeed(boolean optimizeForSpeed) {
             set("optimizeForSpeed", optimizeForSpeed);
             return this;
         }
@@ -134,7 +105,7 @@ public final class HeadlessExperimental {
     public static final class BeginFrameRequest extends CdpObject {
         public BeginFrameRequest() {}
         public static BeginFrameRequest fromMap(Map<String, Object> values) {
-            BeginFrameRequest instance_ = new BeginFrameRequest();
+            final BeginFrameRequest instance_ = new BeginFrameRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -143,99 +114,59 @@ public final class HeadlessExperimental {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble frameTimeTicks() {
-            Double value = CdpObject.numberAsDouble(raw("frameTimeTicks"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("frameTimeTicks").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * The interval between BeginFrames that is reported to the compositor, in milliseconds. Defaults to a 60 frames/second interval, i.e. about 16.666 milliseconds.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble interval() {
-            Double value = CdpObject.numberAsDouble(raw("interval"));
-            return value == null ? OptionalDouble.empty() : OptionalDouble.of(value);
+            return raw("interval").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
         }
         /**
          * Whether updates should not be committed and drawn onto the display. False by default. If true, only side effects of the BeginFrame will be run, such as layout and animations, but any visual updates may not be visible on the display or in screenshots.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> noDisplayUpdates() {
-            Object value = raw("noDisplayUpdates");
-            return Optional.ofNullable((Boolean) value);
+            return raw("noDisplayUpdates").map(value -> (Boolean) value);
         }
         /**
          * If set, a screenshot of the frame will be captured and returned in the response. Otherwise, no screenshot will be captured. Note that capturing a screenshot can fail, for example, during renderer initialization. In such a case, no screenshot data will be returned.
          * @return the protocol field value, empty when absent
          */
         public Optional<HeadlessExperimental.ScreenshotParams> screenshot() {
-            Object value = raw("screenshot");
-            return Optional.ofNullable(value == null ? null : HeadlessExperimental.ScreenshotParams.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("screenshot").flatMap(CdpObject::objectMap).map(HeadlessExperimental.ScreenshotParams::fromMap);
         }
         /**
          * Timestamp of this BeginFrame in Renderer TimeTicks (milliseconds of uptime). If not set, the current time will be used.
-         * @param frameTimeTicks field value; empty omits the value
+         * @param frameTimeTicks field value
          * @return this model
          */
-        public BeginFrameRequest frameTimeTicks(OptionalDouble frameTimeTicks) {
-            set("frameTimeTicks", frameTimeTicks.isPresent() ? frameTimeTicks.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * Timestamp of this BeginFrame in Renderer TimeTicks (milliseconds of uptime). If not set, the current time will be used.
-         * @param frameTimeTicks field value; null removes the value
-         * @return this model
-         */
-        public BeginFrameRequest frameTimeTicks(Double frameTimeTicks) {
+        public BeginFrameRequest frameTimeTicks(double frameTimeTicks) {
             set("frameTimeTicks", frameTimeTicks);
             return this;
         }
         /**
          * The interval between BeginFrames that is reported to the compositor, in milliseconds. Defaults to a 60 frames/second interval, i.e. about 16.666 milliseconds.
-         * @param interval field value; empty omits the value
+         * @param interval field value
          * @return this model
          */
-        public BeginFrameRequest interval(OptionalDouble interval) {
-            set("interval", interval.isPresent() ? interval.getAsDouble() : null);
-            return this;
-        }
-        /**
-         * The interval between BeginFrames that is reported to the compositor, in milliseconds. Defaults to a 60 frames/second interval, i.e. about 16.666 milliseconds.
-         * @param interval field value; null removes the value
-         * @return this model
-         */
-        public BeginFrameRequest interval(Double interval) {
+        public BeginFrameRequest interval(double interval) {
             set("interval", interval);
             return this;
         }
         /**
          * Whether updates should not be committed and drawn onto the display. False by default. If true, only side effects of the BeginFrame will be run, such as layout and animations, but any visual updates may not be visible on the display or in screenshots.
-         * @param noDisplayUpdates field value; empty omits the value
+         * @param noDisplayUpdates field value
          * @return this model
          */
-        public BeginFrameRequest noDisplayUpdates(Optional<Boolean> noDisplayUpdates) {
-            set("noDisplayUpdates", noDisplayUpdates.orElse(null));
-            return this;
-        }
-        /**
-         * Whether updates should not be committed and drawn onto the display. False by default. If true, only side effects of the BeginFrame will be run, such as layout and animations, but any visual updates may not be visible on the display or in screenshots.
-         * @param noDisplayUpdates field value; null removes the value
-         * @return this model
-         */
-        public BeginFrameRequest noDisplayUpdates(Boolean noDisplayUpdates) {
+        public BeginFrameRequest noDisplayUpdates(boolean noDisplayUpdates) {
             set("noDisplayUpdates", noDisplayUpdates);
             return this;
         }
         /**
          * If set, a screenshot of the frame will be captured and returned in the response. Otherwise, no screenshot will be captured. Note that capturing a screenshot can fail, for example, during renderer initialization. In such a case, no screenshot data will be returned.
-         * @param screenshot field value; empty omits the value
-         * @return this model
-         */
-        public BeginFrameRequest screenshot(Optional<HeadlessExperimental.ScreenshotParams> screenshot) {
-            set("screenshot", screenshot.orElse(null));
-            return this;
-        }
-        /**
-         * If set, a screenshot of the frame will be captured and returned in the response. Otherwise, no screenshot will be captured. Note that capturing a screenshot can fail, for example, during renderer initialization. In such a case, no screenshot data will be returned.
-         * @param screenshot field value; null removes the value
+         * @param screenshot field value
          * @return this model
          */
         public BeginFrameRequest screenshot(HeadlessExperimental.ScreenshotParams screenshot) {
@@ -264,8 +195,7 @@ public final class HeadlessExperimental {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> screenshotData() {
-            Object value = raw("screenshotData");
-            return Optional.ofNullable((String) value);
+            return raw("screenshotData").map(value -> (String) value);
         }
         /**
          * Whether the BeginFrame resulted in damage and, thus, a new frame was committed to the display. Reported for diagnostic uses, may be removed in the future.
@@ -278,16 +208,7 @@ public final class HeadlessExperimental {
         }
         /**
          * Base64-encoded image data of the screenshot, if one was requested and successfully taken. (Encoded as a base64 string when passed over JSON)
-         * @param screenshotData field value; empty omits the value
-         * @return this model
-         */
-        public BeginFrameResult screenshotData(Optional<String> screenshotData) {
-            set("screenshotData", screenshotData.orElse(null));
-            return this;
-        }
-        /**
-         * Base64-encoded image data of the screenshot, if one was requested and successfully taken. (Encoded as a base64 string when passed over JSON)
-         * @param screenshotData field value; null removes the value
+         * @param screenshotData field value
          * @return this model
          */
         public BeginFrameResult screenshotData(String screenshotData) {
@@ -306,12 +227,12 @@ public final class HeadlessExperimental {
          * @param screenshot protocol value
          * @return a stage completing with the command result
          */
-        public CompletionStage<BeginFrameResult> beginFrame(OptionalDouble frameTimeTicks, OptionalDouble interval, Optional<Boolean> noDisplayUpdates, Optional<HeadlessExperimental.ScreenshotParams> screenshot) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            frameTimeTicks.ifPresent(value_ -> params.put("frameTimeTicks", value_));
-            interval.ifPresent(value_ -> params.put("interval", value_));
-            noDisplayUpdates.ifPresent(value_ -> params.put("noDisplayUpdates", value_));
-            screenshot.ifPresent(value_ -> params.put("screenshot", CdpObject.json(value_)));
+        public CompletionStage<BeginFrameResult> beginFrame(@Nullable Double frameTimeTicks, @Nullable Double interval, @Nullable Boolean noDisplayUpdates, HeadlessExperimental.@Nullable ScreenshotParams screenshot) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (frameTimeTicks != null) params.put("frameTimeTicks", CdpObject.json(frameTimeTicks));
+            if (interval != null) params.put("interval", CdpObject.json(interval));
+            if (noDisplayUpdates != null) params.put("noDisplayUpdates", CdpObject.json(noDisplayUpdates));
+            if (screenshot != null) params.put("screenshot", CdpObject.json(screenshot));
             return client.call("HeadlessExperimental.beginFrame", params, result_ -> new BeginFrameResult(result_));
         }
         /**
@@ -319,7 +240,7 @@ public final class HeadlessExperimental {
          * @return a stage completing with the command result
          */
         public CompletionStage<BeginFrameResult> beginFrame() {
-            return beginFrame(OptionalDouble.empty(), OptionalDouble.empty(), Optional.empty(), Optional.empty());
+            return client.call("HeadlessExperimental.beginFrame", null, result_ -> new BeginFrameResult(result_));
         }
         /**
          * Sends a BeginFrame to the target and returns when the frame was completed. Optionally captures a screenshot from the resulting frame. Requires that the target was created with enabled BeginFrameControl. Designed for use with --run-all-compositor-stages-before-draw, see also https://goo.gle/chrome-headless-rendering for more background.

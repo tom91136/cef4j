@@ -5,23 +5,30 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 import scala.annotation.tailrec
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
 import PDL.TypeBody
 import PDL.TypeExpr
 
 /** Parses Chromium's line-oriented Protocol Definition Language into the [[PDL.Protocol]] AST. */
-private[cdp] object PdlParser {
-  private final case class Flags(experimental: Boolean, deprecated: Boolean, rest: String)
+object PdlParser {
+  private case class Flags(experimental: Boolean, deprecated: Boolean, rest: String)
 
-  private final case class Raw(line: String, doc: Option[String])
+  private case class Raw(line: String, doc: Option[String])
 
-  private final class State(lines: IndexedSeq[String], path: Path, sources: Set[Path], root: Path) {
-    private var index                  = 0
-    private var lineNumber             = 0
-    private var pendingDoc             = List.empty[String]
-    private var lookahead: Option[Raw] = None
+  /** The form of the declaration an operation is parsed as, which the command form alone holds returns and redirects.
+    */
+  private enum OperationForm {
+    case Command, Event
+  }
+
+  private class State(lines: IndexedSeq[String], path: Path, sources: Set[Path], root: Path) {
+    private val remaining  = mutable.ArrayDeque.from(lines)
+    private val pendingDoc = mutable.ListBuffer.empty[String]
+    private val lookahead  = mutable.ListBuffer.empty[Raw]
+
+    private def lineNumber: Int = lines.length - remaining.size
 
     private def fail(message: String): Nothing = throw IOException(s"$path:$lineNumber: $message")
 
@@ -30,56 +37,56 @@ private[cdp] object PdlParser {
     private def isLevel3(line: String): Boolean = line.startsWith("      ") && !line.startsWith("        ")
 
     private def fill(): Option[Raw] =
-      if (lookahead.isDefined) lookahead
+      if (lookahead.nonEmpty) lookahead.headOption
       else {
-        while (index < lines.length && lookahead.isEmpty) {
-          val raw = lines(index)
-          index += 1
-          lineNumber += 1
+        while remaining.nonEmpty && lookahead.isEmpty do {
+          val raw     = remaining.removeHead()
           val trimmed = raw.trim
-          if (trimmed.startsWith("#")) pendingDoc = pendingDoc :+ trimmed.stripPrefix("#").stripPrefix(" ")
-          else if (trimmed.isEmpty) pendingDoc = Nil
+          if (trimmed.startsWith("#")) pendingDoc += trimmed.stripPrefix("#").stripPrefix(" ")
+          else if (trimmed.isEmpty) pendingDoc.clear()
           else {
             val doc = Option(pendingDoc.mkString("\n").trim).filter(_.nonEmpty)
-            pendingDoc = Nil
-            lookahead = Some(Raw(raw, doc))
+            pendingDoc.clear()
+            lookahead += Raw(raw, doc)
           }
         }
-        lookahead
+        lookahead.headOption
       }
 
     private def peek(): Option[Raw] = fill()
 
     private def take(): Option[Raw] = {
       val result = fill()
-      lookahead = None
+      lookahead.clear()
       result
     }
 
     def parse(): PDL.Protocol = {
-      val domains = ListBuffer.empty[PDL.Domain]
-      var version = PDL.Version()
-      var next    = take()
-      while (next.isDefined) {
-        val raw = next.get
-        if (raw.line.startsWith(" ")) fail(s"illegal token: ${raw.line}")
-        else {
-          val declaration = flags(raw.line)
-          declaration.rest match {
-            case s"domain $name" if name.nonEmpty    => domains += parseDomain(name, raw.doc, declaration)
-            case s"include $value" if value.nonEmpty => domains ++= parseInclude(value)
-            case "version"                           => version = parseVersion()
-            case _                                   => fail(s"illegal token: ${raw.line}")
-          }
+      val domains = mutable.ListBuffer.empty[PDL.Domain]
+
+      @tailrec
+      def loop(version: PDL.Version): PDL.Protocol =
+        take() match {
+          case None      => PDL.Protocol(version, domains.toList)
+          case Some(raw) =>
+            if (raw.line.startsWith(" ")) fail(s"illegal token: ${raw.line}")
+            else {
+              val declaration = flags(raw.line)
+              val nextVersion = declaration.rest match {
+                case s"domain $name" if name.nonEmpty    => domains += parseDomain(name, raw.doc, declaration); version
+                case s"include $value" if value.nonEmpty => domains ++= parseInclude(value); version
+                case "version"                           => parseVersion()
+                case _                                   => fail(s"illegal token: ${raw.line}")
+              }
+              loop(nextVersion)
+            }
         }
-        next = take()
-      }
-      PDL.Protocol(version, domains.toList)
+      loop(PDL.Version())
     }
 
     private def parseDomain(name: String, description: Option[String], declaration: Flags): PDL.Domain = {
-      val dependencies = ListBuffer.empty[String]
-      val declarations = ListBuffer.empty[PDL.Decl]
+      val declarations = mutable.ListBuffer.empty[PDL.Decl]
+      @annotation.tailrec
       def loop(): Unit =
         peek() match {
           case Some(raw) if !raw.line.startsWith(" ") => ()
@@ -88,17 +95,16 @@ private[cdp] object PdlParser {
             val f   = flags(raw.line)
             val _   = take()
             f.rest match {
-              case s"depends on $dependency" if raw.line.startsWith("  depends on ") =>
-                dependencies += dependency
+              case _ if raw.line.startsWith("  depends on ") =>
                 loop()
               case s"type $text" =>
                 declarations += parseType(text, doc, f)
                 loop()
-              case s"command $name" =>
-                declarations += parseOperation(event = false, name, doc, f)
+              case s"command $commandName" =>
+                declarations += parseOperation(OperationForm.Command, commandName, doc, f)
                 loop()
-              case s"event $name" =>
-                declarations += parseOperation(event = true, name, doc, f)
+              case s"event $eventName" =>
+                declarations += parseOperation(OperationForm.Event, eventName, doc, f)
                 loop()
               case _ => fail(s"illegal token: ${raw.line}")
             }
@@ -111,7 +117,6 @@ private[cdp] object PdlParser {
         name,
         description,
         PDL.Flags(declaration.experimental, declaration.deprecated),
-        dependencies.toList,
         all.collect { case t: PDL.Decl.Type => t } ++
           all.collect { case c: PDL.Decl.Command => c } ++
           all.collect { case e: PDL.Decl.Event => e }
@@ -153,7 +158,8 @@ private[cdp] object PdlParser {
       }
 
     private def parseSubitems(): List[PDL.SubItem] = {
-      val items        = ListBuffer.empty[PDL.SubItem]
+      val items = mutable.ListBuffer.empty[PDL.SubItem]
+      @annotation.tailrec
       def loop(): Unit =
         peek() match {
           case Some(raw) if isLevel3(raw.line) =>
@@ -192,7 +198,8 @@ private[cdp] object PdlParser {
       if (typeName == "enum") TypeExpr.InlineEnum(parseEnumValues()) else typeExpr(typeName)
 
     private def parseEnumValues(): List[String] = {
-      val values       = ListBuffer.empty[String]
+      val values = mutable.ListBuffer.empty[String]
+      @annotation.tailrec
       def loop(): Unit =
         peek() match {
           case Some(raw)
@@ -206,11 +213,17 @@ private[cdp] object PdlParser {
       values.toList
     }
 
-    private def parseOperation(event: Boolean, name: String, doc: Option[String], declaration: Flags): PDL.Decl = {
-      val params                   = ListBuffer.empty[PDL.SubItem]
-      val returns                  = ListBuffer.empty[PDL.SubItem]
-      var redirect: Option[String] = None
-      def loop(): Unit             =
+    private def parseOperation(
+        form: OperationForm,
+        name: String,
+        doc: Option[String],
+        declaration: Flags
+    ): PDL.Decl = {
+      val command = form == OperationForm.Command
+      val params  = mutable.ListBuffer.empty[PDL.SubItem]
+      val returns = mutable.ListBuffer.empty[PDL.SubItem]
+      @annotation.tailrec
+      def loop(): Unit =
         peek() match {
           case Some(raw) if isLevel2(raw.line) =>
             val rest = flags(raw.line).rest
@@ -219,13 +232,12 @@ private[cdp] object PdlParser {
                 val _ = take()
                 params ++= parseSubitems()
                 loop()
-              case "returns" if !event =>
+              case "returns" if command =>
                 val _ = take()
                 returns ++= parseSubitems()
                 loop()
-              case s"redirect $target" if raw.line.startsWith("    redirect ") =>
+              case s"redirect $_" if raw.line.startsWith("    redirect ") =>
                 val _ = take()
-                redirect = Some(target)
                 loop()
               case _ => fail(s"illegal token: ${raw.line}")
             }
@@ -235,30 +247,27 @@ private[cdp] object PdlParser {
         }
       loop()
       val f = PDL.Flags(declaration.experimental, declaration.deprecated)
-      if (event) PDL.Decl.Event(name, params.toList, doc, f)
-      else PDL.Decl.Command(name, redirect, params.toList, returns.toList, doc, f)
+      if (command) PDL.Decl.Command(name, params.toList, returns.toList, doc, f)
+      else PDL.Decl.Event(name, params.toList, doc, f)
     }
 
     private def parseVersion(): PDL.Version = {
-      var version      = PDL.Version()
-      def loop(): Unit =
+      @tailrec
+      def loop(version: PDL.Version): PDL.Version =
         peek() match {
           case Some(raw) if isLevel1(raw.line) =>
             flags(raw.line).rest match {
               case s"major $value" if raw.line.startsWith("  major ") =>
                 val _ = take()
-                version = version.copy(major = value)
-                loop()
+                loop(version.copy(major = value))
               case s"minor $value" if raw.line.startsWith("  minor ") =>
                 val _ = take()
-                version = version.copy(minor = value)
-                loop()
-              case _ => ()
+                loop(version.copy(minor = value))
+              case _ => version
             }
-          case _ => ()
+          case _ => version
         }
-      loop()
-      version
+      loop(PDL.Version())
     }
 
     private def parseInclude(value: String): List[PDL.Domain] = {
@@ -279,7 +288,7 @@ private[cdp] object PdlParser {
     if (sources(path)) throw IOException(s"Recursive PDL include: $path")
     val active = sources + path
     val state  =
-      new State(Files.readAllLines(path, StandardCharsets.UTF_8).asScala.toIndexedSeq, path, active, root)
+      State(Files.readAllLines(path, StandardCharsets.UTF_8).asScala.toIndexedSeq, path, active, root)
     state.parse()
   }
 

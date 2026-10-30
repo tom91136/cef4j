@@ -2,6 +2,7 @@ package net.kurobako.cef4j.codegen.ipc
 
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.*
 
 import net.kurobako.cef4j.codegen.TempDirectorySuite
@@ -9,7 +10,7 @@ import net.kurobako.cef4j.codegen.TempDirectorySuite
 class CppEmitterSpec extends TempDirectorySuite {
 
   // XXX: Reduce this timeout when hosted Windows compiler startup is consistently below two minutes.
-  override val munitTimeout = 5.minutes
+  override val munitTimeout: FiniteDuration = 5.minutes
 
   private val sampleSpec = MessageSpec(
     className = "LoadUrlRequest",
@@ -121,7 +122,7 @@ class CppEmitterSpec extends TempDirectorySuite {
     )
 
     val wireDir = Paths.get(sys.props.getOrElse("cef4j.wire.dir", fail("cef4j.wire.dir is not set")))
-    val pb      = new ProcessBuilder(
+    val pb      = ProcessBuilder(
       cxx,
       "-std=c++17",
       "-Wall",
@@ -135,21 +136,25 @@ class CppEmitterSpec extends TempDirectorySuite {
     pb.directory(tmp.toFile)
     pb.redirectErrorStream(true)
     val proc      = pb.start()
-    val output    = new String(proc.getInputStream.readAllBytes())
-    val compileOk = proc.waitFor()
+    val output    = String(proc.getInputStream.readAllBytes())
+    val compileOk = exitCode(proc)
     assertEquals(compileOk, 0, s"C++ compile failed:\n$output")
 
-    val runProc = new ProcessBuilder(outBin.toString).redirectErrorStream(true).start()
-    val runOk   = runProc.waitFor()
+    val runProc = ProcessBuilder(outBin.toString).redirectErrorStream(true).start()
+    val runOk   = exitCode(runProc)
     assertEquals(runOk, 0, "C++ smoke binary exited non-zero (encode/decode mismatch)")
   }
+
+  private def exitCode(process: Process): Int =
+    if (process.waitFor(1, TimeUnit.MINUTES)) process.exitValue()
+    else { process.destroyForcibly(); -1 }
 
   private def locateCxx(): Option[String] = {
     val candidates = List("g++", "clang++")
     candidates.find { name =>
-      val p = new ProcessBuilder(name, "--version").redirectErrorStream(true).start()
+      val p = ProcessBuilder(name, "--version").redirectErrorStream(true).start()
       p.getInputStream.readAllBytes()
-      p.waitFor() == 0
+      exitCode(p) == 0
     }
   }
 }

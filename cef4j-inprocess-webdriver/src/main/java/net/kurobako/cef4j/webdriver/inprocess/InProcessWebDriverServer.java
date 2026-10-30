@@ -9,7 +9,7 @@ public final class InProcessWebDriverServer {
     private InProcessWebDriverServer() {}
 
     public static WebDriverServer start(InProcessBrowserRuntimeFactory runtimeFactory) throws IOException {
-        WebDriverJsonCodec codec = WebDriverJsonCodec.installed();
+        final WebDriverJsonCodec codec = WebDriverJsonCodec.installed();
         return start(runtimeFactory, codec);
     }
 

@@ -21,7 +21,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:45</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefMenuModelDelegate extends CefClientHandler {
 
@@ -129,8 +128,8 @@ public interface CefMenuModelDelegate extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefMenuModelDelegate {
         private final java.util.List<CefMenuModelDelegate> delegates;
@@ -141,37 +140,37 @@ public interface CefMenuModelDelegate extends CefClientHandler {
 
         @Override
         public void executeCommand(@Nullable CefMenuModel menuModel, int commandId, CefEventFlags eventFlags) {
-            for (CefMenuModelDelegate d : delegates) d.executeCommand(menuModel, commandId, eventFlags);
+            for (final CefMenuModelDelegate d : delegates) d.executeCommand(menuModel, commandId, eventFlags);
         }
 
         @Override
         public void mouseOutsideMenu(@Nullable CefMenuModel menuModel, CefPoint screenPoint) {
-            for (CefMenuModelDelegate d : delegates) d.mouseOutsideMenu(menuModel, screenPoint);
+            for (final CefMenuModelDelegate d : delegates) d.mouseOutsideMenu(menuModel, screenPoint);
         }
 
         @Override
         public void unhandledOpenSubmenu(@Nullable CefMenuModel menuModel, boolean isRtl) {
-            for (CefMenuModelDelegate d : delegates) d.unhandledOpenSubmenu(menuModel, isRtl);
+            for (final CefMenuModelDelegate d : delegates) d.unhandledOpenSubmenu(menuModel, isRtl);
         }
 
         @Override
         public void unhandledCloseSubmenu(@Nullable CefMenuModel menuModel, boolean isRtl) {
-            for (CefMenuModelDelegate d : delegates) d.unhandledCloseSubmenu(menuModel, isRtl);
+            for (final CefMenuModelDelegate d : delegates) d.unhandledCloseSubmenu(menuModel, isRtl);
         }
 
         @Override
         public void menuWillShow(@Nullable CefMenuModel menuModel) {
-            for (CefMenuModelDelegate d : delegates) d.menuWillShow(menuModel);
+            for (final CefMenuModelDelegate d : delegates) d.menuWillShow(menuModel);
         }
 
         @Override
         public void menuClosed(@Nullable CefMenuModel menuModel) {
-            for (CefMenuModelDelegate d : delegates) d.menuClosed(menuModel);
+            for (final CefMenuModelDelegate d : delegates) d.menuClosed(menuModel);
         }
 
         @Override
         public boolean formatLabel(@Nullable CefMenuModel menuModel, @Nullable String label) {
-            for (CefMenuModelDelegate d : delegates) {
+            for (final CefMenuModelDelegate d : delegates) {
                 if (d.formatLabel(menuModel, label)) return true;
             }
             if (!delegates.isEmpty()) return false;

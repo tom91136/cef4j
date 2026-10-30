@@ -3,11 +3,13 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class BrowserProcessHandlerOnScheduleMessagePumpWorkEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 451292745;
@@ -34,7 +36,7 @@ public final class BrowserProcessHandlerOnScheduleMessagePumpWorkEvent implement
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putLong(delayMs);
@@ -44,10 +46,9 @@ public final class BrowserProcessHandlerOnScheduleMessagePumpWorkEvent implement
     }
 
     public static final CefMessageDecoder<BrowserProcessHandlerOnScheduleMessagePumpWorkEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Long.BYTES, "delayMs");
-        long delayMs = __buf.getLong();
+        final long delayMs = WireDecoder.int64(__buf, "delayMs");
         WireDecoder.requireFullyConsumed(__buf, "BrowserProcessHandlerOnScheduleMessagePumpWorkEvent");
         return new BrowserProcessHandlerOnScheduleMessagePumpWorkEvent(delayMs);
     };

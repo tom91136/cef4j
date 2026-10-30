@@ -7,7 +7,6 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 import org.jspecify.annotations.Nullable;
 
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefStringUtf16 {
 
@@ -23,7 +22,7 @@ public final class CefStringUtf16 {
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefStringUtf16)) return false;
-        CefStringUtf16 other = (CefStringUtf16) obj;
+        final CefStringUtf16 other = (CefStringUtf16) obj;
         return java.util.Objects.equals(this.str, other.str) && this.length == other.length;
     }
 

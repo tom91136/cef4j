@@ -150,13 +150,11 @@ final class ZmqTransportTest extends CefTransportContractTest {
                             monitorStopped.countDown();
                         }
                     });
-            try {
+            try (client) {
                 client.close();
                 assertThat(monitorStopped.await(1, TimeUnit.SECONDS))
                         .as("the event hook must be detached before JeroMQ starts asynchronous socket termination")
                         .isTrue();
-            } finally {
-                client.close();
             }
         }
     }
@@ -221,7 +219,7 @@ final class ZmqTransportTest extends CefTransportContractTest {
                         if (second.isConnected()) reconnected.countDown();
                     }
                 } catch (Exception ignored) {
-                    return;
+                    /* The failure is expected or cannot be handled here. */
                 }
             });
             try (ZmqTransport transport = ZmqTransport.connect("tcp://127.0.0.1:" + server.getLocalPort(), 1_000)) {
@@ -314,9 +312,10 @@ final class ZmqTransportTest extends CefTransportContractTest {
                     try (Socket socket = proxy.accept()) {
                         socket.getOutputStream().write(zmtpGreetingPrefix);
                         socket.getOutputStream().flush();
-                        terminalDisconnect.await(5, TimeUnit.SECONDS);
+                        if (!terminalDisconnect.await(5, TimeUnit.SECONDS))
+                            throw new IllegalStateException("peer did not disconnect");
                     } catch (Exception expected) {
-                        return;
+                        /* The failure is expected or cannot be handled here. */
                     }
                 });
                 assertThat(terminalDisconnect.await(5, TimeUnit.SECONDS)).isTrue();
@@ -419,7 +418,7 @@ final class ZmqTransportTest extends CefTransportContractTest {
                 try {
                     source.getInputStream().transferTo(destination.getOutputStream());
                 } catch (Exception expected) {
-                    return;
+                    /* The failure is expected or cannot be handled here. */
                 }
             });
         }
@@ -429,7 +428,7 @@ final class ZmqTransportTest extends CefTransportContractTest {
             try {
                 resource.close();
             } catch (Exception expected) {
-                return;
+                /* The failure is expected or cannot be handled here. */
             }
         }
     }

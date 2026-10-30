@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class BrowserProcessHandlerOnAlreadyRunningAppRelaunchEvent implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 1259220936;
@@ -44,7 +46,7 @@ public final class BrowserProcessHandlerOnAlreadyRunningAppRelaunchEvent impleme
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(commandLine.id());
@@ -56,14 +58,10 @@ public final class BrowserProcessHandlerOnAlreadyRunningAppRelaunchEvent impleme
     }
 
     public static final CefMessageDecoder<BrowserProcessHandlerOnAlreadyRunningAppRelaunchEvent> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "commandLine");
-        RemoteHandle commandLine = new RemoteHandle(__buf.getInt());
-        int currentDirectoryLen = WireDecoder.length(__buf, "currentDirectory");
-        byte[] currentDirectoryBuf = new byte[currentDirectoryLen];
-        __buf.get(currentDirectoryBuf);
-        String currentDirectory = new String(currentDirectoryBuf, StandardCharsets.UTF_8);
+        final RemoteHandle commandLine = WireDecoder.handle(__buf, "commandLine");
+        final String currentDirectory = WireDecoder.utf8(__buf, "currentDirectory");
         WireDecoder.requireFullyConsumed(__buf, "BrowserProcessHandlerOnAlreadyRunningAppRelaunchEvent");
         return new BrowserProcessHandlerOnAlreadyRunningAppRelaunchEvent(commandLine, currentDirectory);
     };

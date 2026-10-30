@@ -21,7 +21,6 @@ import org.jspecify.annotations.Nullable;
  *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:209</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefCookieAccessFilter extends CefClientHandler {
 
@@ -75,8 +74,8 @@ public interface CefCookieAccessFilter extends CefClientHandler {
     /**
      * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
      * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
-     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; other
-     * {@code Optional}s pick the first non-empty; any other return type yields the first delegate's value.
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
      */
     class Delegating implements CefCookieAccessFilter {
         private final java.util.List<CefCookieAccessFilter> delegates;
@@ -91,7 +90,7 @@ public interface CefCookieAccessFilter extends CefClientHandler {
                 @Nullable CefFrame frame,
                 @Nullable CefRequest request,
                 CefCookie cookie) {
-            for (CefCookieAccessFilter d : delegates) {
+            for (final CefCookieAccessFilter d : delegates) {
                 if (d.canSendCookie(browser, frame, request, cookie)) return true;
             }
             if (!delegates.isEmpty()) return false;
@@ -105,7 +104,7 @@ public interface CefCookieAccessFilter extends CefClientHandler {
                 @Nullable CefRequest request,
                 @Nullable CefResponse response,
                 CefCookie cookie) {
-            for (CefCookieAccessFilter d : delegates) {
+            for (final CefCookieAccessFilter d : delegates) {
                 if (d.canSaveCookie(browser, frame, request, response, cookie)) return true;
             }
             if (!delegates.isEmpty()) return false;

@@ -65,7 +65,7 @@ class CefCachePublisherSpec extends TempDirectorySuite {
     val root       = tempDirectory("cef-cache")
     val target     = root.resolve("cef_binary_concurrent_linux64_minimal")
     val publishers = List("concurrent-first", "concurrent-second").map { id =>
-      new ProcessBuilder(
+      ProcessBuilder(
         Path.of(System.getProperty("java.home"), "bin", "java").toString,
         "-cp",
         System.getProperty("java.class.path"),

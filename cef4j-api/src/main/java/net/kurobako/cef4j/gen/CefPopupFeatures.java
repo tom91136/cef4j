@@ -26,7 +26,6 @@ import net.kurobako.cef4j.policy.NullableBoundary;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:2489</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefPopupFeatures {
 
@@ -62,7 +61,7 @@ public final class CefPopupFeatures {
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefPopupFeatures)) return false;
-        CefPopupFeatures other = (CefPopupFeatures) obj;
+        final CefPopupFeatures other = (CefPopupFeatures) obj;
         return this.x == other.x
                 && this.xSet == other.xSet
                 && this.y == other.y

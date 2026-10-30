@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class V8ValueGetKeysRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 341739378;
@@ -48,14 +50,14 @@ public final class V8ValueGetKeysRequest implements CefMessageView, CefMessageEn
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(frame.id());
             __dst.putInt(self.id());
             __dst.putInt(keys.length);
-            for (String __s : keys) {
-                byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
+            for (final String __s : keys) {
+                final byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
                 __dst.putInt(__b.length);
                 __dst.put(__b);
             }
@@ -65,20 +67,11 @@ public final class V8ValueGetKeysRequest implements CefMessageView, CefMessageEn
     }
 
     public static final CefMessageDecoder<V8ValueGetKeysRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "frame");
-        RemoteHandle frame = new RemoteHandle(__buf.getInt());
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int keysCount = WireDecoder.count(__buf, "keys");
-        String[] keys = new String[keysCount];
-        for (int __i = 0; __i < keysCount; __i++) {
-            int __slen = WireDecoder.length(__buf, "keys[" + __i + "]");
-            byte[] __sb = new byte[__slen];
-            __buf.get(__sb);
-            keys[__i] = new String(__sb, StandardCharsets.UTF_8);
-        }
+        final RemoteHandle frame = WireDecoder.handle(__buf, "frame");
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final String[] keys = WireDecoder.utf8List(__buf, "keys");
         WireDecoder.requireFullyConsumed(__buf, "V8ValueGetKeysRequest");
         return new V8ValueGetKeysRequest(frame, self, keys);
     };

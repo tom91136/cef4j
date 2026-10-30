@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.devtools;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,17 +36,22 @@ import org.slf4j.LoggerFactory;
  * <p>This class knows nothing about the session's concrete transport or JSON implementation. The same instance works
  * over ZeroMQ, Unix domain sockets, WebSocket, recording/replay, or an in-memory loopback transport with either the
  * Gson or Jackson codec.
+ *
+ * <p>A codec that fails must be reported to the caller of the command, so every failure of the codec is caught and
+ * delivered through the returned future rather than being lost in the completion stage.
  */
+@SuppressWarnings("baumkuchen:catch-throwable")
 public final class DevToolsSession implements CdpTransport {
     private static final Logger LOG = LoggerFactory.getLogger(DevToolsSession.class);
-    private static final java.lang.reflect.@Nullable Method SEND_DEV_TOOLS_METHOD = findSendDevToolsMethod();
+    private static final java.lang.reflect.@Nullable Method SEND_DEV_TOOLS_METHOD =
+            findSendDevToolsMethod().orElse(null);
 
-    private static java.lang.reflect.@Nullable Method findSendDevToolsMethod() {
+    private static Optional<java.lang.reflect.Method> findSendDevToolsMethod() {
         try {
-            return BrowserHost.class.getMethod("sendDevToolsMessage", byte[].class);
-        } catch (NoSuchMethodException unavailableInOlderCef) {
+            return Optional.of(BrowserHost.class.getMethod("sendDevToolsMessage", byte[].class));
+        } catch (NoSuchMethodException ignored) {
             LOG.debug("sendDevToolsMessage is unavailable in this CEF version");
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -88,8 +94,8 @@ public final class DevToolsSession implements CdpTransport {
         Objects.requireNonNull(browser, "browser");
         Objects.requireNonNull(host, "host");
         Objects.requireNonNull(codec, "codec");
-        DevToolsSession devTools = new DevToolsSession(session, browser, host, codec);
-        CompletableFuture<DevToolsSession> attached = CefFutures.map(
+        final DevToolsSession devTools = new DevToolsSession(session, browser, host, codec);
+        final CompletableFuture<DevToolsSession> attached = CefFutures.map(
                 session.request(new DevToolsAttachRequest(browser), DevToolsAttachResponse.DECODER),
                 ignored -> devTools);
         CefFutures.observeFailure(attached, devTools::failAndClose);
@@ -103,9 +109,9 @@ public final class DevToolsSession implements CdpTransport {
         Objects.requireNonNull(method, "method");
         if (!open.get()) return CompletableFuture.failedFuture(new IllegalStateException("DevTools session is closed"));
 
-        CdpRequestTracker.Request<Map<String, Object>> request = requests.register();
-        int id = request.id();
-        Map<String, Object> command = new java.util.HashMap<>();
+        final CdpRequestTracker.Request<Map<String, Object>> request = requests.register();
+        final int id = request.id();
+        final Map<String, Object> command = new java.util.HashMap<>();
         command.put("id", id);
         command.put("method", method);
         if (params != null) command.put("params", params);
@@ -121,10 +127,10 @@ public final class DevToolsSession implements CdpTransport {
                             "sendDevToolsMessage is not available in this CEF version (requires CEF 85+)"));
             return request;
         }
-        byte[] encoded = codec.encode(command);
+        final byte[] encoded = codec.encode(command);
         CompletableFuture<?> sent;
         try {
-            sent = (CompletableFuture<?>) SEND_DEV_TOOLS_METHOD.invoke(host, encoded);
+            sent = (CompletableFuture<?>) SEND_DEV_TOOLS_METHOD.invoke(host, (Object) encoded);
         } catch (java.lang.reflect.InvocationTargetException e) {
             requests.fail(id, e.getCause() != null ? e.getCause() : e);
             return request;
@@ -148,12 +154,12 @@ public final class DevToolsSession implements CdpTransport {
     public CompletableFuture<byte[]> execute(String method, byte @Nullable [] params) {
         Map<String, Object> object = null;
         if (params != null) {
-            Object decoded = codec.decode(params);
-            if (!(decoded instanceof Map)) throw new IllegalArgumentException("CDP params must be a JSON object");
-            object = asMap(decoded);
+            object = asMap(codec.decode(params)
+                    .filter(Map.class::isInstance)
+                    .orElseThrow(() -> new IllegalArgumentException("CDP params must be a JSON object")));
         }
-        CompletableFuture<Map<String, Object>> source = send(method, object);
-        CompletableFuture<byte[]> result = new CompletableFuture<>();
+        final CompletableFuture<Map<String, Object>> source = send(method, object);
+        final CompletableFuture<byte[]> result = new CompletableFuture<>();
         source.whenComplete((value, failure) -> {
             try {
                 if (failure != null) result.completeExceptionally(failure);
@@ -184,7 +190,7 @@ public final class DevToolsSession implements CdpTransport {
     public EventRegistration on(String method, Consumer<Map<String, Object>> handler) {
         Objects.requireNonNull(method, "method");
         Objects.requireNonNull(handler, "handler");
-        CopyOnWriteArrayList<Consumer<Map<String, Object>>> handlers =
+        final CopyOnWriteArrayList<Consumer<Map<String, Object>>> handlers =
                 eventHandlers.computeIfAbsent(method, ignored -> new CopyOnWriteArrayList<>());
         handlers.add(handler);
         return () -> handlers.remove(handler);
@@ -217,15 +223,15 @@ public final class DevToolsSession implements CdpTransport {
     private void handleMessage(DevToolsMessageEvent event) {
         if (!open.get() || !browser.equals(event.browser())) return;
         try {
-            Object decoded = codec.decode(event.message());
-            if (!(decoded instanceof Map)) throw new IllegalArgumentException("CDP message is not an object");
-            Map<String, Object> message = asMap(decoded);
-            Object id = message.get("id");
+            final Map<String, Object> message = asMap(codec.decode(event.message())
+                    .filter(Map.class::isInstance)
+                    .orElseThrow(() -> new IllegalArgumentException("CDP message is not an object")));
+            final Object id = message.get("id");
             if (id instanceof Number) {
                 completeResult(((Number) id).intValue(), message);
                 return;
             }
-            Object method = message.get("method");
+            final Object method = message.get("method");
             if (method instanceof String) {
                 dispatchEvent((String) method, objectOrEmpty(message.get("params")));
             }
@@ -235,13 +241,13 @@ public final class DevToolsSession implements CdpTransport {
     }
 
     private void completeResult(int id, Map<String, Object> message) {
-        Object error = message.get("error");
+        final Object error = message.get("error");
         if (error instanceof Map) {
-            Map<String, Object> errorMap = asMap(error);
-            Object codeValue = errorMap.get("code");
-            int code = codeValue instanceof Number ? ((Number) codeValue).intValue() : -1;
-            Object messageValue = errorMap.get("message");
-            String text = messageValue instanceof String ? (String) messageValue : "CDP command failed";
+            final Map<String, Object> errorMap = asMap(error);
+            final Object codeValue = errorMap.get("code");
+            final int code = codeValue instanceof Number ? ((Number) codeValue).intValue() : -1;
+            final Object messageValue = errorMap.get("message");
+            final String text = messageValue instanceof String ? (String) messageValue : "CDP command failed";
             requests.fail(id, new CdpException(code, text, errorMap.get("data")));
         } else {
             requests.complete(id, objectOrEmpty(message.get("result")));
@@ -249,7 +255,7 @@ public final class DevToolsSession implements CdpTransport {
     }
 
     private void dispatchEvent(String method, Map<String, Object> params) {
-        CopyOnWriteArrayList<Consumer<Map<String, Object>>> handlers = eventHandlers.get(method);
+        final CopyOnWriteArrayList<Consumer<Map<String, Object>>> handlers = eventHandlers.get(method);
         if (handlers == null) return;
         for (Consumer<Map<String, Object>> handler : handlers) {
             try {
@@ -284,7 +290,7 @@ public final class DevToolsSession implements CdpTransport {
     }
 
     private void unregisterClose() {
-        CefSession.HandlerRegistration current = closeRegistration;
+        final CefSession.HandlerRegistration current = closeRegistration;
         closeRegistration = null;
         if (current != null) current.unregister();
     }

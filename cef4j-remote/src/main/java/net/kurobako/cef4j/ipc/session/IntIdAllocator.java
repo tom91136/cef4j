@@ -17,7 +17,7 @@ final class IntIdAllocator {
 
     int allocate(IntPredicate claim) {
         for (long attempts = 0; attempts < Integer.MAX_VALUE; attempts++) {
-            int candidate = next.getAndUpdate(current -> current == Integer.MAX_VALUE ? 1 : current + 1);
+            final int candidate = next.getAndUpdate(current -> current == Integer.MAX_VALUE ? 1 : current + 1);
             if (claim.test(candidate)) return candidate;
         }
         throw new IllegalStateException("positive int32 identifier space exhausted");

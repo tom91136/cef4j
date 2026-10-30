@@ -3,12 +3,13 @@ package net.kurobako.cef4j.webdriver;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import net.kurobako.cef4j.policy.NullableBoundary;
 import org.jspecify.annotations.Nullable;
 
 /** Mutable insertion-ordered JSON object independent of a concrete JSON library. */
-@NullableBoundary("mirrors Gson: absent members read as null and null values are stored as JsonNull")
+@NullableBoundary("mirrors Gson: null values are stored as JsonNull")
 public final class JsonObject extends JsonElement {
     private final Map<String, JsonElement> values = new LinkedHashMap<>();
 
@@ -28,12 +29,12 @@ public final class JsonObject extends JsonElement {
         add(name, value == null ? JsonNull.INSTANCE : new JsonPrimitive(value));
     }
 
-    public @Nullable JsonElement get(String name) {
-        return values.get(name);
+    public Optional<JsonElement> get(String name) {
+        return Optional.ofNullable(values.get(name));
     }
 
-    public @Nullable JsonElement remove(String name) {
-        return values.remove(name);
+    public Optional<JsonElement> remove(String name) {
+        return Optional.ofNullable(values.remove(name));
     }
 
     public boolean has(String name) {
@@ -62,7 +63,7 @@ public final class JsonObject extends JsonElement {
 
     @Override
     public JsonObject deepCopy() {
-        JsonObject copy = new JsonObject();
+        final JsonObject copy = new JsonObject();
         values.forEach((name, value) -> copy.add(name, value.deepCopy()));
         return copy;
     }

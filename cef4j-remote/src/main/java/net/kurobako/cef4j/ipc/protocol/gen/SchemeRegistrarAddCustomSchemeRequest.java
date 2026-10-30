@@ -4,12 +4,14 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class SchemeRegistrarAddCustomSchemeRequest implements CefMessageView, CefMessageEncoder {
 
     public static final int MESSAGE_ID = 1154586080;
@@ -50,7 +52,7 @@ public final class SchemeRegistrarAddCustomSchemeRequest implements CefMessageVi
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        ByteOrder originalOrder = __dst.order();
+        final ByteOrder originalOrder = __dst.order();
         try {
             __dst.order(ByteOrder.LITTLE_ENDIAN);
             __dst.putInt(self.id());
@@ -63,16 +65,11 @@ public final class SchemeRegistrarAddCustomSchemeRequest implements CefMessageVi
     }
 
     public static final CefMessageDecoder<SchemeRegistrarAddCustomSchemeRequest> DECODER = payload -> {
-        ByteBuffer __buf = payload.duplicate();
+        final ByteBuffer __buf = payload.duplicate();
         __buf.order(ByteOrder.LITTLE_ENDIAN);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "self");
-        RemoteHandle self = new RemoteHandle(__buf.getInt());
-        int schemeNameLen = WireDecoder.length(__buf, "schemeName");
-        byte[] schemeNameBuf = new byte[schemeNameLen];
-        __buf.get(schemeNameBuf);
-        String schemeName = new String(schemeNameBuf, StandardCharsets.UTF_8);
-        WireDecoder.requireRemaining(__buf, Integer.BYTES, "options");
-        int options = __buf.getInt();
+        final RemoteHandle self = WireDecoder.handle(__buf, "self");
+        final String schemeName = WireDecoder.utf8(__buf, "schemeName");
+        final int options = WireDecoder.int32(__buf, "options");
         WireDecoder.requireFullyConsumed(__buf, "SchemeRegistrarAddCustomSchemeRequest");
         return new SchemeRegistrarAddCustomSchemeRequest(self, schemeName, options);
     };

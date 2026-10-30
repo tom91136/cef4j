@@ -58,7 +58,7 @@ object RefineTree {
       cppTypeInfo: Map[String, CppMethodTypeInfo]
   )(using ctx: Naming.Context): CefDecl = {
     val cppClassName    = decl.namedStruct.flatMap(ctx.cppClassNames.get)
-    lazy val lowerToKey = cppTypeInfo.keysIterator.map(k => k.toLowerCase -> k).toMap
+    lazy val lowerToKey = cppTypeInfo.keys.view.map(k => k.toLowerCase -> k).toMap
 
     def recover(fn: FnPtr): FnPtr = {
       val pascal       = Naming.toPascalCase(fn.name)
@@ -74,14 +74,7 @@ object RefineTree {
       info match {
         case Some(ti) =>
           val recoveredRet    = recoverType(fn.ret, ti.returnType)
-          val recoveredParams = fn.params.map { p =>
-            val cppParamType = ti.paramTypes.get(p.name)
-              .orElse(ti.paramTypes.get(Naming.toCamelCase(p.name)))
-            cppParamType match {
-              case Some(cppType) => p.copy(typ = recoverType(p.typ, cppType))
-              case None          => p
-            }
-          }
+          val recoveredParams = recoverParams(fn.params, ti)
           val unqualifiedName = matchedKey.map(k =>
             k.lastIndexOf("::") match {
               case -1  => k
@@ -93,8 +86,18 @@ object RefineTree {
       }
     }
 
-    decl.mapFns(recover)
+    decl.mapFns(recover(_))
   }
+
+  private def recoverParams(params: List[Param], info: CppMethodTypeInfo): List[Param] =
+    params.map { p =>
+      val cppType = info.paramTypes.get(p.name)
+        .orElse(info.paramTypes.get(Naming.toCamelCase(p.name)))
+      cppType match {
+        case Some(ct) => p.copy(typ = recoverType(p.typ, ct))
+        case None     => p
+      }
+    }
 
   private def recoverType(capiType: CType, cppTypeStr: String): CType = (capiType, cppTypeStr) match {
     case (CType.Int, "bool") => CType.Bool
@@ -106,17 +109,17 @@ object RefineTree {
       docs: Map[String, String],
       cppMethodNames: Set[String]
   )(using Naming.Context): CefDecl = {
-    lazy val lowerToName         = cppMethodNames.iterator.map(n => n.toLowerCase -> n).toMap
+    lazy val lowerToName         = cppMethodNames.view.map(n => n.toLowerCase -> n).toMap
     def enrich(fn: FnPtr): FnPtr = {
       val pascal  = Naming.toPascalCase(fn.name)
-      val docText = DocComments.resolveMethodDoc(fn, docs, decl.namedStruct.getOrElse(""))
+      val docText = DocComments.resolveMethodDoc(DocComments.MethodDoc(fn, docs, decl.namedStruct.getOrElse("")))
         .orElse(lowerToName.get(pascal.toLowerCase).flatMap(docs.get))
       docText match {
         case Some(text) => fn.copy(metaAttrs = DocComments.extractAttrsList(text))
         case None       => fn
       }
     }
-    decl.mapFns(enrich)
+    decl.mapFns(enrich(_))
   }
 
   private def enrichFreeFunctions(
@@ -126,23 +129,11 @@ object RefineTree {
   )(using Naming.Context): List[CefDecl.FreeFunction] = freeFunctions.map { ff =>
     val pascal  = Naming.toPascalCase(ff.javaMethodName)
     val docText = DocComments.resolveFreeFunctionDoc(ff, docs)
-    val attrs   = docText.map(DocComments.extractAttrsList).getOrElse(Nil)
+    val attrs   = docText.fold(Nil)(DocComments.extractAttrsList)
     val info    = cppTypeInfo.get(pascal).orElse(cppTypeInfo.get(ff.javaMethodName))
 
-    val (recoveredRet, recoveredParams) = info match {
-      case Some(ti) =>
-        val ret    = recoverType(ff.ret, ti.returnType)
-        val params = ff.params.map { p =>
-          val cppType = ti.paramTypes.get(p.name)
-            .orElse(ti.paramTypes.get(Naming.toCamelCase(p.name)))
-          cppType match {
-            case Some(ct) => p.copy(typ = recoverType(p.typ, ct))
-            case None     => p
-          }
-        }
-        (ret, params)
-      case None => (ff.ret, ff.params)
-    }
+    val recoveredRet    = info.fold(ff.ret)(ti => recoverType(ff.ret, ti.returnType))
+    val recoveredParams = info.fold(ff.params)(ti => recoverParams(ff.params, ti))
 
     ff.copy(ret = recoveredRet, params = recoveredParams, metaAttrs = attrs)
   }
@@ -188,7 +179,7 @@ object RefineTree {
       debugName: String
   ): Option[(CType, List[Param])] =
     metaAttrs.collectFirst { case ("count_func", spec) => spec }
-      .flatMap(parseCountFunc)
+      .flatMap(parseCountFunc(_))
       .flatMap { case (arrayParamName, countMethodCpp) =>
         val countParamName = s"${arrayParamName}Count"
         val countParam     = params.find(_.name == countParamName)
@@ -208,8 +199,8 @@ object RefineTree {
                 None
             }
           // cef_string_list_t already carries the flattened vector count.
-          case (None, Some(Param(_, CType.StringList, _, _))) => None
-          case _                                              =>
+          case (None, Some(Param(typ = CType.StringList))) => None
+          case _                                           =>
             System.err.println(
               s"  WARN: count_func on $debugName: expected params $countParamName + $arrayParamName but not found"
             )

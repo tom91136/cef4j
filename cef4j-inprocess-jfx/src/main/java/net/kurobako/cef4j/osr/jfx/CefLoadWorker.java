@@ -1,6 +1,7 @@
 package net.kurobako.cef4j.osr.jfx;
 
 import java.util.Objects;
+import java.util.Optional;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -30,7 +31,7 @@ final class CefLoadWorker implements Worker<Void> {
         this.engine = engine;
     }
 
-    void beginLoad(String location) {
+    void beginLoad(@Nullable String location) {
         state.set(State.SCHEDULED);
         running.set(true);
         exception.set(null);
@@ -64,7 +65,7 @@ final class CefLoadWorker implements Worker<Void> {
         message.set("");
     }
 
-    void markFailed(Throwable failure) {
+    void markFailed(@Nullable Throwable failure) {
         exception.set(failure);
         state.set(State.FAILED);
         running.set(false);
@@ -178,8 +179,8 @@ final class CefLoadWorker implements Worker<Void> {
         return getValue();
     }
 
-    public @Nullable Throwable exception() {
-        return getException();
+    public Optional<Throwable> exception() {
+        return Optional.ofNullable(getException());
     }
 
     public double workDone() {

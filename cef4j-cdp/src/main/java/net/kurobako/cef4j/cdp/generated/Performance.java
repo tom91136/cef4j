@@ -4,8 +4,6 @@ package net.kurobako.cef4j.cdp.generated;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
@@ -13,6 +11,7 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Chrome DevTools Protocol Performance domain.
@@ -20,6 +19,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Performance {
     private Performance() {}
     /**
@@ -70,7 +70,7 @@ public final class Performance {
     public static final class EnableRequest extends CdpObject {
         public EnableRequest() {}
         public static EnableRequest fromMap(Map<String, Object> values) {
-            EnableRequest instance_ = new EnableRequest();
+            final EnableRequest instance_ = new EnableRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -79,21 +79,11 @@ public final class Performance {
          * @return the protocol field value, empty when absent
          */
         public Optional<EnableTimeDomainValues> timeDomain() {
-            Object value = raw("timeDomain");
-            return Optional.ofNullable(value == null ? null : EnableTimeDomainValues.of((String) value));
+            return raw("timeDomain").map(value -> EnableTimeDomainValues.of((String) value));
         }
         /**
          * Time domain to use for collecting and reporting duration metrics.
-         * @param timeDomain field value; empty omits the value
-         * @return this model
-         */
-        public EnableRequest timeDomain(Optional<EnableTimeDomainValues> timeDomain) {
-            set("timeDomain", timeDomain.orElse(null));
-            return this;
-        }
-        /**
-         * Time domain to use for collecting and reporting duration metrics.
-         * @param timeDomain field value; null removes the value
+         * @param timeDomain field value
          * @return this model
          */
         public EnableRequest timeDomain(EnableTimeDomainValues timeDomain) {
@@ -117,10 +107,10 @@ public final class Performance {
          */
         @Deprecated
         public SetTimeDomainRequest(SetTimeDomainTimeDomainValues timeDomain) {
-            set("timeDomain", timeDomain);
+            timeDomain(timeDomain);
         }
         public static SetTimeDomainRequest fromMap(Map<String, Object> values) {
-            SetTimeDomainRequest instance_ = new SetTimeDomainRequest();
+            final SetTimeDomainRequest instance_ = new SetTimeDomainRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -155,7 +145,7 @@ public final class Performance {
          * @return the protocol field value
          */
         public java.util.List<Performance.Metric> metrics() {
-            return CdpObject.requireList(require("metrics"), element0 -> java.util.Objects.requireNonNull(Performance.Metric.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("metrics"), element0 -> java.util.Objects.requireNonNull(Performance.Metric.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Timestamp title.
@@ -191,7 +181,7 @@ public final class Performance {
         THREADTICKS("threadTicks");
         public final String value;
         EnableTimeDomainValues(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static EnableTimeDomainValues of(String value) {
             for (EnableTimeDomainValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -207,7 +197,7 @@ public final class Performance {
         THREADTICKS("threadTicks");
         public final String value;
         SetTimeDomainTimeDomainValues(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static SetTimeDomainTimeDomainValues of(String value) {
             for (SetTimeDomainTimeDomainValues constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -230,9 +220,9 @@ public final class Performance {
          * @param timeDomain protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> enable(Optional<EnableTimeDomainValues> timeDomain) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            timeDomain.ifPresent(value_ -> params.put("timeDomain", CdpObject.json(value_)));
+        public CompletionStage<Void> enable(EnableTimeDomainValues timeDomain) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            params.put("timeDomain", CdpObject.json(timeDomain));
             return client.call("Performance.enable", params);
         }
         /**
@@ -240,7 +230,7 @@ public final class Performance {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return enable(Optional.empty());
+            return client.call("Performance.enable", null);
         }
         /**
          * Enable collecting and reporting metrics.
@@ -259,7 +249,7 @@ public final class Performance {
          */
         @Deprecated
         public CompletionStage<Void> setTimeDomain(SetTimeDomainTimeDomainValues timeDomain) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("timeDomain", CdpObject.json(timeDomain));
             return client.call("Performance.setTimeDomain", params);
         }
@@ -279,7 +269,7 @@ public final class Performance {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Performance.Metric>> getMetrics() {
-            return client.call("Performance.getMetrics", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("metrics")), element0 -> java.util.Objects.requireNonNull(Performance.Metric.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("Performance.getMetrics", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("metrics")), element0 -> java.util.Objects.requireNonNull(Performance.Metric.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Current values of the metrics.

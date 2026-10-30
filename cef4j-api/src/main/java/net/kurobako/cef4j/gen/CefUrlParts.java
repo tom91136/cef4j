@@ -28,7 +28,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">internal/cef_types.h:762</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public final class CefUrlParts {
 
@@ -89,24 +88,14 @@ public final class CefUrlParts {
 
     /** Create a mutable copy of this instance. */
     public Mutable toMutable() {
-        return new Mutable(
-                this.spec,
-                this.scheme,
-                this.username,
-                this.password,
-                this.host,
-                this.port,
-                this.origin,
-                this.path,
-                this.query,
-                this.fragment);
+        return new Mutable(spec, scheme, username, password, host, port, origin, path, query, fragment);
     }
 
     @Override
     public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof CefUrlParts)) return false;
-        CefUrlParts other = (CefUrlParts) obj;
+        final CefUrlParts other = (CefUrlParts) obj;
         return java.util.Objects.equals(this.spec, other.spec)
                 && java.util.Objects.equals(this.scheme, other.scheme)
                 && java.util.Objects.equals(this.username, other.username)
@@ -200,24 +189,14 @@ public final class CefUrlParts {
 
         /** Create an immutable snapshot of this instance. */
         public CefUrlParts toImmutable() {
-            return new CefUrlParts(
-                    this.spec,
-                    this.scheme,
-                    this.username,
-                    this.password,
-                    this.host,
-                    this.port,
-                    this.origin,
-                    this.path,
-                    this.query,
-                    this.fragment);
+            return new CefUrlParts(spec, scheme, username, password, host, port, origin, path, query, fragment);
         }
 
         @Override
         public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
             if (this == obj) return true;
             if (!(obj instanceof Mutable)) return false;
-            Mutable other = (Mutable) obj;
+            final Mutable other = (Mutable) obj;
             return java.util.Objects.equals(this.spec, other.spec)
                     && java.util.Objects.equals(this.scheme, other.scheme)
                     && java.util.Objects.equals(this.username, other.username)

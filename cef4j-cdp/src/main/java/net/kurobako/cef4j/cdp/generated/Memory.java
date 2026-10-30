@@ -4,15 +4,14 @@ package net.kurobako.cef4j.cdp.generated;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
-import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Chrome DevTools Protocol Memory domain.
@@ -21,6 +20,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Memory {
     private Memory() {}
     /**
@@ -31,7 +31,7 @@ public final class Memory {
         CRITICAL("critical");
         public final String value;
         PressureLevel(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static PressureLevel of(String value) {
             for (PressureLevel constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -111,14 +111,14 @@ public final class Memory {
          * @return the protocol field value
          */
         public java.util.List<Memory.SamplingProfileNode> samples() {
-            return CdpObject.requireList(require("samples"), element0 -> java.util.Objects.requireNonNull(Memory.SamplingProfileNode.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("samples"), element0 -> java.util.Objects.requireNonNull(Memory.SamplingProfileNode.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Returns the modules field.
          * @return the protocol field value
          */
         public java.util.List<Memory.Module> modules() {
-            return CdpObject.requireList(require("modules"), element0 -> java.util.Objects.requireNonNull(Memory.Module.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("modules"), element0 -> java.util.Objects.requireNonNull(Memory.Module.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Sets the samples field.
@@ -265,10 +265,10 @@ public final class Memory {
          * @param suppressed protocol value
          */
         public SetPressureNotificationsSuppressedRequest(boolean suppressed) {
-            set("suppressed", suppressed);
+            suppressed(suppressed);
         }
         public static SetPressureNotificationsSuppressedRequest fromMap(Map<String, Object> values) {
-            SetPressureNotificationsSuppressedRequest instance_ = new SetPressureNotificationsSuppressedRequest();
+            final SetPressureNotificationsSuppressedRequest instance_ = new SetPressureNotificationsSuppressedRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -299,10 +299,10 @@ public final class Memory {
          * @param level protocol value
          */
         public SimulatePressureNotificationRequest(Memory.PressureLevel level) {
-            set("level", level);
+            level(level);
         }
         public static SimulatePressureNotificationRequest fromMap(Map<String, Object> values) {
-            SimulatePressureNotificationRequest instance_ = new SimulatePressureNotificationRequest();
+            final SimulatePressureNotificationRequest instance_ = new SimulatePressureNotificationRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -329,7 +329,7 @@ public final class Memory {
     public static final class StartSamplingRequest extends CdpObject {
         public StartSamplingRequest() {}
         public static StartSamplingRequest fromMap(Map<String, Object> values) {
-            StartSamplingRequest instance_ = new StartSamplingRequest();
+            final StartSamplingRequest instance_ = new StartSamplingRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -338,50 +338,30 @@ public final class Memory {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong samplingInterval() {
-            Long value = CdpObject.numberAsLong(raw("samplingInterval"));
-            return value == null ? OptionalLong.empty() : OptionalLong.of(value);
+            return raw("samplingInterval").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
         }
         /**
          * Do not randomize intervals between samples.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> suppressRandomness() {
-            Object value = raw("suppressRandomness");
-            return Optional.ofNullable((Boolean) value);
+            return raw("suppressRandomness").map(value -> (Boolean) value);
         }
         /**
          * Average number of bytes between samples.
-         * @param samplingInterval field value; empty omits the value
+         * @param samplingInterval field value
          * @return this model
          */
-        public StartSamplingRequest samplingInterval(OptionalLong samplingInterval) {
-            set("samplingInterval", samplingInterval.isPresent() ? samplingInterval.getAsLong() : null);
-            return this;
-        }
-        /**
-         * Average number of bytes between samples.
-         * @param samplingInterval field value; null removes the value
-         * @return this model
-         */
-        public StartSamplingRequest samplingInterval(Long samplingInterval) {
+        public StartSamplingRequest samplingInterval(long samplingInterval) {
             set("samplingInterval", samplingInterval);
             return this;
         }
         /**
          * Do not randomize intervals between samples.
-         * @param suppressRandomness field value; empty omits the value
+         * @param suppressRandomness field value
          * @return this model
          */
-        public StartSamplingRequest suppressRandomness(Optional<Boolean> suppressRandomness) {
-            set("suppressRandomness", suppressRandomness.orElse(null));
-            return this;
-        }
-        /**
-         * Do not randomize intervals between samples.
-         * @param suppressRandomness field value; null removes the value
-         * @return this model
-         */
-        public StartSamplingRequest suppressRandomness(Boolean suppressRandomness) {
+        public StartSamplingRequest suppressRandomness(boolean suppressRandomness) {
             set("suppressRandomness", suppressRandomness);
             return this;
         }
@@ -459,7 +439,7 @@ public final class Memory {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Memory.DOMCounter>> getDOMCountersForLeakDetection() {
-            return client.call("Memory.getDOMCountersForLeakDetection", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("counters")), element0 -> java.util.Objects.requireNonNull(Memory.DOMCounter.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0))))));
+            return client.call("Memory.getDOMCountersForLeakDetection", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("counters")), element0 -> java.util.Objects.requireNonNull(Memory.DOMCounter.fromMap(CdpObject.requireObjectMap(element0)))));
         }
         /**
          * Prepares for leak detection by terminating workers, stopping spellcheckers, dropping non-essential internal caches, running garbage collections, etc.
@@ -481,7 +461,7 @@ public final class Memory {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPressureNotificationsSuppressed(boolean suppressed) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("suppressed", CdpObject.json(suppressed));
             return client.call("Memory.setPressureNotificationsSuppressed", params);
         }
@@ -499,7 +479,7 @@ public final class Memory {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> simulatePressureNotification(Memory.PressureLevel level) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("level", CdpObject.json(level));
             return client.call("Memory.simulatePressureNotification", params);
         }
@@ -517,10 +497,10 @@ public final class Memory {
          * @param suppressRandomness protocol value
          * @return a stage completing when the command completes
          */
-        public CompletionStage<Void> startSampling(OptionalLong samplingInterval, Optional<Boolean> suppressRandomness) {
-            Map<String, Object> params = new LinkedHashMap<>();
-            samplingInterval.ifPresent(value_ -> params.put("samplingInterval", value_));
-            suppressRandomness.ifPresent(value_ -> params.put("suppressRandomness", value_));
+        public CompletionStage<Void> startSampling(@Nullable Long samplingInterval, @Nullable Boolean suppressRandomness) {
+            final Map<String, Object> params = new LinkedHashMap<>();
+            if (samplingInterval != null) params.put("samplingInterval", CdpObject.json(samplingInterval));
+            if (suppressRandomness != null) params.put("suppressRandomness", CdpObject.json(suppressRandomness));
             return client.call("Memory.startSampling", params);
         }
         /**
@@ -528,7 +508,7 @@ public final class Memory {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startSampling() {
-            return startSampling(OptionalLong.empty(), Optional.empty());
+            return client.call("Memory.startSampling", null);
         }
         /**
          * Start collecting native memory profile.
@@ -550,21 +530,21 @@ public final class Memory {
          * @return a stage completing with the command result
          */
         public CompletionStage<Memory.SamplingProfile> getAllTimeSamplingProfile() {
-            return client.call("Memory.getAllTimeSamplingProfile", null, result_ -> java.util.Objects.requireNonNull(Memory.SamplingProfile.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("profile")))))));
+            return client.call("Memory.getAllTimeSamplingProfile", null, result_ -> java.util.Objects.requireNonNull(Memory.SamplingProfile.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("profile"))))));
         }
         /**
          * Retrieve native memory allocations profile collected since browser process startup.
          * @return a stage completing with the command result
          */
         public CompletionStage<Memory.SamplingProfile> getBrowserSamplingProfile() {
-            return client.call("Memory.getBrowserSamplingProfile", null, result_ -> java.util.Objects.requireNonNull(Memory.SamplingProfile.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("profile")))))));
+            return client.call("Memory.getBrowserSamplingProfile", null, result_ -> java.util.Objects.requireNonNull(Memory.SamplingProfile.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("profile"))))));
         }
         /**
          * Retrieve native memory allocations profile collected since last {@code startSampling} call.
          * @return a stage completing with the command result
          */
         public CompletionStage<Memory.SamplingProfile> getSamplingProfile() {
-            return client.call("Memory.getSamplingProfile", null, result_ -> java.util.Objects.requireNonNull(Memory.SamplingProfile.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(java.util.Objects.requireNonNull(result_.get("profile")))))));
+            return client.call("Memory.getSamplingProfile", null, result_ -> java.util.Objects.requireNonNull(Memory.SamplingProfile.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("profile"))))));
         }
     }
 }

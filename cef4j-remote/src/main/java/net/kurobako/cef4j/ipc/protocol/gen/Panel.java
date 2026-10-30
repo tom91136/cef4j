@@ -2,6 +2,7 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
+import javax.annotation.processing.Generated;
 import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
@@ -12,6 +13,7 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * Each instance is a thin wrapper around a {@link RemoteHandle} that points at a runtime-server-side
  * ref-counted CEF object.
  */
+@Generated("mvn generate-sources -pl cef4j-remote")
 public final class Panel implements AutoCloseable {
 
     private final CefSession session;

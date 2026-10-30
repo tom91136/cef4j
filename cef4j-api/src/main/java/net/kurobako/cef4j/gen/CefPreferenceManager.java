@@ -23,7 +23,6 @@ import org.jspecify.annotations.Nullable;
  * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:87</a>
  */
 @Generated("./mvnw generate-sources -pl cef4j-api -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
-@SuppressWarnings({"SameReturnValue", "EmptyMethod", "UnusedReturnValue", "unused"})
 @NullableBoundary("generated external ABI")
 public interface CefPreferenceManager extends CefLibraryObject {
 
@@ -100,6 +99,7 @@ public interface CefPreferenceManager extends CefLibraryObject {
      * @param value may be null
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__preference_8h.html">cef_preference.h:169</a>
      */
+    @SuppressWarnings("UnusedReturnValue")
     boolean setPreference(@Nullable String name, @Nullable CefValue value, @Nullable String error);
 
     /**

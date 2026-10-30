@@ -7,7 +7,7 @@ object JavaRecordCodeGen {
   private def isSizeField(f: Field): Boolean = f.name == "size" && f.typ == CType.SizeT
 
   private val NativeSizeDecl =
-    s"""    // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
+    """    // Native struct size, populated by the JNI layer with sizeof(struct) as required by CEF. Not user-modifiable.
                                          |    @SuppressWarnings({"FieldMayBeFinal", "CanBeFinal"})
                                          |    private volatile long size = -1;
                                          |
@@ -31,14 +31,12 @@ object JavaRecordCodeGen {
     val subPkg   = summon[Naming.Context].subPackages.getOrElse(decl.name, "")
     val cProto   = DocComments.cPrototypeForDataStruct(decl)
     val content  = render(
-      javaName,
+      Naming.FileContext(javaName, decl.sourceHeader, subPkg),
       decl.fields,
       classDoc,
       needsMutable,
-      decl.sourceHeader,
       cProto,
       fieldDocs,
-      subPkg,
       emitAsPlatformInterface,
       platformImplSubPackages,
       implementSharedType
@@ -54,14 +52,14 @@ object JavaRecordCodeGen {
   ): String =
     fieldDocs.get(fieldName) match {
       case Some(doc) =>
-        val (rawLines, sectionLines) = doc.linesIterator.toList.partition(!_.startsWith("@_section:"))
-        val sectionNote              = sectionLines.collectFirst { case SectionMarkerRe(note) => note }
-        val rawDoc                   = rawLines.mkString("\n")
-        val converted                = DocComments.convertCefDoc(rawDoc)
-        val (cleanDoc, seeTags)      = DocComments.extractSourceTags(converted)
-        val lines                    = cleanDoc.linesIterator.filter(_.nonEmpty).toList
-        val noteLine                 = sectionNote.map(n => s"<p><i>$n</i>").toList
-        val allContent               = lines ++ noteLine
+        val (rawLines, sectionLines)                  = doc.linesIterator.toList.partition(!_.startsWith("@_section:"))
+        val sectionNote                               = sectionLines.collectFirst { case SectionMarkerRe(note) => note }
+        val rawDoc                                    = rawLines.mkString("\n")
+        val converted                                 = DocComments.convertCefDoc(rawDoc)
+        val DocComments.SourceTags(cleanDoc, seeTags) = DocComments.extractSourceTags(converted)
+        val lines                                     = cleanDoc.linesIterator.filter(_.nonEmpty).toList
+        val noteLine                                  = sectionNote.map(n => s"<p><i>$n</i>").toList
+        val allContent                                = lines ++ noteLine
         if (allContent.isEmpty) ""
         else {
           val docLines = allContent.map(l => s"     * $l")
@@ -76,18 +74,19 @@ ${allLines.mkString("\n")}
     }
 
   private def render(
-      javaName: String,
+      file: Naming.FileContext,
       fields: List[Field],
       classDoc: String,
       needsMutable: Boolean,
-      sourceHeader: String,
       cPrototype: String,
       fieldDocs: Map[String, String],
-      subPackage: String,
       emitAsPlatformInterface: Boolean,
       platformImplSubPackages: List[String],
       implementSharedType: Boolean
-  )(using Naming.Context, DocComments.Context, Banners): String =
+  )(using Naming.Context, DocComments.Context, Banners): String = {
+    val javaName     = file.javaName
+    val sourceHeader = file.sourceHeader
+    val subPackage   = file.subPackage
     if (emitAsPlatformInterface) {
       val rootPkg       = Naming.javaPackage
       val impls         = platformImplSubPackages.distinct.map(p => s"{@link $rootPkg.$p.$javaName}")
@@ -104,8 +103,8 @@ ${allLines.mkString("\n")}
         subPackage = subPackage
       )
     } else {
-      val userFields = fields.filterNot(isSizeField)
-      val hasSize    = fields.exists(isSizeField)
+      val userFields = fields.filterNot(isSizeField(_))
+      val hasSize    = fields.exists(isSizeField(_))
       val allTypes   = fields.map(_.typ)
 
       val fieldDecls  = renderFieldDecls(userFields, fieldDocs, "    ", "    public final ")
@@ -116,12 +115,9 @@ ${allLines.mkString("\n")}
         if (userFields.exists(f => !isPrimitive(f.typ))) List("org.jspecify.annotations.Nullable") else Nil
       val typeImports = (allTypes.flatMap(Naming.javaImports) ++ nullableImport).distinct.sorted.map(i => s"import $i;")
       val crossPkgImports = if (subPackage.nonEmpty) {
-        val cefNames      = allTypes.flatMap(Naming.referencedCefNames).distinct
-        val basePkg       = Naming.javaPackage
-        val thisPkg       = s"$basePkg.$subPackage"
-        val fromTypes     = cefNames.map(n => Naming.fullyQualifiedJavaName(n)).filter(!_.startsWith(s"$thisPkg."))
-        val hasOpaquePtr  = allTypes.exists(_ == CType.OpaquePtr)
-        val helperImports = if (hasOpaquePtr) List(s"$basePkg.NativePointer") else Nil
+        val fromTypes     = Naming.crossPackageCefImports(allTypes, subPackage)
+        val hasOpaquePtr  = allTypes.contains(CType.OpaquePtr)
+        val helperImports = if (hasOpaquePtr) List(s"${Naming.javaPackage}.NativePointer") else Nil
         (fromTypes ++ helperImports).distinct.sorted.map(fqn => s"import $fqn;")
       } else Nil
       val allImports = (typeImports ++ crossPkgImports).distinct.sorted
@@ -168,6 +164,7 @@ ${allLines.mkString("\n")}
         subPackage = subPackage
       )
     }
+  }
 
   private def renderMutableInner(
       immutableName: String,
@@ -176,8 +173,8 @@ ${allLines.mkString("\n")}
       fieldDocs: Map[String, String],
       implementSharedType: Boolean
   )(using Naming.Context, DocComments.Context): String = {
-    val userFields = fields.filterNot(isSizeField)
-    val hasSize    = fields.exists(isSizeField)
+    val userFields = fields.filterNot(isSizeField(_))
+    val hasSize    = fields.exists(isSizeField(_))
 
     val fieldDecls      = renderFieldDecls(userFields, fieldDocs, "        ", "        public ")
     val ctorParams      = renderCtorParams(userFields)
@@ -187,12 +184,8 @@ ${allLines.mkString("\n")}
     val mutableDoc = {
       val docText = if (classDoc.nonEmpty) s"Mutable variant of {@link $immutableName}. $classDoc"
       else s"Mutable variant of {@link $immutableName}."
-      val converted                 = DocComments.convertCefDoc(docText)
-      val (cleanDoc, sourceRefTags) = DocComments.extractSourceTags(converted)
-      val lines                     = cleanDoc.linesIterator.filter(_.nonEmpty).map(l => s"     * $l").toList
-      val seeTags                   = sourceRefTags.map(tag => s"     * @see $tag")
-      val separator                 = if (lines.nonEmpty && seeTags.nonEmpty) List("     *") else Nil
-      val allLines                  = lines ++ separator ++ seeTags
+      val converted = DocComments.convertCefDoc(docText)
+      val allLines  = DocComments.javadocLines(converted)
       s"""    /**
 ${allLines.mkString("\n")}
      */"""
@@ -259,7 +252,7 @@ ${renderToString(s"$immutableName.Mutable", fields, indent = 8)}
     }.mkString("\n")
 
   private def renderThisArgs(fields: List[Field])(using Naming.Context): String =
-    fields.map(f => s"this.${Naming.toCamelCase(f.name)}").mkString(", ")
+    fields.map(f => Naming.toCamelCase(f.name)).mkString(", ")
 
   private def indentDoc(doc: String, indent: String): String =
     if (doc.isEmpty) ""
@@ -283,7 +276,7 @@ $pad}"""
 ${pad}public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
 $pad    if (this == obj) return true;
 $pad    if (!(obj instanceof $className)) return false;
-$pad    $className other = ($className) obj;
+$pad    final $className other = ($className) obj;
 $pad    return $comparisons;
 $pad}"""
     }

@@ -17,7 +17,7 @@ class SystemBootstrapTest {
 
     @Test
     void packagedCefApiVersionMatchesTheBuild() {
-        String packaged = SystemBootstrap.packagedCefApiVersion();
+        String packaged = SystemBootstrap.packagedCefApiVersion().orElse(null);
         assertThat(packaged).isNotBlank();
         assertThat(packaged).matches("\\d+");
     }
@@ -32,15 +32,15 @@ class SystemBootstrapTest {
 
     @Test
     void autoDiscoverySelectsOnlyThePackagedCefMajor() throws Exception {
-        String expectedMajor = java.util.Objects.requireNonNull(SystemBootstrap.packagedCefApiVersion());
+        String expectedMajor = SystemBootstrap.packagedCefApiVersion().orElseThrow();
         Path matching = createCefDistribution(expectedMajor);
         createCefDistribution("999");
 
-        assertThat(SystemBootstrap.discoverCefDist(tempDir, expectedMajor)).isEqualTo(matching);
+        assertThat(SystemBootstrap.discoverCefDist(tempDir, expectedMajor)).contains(matching);
 
         deleteTree(java.util.Objects.requireNonNull(matching.getParent()));
 
-        assertThat(SystemBootstrap.discoverCefDist(tempDir, expectedMajor)).isNull();
+        assertThat(SystemBootstrap.discoverCefDist(tempDir, expectedMajor)).isEmpty();
     }
 
     @Test
@@ -57,9 +57,9 @@ class SystemBootstrapTest {
         Path discovered = Path.of("discovered");
 
         assertThat(SystemBootstrap.selectLibcefDir(configured, discovered, true))
-                .isEqualTo(configured);
-        assertThat(SystemBootstrap.selectLibcefDir(null, discovered, true)).isNull();
-        assertThat(SystemBootstrap.selectLibcefDir(null, discovered, false)).isEqualTo(discovered);
+                .contains(configured);
+        assertThat(SystemBootstrap.selectLibcefDir(null, discovered, true)).isEmpty();
+        assertThat(SystemBootstrap.selectLibcefDir(null, discovered, false)).contains(discovered);
     }
 
     @Test

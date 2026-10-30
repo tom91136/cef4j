@@ -4,8 +4,6 @@ package net.kurobako.cef4j.cdp.generated;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
@@ -13,6 +11,7 @@ import net.kurobako.cef4j.cdp.CdpClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
+import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
  * Chrome DevTools Protocol Security domain.
@@ -20,6 +19,7 @@ import net.kurobako.cef4j.cdp.CdpValue;
  */
 @Generated("./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
 @SuppressWarnings({"EscapedEntity", "InvalidParam", "JavaLangClash", "MissingSummary", "Unchecked", "UnusedMethod"})
+@NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Security {
     private Security() {}
     /**
@@ -28,7 +28,7 @@ public final class Security {
     public static final class CertificateId implements CdpValue<Long> {
         public final long value;
         public CertificateId(long value) { this.value = value; }
-        public Long value() { return value; }
+        @Override public Long value() { return value; }
         @Override public boolean equals(@org.jspecify.annotations.Nullable Object other) {
             if (this == other) return true;
             if (!(other instanceof CertificateId)) return false;
@@ -46,7 +46,7 @@ public final class Security {
         NONE("none");
         public final String value;
         MixedContentType(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static MixedContentType of(String value) {
             for (MixedContentType constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -66,7 +66,7 @@ public final class Security {
         INSECURE_BROKEN("insecure-broken");
         public final String value;
         SecurityState(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static SecurityState of(String value) {
             for (SecurityState constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -103,8 +103,7 @@ public final class Security {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> keyExchangeGroup() {
-            Object value = raw("keyExchangeGroup");
-            return Optional.ofNullable((String) value);
+            return raw("keyExchangeGroup").map(value -> (String) value);
         }
         /**
          * Cipher name.
@@ -118,8 +117,7 @@ public final class Security {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> mac() {
-            Object value = raw("mac");
-            return Optional.ofNullable((String) value);
+            return raw("mac").map(value -> (String) value);
         }
         /**
          * Page certificate.
@@ -161,8 +159,7 @@ public final class Security {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> certificateNetworkError() {
-            Object value = raw("certificateNetworkError");
-            return Optional.ofNullable((String) value);
+            return raw("certificateNetworkError").map(value -> (String) value);
         }
         /**
          * True if the certificate uses a weak signature algorithm.
@@ -233,16 +230,7 @@ public final class Security {
         }
         /**
          * (EC)DH group used by the connection, if applicable.
-         * @param keyExchangeGroup field value; empty omits the value
-         * @return this model
-         */
-        public CertificateSecurityState keyExchangeGroup(Optional<String> keyExchangeGroup) {
-            set("keyExchangeGroup", keyExchangeGroup.orElse(null));
-            return this;
-        }
-        /**
-         * (EC)DH group used by the connection, if applicable.
-         * @param keyExchangeGroup field value; null removes the value
+         * @param keyExchangeGroup field value
          * @return this model
          */
         public CertificateSecurityState keyExchangeGroup(String keyExchangeGroup) {
@@ -260,16 +248,7 @@ public final class Security {
         }
         /**
          * TLS MAC. Note that AEAD ciphers do not have separate MACs.
-         * @param mac field value; empty omits the value
-         * @return this model
-         */
-        public CertificateSecurityState mac(Optional<String> mac) {
-            set("mac", mac.orElse(null));
-            return this;
-        }
-        /**
-         * TLS MAC. Note that AEAD ciphers do not have separate MACs.
-         * @param mac field value; null removes the value
+         * @param mac field value
          * @return this model
          */
         public CertificateSecurityState mac(String mac) {
@@ -323,16 +302,7 @@ public final class Security {
         }
         /**
          * The highest priority network error code, if the certificate has an error.
-         * @param certificateNetworkError field value; empty omits the value
-         * @return this model
-         */
-        public CertificateSecurityState certificateNetworkError(Optional<String> certificateNetworkError) {
-            set("certificateNetworkError", certificateNetworkError.orElse(null));
-            return this;
-        }
-        /**
-         * The highest priority network error code, if the certificate has an error.
-         * @param certificateNetworkError field value; null removes the value
+         * @param certificateNetworkError field value
          * @return this model
          */
         public CertificateSecurityState certificateNetworkError(String certificateNetworkError) {
@@ -412,7 +382,7 @@ public final class Security {
         LOOKALIKE("lookalike");
         public final String value;
         SafetyTipStatus(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static SafetyTipStatus of(String value) {
             for (SafetyTipStatus constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -441,8 +411,7 @@ public final class Security {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> safeUrl() {
-            Object value = raw("safeUrl");
-            return Optional.ofNullable((String) value);
+            return raw("safeUrl").map(value -> (String) value);
         }
         /**
          * Describes whether the page triggers any safety tips or reputation warnings. Default is unknown.
@@ -455,16 +424,7 @@ public final class Security {
         }
         /**
          * The URL the safety tip suggested (&quot;Did you mean?&quot;). Only filled in for lookalike matches.
-         * @param safeUrl field value; empty omits the value
-         * @return this model
-         */
-        public SafetyTipInfo safeUrl(Optional<String> safeUrl) {
-            set("safeUrl", safeUrl.orElse(null));
-            return this;
-        }
-        /**
-         * The URL the safety tip suggested (&quot;Did you mean?&quot;). Only filled in for lookalike matches.
-         * @param safeUrl field value; null removes the value
+         * @param safeUrl field value
          * @return this model
          */
         public SafetyTipInfo safeUrl(String safeUrl) {
@@ -494,16 +454,14 @@ public final class Security {
          * @return the protocol field value, empty when absent
          */
         public Optional<Security.CertificateSecurityState> certificateSecurityState() {
-            Object value = raw("certificateSecurityState");
-            return Optional.ofNullable(value == null ? null : Security.CertificateSecurityState.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("certificateSecurityState").flatMap(CdpObject::objectMap).map(Security.CertificateSecurityState::fromMap);
         }
         /**
          * The type of Safety Tip triggered on the page. Note that this field will be set even if the Safety Tip UI was not actually shown.
          * @return the protocol field value, empty when absent
          */
         public Optional<Security.SafetyTipInfo> safetyTipInfo() {
-            Object value = raw("safetyTipInfo");
-            return Optional.ofNullable(value == null ? null : Security.SafetyTipInfo.fromMap(java.util.Objects.requireNonNull(objectMap(value))));
+            return raw("safetyTipInfo").flatMap(CdpObject::objectMap).map(Security.SafetyTipInfo::fromMap);
         }
         /**
          * Array of security state issues ids.
@@ -523,16 +481,7 @@ public final class Security {
         }
         /**
          * Security state details about the page certificate.
-         * @param certificateSecurityState field value; empty omits the value
-         * @return this model
-         */
-        public VisibleSecurityState certificateSecurityState(Optional<Security.CertificateSecurityState> certificateSecurityState) {
-            set("certificateSecurityState", certificateSecurityState.orElse(null));
-            return this;
-        }
-        /**
-         * Security state details about the page certificate.
-         * @param certificateSecurityState field value; null removes the value
+         * @param certificateSecurityState field value
          * @return this model
          */
         public VisibleSecurityState certificateSecurityState(Security.CertificateSecurityState certificateSecurityState) {
@@ -541,16 +490,7 @@ public final class Security {
         }
         /**
          * The type of Safety Tip triggered on the page. Note that this field will be set even if the Safety Tip UI was not actually shown.
-         * @param safetyTipInfo field value; empty omits the value
-         * @return this model
-         */
-        public VisibleSecurityState safetyTipInfo(Optional<Security.SafetyTipInfo> safetyTipInfo) {
-            set("safetyTipInfo", safetyTipInfo.orElse(null));
-            return this;
-        }
-        /**
-         * The type of Safety Tip triggered on the page. Note that this field will be set even if the Safety Tip UI was not actually shown.
-         * @param safetyTipInfo field value; null removes the value
+         * @param safetyTipInfo field value
          * @return this model
          */
         public VisibleSecurityState safetyTipInfo(Security.SafetyTipInfo safetyTipInfo) {
@@ -623,8 +563,7 @@ public final class Security {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> recommendations() {
-            Object value = raw("recommendations");
-            return Optional.ofNullable(list(value, element0 -> (String) element0));
+            return raw("recommendations").flatMap(value -> list(value, element0 -> (String) element0));
         }
         /**
          * Security state representing the severity of the factor being explained.
@@ -682,16 +621,7 @@ public final class Security {
         }
         /**
          * Recommendations to fix any issues.
-         * @param recommendations field value; empty omits the value
-         * @return this model
-         */
-        public SecurityStateExplanation recommendations(Optional<java.util.List<String>> recommendations) {
-            set("recommendations", recommendations.orElse(null));
-            return this;
-        }
-        /**
-         * Recommendations to fix any issues.
-         * @param recommendations field value; null removes the value
+         * @param recommendations field value
          * @return this model
          */
         public SecurityStateExplanation recommendations(java.util.List<String> recommendations) {
@@ -831,7 +761,7 @@ public final class Security {
         CANCEL("cancel");
         public final String value;
         CertificateErrorAction(String value) { this.value = value; }
-        public String value() { return value; }
+        @Override public String value() { return value; }
         public static CertificateErrorAction of(String value) {
             for (CertificateErrorAction constant : values()) {
                 if (constant.value.equals(value)) return constant;
@@ -849,10 +779,10 @@ public final class Security {
          * @param ignore protocol value
          */
         public SetIgnoreCertificateErrorsRequest(boolean ignore) {
-            set("ignore", ignore);
+            ignore(ignore);
         }
         public static SetIgnoreCertificateErrorsRequest fromMap(Map<String, Object> values) {
-            SetIgnoreCertificateErrorsRequest instance_ = new SetIgnoreCertificateErrorsRequest();
+            final SetIgnoreCertificateErrorsRequest instance_ = new SetIgnoreCertificateErrorsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -888,11 +818,10 @@ public final class Security {
          */
         @Deprecated
         public HandleCertificateErrorRequest(long eventId, Security.CertificateErrorAction action) {
-            set("eventId", eventId);
-            set("action", action);
+            eventId(eventId).action(action);
         }
         public static HandleCertificateErrorRequest fromMap(Map<String, Object> values) {
-            HandleCertificateErrorRequest instance_ = new HandleCertificateErrorRequest();
+            final HandleCertificateErrorRequest instance_ = new HandleCertificateErrorRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -943,10 +872,10 @@ public final class Security {
          */
         @Deprecated
         public SetOverrideCertificateErrorsRequest(boolean override) {
-            set("override", override);
+            override(override);
         }
         public static SetOverrideCertificateErrorsRequest fromMap(Map<String, Object> values) {
-            SetOverrideCertificateErrorsRequest instance_ = new SetOverrideCertificateErrorsRequest();
+            final SetOverrideCertificateErrorsRequest instance_ = new SetOverrideCertificateErrorsRequest();
             if (values != null) instance_.values.putAll(values);
             return instance_;
         }
@@ -1042,7 +971,7 @@ public final class Security {
          * @return the protocol field value
          */
         public Security.VisibleSecurityState visibleSecurityState() {
-            return java.util.Objects.requireNonNull(Security.VisibleSecurityState.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("visibleSecurityState")))));
+            return java.util.Objects.requireNonNull(Security.VisibleSecurityState.fromMap(CdpObject.requireObjectMap(require("visibleSecurityState"))));
         }
         /**
          * Security state information about the page.
@@ -1088,7 +1017,7 @@ public final class Security {
          */
         @Deprecated
         public java.util.List<Security.SecurityStateExplanation> explanations() {
-            return CdpObject.requireList(require("explanations"), element0 -> java.util.Objects.requireNonNull(Security.SecurityStateExplanation.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(element0)))));
+            return CdpObject.requireList(require("explanations"), element0 -> java.util.Objects.requireNonNull(Security.SecurityStateExplanation.fromMap(CdpObject.requireObjectMap(element0))));
         }
         /**
          * Information about insecure content on the page.
@@ -1097,7 +1026,7 @@ public final class Security {
          */
         @Deprecated
         public Security.InsecureContentStatus insecureContentStatus() {
-            return java.util.Objects.requireNonNull(Security.InsecureContentStatus.fromMap(java.util.Objects.requireNonNull(CdpObject.objectMap(require("insecureContentStatus")))));
+            return java.util.Objects.requireNonNull(Security.InsecureContentStatus.fromMap(CdpObject.requireObjectMap(require("insecureContentStatus"))));
         }
         /**
          * Overrides user-visible description of the state. Always omitted.
@@ -1106,8 +1035,7 @@ public final class Security {
          */
         @Deprecated
         public Optional<String> summary() {
-            Object value = raw("summary");
-            return Optional.ofNullable((String) value);
+            return raw("summary").map(value -> (String) value);
         }
         /**
          * Security state.
@@ -1153,18 +1081,7 @@ public final class Security {
         }
         /**
          * Overrides user-visible description of the state. Always omitted.
-         * @param summary field value; empty omits the value
-         * @return this model
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public SecurityStateChangedEvent summary(Optional<String> summary) {
-            set("summary", summary.orElse(null));
-            return this;
-        }
-        /**
-         * Overrides user-visible description of the state. Always omitted.
-         * @param summary field value; null removes the value
+         * @param summary field value
          * @return this model
          * @deprecated Deprecated by the Chromium DevTools Protocol.
          */
@@ -1197,7 +1114,7 @@ public final class Security {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setIgnoreCertificateErrors(boolean ignore) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("ignore", CdpObject.json(ignore));
             return client.call("Security.setIgnoreCertificateErrors", params);
         }
@@ -1218,7 +1135,7 @@ public final class Security {
          */
         @Deprecated
         public CompletionStage<Void> handleCertificateError(long eventId, Security.CertificateErrorAction action) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("eventId", CdpObject.json(eventId));
             params.put("action", CdpObject.json(action));
             return client.call("Security.handleCertificateError", params);
@@ -1241,7 +1158,7 @@ public final class Security {
          */
         @Deprecated
         public CompletionStage<Void> setOverrideCertificateErrors(boolean override) {
-            Map<String, Object> params = new LinkedHashMap<>();
+            final Map<String, Object> params = new LinkedHashMap<>();
             params.put("override", CdpObject.json(override));
             return client.call("Security.setOverrideCertificateErrors", params);
         }

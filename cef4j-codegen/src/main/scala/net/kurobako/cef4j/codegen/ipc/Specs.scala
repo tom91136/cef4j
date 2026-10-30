@@ -2,6 +2,16 @@ package net.kurobako.cef4j.codegen.ipc
 
 object Specs {
 
+  private val V8ValueResponseFields: List[FieldSpec] = List(
+    FieldSpec("valueKind", FieldType.I32),
+    FieldSpec("boolValue", FieldType.Bool),
+    FieldSpec("intValue", FieldType.I32),
+    FieldSpec("doubleValue", FieldType.I64),
+    FieldSpec("stringValue", FieldType.Utf8String),
+    FieldSpec("errorMessage", FieldType.Utf8String),
+    FieldSpec("valueHandle", FieldType.I32)
+  )
+
   def all(packageName: String): List[MessageSpec] = List(
     MessageSpec(
       className = "ReleaseHandleRequest",
@@ -78,15 +88,7 @@ object Specs {
       className = "EvaluateJavascriptResponse",
       packageName = packageName,
       messageId = 12,
-      fields = List(
-        FieldSpec("valueKind", FieldType.I32),
-        FieldSpec("boolValue", FieldType.Bool),
-        FieldSpec("intValue", FieldType.I32),
-        FieldSpec("doubleValue", FieldType.I64),
-        FieldSpec("stringValue", FieldType.Utf8String),
-        FieldSpec("errorMessage", FieldType.Utf8String),
-        FieldSpec("valueHandle", FieldType.I32)
-      )
+      fields = V8ValueResponseFields
     ),
     MessageSpec(
       className = "V8GetStringValueRequest",
@@ -120,15 +122,7 @@ object Specs {
       className = "V8GetPropertyResponse",
       packageName = packageName,
       messageId = 14,
-      fields = List(
-        FieldSpec("valueKind", FieldType.I32),
-        FieldSpec("boolValue", FieldType.Bool),
-        FieldSpec("intValue", FieldType.I32),
-        FieldSpec("doubleValue", FieldType.I64),
-        FieldSpec("stringValue", FieldType.Utf8String),
-        FieldSpec("errorMessage", FieldType.Utf8String),
-        FieldSpec("valueHandle", FieldType.I32)
-      )
+      fields = V8ValueResponseFields
     ),
     MessageSpec(
       className = "V8ExecuteFunctionRequest",
@@ -144,15 +138,7 @@ object Specs {
       className = "V8ExecuteFunctionResponse",
       packageName = packageName,
       messageId = 18,
-      fields = List(
-        FieldSpec("valueKind", FieldType.I32),
-        FieldSpec("boolValue", FieldType.Bool),
-        FieldSpec("intValue", FieldType.I32),
-        FieldSpec("doubleValue", FieldType.I64),
-        FieldSpec("stringValue", FieldType.Utf8String),
-        FieldSpec("errorMessage", FieldType.Utf8String),
-        FieldSpec("valueHandle", FieldType.I32)
-      )
+      fields = V8ValueResponseFields
     ),
     MessageSpec(
       className = "V8ReleaseHandleRequest",
@@ -260,15 +246,7 @@ object Specs {
       className = "V8GetValueByIndexResponse",
       packageName = packageName,
       messageId = 23,
-      fields = List(
-        FieldSpec("valueKind", FieldType.I32),
-        FieldSpec("boolValue", FieldType.Bool),
-        FieldSpec("intValue", FieldType.I32),
-        FieldSpec("doubleValue", FieldType.I64),
-        FieldSpec("stringValue", FieldType.Utf8String),
-        FieldSpec("errorMessage", FieldType.Utf8String),
-        FieldSpec("valueHandle", FieldType.I32)
-      )
+      fields = V8ValueResponseFields
     ),
     MessageSpec(
       className = "RegisterJsFunctionRequest",
