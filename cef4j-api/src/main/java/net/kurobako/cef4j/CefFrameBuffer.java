@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import net.kurobako.cef4j.gen.CefRect;
 import net.kurobako.cef4j.policy.NullableBoundary;
 import org.jspecify.annotations.Nullable;
@@ -19,8 +20,8 @@ import org.jspecify.annotations.Nullable;
  * <ul>
  *   <li>Pre-allocated {@code int[]} pixel buffer sized to max monitor dimensions - no GC churn on resize.
  *   <li>Back-pressure: the producer skips work when the consumer hasn't consumed the last frame. CEF's {@code onPaint}
- *       is demand-driven (only fires on dirty regions), so a dropped frame means no repaint until the next interaction
- *       unless {@link #resetBackPressure()} is called.
+ *       is demand-driven (only fires on dirty regions), so the first frame dropped after an accepted one runs the
+ *       refresh request, which should ask CEF for a new frame once the consumer has caught up.
  *   <li>Thread-safe image handoff via volatile reference. The volatile write of the image reference <em>after</em>
  *       pixel stamping creates the happens-before edge.
  *   <li>Generic over image type {@code I} - provide an {@link ImageWriter} for your toolkit.
@@ -39,7 +40,7 @@ import org.jspecify.annotations.Nullable;
  *             img.getRaster().setDataElements(r.x, r.y, r.width, r.height, pixels);
  *     }
  *     return img;
- * });
+ * }, () -> SwingUtilities.invokeLater(this::refreshView));
  * }</pre>
  *
  * @param <I> the toolkit image type (e.g. {@code BufferedImage}, {@code WritableImage})
@@ -93,6 +94,8 @@ public final class CefFrameBuffer<I> {
 
     private int[] pixelBuffer;
     private final ImageWriter<I> writer;
+    private final Runnable refreshRequest;
+    private final AtomicBoolean refreshRequested = new AtomicBoolean();
 
     private int lastWidth;
     private int lastHeight;
@@ -111,14 +114,19 @@ public final class CefFrameBuffer<I> {
      * @param maxWidth maximum expected frame width (typically max monitor width)
      * @param maxHeight maximum expected frame height (typically max monitor height)
      * @param writer strategy for creating/reusing images and stamping pixels
+     * @param refreshRequest runs on the producer thread when a frame is dropped by back-pressure, at most once until
+     *     the next accepted frame; it should hand off to the consumer thread, then call {@link #resetBackPressure()}
+     *     and invalidate the CEF view so the dropped content is painted again
      */
-    public CefFrameBuffer(int maxWidth, int maxHeight, ImageWriter<I> writer) {
+    public CefFrameBuffer(int maxWidth, int maxHeight, ImageWriter<I> writer, Runnable refreshRequest) {
         if (maxWidth <= 0 || maxHeight <= 0) {
             throw new IllegalArgumentException("maxWidth and maxHeight must be positive");
         }
         Objects.requireNonNull(writer, "writer");
+        Objects.requireNonNull(refreshRequest, "refreshRequest");
         this.pixelBuffer = new int[checkedPixelCount(maxWidth, maxHeight)];
         this.writer = writer;
+        this.refreshRequest = refreshRequest;
     }
 
     /**
@@ -182,6 +190,7 @@ public final class CefFrameBuffer<I> {
 
         if (!ready) {
             accumulateRects(dirtyRects);
+            if (refreshRequested.compareAndSet(false, true)) refreshRequest.run();
             return Optional.empty();
         }
         ready = false;
@@ -223,6 +232,7 @@ public final class CefFrameBuffer<I> {
                     : writer.stamp(backImage, pixelBuffer, width, height, stampRects);
             backImage = frontImage;
             frontImage = image;
+            refreshRequested.set(false);
             stamped = true;
             return Optional.of(image);
         } finally {

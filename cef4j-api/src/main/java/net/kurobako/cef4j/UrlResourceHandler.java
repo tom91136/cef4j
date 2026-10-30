@@ -39,16 +39,16 @@ public final class UrlResourceHandler implements CefResourceHandler, AutoCloseab
         this.connectionFactory = connectionFactory;
     }
 
-    @Override
     @NullableBoundary("CEF resource callbacks are nullable across supported ABI versions")
+    @SuppressWarnings("MissingOverride")
     public boolean processRequest(@Nullable CefRequest request, @Nullable CefCallback callback) {
         final boolean handled = open(request, new int[] {0}, callback);
         if (handled && callback != null) callback.cont();
         return handled;
     }
 
-    @Override
     @NullableBoundary("CEF resource callbacks are nullable across supported ABI versions")
+    @SuppressWarnings("MissingOverride")
     public boolean open(@Nullable CefRequest request, int[] handleRequest, @Nullable CefCallback callback) {
         closeStream();
         failed = false;

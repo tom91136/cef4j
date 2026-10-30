@@ -138,7 +138,6 @@ public final class CefWebView extends Parent implements AutoCloseable {
     private final CompletableFuture<Void> browserClosed = new CompletableFuture<>();
     private final CompletableFuture<Void> browserReleased = new CompletableFuture<>();
     private final AtomicBoolean releaseStarted = new AtomicBoolean();
-    private final AtomicBoolean deferredViewRefreshPosted = new AtomicBoolean();
     private final Timeline periodicRepaint =
             new Timeline(new KeyFrame(Duration.millis(100), e -> ifHostPresent(h -> h.invalidate(PAINT_VIEW))));
     private final ChangeListener<Boolean> windowShowingListener = (obs, wasShowing, isShowing) -> {
@@ -375,13 +374,17 @@ public final class CefWebView extends Parent implements AutoCloseable {
             if (pw > maxW) maxW = pw;
             if (ph > maxH) maxH = ph;
         }
-        frameBuffer = new CefFrameBuffer<>(maxW, maxH, (prev, pixels, w, h, dirty) -> {
-            // XXX: CefFrameBuffer reuses pixels after consume re-arms production; remove this copy only when the image
-            // handoff transfers immutable pixel ownership to the JavaFX application thread.
-            final int[] image = prev != null && prev.length >= w * h ? prev : new int[w * h];
-            System.arraycopy(pixels, 0, image, 0, w * h);
-            return image;
-        });
+        frameBuffer = new CefFrameBuffer<>(
+                maxW,
+                maxH,
+                (prev, pixels, w, h, dirty) -> {
+                    // XXX: CefFrameBuffer reuses pixels after consume re-arms production; remove this copy only when
+                    // the image handoff transfers immutable pixel ownership to the JavaFX application thread.
+                    final int[] image = prev != null && prev.length >= w * h ? prev : new int[w * h];
+                    System.arraycopy(pixels, 0, image, 0, w * h);
+                    return image;
+                },
+                () -> Platform.runLater(() -> requestViewRefresh(false)));
 
         setNodeOrientation(NodeOrientation.LEFT_TO_RIGHT);
         getStyleClass().add("web-view");
@@ -913,15 +916,6 @@ public final class CefWebView extends Parent implements AutoCloseable {
                         framesPainted.increment();
                         onViewPainted(width, height);
                         Platform.runLater(() -> blitFrame(width, height));
-                    } else if (deferredViewRefreshPosted.compareAndSet(false, true)) {
-                        // CEF paints are demand-driven. If a newer frame arrives before JavaFX consumes the current
-                        // one, CefFrameBuffer applies back-pressure and records its dirty region, but CEF may not
-                        // schedule another paint by itself. Queue the refresh behind the accepted frame's blit so the
-                        // accumulated damage is delivered instead of leaving the first frame visible indefinitely.
-                        Platform.runLater(() -> {
-                            deferredViewRefreshPosted.set(false);
-                            requestViewRefresh(false);
-                        });
                     }
                 }
             }

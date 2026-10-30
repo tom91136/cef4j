@@ -471,6 +471,11 @@ public enum Cef implements AutoCloseable {
         if (cefApi < 134) {
             disabledFeatures.add("SpareRendererForSitePerProcess");
         }
+        // Chromium 122+ queries Windows Hello support from a startup task; on Windows ARM the NTE_BAD_KEYSET RPC
+        // exception raised inside ngcksp.dll during that query intermittently aborts the JVM on JDK 25.0.5.
+        if (OS.isWindows() && OS.isArm64() && cefApi >= 122) {
+            disabledFeatures.add("ReportKeyCredentialManagerSupportWin");
+        }
         // Chromium 151+ can otherwise block startup on its first-run terms dialog when using a fresh cache.
         if (cefApi >= 151) {
             addArgIfMissing(argv, "--no-first-run");

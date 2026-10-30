@@ -242,14 +242,19 @@ public class CefBrowserPanel extends JPanel implements AutoCloseable {
             if (pw > maxW) maxW = pw;
             if (ph > maxH) maxH = ph;
         }
-        frameBuffer = new CefFrameBuffer<>(maxW, maxH, (prev, pixels, w, h, dirty) -> {
-            final BufferedImage img = prev != null && prev.getWidth() == w && prev.getHeight() == h
-                    ? prev
-                    : new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-            final int[] dst = ((java.awt.image.DataBufferInt) img.getRaster().getDataBuffer()).getData();
-            System.arraycopy(pixels, 0, dst, 0, w * h);
-            return img;
-        });
+        frameBuffer = new CefFrameBuffer<>(
+                maxW,
+                maxH,
+                (prev, pixels, w, h, dirty) -> {
+                    final BufferedImage img = prev != null && prev.getWidth() == w && prev.getHeight() == h
+                            ? prev
+                            : new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+                    final int[] dst =
+                            ((java.awt.image.DataBufferInt) img.getRaster().getDataBuffer()).getData();
+                    System.arraycopy(pixels, 0, dst, 0, w * h);
+                    return img;
+                },
+                () -> SwingUtilities.invokeLater(() -> refreshView(h -> {})));
 
         setBackground(Color.WHITE);
         setFocusable(true);

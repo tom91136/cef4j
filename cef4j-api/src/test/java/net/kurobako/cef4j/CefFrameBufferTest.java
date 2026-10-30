@@ -13,15 +13,16 @@ class CefFrameBufferTest {
     @Test
     void rejectsDimensionsWhosePixelCountExceedsTheSupportedMaximum() {
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> new CefFrameBuffer<>(50_000, 50_000, (previous, pixels, width, height, dirty) -> 1))
+                .isThrownBy(() ->
+                        new CefFrameBuffer<>(50_000, 50_000, (previous, pixels, width, height, dirty) -> 1, () -> {}))
                 .withMessageContaining("pixel count");
     }
 
     @Test
     void rejectsTruncatedPaintWithoutPoisoningBackPressure() {
         AtomicInteger writes = new AtomicInteger();
-        CefFrameBuffer<Integer> frames =
-                new CefFrameBuffer<>(2, 2, (previous, pixels, width, height, dirty) -> writes.incrementAndGet());
+        CefFrameBuffer<Integer> frames = new CefFrameBuffer<>(
+                2, 2, (previous, pixels, width, height, dirty) -> writes.incrementAndGet(), () -> {});
 
         assertThat(frames.onPaint(ByteBuffer.allocateDirect(12), 2, 2)).isEmpty();
         assertThat(frames.onPaint(ByteBuffer.allocateDirect(16), 2, 2)).contains(1);
@@ -30,10 +31,14 @@ class CefFrameBufferTest {
     @Test
     void writerFailureDoesNotPoisonBackPressure() {
         AtomicInteger writes = new AtomicInteger();
-        CefFrameBuffer<Integer> frames = new CefFrameBuffer<>(2, 2, (previous, pixels, width, height, dirty) -> {
-            if (writes.getAndIncrement() == 0) throw new IllegalStateException("stamp failed");
-            return 7;
-        });
+        CefFrameBuffer<Integer> frames = new CefFrameBuffer<>(
+                2,
+                2,
+                (previous, pixels, width, height, dirty) -> {
+                    if (writes.getAndIncrement() == 0) throw new IllegalStateException("stamp failed");
+                    return 7;
+                },
+                () -> {});
 
         assertThatThrownBy(() -> frames.onPaint(ByteBuffer.allocateDirect(16), 2, 2))
                 .isInstanceOf(IllegalStateException.class)
