@@ -121,6 +121,7 @@ public final class CefWebView extends Parent implements AutoCloseable {
     private static final CefPaintElementType PAINT_VIEW = CefPaintElementType.of(CefPaintElementType.Kind.VIEW);
     private static final CefThreadId CEF_UI_THREAD = CefThreadId.of(CefThreadId.Kind.UI);
     private static final long FX_CALLBACK_TIMEOUT_SECONDS = 10;
+    private static final long POPUP_SHOW_TIMEOUT_MILLIS = 1_000;
     private static final java.util.concurrent.Executor CREATED_BROWSER_CLOSER = Executors.newSingleThreadExecutor(r -> {
         final Thread thread = new Thread(r, "cef4j-created-browser-closer");
         thread.setDaemon(true);
@@ -251,6 +252,7 @@ public final class CefWebView extends Parent implements AutoCloseable {
     private volatile boolean browserCreationPosted = false;
     private volatile boolean browserCreated = false;
     volatile boolean popupBrowser = false;
+    private final CompletableFuture<@Nullable Void> popupShown = new CompletableFuture<>();
     volatile Rectangle2D detachedBounds = new Rectangle2D(0, 0, 1, 1);
     private volatile ViewportSnapshot viewportSnapshot = ViewportSnapshot.detached();
     private final Queue<Consumer<BrowserHandle>> pendingBrowserActions = new ConcurrentLinkedQueue<>();
@@ -803,7 +805,8 @@ public final class CefWebView extends Parent implements AutoCloseable {
         scriptEngine.dispose();
         if (h != null) {
             releaseBrowserAfterClose(h);
-            h.close(true);
+            if (popupBrowser) closeAfterPopupShown(h);
+            else h.close(true);
         } else if (!creationPending) {
             browserClosed.complete(null);
             browserReleased.complete(null);
@@ -1537,21 +1540,39 @@ public final class CefWebView extends Parent implements AutoCloseable {
         });
     }
 
+    void onPopupShown() {
+        popupShown.complete(null);
+    }
+
+    // CEF dereferences the popup's delegate when the renderer's show message arrives, after onAfterCreated and before
+    // the first load event, and a popup that never loads sends no event
+    @SuppressWarnings("FutureReturnValueIgnored")
+    private void closeAfterPopupShown(BrowserHandle handle) {
+        popupShown
+                .completeOnTimeout(null, POPUP_SHOW_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)
+                .thenRun(() -> closeOnCefUiThread(handle));
+    }
+
+    private void closeOnCefUiThread(BrowserHandle handle) {
+        // Closing from onAfterCreated can invalidate CEF's popup delegate before the surrounding CreateBrowser /
+        // AddNewContents call returns. A CEF UI task establishes the required callback-stack boundary.
+        if (!CefGlobals.postTask(CEF_UI_THREAD, new CefTask() {
+            @Override
+            public void execute() {
+                handle.close(true);
+            }
+        })) {
+            CREATED_BROWSER_CLOSER.execute(() -> handle.close(true));
+        }
+    }
+
     void onBrowserCreated(@Nullable CefBrowser browser) {
         if (browser == null) return;
         final BrowserHandle created = new BrowserHandle(browser);
         if (releaseRequested) {
             releaseBrowserAfterClose(created);
-            // Closing from onAfterCreated can invalidate CEF's popup delegate before the surrounding CreateBrowser /
-            // AddNewContents call returns. A CEF UI task establishes the required callback-stack boundary.
-            if (!CefGlobals.postTask(CEF_UI_THREAD, new CefTask() {
-                @Override
-                public void execute() {
-                    created.close(true);
-                }
-            })) {
-                CREATED_BROWSER_CLOSER.execute(() -> created.close(true));
-            }
+            if (popupBrowser) closeAfterPopupShown(created);
+            else closeOnCefUiThread(created);
             return;
         }
         BrowserHandle current = this.browser;

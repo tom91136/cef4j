@@ -150,6 +150,7 @@ final class CefWebViewClient implements CefClient {
             @Override
             public void onLoadingStateChange(
                     @Nullable CefBrowser browser, boolean isLoading, boolean canGoBack, boolean canGoForward) {
+                view.onPopupShown();
                 Platform.runLater(() -> view.engine.updateLoadState(isLoading, canGoBack, canGoForward));
                 refreshHistoryFromBrowser(browser);
             }
