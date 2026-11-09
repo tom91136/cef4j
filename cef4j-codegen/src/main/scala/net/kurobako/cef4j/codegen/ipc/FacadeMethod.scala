@@ -11,4 +11,7 @@ case class FacadeMethod(
     // Preserves filtered size parameters in the original C signature order.
     cCallArgs: Option[List[CCallArg]] = None,
     javadoc: String = ""
-)
+) {
+  def fieldsSatisfy(ok: (String, FieldType) => Boolean): Boolean =
+    explicitParams.forall(p => ok(p.name, p.ty)) && resultField.forall(f => ok("result", f.ty))
+}

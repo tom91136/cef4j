@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,48 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class DomNode implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle frame;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class DomNode extends RendererFacade {
 
     public DomNode(CefSession session, RemoteHandle frame, RemoteHandle handle) {
-        this.session = session;
-        this.frame = frame;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-    /** The frame whose V8 context this handle lives in. Renderer-side dispatch enters this frame's
-      * V8 context before invoking methods on the receiver. */
-    public RemoteHandle frame() {
-        return frame;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new RendererReleaseHandleRequest(frame, handle, "cef_domnode_t"),
-                    RendererReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, frame, handle, "cef_domnode_t");
     }
 
     /**
@@ -66,8 +27,8 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<Integer> getType() {
         return CefFutures.map(
-            session.request(new DomNodeGetTypeRequest(frame, handle), DomNodeGetTypeResponse.DECODER),
-            DomNodeGetTypeResponse::result);
+            session.request(MessageIds.DOM_NODE_GET_TYPE_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -78,8 +39,8 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<Integer> isText() {
         return CefFutures.map(
-            session.request(new DomNodeIsTextRequest(frame, handle), DomNodeIsTextResponse.DECODER),
-            DomNodeIsTextResponse::result);
+            session.request(MessageIds.DOM_NODE_IS_TEXT_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -90,8 +51,8 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<Integer> isElement() {
         return CefFutures.map(
-            session.request(new DomNodeIsElementRequest(frame, handle), DomNodeIsElementResponse.DECODER),
-            DomNodeIsElementResponse::result);
+            session.request(MessageIds.DOM_NODE_IS_ELEMENT_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -102,8 +63,8 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<Integer> isEditable() {
         return CefFutures.map(
-            session.request(new DomNodeIsEditableRequest(frame, handle), DomNodeIsEditableResponse.DECODER),
-            DomNodeIsEditableResponse::result);
+            session.request(MessageIds.DOM_NODE_IS_EDITABLE_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -114,8 +75,8 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<Integer> isFormControlElement() {
         return CefFutures.map(
-            session.request(new DomNodeIsFormControlElementRequest(frame, handle), DomNodeIsFormControlElementResponse.DECODER),
-            DomNodeIsFormControlElementResponse::result);
+            session.request(MessageIds.DOM_NODE_IS_FORM_CONTROL_ELEMENT_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -126,8 +87,8 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<Integer> getFormControlElementType() {
         return CefFutures.map(
-            session.request(new DomNodeGetFormControlElementTypeRequest(frame, handle), DomNodeGetFormControlElementTypeResponse.DECODER),
-            DomNodeGetFormControlElementTypeResponse::result);
+            session.request(MessageIds.DOM_NODE_GET_FORM_CONTROL_ELEMENT_TYPE_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -138,8 +99,8 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<Integer> isSame(RemoteHandle that) {
         return CefFutures.map(
-            session.request(new DomNodeIsSameRequest(frame, handle, that), DomNodeIsSameResponse.DECODER),
-            DomNodeIsSameResponse::result);
+            session.request(MessageIds.DOM_NODE_IS_SAME_REQUEST, new FrameHandleSelfHandleThatHandleMessage(frame, handle, that), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -150,8 +111,8 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<String> getName() {
         return CefFutures.map(
-            session.request(new DomNodeGetNameRequest(frame, handle), DomNodeGetNameResponse.DECODER),
-            DomNodeGetNameResponse::result);
+            session.request(MessageIds.DOM_NODE_GET_NAME_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -162,8 +123,8 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<String> getValue() {
         return CefFutures.map(
-            session.request(new DomNodeGetValueRequest(frame, handle), DomNodeGetValueResponse.DECODER),
-            DomNodeGetValueResponse::result);
+            session.request(MessageIds.DOM_NODE_GET_VALUE_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -174,8 +135,8 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<Integer> setValue(String value) {
         return CefFutures.map(
-            session.request(new DomNodeSetValueRequest(frame, handle, value), DomNodeSetValueResponse.DECODER),
-            DomNodeSetValueResponse::result);
+            session.request(MessageIds.DOM_NODE_SET_VALUE_REQUEST, new DomNodeSetValueRequest(frame, handle, value), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -186,8 +147,8 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<String> getAsMarkup() {
         return CefFutures.map(
-            session.request(new DomNodeGetAsMarkupRequest(frame, handle), DomNodeGetAsMarkupResponse.DECODER),
-            DomNodeGetAsMarkupResponse::result);
+            session.request(MessageIds.DOM_NODE_GET_AS_MARKUP_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -198,7 +159,7 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<DomDocument> getDocument() {
         return CefFutures.map(
-            session.request(new DomNodeGetDocumentRequest(frame, handle), DomNodeGetDocumentResponse.DECODER),
+            session.request(MessageIds.DOM_NODE_GET_DOCUMENT_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultHandleMessage.DECODER),
             __r -> new DomDocument(session, frame, __r.result()));
     }
 
@@ -210,7 +171,7 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<DomNode> getParent() {
         return CefFutures.map(
-            session.request(new DomNodeGetParentRequest(frame, handle), DomNodeGetParentResponse.DECODER),
+            session.request(MessageIds.DOM_NODE_GET_PARENT_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultHandleMessage.DECODER),
             __r -> new DomNode(session, frame, __r.result()));
     }
 
@@ -222,7 +183,7 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<DomNode> getPreviousSibling() {
         return CefFutures.map(
-            session.request(new DomNodeGetPreviousSiblingRequest(frame, handle), DomNodeGetPreviousSiblingResponse.DECODER),
+            session.request(MessageIds.DOM_NODE_GET_PREVIOUS_SIBLING_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultHandleMessage.DECODER),
             __r -> new DomNode(session, frame, __r.result()));
     }
 
@@ -234,7 +195,7 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<DomNode> getNextSibling() {
         return CefFutures.map(
-            session.request(new DomNodeGetNextSiblingRequest(frame, handle), DomNodeGetNextSiblingResponse.DECODER),
+            session.request(MessageIds.DOM_NODE_GET_NEXT_SIBLING_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultHandleMessage.DECODER),
             __r -> new DomNode(session, frame, __r.result()));
     }
 
@@ -246,8 +207,8 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasChildren() {
         return CefFutures.map(
-            session.request(new DomNodeHasChildrenRequest(frame, handle), DomNodeHasChildrenResponse.DECODER),
-            DomNodeHasChildrenResponse::result);
+            session.request(MessageIds.DOM_NODE_HAS_CHILDREN_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -258,7 +219,7 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<DomNode> getFirstChild() {
         return CefFutures.map(
-            session.request(new DomNodeGetFirstChildRequest(frame, handle), DomNodeGetFirstChildResponse.DECODER),
+            session.request(MessageIds.DOM_NODE_GET_FIRST_CHILD_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultHandleMessage.DECODER),
             __r -> new DomNode(session, frame, __r.result()));
     }
 
@@ -270,7 +231,7 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<DomNode> getLastChild() {
         return CefFutures.map(
-            session.request(new DomNodeGetLastChildRequest(frame, handle), DomNodeGetLastChildResponse.DECODER),
+            session.request(MessageIds.DOM_NODE_GET_LAST_CHILD_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultHandleMessage.DECODER),
             __r -> new DomNode(session, frame, __r.result()));
     }
 
@@ -282,8 +243,8 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<String> getElementTagName() {
         return CefFutures.map(
-            session.request(new DomNodeGetElementTagNameRequest(frame, handle), DomNodeGetElementTagNameResponse.DECODER),
-            DomNodeGetElementTagNameResponse::result);
+            session.request(MessageIds.DOM_NODE_GET_ELEMENT_TAG_NAME_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -294,8 +255,8 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasElementAttributes() {
         return CefFutures.map(
-            session.request(new DomNodeHasElementAttributesRequest(frame, handle), DomNodeHasElementAttributesResponse.DECODER),
-            DomNodeHasElementAttributesResponse::result);
+            session.request(MessageIds.DOM_NODE_HAS_ELEMENT_ATTRIBUTES_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -306,8 +267,8 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasElementAttribute(String attrName) {
         return CefFutures.map(
-            session.request(new DomNodeHasElementAttributeRequest(frame, handle, attrName), DomNodeHasElementAttributeResponse.DECODER),
-            DomNodeHasElementAttributeResponse::result);
+            session.request(MessageIds.DOM_NODE_HAS_ELEMENT_ATTRIBUTE_REQUEST, new FrameHandleSelfHandleAttrNameStringMessage(frame, handle, attrName), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -318,8 +279,8 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<String> getElementAttribute(String attrName) {
         return CefFutures.map(
-            session.request(new DomNodeGetElementAttributeRequest(frame, handle, attrName), DomNodeGetElementAttributeResponse.DECODER),
-            DomNodeGetElementAttributeResponse::result);
+            session.request(MessageIds.DOM_NODE_GET_ELEMENT_ATTRIBUTE_REQUEST, new FrameHandleSelfHandleAttrNameStringMessage(frame, handle, attrName), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -330,8 +291,8 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<Integer> setElementAttribute(String attrName, String value) {
         return CefFutures.map(
-            session.request(new DomNodeSetElementAttributeRequest(frame, handle, attrName, value), DomNodeSetElementAttributeResponse.DECODER),
-            DomNodeSetElementAttributeResponse::result);
+            session.request(MessageIds.DOM_NODE_SET_ELEMENT_ATTRIBUTE_REQUEST, new DomNodeSetElementAttributeRequest(frame, handle, attrName, value), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -342,8 +303,8 @@ public final class DomNode implements AutoCloseable {
      */
     public CompletableFuture<String> getElementInnerText() {
         return CefFutures.map(
-            session.request(new DomNodeGetElementInnerTextRequest(frame, handle), DomNodeGetElementInnerTextResponse.DECODER),
-            DomNodeGetElementInnerTextResponse::result);
+            session.request(MessageIds.DOM_NODE_GET_ELEMENT_INNER_TEXT_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -352,9 +313,9 @@ public final class DomNode implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dom_8h.html">cef_dom.h:327</a>
      */
-    public CompletableFuture<Rect> getElementBounds() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefRect> getElementBounds() {
         return CefFutures.map(
-            session.request(new DomNodeGetElementBoundsRequest(frame, handle), DomNodeGetElementBoundsResponse.DECODER),
-            DomNodeGetElementBoundsResponse::result);
+            session.request(MessageIds.DOM_NODE_GET_ELEMENT_BOUNDS_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultCefRectMessage.DECODER),
+            ResultCefRectMessage::result);
     }
 }

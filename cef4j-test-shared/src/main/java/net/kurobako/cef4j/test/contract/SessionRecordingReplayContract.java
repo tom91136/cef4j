@@ -46,11 +46,13 @@ public abstract class SessionRecordingReplayContract {
 
         try (RecordingCefSession live = RecordingCefSession.toFile(new CefSessionImpl(pair.a), traceFile)) {
             final CefSession.HandlerRegistration events =
-                    live.on(EVENT, decoder(EVENT), value -> liveEvents.add(value.text));
+                    live.on(EVENT, decoder(), value -> liveEvents.add(value.text));
             final CefSession.HandlerRegistration intercept = live.intercept(
-                    INTERCEPT, decoder(INTERCEPT), value -> Optional.of(encoder(INTERCEPT, "reply:" + value.text)));
+                    INTERCEPT,
+                    decoder(),
+                    value -> Optional.of(new CefSession.Reply(INTERCEPT, encoder("reply:" + value.text))));
 
-            final CompletableFuture<TextView> answer = live.request(encoder(REQUEST, "question"), decoder(REQUEST));
+            final CompletableFuture<TextView> answer = live.request(REQUEST, encoder("question"), decoder());
             final Peer.Frame request = peer.take();
             peer.event(EVENT, "paint");
             peer.intercept(77, INTERCEPT, "permission");
@@ -86,13 +88,13 @@ public abstract class SessionRecordingReplayContract {
         final List<String> replayedEvents = new ArrayList<>();
         final ReplayCefSession replay = new ReplayCefSession(recording, ReplayMode.IMMEDIATE);
         final CefSession.HandlerRegistration events =
-                replay.on(EVENT, decoder(EVENT), value -> replayedEvents.add(value.text));
+                replay.on(EVENT, decoder(), value -> replayedEvents.add(value.text));
         final CefSession.HandlerRegistration intercept = replay.intercept(
-                INTERCEPT, decoder(INTERCEPT), value -> Optional.of(encoder(INTERCEPT, "reply:" + value.text)));
+                INTERCEPT,
+                decoder(),
+                value -> Optional.of(new CefSession.Reply(INTERCEPT, encoder("reply:" + value.text))));
         replay.start();
-        assertThat(replay.request(encoder(REQUEST, "question"), decoder(REQUEST))
-                        .get(5, TimeUnit.SECONDS)
-                        .text)
+        assertThat(replay.request(REQUEST, encoder("question"), decoder()).get(5, TimeUnit.SECONDS).text)
                 .isEqualTo("answer");
         assertThat(replayedEvents).containsExactly("paint");
         events.unregister();
@@ -107,7 +109,7 @@ public abstract class SessionRecordingReplayContract {
 
         final ReplayCefSession replay = ReplayCefSession.fromFile(traceFile, ReplayMode.IMMEDIATE);
         replay.start();
-        final CompletableFuture<TextView> result = replay.request(encoder(REQUEST, "expXcted"), decoder(REQUEST));
+        final CompletableFuture<TextView> result = replay.request(REQUEST, encoder("expXcted"), decoder());
         assertThatThrownBy(() -> result.get(5, TimeUnit.SECONDS))
                 .hasRootCauseInstanceOf(ReplayMismatchException.class)
                 .hasRootCauseMessage("API replay mismatch at entry #1 (REQUEST): request payload differs at byte 3 "
@@ -120,7 +122,7 @@ public abstract class SessionRecordingReplayContract {
 
         final ReplayCefSession replay = ReplayCefSession.fromFile(traceFile, ReplayMode.MANUAL);
         replay.start();
-        final CompletableFuture<TextView> result = replay.request(encoder(REQUEST, "question"), decoder(REQUEST));
+        final CompletableFuture<TextView> result = replay.request(REQUEST, encoder("question"), decoder());
         assertThat(result).isNotDone();
         assertThat(replay.advance()).isTrue();
         assertThat(result.get(5, TimeUnit.SECONDS).text).isEqualTo("answer");
@@ -142,9 +144,9 @@ public abstract class SessionRecordingReplayContract {
 
         final ReplayCefSession replay = ReplayCefSession.fromFile(traceFile, ReplayMode.IMMEDIATE);
         replay.start();
-        final CompletableFuture<TextView> first = replay.request(encoder(REQUEST, "first"), decoder(REQUEST));
+        final CompletableFuture<TextView> first = replay.request(REQUEST, encoder("first"), decoder());
         assertThat(first).isNotDone();
-        final CompletableFuture<TextView> second = replay.request(encoder(REQUEST, "second"), decoder(REQUEST));
+        final CompletableFuture<TextView> second = replay.request(REQUEST, encoder("second"), decoder());
         assertThat(second.get(5, TimeUnit.SECONDS).text).isEqualTo("second-done");
         assertThat(first.get(5, TimeUnit.SECONDS).text).isEqualTo("first-done");
         replay.close();
@@ -170,7 +172,7 @@ public abstract class SessionRecordingReplayContract {
                 new ReplayCefSession(new SessionTrace.Recording(Collections.emptyMap(), entries), ReplayMode.TIMED);
         final long startedAt = System.nanoTime();
         replay.start();
-        final CompletableFuture<TextView> result = replay.request(encoder(REQUEST, "question"), decoder(REQUEST));
+        final CompletableFuture<TextView> result = replay.request(REQUEST, encoder("question"), decoder());
         assertThat(result.get(5, TimeUnit.SECONDS).text).isEqualTo("answer");
         assertThat(System.nanoTime() - startedAt).isGreaterThanOrEqualTo(TimeUnit.MILLISECONDS.toNanos(100));
         replay.close();
@@ -194,8 +196,8 @@ public abstract class SessionRecordingReplayContract {
 
         final ReplayCefSession replay = ReplayCefSession.fromFile(traceFile, ReplayMode.IMMEDIATE);
         replay.start();
-        assertThatThrownBy(() -> replay.request(encoder(REQUEST, "question"), decoder(REQUEST))
-                        .get(5, TimeUnit.SECONDS))
+        assertThatThrownBy(() ->
+                        replay.request(REQUEST, encoder("question"), decoder()).get(5, TimeUnit.SECONDS))
                 .hasRootCauseInstanceOf(ReplayedSessionException.class)
                 .hasRootCauseMessage("java.util.concurrent.TimeoutException: server did not answer");
         replay.close();
@@ -208,7 +210,7 @@ public abstract class SessionRecordingReplayContract {
         final LoopbackTransport.Pair pair = LoopbackTransport.create();
         final Peer peer = new Peer(pair.b);
         try (RecordingCefSession live = RecordingCefSession.toFile(new CefSessionImpl(pair.a), traceFile)) {
-            final CefSession.HandlerRegistration registration = live.intercept(INTERCEPT, decoder(INTERCEPT), value -> {
+            final CefSession.HandlerRegistration registration = live.intercept(INTERCEPT, decoder(), value -> {
                 throw new IllegalArgumentException("deliberate failure");
             });
             peer.intercept(91, INTERCEPT, "permission");
@@ -219,7 +221,7 @@ public abstract class SessionRecordingReplayContract {
         }
 
         final ReplayCefSession replay = ReplayCefSession.fromFile(traceFile, ReplayMode.IMMEDIATE);
-        final CefSession.HandlerRegistration registration = replay.intercept(INTERCEPT, decoder(INTERCEPT), value -> {
+        final CefSession.HandlerRegistration registration = replay.intercept(INTERCEPT, decoder(), value -> {
             throw new IllegalArgumentException("deliberate failure");
         });
         replay.start();
@@ -228,15 +230,15 @@ public abstract class SessionRecordingReplayContract {
         replay.verifyComplete();
     }
 
-    private static TextEncoder encoder(int messageId, String text) {
-        return new TextEncoder(messageId, bytes(text));
+    private static TextEncoder encoder(String text) {
+        return new TextEncoder(bytes(text));
     }
 
-    private static CefMessageDecoder<TextView> decoder(int messageId) {
+    private static CefMessageDecoder<TextView> decoder() {
         return payload -> {
             final byte[] bytes = new byte[payload.remaining()];
             payload.get(bytes);
-            return new TextView(messageId, new String(bytes, StandardCharsets.UTF_8));
+            return new TextView(new String(bytes, StandardCharsets.UTF_8));
         };
     }
 
@@ -256,17 +258,10 @@ public abstract class SessionRecordingReplayContract {
     }
 
     private static final class TextEncoder implements CefMessageEncoder {
-        private final int messageId;
         private final byte[] bytes;
 
-        TextEncoder(int messageId, byte[] bytes) {
-            this.messageId = messageId;
+        TextEncoder(byte[] bytes) {
             this.bytes = bytes;
-        }
-
-        @Override
-        public int messageId() {
-            return messageId;
         }
 
         @Override
@@ -281,17 +276,10 @@ public abstract class SessionRecordingReplayContract {
     }
 
     private static final class TextView implements CefMessageView {
-        private final int messageId;
         private final String text;
 
-        TextView(int messageId, String text) {
-            this.messageId = messageId;
+        TextView(String text) {
             this.text = text;
-        }
-
-        @Override
-        public int messageId() {
-            return messageId;
         }
     }
 

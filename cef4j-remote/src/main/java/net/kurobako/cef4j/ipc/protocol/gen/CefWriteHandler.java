@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -23,7 +24,7 @@ public interface CefWriteHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:158</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> seek(long offset, int whence) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> seek(long offset, int whence) { return Unhandled.bool(); }
 
     /**
      * Flush the stream.
@@ -32,7 +33,7 @@ public interface CefWriteHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:172</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> flush() { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> flush() { return Unhandled.bool(); }
 
     /**
      * Return {@code true} if this handler performs work like accessing the file system which may block. Used as a hint for determining the thread to access the handler from.
@@ -41,22 +42,22 @@ public interface CefWriteHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__stream_8h.html">cef_stream.h:178</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> mayBlock() { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> mayBlock() { return Unhandled.bool(); }
 
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefWriteHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.intercept(WriteHandlerSeekEvent.MESSAGE_ID, WriteHandlerSeekEvent.DECODER, ev -> {
+                session.intercept(MessageIds.WRITE_HANDLER_SEEK_EVENT, OffsetLongWhenceIntMessage.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.seek(ev.offset(), ev.whence());
-                    return java.util.Optional.of(new WriteHandlerSeekResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.WRITE_HANDLER_SEEK_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.intercept(WriteHandlerFlushEvent.MESSAGE_ID, WriteHandlerFlushEvent.DECODER, ev -> {
+                session.intercept(MessageIds.WRITE_HANDLER_FLUSH_EVENT, EmptyMessage.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.flush();
-                    return java.util.Optional.of(new WriteHandlerFlushResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.WRITE_HANDLER_FLUSH_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.intercept(WriteHandlerMayBlockEvent.MESSAGE_ID, WriteHandlerMayBlockEvent.DECODER, ev -> {
+                session.intercept(MessageIds.WRITE_HANDLER_MAY_BLOCK_EVENT, EmptyMessage.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.mayBlock();
-                    return java.util.Optional.of(new WriteHandlerMayBlockResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.WRITE_HANDLER_MAY_BLOCK_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }));
     }
 }

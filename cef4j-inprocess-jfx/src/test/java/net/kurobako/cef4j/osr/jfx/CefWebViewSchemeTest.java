@@ -100,9 +100,9 @@ class CefWebViewSchemeTest {
             @Override
             public void onRegisterCustomSchemes(@Nullable CefSchemeRegistrar registrar) {
                 if (registrar != null) {
-                    int options = (int) (CefSchemeOptions.Kind.SECURE.value
-                            | CefSchemeOptions.Kind.CORS_ENABLED.value
-                            | CefSchemeOptions.Kind.FETCH_ENABLED.value);
+                    int options = (int) (CefSchemeOptions.Kind.SECURE.value()
+                            | CefSchemeOptions.Kind.CORS_ENABLED.value()
+                            | CefSchemeOptions.Kind.FETCH_ENABLED.value());
                     registrar.addCustomScheme("classpath", options);
                 }
             }

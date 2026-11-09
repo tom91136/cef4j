@@ -1,7 +1,6 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalLong;
@@ -9,6 +8,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.policy.NullableBoundary;
@@ -23,6 +24,19 @@ import org.jspecify.annotations.Nullable;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Profiler {
     private Profiler() {}
+    private static final CdpField<Runtime.CallFrame> CALL_FRAME = CdpField.of("callFrame", value -> java.util.Objects.requireNonNull(Runtime.CallFrame.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Long>> CHILDREN = CdpField.of("children", value -> CdpObject.requireList(value, element0 -> ((Number) element0).longValue()));
+    private static final CdpField<java.util.List<Profiler.FunctionCoverage>> FUNCTIONS = CdpField.of("functions", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Profiler.FunctionCoverage.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Debugger.Location> LOCATION = CdpField.of("location", value -> java.util.Objects.requireNonNull(Debugger.Location.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Profiler.ProfileNode>> NODES = CdpField.of("nodes", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Profiler.ProfileNode.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Profiler.PositionTickInfo>> POSITION_TICKS = CdpField.of("positionTicks", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Profiler.PositionTickInfo.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Profiler.Profile> PROFILE = CdpField.of("profile", value -> java.util.Objects.requireNonNull(Profiler.Profile.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Profiler.CoverageRange>> RANGES = CdpField.of("ranges", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Profiler.CoverageRange.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Profiler.ScriptCoverage>> RESULT = CdpField.of("result", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Profiler.ScriptCoverage.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Long>> SAMPLES = CdpField.of("samples", value -> CdpObject.requireList(value, element0 -> ((Number) element0).longValue()));
+    private static final CdpField<Runtime.ScriptId> SCRIPT_ID = CdpField.of("scriptId", value -> new Runtime.ScriptId((String) value));
+    private static final CdpField<Double> TIMESTAMP = CdpField.of("timestamp", value -> ((Number) value).doubleValue());
+    private static final CdpField<java.util.List<Long>> TIME_DELTAS = CdpField.of("timeDeltas", value -> CdpObject.requireList(value, element0 -> ((Number) element0).longValue()));
     /**
      * Profile node. Holds callsite information, execution statistics and child nodes.
      */
@@ -37,42 +51,42 @@ public final class Profiler {
          * @return the protocol field value
          */
         public long id() {
-            return ((Number) require("id")).longValue();
+            return requireLong("id");
         }
         /**
          * Function location.
          * @return the protocol field value
          */
         public Runtime.CallFrame callFrame() {
-            return java.util.Objects.requireNonNull(Runtime.CallFrame.fromMap(CdpObject.requireObjectMap(require("callFrame"))));
+            return require(CALL_FRAME);
         }
         /**
          * Number of samples where this node was on top of the call stack.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong hitCount() {
-            return raw("hitCount").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("hitCount");
         }
         /**
          * Child node ids.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Long>> children() {
-            return raw("children").flatMap(value -> list(value, element0 -> ((Number) element0).longValue()));
+            return optional(CHILDREN);
         }
         /**
          * The reason of being not optimized. The function may be deoptimized or marked as don&#x27;t optimize.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> deoptReason() {
-            return raw("deoptReason").map(value -> (String) value);
+            return optionalString("deoptReason");
         }
         /**
          * An array of source position ticks.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Profiler.PositionTickInfo>> positionTicks() {
-            return raw("positionTicks").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Profiler.PositionTickInfo.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(POSITION_TICKS);
         }
         /**
          * Unique id of the node.
@@ -143,35 +157,35 @@ public final class Profiler {
          * @return the protocol field value
          */
         public java.util.List<Profiler.ProfileNode> nodes() {
-            return CdpObject.requireList(require("nodes"), element0 -> java.util.Objects.requireNonNull(Profiler.ProfileNode.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(NODES);
         }
         /**
          * Profiling start timestamp in microseconds.
          * @return the protocol field value
          */
         public double startTime() {
-            return ((Number) require("startTime")).doubleValue();
+            return requireDouble("startTime");
         }
         /**
          * Profiling end timestamp in microseconds.
          * @return the protocol field value
          */
         public double endTime() {
-            return ((Number) require("endTime")).doubleValue();
+            return requireDouble("endTime");
         }
         /**
          * Ids of samples top nodes.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Long>> samples() {
-            return raw("samples").flatMap(value -> list(value, element0 -> ((Number) element0).longValue()));
+            return optional(SAMPLES);
         }
         /**
          * Time intervals between adjacent samples in microseconds. The first delta is relative to the profile startTime.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Long>> timeDeltas() {
-            return raw("timeDeltas").flatMap(value -> list(value, element0 -> ((Number) element0).longValue()));
+            return optional(TIME_DELTAS);
         }
         /**
          * The list of profile nodes. First item is the root node.
@@ -233,14 +247,14 @@ public final class Profiler {
          * @return the protocol field value
          */
         public long line() {
-            return ((Number) require("line")).longValue();
+            return requireLong("line");
         }
         /**
          * Number of samples attributed to the source line.
          * @return the protocol field value
          */
         public long ticks() {
-            return ((Number) require("ticks")).longValue();
+            return requireLong("ticks");
         }
         /**
          * Source line number (1-based).
@@ -275,21 +289,21 @@ public final class Profiler {
          * @return the protocol field value
          */
         public long startOffset() {
-            return ((Number) require("startOffset")).longValue();
+            return requireLong("startOffset");
         }
         /**
          * JavaScript script source offset for the range end.
          * @return the protocol field value
          */
         public long endOffset() {
-            return ((Number) require("endOffset")).longValue();
+            return requireLong("endOffset");
         }
         /**
          * Collected execution count of the source range.
          * @return the protocol field value
          */
         public long count() {
-            return ((Number) require("count")).longValue();
+            return requireLong("count");
         }
         /**
          * JavaScript script source offset for the range start.
@@ -333,21 +347,21 @@ public final class Profiler {
          * @return the protocol field value
          */
         public String functionName() {
-            return (String) require("functionName");
+            return requireString("functionName");
         }
         /**
          * Source ranges inside the function with coverage data.
          * @return the protocol field value
          */
         public java.util.List<Profiler.CoverageRange> ranges() {
-            return CdpObject.requireList(require("ranges"), element0 -> java.util.Objects.requireNonNull(Profiler.CoverageRange.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(RANGES);
         }
         /**
          * Whether coverage data for this function has block granularity.
          * @return the protocol field value
          */
         public boolean isBlockCoverage() {
-            return (Boolean) require("isBlockCoverage");
+            return requireBoolean("isBlockCoverage");
         }
         /**
          * JavaScript function name.
@@ -391,21 +405,21 @@ public final class Profiler {
          * @return the protocol field value
          */
         public Runtime.ScriptId scriptId() {
-            return new Runtime.ScriptId((String) require("scriptId"));
+            return require(SCRIPT_ID);
         }
         /**
          * JavaScript script name or url.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Functions contained in the script that has coverage data.
          * @return the protocol field value
          */
         public java.util.List<Profiler.FunctionCoverage> functions() {
-            return CdpObject.requireList(require("functions"), element0 -> java.util.Objects.requireNonNull(Profiler.FunctionCoverage.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(FUNCTIONS);
         }
         /**
          * JavaScript script id.
@@ -440,13 +454,6 @@ public final class Profiler {
      */
     public static final class SetSamplingIntervalRequest extends CdpObject {
         public SetSamplingIntervalRequest() {}
-        /**
-         * Changes CPU profiler sampling interval. Must be called before CPU profiles recording started.
-         * @param interval protocol value
-         */
-        public SetSamplingIntervalRequest(long interval) {
-            interval(interval);
-        }
         public static SetSamplingIntervalRequest fromMap(Map<String, Object> values) {
             final SetSamplingIntervalRequest instance_ = new SetSamplingIntervalRequest();
             if (values != null) instance_.values.putAll(values);
@@ -457,7 +464,7 @@ public final class Profiler {
          * @return the protocol field value
          */
         public long interval() {
-            return ((Number) require("interval")).longValue();
+            return requireLong("interval");
         }
         /**
          * New sampling interval in microseconds.
@@ -484,21 +491,21 @@ public final class Profiler {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> callCount() {
-            return raw("callCount").map(value -> (Boolean) value);
+            return optionalBoolean("callCount");
         }
         /**
          * Collect block-based coverage.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> detailed() {
-            return raw("detailed").map(value -> (Boolean) value);
+            return optionalBoolean("detailed");
         }
         /**
          * Allow the backend to send updates on its own initiative
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> allowTriggeredUpdates() {
-            return raw("allowTriggeredUpdates").map(value -> (Boolean) value);
+            return optionalBoolean("allowTriggeredUpdates");
         }
         /**
          * Collect accurate call counts beyond simple &#x27;covered&#x27; or &#x27;not covered&#x27;.
@@ -542,14 +549,14 @@ public final class Profiler {
          * @return the protocol field value
          */
         public java.util.List<Profiler.ScriptCoverage> result() {
-            return CdpObject.requireList(require("result"), element0 -> java.util.Objects.requireNonNull(Profiler.ScriptCoverage.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(RESULT);
         }
         /**
          * Monotonically increasing time (in seconds) when the coverage update was taken in the backend.
          * @return the protocol field value
          */
         public double timestamp() {
-            return ((Number) require("timestamp")).doubleValue();
+            return requireDouble("timestamp");
         }
         /**
          * Coverage data for the current isolate.
@@ -584,28 +591,28 @@ public final class Profiler {
          * @return the protocol field value
          */
         public String id() {
-            return (String) require("id");
+            return requireString("id");
         }
         /**
          * Location of console.profileEnd().
          * @return the protocol field value
          */
         public Debugger.Location location() {
-            return java.util.Objects.requireNonNull(Debugger.Location.fromMap(CdpObject.requireObjectMap(require("location"))));
+            return require(LOCATION);
         }
         /**
          * Returns the profile field.
          * @return the protocol field value
          */
         public Profiler.Profile profile() {
-            return java.util.Objects.requireNonNull(Profiler.Profile.fromMap(CdpObject.requireObjectMap(require("profile"))));
+            return require(PROFILE);
         }
         /**
          * Profile title passed as an argument to console.profile().
          * @return the protocol field value, empty when absent
          */
         public Optional<String> title() {
-            return raw("title").map(value -> (String) value);
+            return optionalString("title");
         }
         /**
          * Sets the id field.
@@ -658,21 +665,21 @@ public final class Profiler {
          * @return the protocol field value
          */
         public String id() {
-            return (String) require("id");
+            return requireString("id");
         }
         /**
          * Location of console.profile().
          * @return the protocol field value
          */
         public Debugger.Location location() {
-            return java.util.Objects.requireNonNull(Debugger.Location.fromMap(CdpObject.requireObjectMap(require("location"))));
+            return require(LOCATION);
         }
         /**
          * Profile title passed as an argument to console.profile().
          * @return the protocol field value, empty when absent
          */
         public Optional<String> title() {
-            return raw("title").map(value -> (String) value);
+            return optionalString("title");
         }
         /**
          * Sets the id field.
@@ -717,21 +724,21 @@ public final class Profiler {
          * @return the protocol field value
          */
         public double timestamp() {
-            return ((Number) require("timestamp")).doubleValue();
+            return requireDouble("timestamp");
         }
         /**
          * Identifier for distinguishing coverage events.
          * @return the protocol field value
          */
         public String occasion() {
-            return (String) require("occasion");
+            return requireString("occasion");
         }
         /**
          * Coverage data for the current isolate.
          * @return the protocol field value
          */
         public java.util.List<Profiler.ScriptCoverage> result() {
-            return CdpObject.requireList(require("result"), element0 -> java.util.Objects.requireNonNull(Profiler.ScriptCoverage.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(RESULT);
         }
         /**
          * Monotonically increasing time (in seconds) when the coverage update was taken in the backend.
@@ -761,29 +768,28 @@ public final class Profiler {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Invokes Profiler.disable.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Profiler.disable", null);
+            return call("Profiler.disable");
         }
         /**
          * Invokes Profiler.enable.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Profiler.enable", null);
+            return call("Profiler.enable");
         }
         /**
          * Collect coverage data for the current isolate. The coverage data may be incomplete due to garbage collection.
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Profiler.ScriptCoverage>> getBestEffortCoverage() {
-            return client.call("Profiler.getBestEffortCoverage", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("result")), element0 -> java.util.Objects.requireNonNull(Profiler.ScriptCoverage.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Profiler.getBestEffortCoverage", RESULT::require);
         }
         /**
          * Changes CPU profiler sampling interval. Must be called before CPU profiles recording started.
@@ -791,9 +797,7 @@ public final class Profiler {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSamplingInterval(long interval) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("interval", CdpObject.json(interval));
-            return client.call("Profiler.setSamplingInterval", params);
+            return call("Profiler.setSamplingInterval", params("interval", interval));
         }
         /**
          * Changes CPU profiler sampling interval. Must be called before CPU profiles recording started.
@@ -801,14 +805,14 @@ public final class Profiler {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSamplingInterval(SetSamplingIntervalRequest request) {
-            return client.call("Profiler.setSamplingInterval", request == null ? null : request.toMap());
+            return call("Profiler.setSamplingInterval", request);
         }
         /**
          * Invokes Profiler.start.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> start() {
-            return client.call("Profiler.start", null);
+            return call("Profiler.start");
         }
         /**
          * Enable precise code coverage. Coverage data for JavaScript executed before enabling precise code coverage may be incomplete. Enabling prevents running optimized code and resets execution counters.
@@ -818,18 +822,14 @@ public final class Profiler {
          * @return a stage completing with the command result
          */
         public CompletionStage<Double> startPreciseCoverage(@Nullable Boolean callCount, @Nullable Boolean detailed, @Nullable Boolean allowTriggeredUpdates) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (callCount != null) params.put("callCount", CdpObject.json(callCount));
-            if (detailed != null) params.put("detailed", CdpObject.json(detailed));
-            if (allowTriggeredUpdates != null) params.put("allowTriggeredUpdates", CdpObject.json(allowTriggeredUpdates));
-            return client.call("Profiler.startPreciseCoverage", params, result_ -> ((Number) java.util.Objects.requireNonNull(result_.get("timestamp"))).doubleValue());
+            return call("Profiler.startPreciseCoverage", params("callCount", callCount, "detailed", detailed, "allowTriggeredUpdates", allowTriggeredUpdates), TIMESTAMP::require);
         }
         /**
          * Enable precise code coverage. Coverage data for JavaScript executed before enabling precise code coverage may be incomplete. Enabling prevents running optimized code and resets execution counters.
          * @return a stage completing with the command result
          */
         public CompletionStage<Double> startPreciseCoverage() {
-            return client.call("Profiler.startPreciseCoverage", null, result_ -> ((Number) java.util.Objects.requireNonNull(result_.get("timestamp"))).doubleValue());
+            return call("Profiler.startPreciseCoverage", TIMESTAMP::require);
         }
         /**
          * Enable precise code coverage. Coverage data for JavaScript executed before enabling precise code coverage may be incomplete. Enabling prevents running optimized code and resets execution counters.
@@ -837,28 +837,28 @@ public final class Profiler {
          * @return a stage completing with the command result
          */
         public CompletionStage<Double> startPreciseCoverage(StartPreciseCoverageRequest request) {
-            return client.call("Profiler.startPreciseCoverage", request == null ? null : request.toMap(), result_ -> ((Number) java.util.Objects.requireNonNull(result_.get("timestamp"))).doubleValue());
+            return call("Profiler.startPreciseCoverage", request, TIMESTAMP::require);
         }
         /**
          * Invokes Profiler.stop.
          * @return a stage completing with the command result
          */
         public CompletionStage<Profiler.Profile> stop() {
-            return client.call("Profiler.stop", null, result_ -> java.util.Objects.requireNonNull(Profiler.Profile.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("profile"))))));
+            return call("Profiler.stop", PROFILE::require);
         }
         /**
          * Disable precise code coverage. Disabling releases unnecessary execution count records and allows executing optimized code.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopPreciseCoverage() {
-            return client.call("Profiler.stopPreciseCoverage", null);
+            return call("Profiler.stopPreciseCoverage");
         }
         /**
          * Collect coverage data for the current isolate, and resets execution counters. Precise code coverage needs to have started.
          * @return a stage completing with the command result
          */
         public CompletionStage<TakePreciseCoverageResult> takePreciseCoverage() {
-            return client.call("Profiler.takePreciseCoverage", null, result_ -> new TakePreciseCoverageResult(result_));
+            return call("Profiler.takePreciseCoverage", TakePreciseCoverageResult::fromMap);
         }
         /**
          * Subscribes to Profiler.consoleProfileFinished.
@@ -866,7 +866,7 @@ public final class Profiler {
          * @return a removable subscription
          */
         public CdpSubscription onConsoleProfileFinished(Consumer<ConsoleProfileFinishedEvent> handler) {
-            return client.on("Profiler.consoleProfileFinished", ConsoleProfileFinishedEvent::fromMap, handler);
+            return on("Profiler.consoleProfileFinished", ConsoleProfileFinishedEvent::fromMap, handler);
         }
         /**
          * Sent when new profile recording is started using console.profile() call.
@@ -874,7 +874,7 @@ public final class Profiler {
          * @return a removable subscription
          */
         public CdpSubscription onConsoleProfileStarted(Consumer<ConsoleProfileStartedEvent> handler) {
-            return client.on("Profiler.consoleProfileStarted", ConsoleProfileStartedEvent::fromMap, handler);
+            return on("Profiler.consoleProfileStarted", ConsoleProfileStartedEvent::fromMap, handler);
         }
         /**
          * Reports coverage delta since the last poll (either from an event like this, or from {@code takePreciseCoverage} for the current isolate. May only be sent if precise code coverage has been started. This event can be trigged by the embedder to, for example, trigger collection of coverage data immediately at a certain point in time.
@@ -883,7 +883,7 @@ public final class Profiler {
          * @return a removable subscription
          */
         public CdpSubscription onPreciseCoverageDeltaUpdate(Consumer<PreciseCoverageDeltaUpdateEvent> handler) {
-            return client.on("Profiler.preciseCoverageDeltaUpdate", PreciseCoverageDeltaUpdateEvent::fromMap, handler);
+            return on("Profiler.preciseCoverageDeltaUpdate", PreciseCoverageDeltaUpdateEvent::fromMap, handler);
         }
     }
 }

@@ -6,7 +6,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
-import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessage;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.session.Envelope;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import org.zeromq.SocketType;
@@ -75,7 +76,7 @@ public final class StubRuntimeServerMain {
         ack.flip();
         sock.send(toArray(ack), 0);
 
-        LifeSpanHandlerOnAfterCreatedEvent ev = new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(42));
+        BrowserHandleMessage ev = new BrowserHandleMessage(new RemoteHandle(42));
         ByteBuffer evBuf =
                 ByteBuffer.allocate(Envelope.HEADER_SIZE + ev.encodedSize()).order(ByteOrder.LITTLE_ENDIAN);
         Envelope.writeHeader(
@@ -85,7 +86,7 @@ public final class StubRuntimeServerMain {
                         Envelope.Kind.EVENT,
                         0,
                         Envelope.NO_CORR_ID,
-                        LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID));
+                        MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT));
         ev.encodeInto(evBuf);
         evBuf.flip();
         sock.send(toArray(evBuf), 0);

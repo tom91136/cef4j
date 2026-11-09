@@ -2,25 +2,23 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class TextFieldApplyTextStyleRequest implements CefMessageView, CefMessageEncoder {
 
-    public static final int MESSAGE_ID = 649096479;
-
     private final RemoteHandle self;
     private final int style;
     private final int add;
-    private final Range range;
+    private final net.kurobako.cef4j.gen.CefRange range;
 
-    public TextFieldApplyTextStyleRequest(RemoteHandle self, int style, int add, Range range) {
+    public TextFieldApplyTextStyleRequest(RemoteHandle self, int style, int add, net.kurobako.cef4j.gen.CefRange range) {
         this.self = self;
         this.style = style;
         this.add = add;
@@ -39,42 +37,30 @@ public final class TextFieldApplyTextStyleRequest implements CefMessageView, Cef
         return add;
     }
 
-    public Range range() {
+    public net.kurobako.cef4j.gen.CefRange range() {
         return range;
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return 12 + range.encodedSize();
+        return 12 + RangeCodec.encodedSize(range);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putInt(style);
-            __dst.putInt(add);
-            range.encodeInto(__dst);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            __out.putInt(style);
+            __out.putInt(add);
+            RangeCodec.encode(__out, range);
+        });
     }
 
-    public static final CefMessageDecoder<TextFieldApplyTextStyleRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<TextFieldApplyTextStyleRequest> DECODER = WireDecoder.message("TextFieldApplyTextStyleRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final int style = WireDecoder.int32(__buf, "style");
         final int add = WireDecoder.int32(__buf, "add");
-        final Range range = Range.decode(__buf);
-        WireDecoder.requireFullyConsumed(__buf, "TextFieldApplyTextStyleRequest");
+        final net.kurobako.cef4j.gen.CefRange range = RangeCodec.decode(__buf);
         return new TextFieldApplyTextStyleRequest(self, style, add, range);
-    };
+    });
 }

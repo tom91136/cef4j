@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class TaskRunner implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class TaskRunner extends BrowserFacade {
 
     public TaskRunner(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_task_runner_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_task_runner_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class TaskRunner implements AutoCloseable {
      */
     public CompletableFuture<Integer> isSame(RemoteHandle that) {
         return CefFutures.map(
-            session.request(new TaskRunnerIsSameRequest(handle, that), TaskRunnerIsSameResponse.DECODER),
-            TaskRunnerIsSameResponse::result);
+            session.request(MessageIds.TASK_RUNNER_IS_SAME_REQUEST, new SelfHandleThatHandleMessage(handle, that), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class TaskRunner implements AutoCloseable {
      */
     public CompletableFuture<Integer> belongsToCurrentThread() {
         return CefFutures.map(
-            session.request(new TaskRunnerBelongsToCurrentThreadRequest(handle), TaskRunnerBelongsToCurrentThreadResponse.DECODER),
-            TaskRunnerBelongsToCurrentThreadResponse::result);
+            session.request(MessageIds.TASK_RUNNER_BELONGS_TO_CURRENT_THREAD_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -82,8 +51,8 @@ public final class TaskRunner implements AutoCloseable {
      */
     public CompletableFuture<Integer> belongsToThread(int threadId) {
         return CefFutures.map(
-            session.request(new TaskRunnerBelongsToThreadRequest(handle, threadId), TaskRunnerBelongsToThreadResponse.DECODER),
-            TaskRunnerBelongsToThreadResponse::result);
+            session.request(MessageIds.TASK_RUNNER_BELONGS_TO_THREAD_REQUEST, new TaskRunnerBelongsToThreadRequest(handle, threadId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -94,8 +63,8 @@ public final class TaskRunner implements AutoCloseable {
      */
     public CompletableFuture<Integer> postTask(RemoteHandle task) {
         return CefFutures.map(
-            session.request(new TaskRunnerPostTaskRequest(handle, task), TaskRunnerPostTaskResponse.DECODER),
-            TaskRunnerPostTaskResponse::result);
+            session.request(MessageIds.TASK_RUNNER_POST_TASK_REQUEST, new TaskRunnerPostTaskRequest(handle, task), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -106,7 +75,7 @@ public final class TaskRunner implements AutoCloseable {
      */
     public CompletableFuture<Integer> postDelayedTask(RemoteHandle task, long delayMs) {
         return CefFutures.map(
-            session.request(new TaskRunnerPostDelayedTaskRequest(handle, task, delayMs), TaskRunnerPostDelayedTaskResponse.DECODER),
-            TaskRunnerPostDelayedTaskResponse::result);
+            session.request(MessageIds.TASK_RUNNER_POST_DELAYED_TASK_REQUEST, new TaskRunnerPostDelayedTaskRequest(handle, task, delayMs), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

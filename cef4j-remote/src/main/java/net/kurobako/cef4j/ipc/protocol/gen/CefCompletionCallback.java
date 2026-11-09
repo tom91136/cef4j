@@ -24,11 +24,11 @@ public interface CefCompletionCallback {
     void onComplete();
 
     /**
-     * Wires inbound {@link CompletionCallbackOnCompleteCallbackEvent} frames into the supplied {@code table} so each visitor invocation
+     * Wires inbound {@code CompletionCallbackOnCompleteCallbackEvent} frames into the supplied {@code table} so each visitor invocation
      * dispatches to the {@code CefCompletionCallback} registered under that callbackId. Call once per session.
      */
     static CefSession.HandlerRegistration route(CefSession session, JvmCallbackTable<CefCompletionCallback> table) {
-        return session.on(CompletionCallbackOnCompleteCallbackEvent.MESSAGE_ID, CompletionCallbackOnCompleteCallbackEvent.DECODER, ev ->
+        return session.on(MessageIds.COMPLETION_CALLBACK_ON_COMPLETE_CALLBACK_EVENT, CallbackIdIntMessage.DECODER, ev ->
                 table.lookup(ev.callbackId()).ifPresent(v -> v.onComplete()));
     }
 }

@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,44 +13,14 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class MenuButtonDelegate implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class MenuButtonDelegate extends BrowserFacade {
 
     public MenuButtonDelegate(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_menu_button_delegate_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_menu_button_delegate_t");
     }
 
     /** Dispatches {@code on_menu_button_pressed} to the runtime server. */
-    public CompletableFuture<Void> onMenuButtonPressed(RemoteHandle menuButton, Point screenPoint, RemoteHandle buttonPressedLock) {
-        return CefFutures.discard(session.request(new MenuButtonDelegateOnMenuButtonPressedRequest(handle, menuButton, screenPoint, buttonPressedLock), MenuButtonDelegateOnMenuButtonPressedResponse.DECODER));
+    public CompletableFuture<Void> onMenuButtonPressed(RemoteHandle menuButton, net.kurobako.cef4j.gen.CefPoint screenPoint, RemoteHandle buttonPressedLock) {
+        return CefFutures.discard(session.request(MessageIds.MENU_BUTTON_DELEGATE_ON_MENU_BUTTON_PRESSED_REQUEST, new MenuButtonDelegateOnMenuButtonPressedRequest(handle, menuButton, screenPoint, buttonPressedLock), EmptyMessage.DECODER));
     }
 }

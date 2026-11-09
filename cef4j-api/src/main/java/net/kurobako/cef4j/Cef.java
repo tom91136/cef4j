@@ -23,6 +23,7 @@ import net.kurobako.cef4j.gen.CefSettings.Mutable;
 import net.kurobako.cef4j.gen.CefTask;
 import net.kurobako.cef4j.gen.CefThreadId;
 import net.kurobako.cef4j.gen.CefWindowInfo;
+import net.kurobako.cef4j.peer.NativeCleaner;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

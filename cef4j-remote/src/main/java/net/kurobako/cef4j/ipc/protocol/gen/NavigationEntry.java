@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class NavigationEntry implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class NavigationEntry extends BrowserFacade {
 
     public NavigationEntry(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_navigation_entry_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_navigation_entry_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class NavigationEntry implements AutoCloseable {
      */
     public CompletableFuture<Integer> isValid() {
         return CefFutures.map(
-            session.request(new NavigationEntryIsValidRequest(handle), NavigationEntryIsValidResponse.DECODER),
-            NavigationEntryIsValidResponse::result);
+            session.request(MessageIds.NAVIGATION_ENTRY_IS_VALID_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class NavigationEntry implements AutoCloseable {
      */
     public CompletableFuture<String> getUrl() {
         return CefFutures.map(
-            session.request(new NavigationEntryGetUrlRequest(handle), NavigationEntryGetUrlResponse.DECODER),
-            NavigationEntryGetUrlResponse::result);
+            session.request(MessageIds.NAVIGATION_ENTRY_GET_URL_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -82,8 +51,8 @@ public final class NavigationEntry implements AutoCloseable {
      */
     public CompletableFuture<String> getDisplayUrl() {
         return CefFutures.map(
-            session.request(new NavigationEntryGetDisplayUrlRequest(handle), NavigationEntryGetDisplayUrlResponse.DECODER),
-            NavigationEntryGetDisplayUrlResponse::result);
+            session.request(MessageIds.NAVIGATION_ENTRY_GET_DISPLAY_URL_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -94,8 +63,8 @@ public final class NavigationEntry implements AutoCloseable {
      */
     public CompletableFuture<String> getOriginalUrl() {
         return CefFutures.map(
-            session.request(new NavigationEntryGetOriginalUrlRequest(handle), NavigationEntryGetOriginalUrlResponse.DECODER),
-            NavigationEntryGetOriginalUrlResponse::result);
+            session.request(MessageIds.NAVIGATION_ENTRY_GET_ORIGINAL_URL_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -106,8 +75,8 @@ public final class NavigationEntry implements AutoCloseable {
      */
     public CompletableFuture<String> getTitle() {
         return CefFutures.map(
-            session.request(new NavigationEntryGetTitleRequest(handle), NavigationEntryGetTitleResponse.DECODER),
-            NavigationEntryGetTitleResponse::result);
+            session.request(MessageIds.NAVIGATION_ENTRY_GET_TITLE_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -118,8 +87,8 @@ public final class NavigationEntry implements AutoCloseable {
      */
     public CompletableFuture<Integer> getTransitionType() {
         return CefFutures.map(
-            session.request(new NavigationEntryGetTransitionTypeRequest(handle), NavigationEntryGetTransitionTypeResponse.DECODER),
-            NavigationEntryGetTransitionTypeResponse::result);
+            session.request(MessageIds.NAVIGATION_ENTRY_GET_TRANSITION_TYPE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -130,8 +99,8 @@ public final class NavigationEntry implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasPostData() {
         return CefFutures.map(
-            session.request(new NavigationEntryHasPostDataRequest(handle), NavigationEntryHasPostDataResponse.DECODER),
-            NavigationEntryHasPostDataResponse::result);
+            session.request(MessageIds.NAVIGATION_ENTRY_HAS_POST_DATA_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -140,10 +109,10 @@ public final class NavigationEntry implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__navigation__entry_8h.html">cef_navigation_entry.h:98</a>
      */
-    public CompletableFuture<BaseTime> getCompletionTime() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefBaseTime> getCompletionTime() {
         return CefFutures.map(
-            session.request(new NavigationEntryGetCompletionTimeRequest(handle), NavigationEntryGetCompletionTimeResponse.DECODER),
-            NavigationEntryGetCompletionTimeResponse::result);
+            session.request(MessageIds.NAVIGATION_ENTRY_GET_COMPLETION_TIME_REQUEST, new SelfHandleMessage(handle), ResultCefBaseTimeMessage.DECODER),
+            ResultCefBaseTimeMessage::result);
     }
 
     /**
@@ -154,8 +123,8 @@ public final class NavigationEntry implements AutoCloseable {
      */
     public CompletableFuture<Integer> getHttpStatusCode() {
         return CefFutures.map(
-            session.request(new NavigationEntryGetHttpStatusCodeRequest(handle), NavigationEntryGetHttpStatusCodeResponse.DECODER),
-            NavigationEntryGetHttpStatusCodeResponse::result);
+            session.request(MessageIds.NAVIGATION_ENTRY_GET_HTTP_STATUS_CODE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -166,7 +135,7 @@ public final class NavigationEntry implements AutoCloseable {
      */
     public CompletableFuture<SslStatus> getSslStatus() {
         return CefFutures.map(
-            session.request(new NavigationEntryGetSslStatusRequest(handle), NavigationEntryGetSslStatusResponse.DECODER),
+            session.request(MessageIds.NAVIGATION_ENTRY_GET_SSL_STATUS_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new SslStatus(session, __r.result()));
     }
 }

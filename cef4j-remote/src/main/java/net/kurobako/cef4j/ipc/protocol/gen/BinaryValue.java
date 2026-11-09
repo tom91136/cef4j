@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class BinaryValue implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class BinaryValue extends BrowserFacade {
 
     public BinaryValue(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_binary_value_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_binary_value_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class BinaryValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> isValid() {
         return CefFutures.map(
-            session.request(new BinaryValueIsValidRequest(handle), BinaryValueIsValidResponse.DECODER),
-            BinaryValueIsValidResponse::result);
+            session.request(MessageIds.BINARY_VALUE_IS_VALID_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class BinaryValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> isOwned() {
         return CefFutures.map(
-            session.request(new BinaryValueIsOwnedRequest(handle), BinaryValueIsOwnedResponse.DECODER),
-            BinaryValueIsOwnedResponse::result);
+            session.request(MessageIds.BINARY_VALUE_IS_OWNED_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -82,8 +51,8 @@ public final class BinaryValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> isSame(RemoteHandle that) {
         return CefFutures.map(
-            session.request(new BinaryValueIsSameRequest(handle, that), BinaryValueIsSameResponse.DECODER),
-            BinaryValueIsSameResponse::result);
+            session.request(MessageIds.BINARY_VALUE_IS_SAME_REQUEST, new SelfHandleThatHandleMessage(handle, that), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -94,8 +63,8 @@ public final class BinaryValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> isEqual(RemoteHandle that) {
         return CefFutures.map(
-            session.request(new BinaryValueIsEqualRequest(handle, that), BinaryValueIsEqualResponse.DECODER),
-            BinaryValueIsEqualResponse::result);
+            session.request(MessageIds.BINARY_VALUE_IS_EQUAL_REQUEST, new SelfHandleThatHandleMessage(handle, that), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -106,7 +75,7 @@ public final class BinaryValue implements AutoCloseable {
      */
     public CompletableFuture<BinaryValue> copy() {
         return CefFutures.map(
-            session.request(new BinaryValueCopyRequest(handle), BinaryValueCopyResponse.DECODER),
+            session.request(MessageIds.BINARY_VALUE_COPY_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new BinaryValue(session, __r.result()));
     }
 
@@ -118,7 +87,7 @@ public final class BinaryValue implements AutoCloseable {
      */
     public CompletableFuture<Long> getSize() {
         return CefFutures.map(
-            session.request(new BinaryValueGetSizeRequest(handle), BinaryValueGetSizeResponse.DECODER),
-            BinaryValueGetSizeResponse::result);
+            session.request(MessageIds.BINARY_VALUE_GET_SIZE_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 }

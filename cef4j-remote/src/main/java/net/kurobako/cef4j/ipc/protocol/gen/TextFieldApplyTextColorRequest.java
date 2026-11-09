@@ -2,24 +2,22 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class TextFieldApplyTextColorRequest implements CefMessageView, CefMessageEncoder {
 
-    public static final int MESSAGE_ID = 293011039;
-
     private final RemoteHandle self;
     private final int color;
-    private final Range range;
+    private final net.kurobako.cef4j.gen.CefRange range;
 
-    public TextFieldApplyTextColorRequest(RemoteHandle self, int color, Range range) {
+    public TextFieldApplyTextColorRequest(RemoteHandle self, int color, net.kurobako.cef4j.gen.CefRange range) {
         this.self = self;
         this.color = color;
         this.range = range;
@@ -33,40 +31,28 @@ public final class TextFieldApplyTextColorRequest implements CefMessageView, Cef
         return color;
     }
 
-    public Range range() {
+    public net.kurobako.cef4j.gen.CefRange range() {
         return range;
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return 8 + range.encodedSize();
+        return 8 + RangeCodec.encodedSize(range);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putInt(color);
-            range.encodeInto(__dst);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            __out.putInt(color);
+            RangeCodec.encode(__out, range);
+        });
     }
 
-    public static final CefMessageDecoder<TextFieldApplyTextColorRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<TextFieldApplyTextColorRequest> DECODER = WireDecoder.message("TextFieldApplyTextColorRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final int color = WireDecoder.int32(__buf, "color");
-        final Range range = Range.decode(__buf);
-        WireDecoder.requireFullyConsumed(__buf, "TextFieldApplyTextColorRequest");
+        final net.kurobako.cef4j.gen.CefRange range = RangeCodec.decode(__buf);
         return new TextFieldApplyTextColorRequest(self, color, range);
-    };
+    });
 }

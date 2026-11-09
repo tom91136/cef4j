@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,11 +9,10 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class DownloadHandlerCanDownloadEvent implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 1646418617;
 
     private final RemoteHandle browser;
     private final String url;
@@ -43,37 +41,23 @@ public final class DownloadHandlerCanDownloadEvent implements CefMessageView, Ce
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 12 + urlBytes.length + requestMethodBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(browser.id());
-            __dst.putInt(urlBytes.length);
-            __dst.put(urlBytes);
-            __dst.putInt(requestMethodBytes.length);
-            __dst.put(requestMethodBytes);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(browser.id());
+            WireEncoder.bytes(__out, urlBytes);
+            WireEncoder.bytes(__out, requestMethodBytes);
+        });
     }
 
-    public static final CefMessageDecoder<DownloadHandlerCanDownloadEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<DownloadHandlerCanDownloadEvent> DECODER = WireDecoder.message("DownloadHandlerCanDownloadEvent", __buf -> {
         final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
         final String url = WireDecoder.utf8(__buf, "url");
         final String requestMethod = WireDecoder.utf8(__buf, "requestMethod");
-        WireDecoder.requireFullyConsumed(__buf, "DownloadHandlerCanDownloadEvent");
         return new DownloadHandlerCanDownloadEvent(browser, url, requestMethod);
-    };
+    });
 }

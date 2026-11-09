@@ -1,7 +1,6 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -9,6 +8,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -24,6 +25,20 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Animation {
     private Animation() {}
+    private static final CdpField<Animation.AnimationValue> ANIMATION = CdpField.of("animation", value -> java.util.Objects.requireNonNull(Animation.AnimationValue.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<String>> ANIMATIONS = CdpField.of("animations", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<DOM.ScrollOrientation> AXIS = CdpField.of("axis", value -> DOM.ScrollOrientation.of((String) value));
+    private static final CdpField<DOM.BackendNodeId> BACKEND_NODE_ID = CdpField.of("backendNodeId", value -> new DOM.BackendNodeId(((Number) value).longValue()));
+    private static final CdpField<Double> CURRENT_TIME = CdpField.of("currentTime", value -> ((Number) value).doubleValue());
+    private static final CdpField<java.util.List<Animation.KeyframeStyle>> KEYFRAMES = CdpField.of("keyframes", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Animation.KeyframeStyle.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Animation.KeyframesRule> KEYFRAMES_RULE = CdpField.of("keyframesRule", value -> java.util.Objects.requireNonNull(Animation.KeyframesRule.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Double> PLAYBACK_RATE = CdpField.of("playbackRate", value -> ((Number) value).doubleValue());
+    private static final CdpField<Runtime.RemoteObject> REMOTE_OBJECT = CdpField.of("remoteObject", value -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Animation.AnimationEffect> SOURCE = CdpField.of("source", value -> java.util.Objects.requireNonNull(Animation.AnimationEffect.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<DOM.BackendNodeId> SOURCE_NODE_ID = CdpField.of("sourceNodeId", value -> new DOM.BackendNodeId(((Number) value).longValue()));
+    private static final CdpField<DOM.BackendNodeId> SUBJECT_NODE_ID = CdpField.of("subjectNodeId", value -> new DOM.BackendNodeId(((Number) value).longValue()));
+    private static final CdpField<AnimationValue.TypeValues> TYPE = CdpField.of("type", value -> AnimationValue.TypeValues.of((String) value));
+    private static final CdpField<Animation.ViewOrScrollTimeline> VIEW_OR_SCROLL_TIMELINE = CdpField.of("viewOrScrollTimeline", value -> java.util.Objects.requireNonNull(Animation.ViewOrScrollTimeline.fromMap(CdpObject.requireObjectMap(value))));
     /**
      * Animation instance.
      */
@@ -55,77 +70,77 @@ public final class Animation {
          * @return the protocol field value
          */
         public String id() {
-            return (String) require("id");
+            return requireString("id");
         }
         /**
          * {@code Animation}&#x27;s name.
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * {@code Animation}&#x27;s internal paused state.
          * @return the protocol field value
          */
         public boolean pausedState() {
-            return (Boolean) require("pausedState");
+            return requireBoolean("pausedState");
         }
         /**
          * {@code Animation}&#x27;s play state.
          * @return the protocol field value
          */
         public String playState() {
-            return (String) require("playState");
+            return requireString("playState");
         }
         /**
          * {@code Animation}&#x27;s playback rate.
          * @return the protocol field value
          */
         public double playbackRate() {
-            return ((Number) require("playbackRate")).doubleValue();
+            return requireDouble("playbackRate");
         }
         /**
          * {@code Animation}&#x27;s start time. Milliseconds for time based animations and percentage [0 - 100] for scroll driven animations (i.e. when viewOrScrollTimeline exists).
          * @return the protocol field value
          */
         public double startTime() {
-            return ((Number) require("startTime")).doubleValue();
+            return requireDouble("startTime");
         }
         /**
          * {@code Animation}&#x27;s current time.
          * @return the protocol field value
          */
         public double currentTime() {
-            return ((Number) require("currentTime")).doubleValue();
+            return requireDouble("currentTime");
         }
         /**
          * Animation type of {@code Animation}.
          * @return the protocol field value
          */
         public AnimationValue.TypeValues type() {
-            return AnimationValue.TypeValues.of((String) require("type"));
+            return require(TYPE);
         }
         /**
          * {@code Animation}&#x27;s source animation node.
          * @return the protocol field value, empty when absent
          */
         public Optional<Animation.AnimationEffect> source() {
-            return raw("source").flatMap(CdpObject::objectMap).map(Animation.AnimationEffect::fromMap);
+            return optional(SOURCE);
         }
         /**
          * A unique ID for {@code Animation} representing the sources that triggered this CSS animation/transition.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> cssId() {
-            return raw("cssId").map(value -> (String) value);
+            return optionalString("cssId");
         }
         /**
          * View or scroll timeline
          * @return the protocol field value, empty when absent
          */
         public Optional<Animation.ViewOrScrollTimeline> viewOrScrollTimeline() {
-            return raw("viewOrScrollTimeline").flatMap(CdpObject::objectMap).map(Animation.ViewOrScrollTimeline::fromMap);
+            return optional(VIEW_OR_SCROLL_TIMELINE);
         }
         /**
          * {@code Animation}&#x27;s id.
@@ -241,35 +256,35 @@ public final class Animation {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> sourceNodeId() {
-            return raw("sourceNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(SOURCE_NODE_ID);
         }
         /**
          * Represents the starting scroll position of the timeline as a length offset in pixels from scroll origin.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble startOffset() {
-            return raw("startOffset").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("startOffset");
         }
         /**
          * Represents the ending scroll position of the timeline as a length offset in pixels from scroll origin.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble endOffset() {
-            return raw("endOffset").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("endOffset");
         }
         /**
          * The element whose principal box&#x27;s visibility in the scrollport defined the progress of the timeline. Does not exist for animations with ScrollTimeline
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> subjectNodeId() {
-            return raw("subjectNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(SUBJECT_NODE_ID);
         }
         /**
          * Orientation of the scroll
          * @return the protocol field value
          */
         public DOM.ScrollOrientation axis() {
-            return DOM.ScrollOrientation.of((String) require("axis"));
+            return require(AXIS);
         }
         /**
          * Scroll container node
@@ -331,70 +346,70 @@ public final class Animation {
          * @return the protocol field value
          */
         public double delay() {
-            return ((Number) require("delay")).doubleValue();
+            return requireDouble("delay");
         }
         /**
          * {@code AnimationEffect}&#x27;s end delay.
          * @return the protocol field value
          */
         public double endDelay() {
-            return ((Number) require("endDelay")).doubleValue();
+            return requireDouble("endDelay");
         }
         /**
          * {@code AnimationEffect}&#x27;s iteration start.
          * @return the protocol field value
          */
         public double iterationStart() {
-            return ((Number) require("iterationStart")).doubleValue();
+            return requireDouble("iterationStart");
         }
         /**
          * {@code AnimationEffect}&#x27;s iterations. Omitted if the value is infinite.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble iterations() {
-            return raw("iterations").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("iterations");
         }
         /**
          * {@code AnimationEffect}&#x27;s iteration duration. Milliseconds for time based animations and percentage [0 - 100] for scroll driven animations (i.e. when viewOrScrollTimeline exists).
          * @return the protocol field value
          */
         public double duration() {
-            return ((Number) require("duration")).doubleValue();
+            return requireDouble("duration");
         }
         /**
          * {@code AnimationEffect}&#x27;s playback direction.
          * @return the protocol field value
          */
         public String direction() {
-            return (String) require("direction");
+            return requireString("direction");
         }
         /**
          * {@code AnimationEffect}&#x27;s fill mode.
          * @return the protocol field value
          */
         public String fill() {
-            return (String) require("fill");
+            return requireString("fill");
         }
         /**
          * {@code AnimationEffect}&#x27;s target node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(BACKEND_NODE_ID);
         }
         /**
          * {@code AnimationEffect}&#x27;s keyframes.
          * @return the protocol field value, empty when absent
          */
         public Optional<Animation.KeyframesRule> keyframesRule() {
-            return raw("keyframesRule").flatMap(CdpObject::objectMap).map(Animation.KeyframesRule::fromMap);
+            return optional(KEYFRAMES_RULE);
         }
         /**
          * {@code AnimationEffect}&#x27;s timing function.
          * @return the protocol field value
          */
         public String easing() {
-            return (String) require("easing");
+            return requireString("easing");
         }
         /**
          * {@code AnimationEffect}&#x27;s delay.
@@ -501,14 +516,14 @@ public final class Animation {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            return raw("name").map(value -> (String) value);
+            return optionalString("name");
         }
         /**
          * List of animation keyframes.
          * @return the protocol field value
          */
         public java.util.List<Animation.KeyframeStyle> keyframes() {
-            return CdpObject.requireList(require("keyframes"), element0 -> java.util.Objects.requireNonNull(Animation.KeyframeStyle.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(KEYFRAMES);
         }
         /**
          * CSS keyframed animation&#x27;s name.
@@ -543,14 +558,14 @@ public final class Animation {
          * @return the protocol field value
          */
         public String offset() {
-            return (String) require("offset");
+            return requireString("offset");
         }
         /**
          * {@code AnimationEffect}&#x27;s timing function.
          * @return the protocol field value
          */
         public String easing() {
-            return (String) require("easing");
+            return requireString("easing");
         }
         /**
          * Keyframe&#x27;s time offset.
@@ -576,13 +591,6 @@ public final class Animation {
      */
     public static final class GetCurrentTimeRequest extends CdpObject {
         public GetCurrentTimeRequest() {}
-        /**
-         * Returns the current time of the an animation.
-         * @param id protocol value
-         */
-        public GetCurrentTimeRequest(String id) {
-            id(id);
-        }
         public static GetCurrentTimeRequest fromMap(Map<String, Object> values) {
             final GetCurrentTimeRequest instance_ = new GetCurrentTimeRequest();
             if (values != null) instance_.values.putAll(values);
@@ -593,7 +601,7 @@ public final class Animation {
          * @return the protocol field value
          */
         public String id() {
-            return (String) require("id");
+            return requireString("id");
         }
         /**
          * Id of animation.
@@ -610,13 +618,6 @@ public final class Animation {
      */
     public static final class ReleaseAnimationsRequest extends CdpObject {
         public ReleaseAnimationsRequest() {}
-        /**
-         * Releases a set of animations to no longer be manipulated.
-         * @param animations protocol value
-         */
-        public ReleaseAnimationsRequest(java.util.List<String> animations) {
-            animations(animations);
-        }
         public static ReleaseAnimationsRequest fromMap(Map<String, Object> values) {
             final ReleaseAnimationsRequest instance_ = new ReleaseAnimationsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -627,7 +628,7 @@ public final class Animation {
          * @return the protocol field value
          */
         public java.util.List<String> animations() {
-            return CdpObject.requireList(require("animations"), element0 -> (String) element0);
+            return require(ANIMATIONS);
         }
         /**
          * List of animation ids to seek.
@@ -644,13 +645,6 @@ public final class Animation {
      */
     public static final class ResolveAnimationRequest extends CdpObject {
         public ResolveAnimationRequest() {}
-        /**
-         * Gets the remote object of the Animation.
-         * @param animationId protocol value
-         */
-        public ResolveAnimationRequest(String animationId) {
-            animationId(animationId);
-        }
         public static ResolveAnimationRequest fromMap(Map<String, Object> values) {
             final ResolveAnimationRequest instance_ = new ResolveAnimationRequest();
             if (values != null) instance_.values.putAll(values);
@@ -661,7 +655,7 @@ public final class Animation {
          * @return the protocol field value
          */
         public String animationId() {
-            return (String) require("animationId");
+            return requireString("animationId");
         }
         /**
          * Animation id.
@@ -678,14 +672,6 @@ public final class Animation {
      */
     public static final class SeekAnimationsRequest extends CdpObject {
         public SeekAnimationsRequest() {}
-        /**
-         * Seek a set of animations to a particular time within each animation.
-         * @param animations protocol value
-         * @param currentTime protocol value
-         */
-        public SeekAnimationsRequest(java.util.List<String> animations, double currentTime) {
-            animations(animations).currentTime(currentTime);
-        }
         public static SeekAnimationsRequest fromMap(Map<String, Object> values) {
             final SeekAnimationsRequest instance_ = new SeekAnimationsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -696,14 +682,14 @@ public final class Animation {
          * @return the protocol field value
          */
         public java.util.List<String> animations() {
-            return CdpObject.requireList(require("animations"), element0 -> (String) element0);
+            return require(ANIMATIONS);
         }
         /**
          * Set the current time of each animation.
          * @return the protocol field value
          */
         public double currentTime() {
-            return ((Number) require("currentTime")).doubleValue();
+            return requireDouble("currentTime");
         }
         /**
          * List of animation ids to seek.
@@ -729,14 +715,6 @@ public final class Animation {
      */
     public static final class SetPausedRequest extends CdpObject {
         public SetPausedRequest() {}
-        /**
-         * Sets the paused state of a set of animations.
-         * @param animations protocol value
-         * @param paused protocol value
-         */
-        public SetPausedRequest(java.util.List<String> animations, boolean paused) {
-            animations(animations).paused(paused);
-        }
         public static SetPausedRequest fromMap(Map<String, Object> values) {
             final SetPausedRequest instance_ = new SetPausedRequest();
             if (values != null) instance_.values.putAll(values);
@@ -747,14 +725,14 @@ public final class Animation {
          * @return the protocol field value
          */
         public java.util.List<String> animations() {
-            return CdpObject.requireList(require("animations"), element0 -> (String) element0);
+            return require(ANIMATIONS);
         }
         /**
          * Paused state to set to.
          * @return the protocol field value
          */
         public boolean paused() {
-            return (Boolean) require("paused");
+            return requireBoolean("paused");
         }
         /**
          * Animations to set the pause state of.
@@ -780,13 +758,6 @@ public final class Animation {
      */
     public static final class SetPlaybackRateRequest extends CdpObject {
         public SetPlaybackRateRequest() {}
-        /**
-         * Sets the playback rate of the document timeline.
-         * @param playbackRate protocol value
-         */
-        public SetPlaybackRateRequest(double playbackRate) {
-            playbackRate(playbackRate);
-        }
         public static SetPlaybackRateRequest fromMap(Map<String, Object> values) {
             final SetPlaybackRateRequest instance_ = new SetPlaybackRateRequest();
             if (values != null) instance_.values.putAll(values);
@@ -797,7 +768,7 @@ public final class Animation {
          * @return the protocol field value
          */
         public double playbackRate() {
-            return ((Number) require("playbackRate")).doubleValue();
+            return requireDouble("playbackRate");
         }
         /**
          * Playback rate for animations on page
@@ -814,15 +785,6 @@ public final class Animation {
      */
     public static final class SetTimingRequest extends CdpObject {
         public SetTimingRequest() {}
-        /**
-         * Sets the timing of an animation node.
-         * @param animationId protocol value
-         * @param duration protocol value
-         * @param delay protocol value
-         */
-        public SetTimingRequest(String animationId, double duration, double delay) {
-            animationId(animationId).duration(duration).delay(delay);
-        }
         public static SetTimingRequest fromMap(Map<String, Object> values) {
             final SetTimingRequest instance_ = new SetTimingRequest();
             if (values != null) instance_.values.putAll(values);
@@ -833,21 +795,21 @@ public final class Animation {
          * @return the protocol field value
          */
         public String animationId() {
-            return (String) require("animationId");
+            return requireString("animationId");
         }
         /**
          * Duration of the animation.
          * @return the protocol field value
          */
         public double duration() {
-            return ((Number) require("duration")).doubleValue();
+            return requireDouble("duration");
         }
         /**
          * Delay of the animation.
          * @return the protocol field value
          */
         public double delay() {
-            return ((Number) require("delay")).doubleValue();
+            return requireDouble("delay");
         }
         /**
          * Animation id.
@@ -891,7 +853,7 @@ public final class Animation {
          * @return the protocol field value
          */
         public String id() {
-            return (String) require("id");
+            return requireString("id");
         }
         /**
          * Id of the animation that was cancelled.
@@ -917,7 +879,7 @@ public final class Animation {
          * @return the protocol field value
          */
         public String id() {
-            return (String) require("id");
+            return requireString("id");
         }
         /**
          * Id of the animation that was created.
@@ -943,7 +905,7 @@ public final class Animation {
          * @return the protocol field value
          */
         public Animation.AnimationValue animation() {
-            return java.util.Objects.requireNonNull(Animation.AnimationValue.fromMap(CdpObject.requireObjectMap(require("animation"))));
+            return require(ANIMATION);
         }
         /**
          * Animation that was started.
@@ -969,7 +931,7 @@ public final class Animation {
          * @return the protocol field value
          */
         public Animation.AnimationValue animation() {
-            return java.util.Objects.requireNonNull(Animation.AnimationValue.fromMap(CdpObject.requireObjectMap(require("animation"))));
+            return require(ANIMATION);
         }
         /**
          * Animation that was updated.
@@ -981,22 +943,21 @@ public final class Animation {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Disables animation domain notifications.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Animation.disable", null);
+            return call("Animation.disable");
         }
         /**
          * Enables animation domain notifications.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Animation.enable", null);
+            return call("Animation.enable");
         }
         /**
          * Returns the current time of the an animation.
@@ -1004,9 +965,7 @@ public final class Animation {
          * @return a stage completing with the command result
          */
         public CompletionStage<Double> getCurrentTime(String id) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("id", CdpObject.json(id));
-            return client.call("Animation.getCurrentTime", params, result_ -> ((Number) java.util.Objects.requireNonNull(result_.get("currentTime"))).doubleValue());
+            return call("Animation.getCurrentTime", params("id", id), CURRENT_TIME::require);
         }
         /**
          * Returns the current time of the an animation.
@@ -1014,14 +973,14 @@ public final class Animation {
          * @return a stage completing with the command result
          */
         public CompletionStage<Double> getCurrentTime(GetCurrentTimeRequest request) {
-            return client.call("Animation.getCurrentTime", request == null ? null : request.toMap(), result_ -> ((Number) java.util.Objects.requireNonNull(result_.get("currentTime"))).doubleValue());
+            return call("Animation.getCurrentTime", request, CURRENT_TIME::require);
         }
         /**
          * Gets the playback rate of the document timeline.
          * @return a stage completing with the command result
          */
         public CompletionStage<Double> getPlaybackRate() {
-            return client.call("Animation.getPlaybackRate", null, result_ -> ((Number) java.util.Objects.requireNonNull(result_.get("playbackRate"))).doubleValue());
+            return call("Animation.getPlaybackRate", PLAYBACK_RATE::require);
         }
         /**
          * Releases a set of animations to no longer be manipulated.
@@ -1029,9 +988,7 @@ public final class Animation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> releaseAnimations(java.util.List<String> animations) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("animations", CdpObject.json(animations));
-            return client.call("Animation.releaseAnimations", params);
+            return call("Animation.releaseAnimations", params("animations", animations));
         }
         /**
          * Releases a set of animations to no longer be manipulated.
@@ -1039,7 +996,7 @@ public final class Animation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> releaseAnimations(ReleaseAnimationsRequest request) {
-            return client.call("Animation.releaseAnimations", request == null ? null : request.toMap());
+            return call("Animation.releaseAnimations", request);
         }
         /**
          * Gets the remote object of the Animation.
@@ -1047,9 +1004,7 @@ public final class Animation {
          * @return a stage completing with the command result
          */
         public CompletionStage<Runtime.RemoteObject> resolveAnimation(String animationId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("animationId", CdpObject.json(animationId));
-            return client.call("Animation.resolveAnimation", params, result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("remoteObject"))))));
+            return call("Animation.resolveAnimation", params("animationId", animationId), REMOTE_OBJECT::require);
         }
         /**
          * Gets the remote object of the Animation.
@@ -1057,7 +1012,7 @@ public final class Animation {
          * @return a stage completing with the command result
          */
         public CompletionStage<Runtime.RemoteObject> resolveAnimation(ResolveAnimationRequest request) {
-            return client.call("Animation.resolveAnimation", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("remoteObject"))))));
+            return call("Animation.resolveAnimation", request, REMOTE_OBJECT::require);
         }
         /**
          * Seek a set of animations to a particular time within each animation.
@@ -1066,10 +1021,7 @@ public final class Animation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> seekAnimations(java.util.List<String> animations, double currentTime) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("animations", CdpObject.json(animations));
-            params.put("currentTime", CdpObject.json(currentTime));
-            return client.call("Animation.seekAnimations", params);
+            return call("Animation.seekAnimations", params("animations", animations, "currentTime", currentTime));
         }
         /**
          * Seek a set of animations to a particular time within each animation.
@@ -1077,7 +1029,7 @@ public final class Animation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> seekAnimations(SeekAnimationsRequest request) {
-            return client.call("Animation.seekAnimations", request == null ? null : request.toMap());
+            return call("Animation.seekAnimations", request);
         }
         /**
          * Sets the paused state of a set of animations.
@@ -1086,10 +1038,7 @@ public final class Animation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPaused(java.util.List<String> animations, boolean paused) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("animations", CdpObject.json(animations));
-            params.put("paused", CdpObject.json(paused));
-            return client.call("Animation.setPaused", params);
+            return call("Animation.setPaused", params("animations", animations, "paused", paused));
         }
         /**
          * Sets the paused state of a set of animations.
@@ -1097,7 +1046,7 @@ public final class Animation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPaused(SetPausedRequest request) {
-            return client.call("Animation.setPaused", request == null ? null : request.toMap());
+            return call("Animation.setPaused", request);
         }
         /**
          * Sets the playback rate of the document timeline.
@@ -1105,9 +1054,7 @@ public final class Animation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPlaybackRate(double playbackRate) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("playbackRate", CdpObject.json(playbackRate));
-            return client.call("Animation.setPlaybackRate", params);
+            return call("Animation.setPlaybackRate", params("playbackRate", playbackRate));
         }
         /**
          * Sets the playback rate of the document timeline.
@@ -1115,7 +1062,7 @@ public final class Animation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPlaybackRate(SetPlaybackRateRequest request) {
-            return client.call("Animation.setPlaybackRate", request == null ? null : request.toMap());
+            return call("Animation.setPlaybackRate", request);
         }
         /**
          * Sets the timing of an animation node.
@@ -1125,11 +1072,7 @@ public final class Animation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setTiming(String animationId, double duration, double delay) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("animationId", CdpObject.json(animationId));
-            params.put("duration", CdpObject.json(duration));
-            params.put("delay", CdpObject.json(delay));
-            return client.call("Animation.setTiming", params);
+            return call("Animation.setTiming", params("animationId", animationId, "duration", duration, "delay", delay));
         }
         /**
          * Sets the timing of an animation node.
@@ -1137,7 +1080,7 @@ public final class Animation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setTiming(SetTimingRequest request) {
-            return client.call("Animation.setTiming", request == null ? null : request.toMap());
+            return call("Animation.setTiming", request);
         }
         /**
          * Event for when an animation has been cancelled.
@@ -1145,7 +1088,7 @@ public final class Animation {
          * @return a removable subscription
          */
         public CdpSubscription onAnimationCanceled(Consumer<AnimationCanceledEvent> handler) {
-            return client.on("Animation.animationCanceled", AnimationCanceledEvent::fromMap, handler);
+            return on("Animation.animationCanceled", AnimationCanceledEvent::fromMap, handler);
         }
         /**
          * Event for each animation that has been created.
@@ -1153,7 +1096,7 @@ public final class Animation {
          * @return a removable subscription
          */
         public CdpSubscription onAnimationCreated(Consumer<AnimationCreatedEvent> handler) {
-            return client.on("Animation.animationCreated", AnimationCreatedEvent::fromMap, handler);
+            return on("Animation.animationCreated", AnimationCreatedEvent::fromMap, handler);
         }
         /**
          * Event for animation that has been started.
@@ -1161,7 +1104,7 @@ public final class Animation {
          * @return a removable subscription
          */
         public CdpSubscription onAnimationStarted(Consumer<AnimationStartedEvent> handler) {
-            return client.on("Animation.animationStarted", AnimationStartedEvent::fromMap, handler);
+            return on("Animation.animationStarted", AnimationStartedEvent::fromMap, handler);
         }
         /**
          * Event for animation that has been updated.
@@ -1169,7 +1112,7 @@ public final class Animation {
          * @return a removable subscription
          */
         public CdpSubscription onAnimationUpdated(Consumer<AnimationUpdatedEvent> handler) {
-            return client.on("Animation.animationUpdated", AnimationUpdatedEvent::fromMap, handler);
+            return on("Animation.animationUpdated", AnimationUpdatedEvent::fromMap, handler);
         }
     }
 }

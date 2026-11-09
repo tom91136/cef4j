@@ -1,13 +1,14 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.policy.NullableBoundary;
@@ -22,6 +23,7 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Cast {
     private Cast() {}
+    private static final CdpField<java.util.List<Cast.Sink>> SINKS = CdpField.of("sinks", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Cast.Sink.fromMap(CdpObject.requireObjectMap(element0)))));
     /**
      */
     public static final class Sink extends CdpObject {
@@ -35,21 +37,21 @@ public final class Cast {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Returns the id field.
          * @return the protocol field value
          */
         public String id() {
-            return (String) require("id");
+            return requireString("id");
         }
         /**
          * Text describing the current session. Present only if there is an active session on the sink.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> session() {
-            return raw("session").map(value -> (String) value);
+            return optionalString("session");
         }
         /**
          * Sets the name field.
@@ -94,7 +96,7 @@ public final class Cast {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> presentationUrl() {
-            return raw("presentationUrl").map(value -> (String) value);
+            return optionalString("presentationUrl");
         }
         /**
          * Sets the presentationUrl field.
@@ -111,13 +113,6 @@ public final class Cast {
      */
     public static final class SetSinkToUseRequest extends CdpObject {
         public SetSinkToUseRequest() {}
-        /**
-         * Sets a sink to be used when the web page requests the browser to choose a sink via Presentation API, Remote Playback API, or Cast SDK.
-         * @param sinkName protocol value
-         */
-        public SetSinkToUseRequest(String sinkName) {
-            sinkName(sinkName);
-        }
         public static SetSinkToUseRequest fromMap(Map<String, Object> values) {
             final SetSinkToUseRequest instance_ = new SetSinkToUseRequest();
             if (values != null) instance_.values.putAll(values);
@@ -128,7 +123,7 @@ public final class Cast {
          * @return the protocol field value
          */
         public String sinkName() {
-            return (String) require("sinkName");
+            return requireString("sinkName");
         }
         /**
          * Sets the sinkName field.
@@ -145,13 +140,6 @@ public final class Cast {
      */
     public static final class StartDesktopMirroringRequest extends CdpObject {
         public StartDesktopMirroringRequest() {}
-        /**
-         * Starts mirroring the desktop to the sink.
-         * @param sinkName protocol value
-         */
-        public StartDesktopMirroringRequest(String sinkName) {
-            sinkName(sinkName);
-        }
         public static StartDesktopMirroringRequest fromMap(Map<String, Object> values) {
             final StartDesktopMirroringRequest instance_ = new StartDesktopMirroringRequest();
             if (values != null) instance_.values.putAll(values);
@@ -162,7 +150,7 @@ public final class Cast {
          * @return the protocol field value
          */
         public String sinkName() {
-            return (String) require("sinkName");
+            return requireString("sinkName");
         }
         /**
          * Sets the sinkName field.
@@ -179,13 +167,6 @@ public final class Cast {
      */
     public static final class StartTabMirroringRequest extends CdpObject {
         public StartTabMirroringRequest() {}
-        /**
-         * Starts mirroring the tab to the sink.
-         * @param sinkName protocol value
-         */
-        public StartTabMirroringRequest(String sinkName) {
-            sinkName(sinkName);
-        }
         public static StartTabMirroringRequest fromMap(Map<String, Object> values) {
             final StartTabMirroringRequest instance_ = new StartTabMirroringRequest();
             if (values != null) instance_.values.putAll(values);
@@ -196,7 +177,7 @@ public final class Cast {
          * @return the protocol field value
          */
         public String sinkName() {
-            return (String) require("sinkName");
+            return requireString("sinkName");
         }
         /**
          * Sets the sinkName field.
@@ -213,13 +194,6 @@ public final class Cast {
      */
     public static final class StopCastingRequest extends CdpObject {
         public StopCastingRequest() {}
-        /**
-         * Stops the active Cast session on the sink.
-         * @param sinkName protocol value
-         */
-        public StopCastingRequest(String sinkName) {
-            sinkName(sinkName);
-        }
         public static StopCastingRequest fromMap(Map<String, Object> values) {
             final StopCastingRequest instance_ = new StopCastingRequest();
             if (values != null) instance_.values.putAll(values);
@@ -230,7 +204,7 @@ public final class Cast {
          * @return the protocol field value
          */
         public String sinkName() {
-            return (String) require("sinkName");
+            return requireString("sinkName");
         }
         /**
          * Sets the sinkName field.
@@ -256,7 +230,7 @@ public final class Cast {
          * @return the protocol field value
          */
         public java.util.List<Cast.Sink> sinks() {
-            return CdpObject.requireList(require("sinks"), element0 -> java.util.Objects.requireNonNull(Cast.Sink.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(SINKS);
         }
         /**
          * Sets the sinks field.
@@ -282,7 +256,7 @@ public final class Cast {
          * @return the protocol field value
          */
         public String issueMessage() {
-            return (String) require("issueMessage");
+            return requireString("issueMessage");
         }
         /**
          * Sets the issueMessage field.
@@ -294,25 +268,22 @@ public final class Cast {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Starts observing for sinks that can be used for tab mirroring, and if set, sinks compatible with |presentationUrl| as well. When sinks are found, a |sinksUpdated| event is fired. Also starts observing for issue messages. When an issue is added or removed, an |issueUpdated| event is fired.
          * @param presentationUrl protocol value
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable(String presentationUrl) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("presentationUrl", CdpObject.json(presentationUrl));
-            return client.call("Cast.enable", params);
+            return call("Cast.enable", params("presentationUrl", presentationUrl));
         }
         /**
          * Starts observing for sinks that can be used for tab mirroring, and if set, sinks compatible with |presentationUrl| as well. When sinks are found, a |sinksUpdated| event is fired. Also starts observing for issue messages. When an issue is added or removed, an |issueUpdated| event is fired.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Cast.enable", null);
+            return call("Cast.enable");
         }
         /**
          * Starts observing for sinks that can be used for tab mirroring, and if set, sinks compatible with |presentationUrl| as well. When sinks are found, a |sinksUpdated| event is fired. Also starts observing for issue messages. When an issue is added or removed, an |issueUpdated| event is fired.
@@ -320,14 +291,14 @@ public final class Cast {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable(EnableRequest request) {
-            return client.call("Cast.enable", request == null ? null : request.toMap());
+            return call("Cast.enable", request);
         }
         /**
          * Stops observing for sinks and issues.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Cast.disable", null);
+            return call("Cast.disable");
         }
         /**
          * Sets a sink to be used when the web page requests the browser to choose a sink via Presentation API, Remote Playback API, or Cast SDK.
@@ -335,9 +306,7 @@ public final class Cast {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSinkToUse(String sinkName) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("sinkName", CdpObject.json(sinkName));
-            return client.call("Cast.setSinkToUse", params);
+            return call("Cast.setSinkToUse", params("sinkName", sinkName));
         }
         /**
          * Sets a sink to be used when the web page requests the browser to choose a sink via Presentation API, Remote Playback API, or Cast SDK.
@@ -345,7 +314,7 @@ public final class Cast {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSinkToUse(SetSinkToUseRequest request) {
-            return client.call("Cast.setSinkToUse", request == null ? null : request.toMap());
+            return call("Cast.setSinkToUse", request);
         }
         /**
          * Starts mirroring the desktop to the sink.
@@ -353,9 +322,7 @@ public final class Cast {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startDesktopMirroring(String sinkName) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("sinkName", CdpObject.json(sinkName));
-            return client.call("Cast.startDesktopMirroring", params);
+            return call("Cast.startDesktopMirroring", params("sinkName", sinkName));
         }
         /**
          * Starts mirroring the desktop to the sink.
@@ -363,7 +330,7 @@ public final class Cast {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startDesktopMirroring(StartDesktopMirroringRequest request) {
-            return client.call("Cast.startDesktopMirroring", request == null ? null : request.toMap());
+            return call("Cast.startDesktopMirroring", request);
         }
         /**
          * Starts mirroring the tab to the sink.
@@ -371,9 +338,7 @@ public final class Cast {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startTabMirroring(String sinkName) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("sinkName", CdpObject.json(sinkName));
-            return client.call("Cast.startTabMirroring", params);
+            return call("Cast.startTabMirroring", params("sinkName", sinkName));
         }
         /**
          * Starts mirroring the tab to the sink.
@@ -381,7 +346,7 @@ public final class Cast {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startTabMirroring(StartTabMirroringRequest request) {
-            return client.call("Cast.startTabMirroring", request == null ? null : request.toMap());
+            return call("Cast.startTabMirroring", request);
         }
         /**
          * Stops the active Cast session on the sink.
@@ -389,9 +354,7 @@ public final class Cast {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopCasting(String sinkName) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("sinkName", CdpObject.json(sinkName));
-            return client.call("Cast.stopCasting", params);
+            return call("Cast.stopCasting", params("sinkName", sinkName));
         }
         /**
          * Stops the active Cast session on the sink.
@@ -399,7 +362,7 @@ public final class Cast {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopCasting(StopCastingRequest request) {
-            return client.call("Cast.stopCasting", request == null ? null : request.toMap());
+            return call("Cast.stopCasting", request);
         }
         /**
          * This is fired whenever the list of available sinks changes. A sink is a device or a software surface that you can cast to.
@@ -407,7 +370,7 @@ public final class Cast {
          * @return a removable subscription
          */
         public CdpSubscription onSinksUpdated(Consumer<SinksUpdatedEvent> handler) {
-            return client.on("Cast.sinksUpdated", SinksUpdatedEvent::fromMap, handler);
+            return on("Cast.sinksUpdated", SinksUpdatedEvent::fromMap, handler);
         }
         /**
          * This is fired whenever the outstanding issue/error message changes. |issueMessage| is empty if there is no issue.
@@ -415,7 +378,7 @@ public final class Cast {
          * @return a removable subscription
          */
         public CdpSubscription onIssueUpdated(Consumer<IssueUpdatedEvent> handler) {
-            return client.on("Cast.issueUpdated", IssueUpdatedEvent::fromMap, handler);
+            return on("Cast.issueUpdated", IssueUpdatedEvent::fromMap, handler);
         }
     }
 }

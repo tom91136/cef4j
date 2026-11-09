@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,11 +9,10 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class BrowserHostRunFileDialogRequest implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 988926820;
 
     private final RemoteHandle self;
     private final int mode;
@@ -61,48 +59,29 @@ public final class BrowserHostRunFileDialogRequest implements CefMessageView, Ce
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return 24 + titleBytes.length + defaultFilePathBytes.length + java.util.Arrays.stream(acceptFilters).mapToInt(__s -> 4 + __s.getBytes(StandardCharsets.UTF_8).length).sum();
+        return 24 + titleBytes.length + defaultFilePathBytes.length + WireEncoder.utf8ListSize(acceptFilters);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putInt(mode);
-            __dst.putInt(titleBytes.length);
-            __dst.put(titleBytes);
-            __dst.putInt(defaultFilePathBytes.length);
-            __dst.put(defaultFilePathBytes);
-            __dst.putInt(acceptFilters.length);
-            for (final String __s : acceptFilters) {
-                final byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
-                __dst.putInt(__b.length);
-                __dst.put(__b);
-            }
-            __dst.putInt(callback.id());
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            __out.putInt(mode);
+            WireEncoder.bytes(__out, titleBytes);
+            WireEncoder.bytes(__out, defaultFilePathBytes);
+            WireEncoder.utf8List(__out, acceptFilters);
+            __out.putInt(callback.id());
+        });
     }
 
-    public static final CefMessageDecoder<BrowserHostRunFileDialogRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<BrowserHostRunFileDialogRequest> DECODER = WireDecoder.message("BrowserHostRunFileDialogRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final int mode = WireDecoder.int32(__buf, "mode");
         final String title = WireDecoder.utf8(__buf, "title");
         final String defaultFilePath = WireDecoder.utf8(__buf, "defaultFilePath");
         final String[] acceptFilters = WireDecoder.utf8List(__buf, "acceptFilters");
         final RemoteHandle callback = WireDecoder.handle(__buf, "callback");
-        WireDecoder.requireFullyConsumed(__buf, "BrowserHostRunFileDialogRequest");
         return new BrowserHostRunFileDialogRequest(self, mode, title, defaultFilePath, acceptFilters, callback);
-    };
+    });
 }

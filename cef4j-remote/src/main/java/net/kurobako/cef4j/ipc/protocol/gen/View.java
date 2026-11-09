@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,89 +13,59 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class View implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class View extends BrowserFacade {
 
     public View(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_view_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_view_t");
     }
 
     /** Dispatches {@code as_browser_view} to the runtime server. */
     public CompletableFuture<BrowserView> asBrowserView() {
         return CefFutures.map(
-            session.request(new ViewAsBrowserViewRequest(handle), ViewAsBrowserViewResponse.DECODER),
+            session.request(MessageIds.VIEW_AS_BROWSER_VIEW_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new BrowserView(session, __r.result()));
     }
 
     /** Dispatches {@code as_button} to the runtime server. */
     public CompletableFuture<Button> asButton() {
         return CefFutures.map(
-            session.request(new ViewAsButtonRequest(handle), ViewAsButtonResponse.DECODER),
+            session.request(MessageIds.VIEW_AS_BUTTON_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new Button(session, __r.result()));
     }
 
     /** Dispatches {@code as_panel} to the runtime server. */
     public CompletableFuture<Panel> asPanel() {
         return CefFutures.map(
-            session.request(new ViewAsPanelRequest(handle), ViewAsPanelResponse.DECODER),
+            session.request(MessageIds.VIEW_AS_PANEL_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new Panel(session, __r.result()));
     }
 
     /** Dispatches {@code as_scroll_view} to the runtime server. */
     public CompletableFuture<ScrollView> asScrollView() {
         return CefFutures.map(
-            session.request(new ViewAsScrollViewRequest(handle), ViewAsScrollViewResponse.DECODER),
+            session.request(MessageIds.VIEW_AS_SCROLL_VIEW_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new ScrollView(session, __r.result()));
     }
 
     /** Dispatches {@code as_textfield} to the runtime server. */
     public CompletableFuture<TextField> asTextField() {
         return CefFutures.map(
-            session.request(new ViewAsTextFieldRequest(handle), ViewAsTextFieldResponse.DECODER),
+            session.request(MessageIds.VIEW_AS_TEXT_FIELD_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new TextField(session, __r.result()));
     }
 
     /** Dispatches {@code get_type_string} to the runtime server. */
     public CompletableFuture<String> getTypeString() {
         return CefFutures.map(
-            session.request(new ViewGetTypeStringRequest(handle), ViewGetTypeStringResponse.DECODER),
-            ViewGetTypeStringResponse::result);
+            session.request(MessageIds.VIEW_GET_TYPE_STRING_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /** Dispatches {@code to_string} to the runtime server. */
     public CompletableFuture<String> cefToString(int includeChildren) {
         return CefFutures.map(
-            session.request(new ViewToStringRequest(handle, includeChildren), ViewToStringResponse.DECODER),
-            ViewToStringResponse::result);
+            session.request(MessageIds.VIEW_TO_STRING_REQUEST, new ViewToStringRequest(handle, includeChildren), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -107,15 +76,15 @@ public final class View implements AutoCloseable {
      */
     public CompletableFuture<Integer> isValid() {
         return CefFutures.map(
-            session.request(new ViewIsValidRequest(handle), ViewIsValidResponse.DECODER),
-            ViewIsValidResponse::result);
+            session.request(MessageIds.VIEW_IS_VALID_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code is_attached} to the runtime server. */
     public CompletableFuture<Integer> isAttached() {
         return CefFutures.map(
-            session.request(new ViewIsAttachedRequest(handle), ViewIsAttachedResponse.DECODER),
-            ViewIsAttachedResponse::result);
+            session.request(MessageIds.VIEW_IS_ATTACHED_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -126,21 +95,21 @@ public final class View implements AutoCloseable {
      */
     public CompletableFuture<Integer> isSame(RemoteHandle that) {
         return CefFutures.map(
-            session.request(new ViewIsSameRequest(handle, that), ViewIsSameResponse.DECODER),
-            ViewIsSameResponse::result);
+            session.request(MessageIds.VIEW_IS_SAME_REQUEST, new SelfHandleThatHandleMessage(handle, that), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code get_delegate} to the runtime server. */
     public CompletableFuture<ViewDelegate> getDelegate() {
         return CefFutures.map(
-            session.request(new ViewGetDelegateRequest(handle), ViewGetDelegateResponse.DECODER),
+            session.request(MessageIds.VIEW_GET_DELEGATE_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new ViewDelegate(session, __r.result()));
     }
 
     /** Dispatches {@code get_window} to the runtime server. */
     public CompletableFuture<Window> getWindow() {
         return CefFutures.map(
-            session.request(new ViewGetWindowRequest(handle), ViewGetWindowResponse.DECODER),
+            session.request(MessageIds.VIEW_GET_WINDOW_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new Window(session, __r.result()));
     }
 
@@ -152,13 +121,13 @@ public final class View implements AutoCloseable {
      */
     public CompletableFuture<Integer> getId() {
         return CefFutures.map(
-            session.request(new ViewGetIdRequest(handle), ViewGetIdResponse.DECODER),
-            ViewGetIdResponse::result);
+            session.request(MessageIds.VIEW_GET_ID_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code set_id} to the runtime server. */
     public CompletableFuture<Void> setId(int id) {
-        return CefFutures.discard(session.request(new ViewSetIdRequest(handle, id), ViewSetIdResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.VIEW_SET_ID_REQUEST, new SelfHandleIdIntMessage(handle, id), EmptyMessage.DECODER));
     }
 
     /**
@@ -169,8 +138,8 @@ public final class View implements AutoCloseable {
      */
     public CompletableFuture<Integer> getGroupId() {
         return CefFutures.map(
-            session.request(new ViewGetGroupIdRequest(handle), ViewGetGroupIdResponse.DECODER),
-            ViewGetGroupIdResponse::result);
+            session.request(MessageIds.VIEW_GET_GROUP_ID_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -180,40 +149,40 @@ public final class View implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:239</a>
      */
     public CompletableFuture<Void> setGroupId(int groupId) {
-        return CefFutures.discard(session.request(new ViewSetGroupIdRequest(handle, groupId), ViewSetGroupIdResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.VIEW_SET_GROUP_ID_REQUEST, new ViewSetGroupIdRequest(handle, groupId), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code get_parent_view} to the runtime server. */
     public CompletableFuture<View> getParentView() {
         return CefFutures.map(
-            session.request(new ViewGetParentViewRequest(handle), ViewGetParentViewResponse.DECODER),
+            session.request(MessageIds.VIEW_GET_PARENT_VIEW_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new View(session, __r.result()));
     }
 
     /** Dispatches {@code get_view_for_id} to the runtime server. */
     public CompletableFuture<View> getViewForId(int id) {
         return CefFutures.map(
-            session.request(new ViewGetViewForIdRequest(handle, id), ViewGetViewForIdResponse.DECODER),
+            session.request(MessageIds.VIEW_GET_VIEW_FOR_ID_REQUEST, new SelfHandleIdIntMessage(handle, id), ResultHandleMessage.DECODER),
             __r -> new View(session, __r.result()));
     }
 
     /** Dispatches {@code set_bounds} to the runtime server. */
-    public CompletableFuture<Void> setBounds(Rect bounds) {
-        return CefFutures.discard(session.request(new ViewSetBoundsRequest(handle, bounds), ViewSetBoundsResponse.DECODER));
+    public CompletableFuture<Void> setBounds(net.kurobako.cef4j.gen.CefRect bounds) {
+        return CefFutures.discard(session.request(MessageIds.VIEW_SET_BOUNDS_REQUEST, new SelfHandleBoundsCefRectMessage(handle, bounds), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code get_bounds} to the runtime server. */
-    public CompletableFuture<Rect> getBounds() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefRect> getBounds() {
         return CefFutures.map(
-            session.request(new ViewGetBoundsRequest(handle), ViewGetBoundsResponse.DECODER),
-            ViewGetBoundsResponse::result);
+            session.request(MessageIds.VIEW_GET_BOUNDS_REQUEST, new SelfHandleMessage(handle), ResultCefRectMessage.DECODER),
+            ResultCefRectMessage::result);
     }
 
     /** Dispatches {@code get_bounds_in_screen} to the runtime server. */
-    public CompletableFuture<Rect> getBoundsInScreen() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefRect> getBoundsInScreen() {
         return CefFutures.map(
-            session.request(new ViewGetBoundsInScreenRequest(handle), ViewGetBoundsInScreenResponse.DECODER),
-            ViewGetBoundsInScreenResponse::result);
+            session.request(MessageIds.VIEW_GET_BOUNDS_IN_SCREEN_REQUEST, new SelfHandleMessage(handle), ResultCefRectMessage.DECODER),
+            ResultCefRectMessage::result);
     }
 
     /**
@@ -222,8 +191,8 @@ public final class View implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:592</a>
      */
-    public CompletableFuture<Void> setSize(Size size) {
-        return CefFutures.discard(session.request(new ViewSetSizeRequest(handle, size), ViewSetSizeResponse.DECODER));
+    public CompletableFuture<Void> setSize(net.kurobako.cef4j.gen.CefSize size) {
+        return CefFutures.discard(session.request(MessageIds.VIEW_SET_SIZE_REQUEST, new SelfHandleSizeCefSizeMessage(handle, size), EmptyMessage.DECODER));
     }
 
     /**
@@ -232,72 +201,72 @@ public final class View implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:599</a>
      */
-    public CompletableFuture<Size> getSize() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefSize> getSize() {
         return CefFutures.map(
-            session.request(new ViewGetSizeRequest(handle), ViewGetSizeResponse.DECODER),
-            ViewGetSizeResponse::result);
+            session.request(MessageIds.VIEW_GET_SIZE_REQUEST, new SelfHandleMessage(handle), ResultCefSizeMessage.DECODER),
+            ResultCefSizeMessage::result);
     }
 
     /** Dispatches {@code set_position} to the runtime server. */
-    public CompletableFuture<Void> setPosition(Point position) {
-        return CefFutures.discard(session.request(new ViewSetPositionRequest(handle, position), ViewSetPositionResponse.DECODER));
+    public CompletableFuture<Void> setPosition(net.kurobako.cef4j.gen.CefPoint position) {
+        return CefFutures.discard(session.request(MessageIds.VIEW_SET_POSITION_REQUEST, new SelfHandlePositionCefPointMessage(handle, position), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code get_position} to the runtime server. */
-    public CompletableFuture<Point> getPosition() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefPoint> getPosition() {
         return CefFutures.map(
-            session.request(new ViewGetPositionRequest(handle), ViewGetPositionResponse.DECODER),
-            ViewGetPositionResponse::result);
+            session.request(MessageIds.VIEW_GET_POSITION_REQUEST, new SelfHandleMessage(handle), ResultCefPointMessage.DECODER),
+            ResultCefPointMessage::result);
     }
 
     /** Dispatches {@code set_insets} to the runtime server. */
-    public CompletableFuture<Void> setInsets(Insets insets) {
-        return CefFutures.discard(session.request(new ViewSetInsetsRequest(handle, insets), ViewSetInsetsResponse.DECODER));
+    public CompletableFuture<Void> setInsets(net.kurobako.cef4j.gen.CefInsets insets) {
+        return CefFutures.discard(session.request(MessageIds.VIEW_SET_INSETS_REQUEST, new SelfHandleInsetsCefInsetsMessage(handle, insets), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code get_insets} to the runtime server. */
-    public CompletableFuture<Insets> getInsets() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefInsets> getInsets() {
         return CefFutures.map(
-            session.request(new ViewGetInsetsRequest(handle), ViewGetInsetsResponse.DECODER),
-            ViewGetInsetsResponse::result);
+            session.request(MessageIds.VIEW_GET_INSETS_REQUEST, new SelfHandleMessage(handle), ResultCefInsetsMessage.DECODER),
+            ResultCefInsetsMessage::result);
     }
 
     /** Dispatches {@code get_preferred_size} to the runtime server. */
-    public CompletableFuture<Size> getPreferredSize() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefSize> getPreferredSize() {
         return CefFutures.map(
-            session.request(new ViewGetPreferredSizeRequest(handle), ViewGetPreferredSizeResponse.DECODER),
-            ViewGetPreferredSizeResponse::result);
+            session.request(MessageIds.VIEW_GET_PREFERRED_SIZE_REQUEST, new SelfHandleMessage(handle), ResultCefSizeMessage.DECODER),
+            ResultCefSizeMessage::result);
     }
 
     /** Dispatches {@code size_to_preferred_size} to the runtime server. */
     public CompletableFuture<Void> sizeToPreferredSize() {
-        return CefFutures.discard(session.request(new ViewSizeToPreferredSizeRequest(handle), ViewSizeToPreferredSizeResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.VIEW_SIZE_TO_PREFERRED_SIZE_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code get_minimum_size} to the runtime server. */
-    public CompletableFuture<Size> getMinimumSize() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefSize> getMinimumSize() {
         return CefFutures.map(
-            session.request(new ViewGetMinimumSizeRequest(handle), ViewGetMinimumSizeResponse.DECODER),
-            ViewGetMinimumSizeResponse::result);
+            session.request(MessageIds.VIEW_GET_MINIMUM_SIZE_REQUEST, new SelfHandleMessage(handle), ResultCefSizeMessage.DECODER),
+            ResultCefSizeMessage::result);
     }
 
     /** Dispatches {@code get_maximum_size} to the runtime server. */
-    public CompletableFuture<Size> getMaximumSize() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefSize> getMaximumSize() {
         return CefFutures.map(
-            session.request(new ViewGetMaximumSizeRequest(handle), ViewGetMaximumSizeResponse.DECODER),
-            ViewGetMaximumSizeResponse::result);
+            session.request(MessageIds.VIEW_GET_MAXIMUM_SIZE_REQUEST, new SelfHandleMessage(handle), ResultCefSizeMessage.DECODER),
+            ResultCefSizeMessage::result);
     }
 
     /** Dispatches {@code get_height_for_width} to the runtime server. */
     public CompletableFuture<Integer> getHeightForWidth(int width) {
         return CefFutures.map(
-            session.request(new ViewGetHeightForWidthRequest(handle, width), ViewGetHeightForWidthResponse.DECODER),
-            ViewGetHeightForWidthResponse::result);
+            session.request(MessageIds.VIEW_GET_HEIGHT_FOR_WIDTH_REQUEST, new ViewGetHeightForWidthRequest(handle, width), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code invalidate_layout} to the runtime server. */
     public CompletableFuture<Void> invalidateLayout() {
-        return CefFutures.discard(session.request(new ViewInvalidateLayoutRequest(handle), ViewInvalidateLayoutResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.VIEW_INVALIDATE_LAYOUT_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -307,7 +276,7 @@ public final class View implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:275</a>
      */
     public CompletableFuture<Void> setVisible(int visible) {
-        return CefFutures.discard(session.request(new ViewSetVisibleRequest(handle, visible), ViewSetVisibleResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.VIEW_SET_VISIBLE_REQUEST, new SelfHandleVisibleIntMessage(handle, visible), EmptyMessage.DECODER));
     }
 
     /**
@@ -318,15 +287,15 @@ public final class View implements AutoCloseable {
      */
     public CompletableFuture<Integer> isVisible() {
         return CefFutures.map(
-            session.request(new ViewIsVisibleRequest(handle), ViewIsVisibleResponse.DECODER),
-            ViewIsVisibleResponse::result);
+            session.request(MessageIds.VIEW_IS_VISIBLE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code is_drawn} to the runtime server. */
     public CompletableFuture<Integer> isDrawn() {
         return CefFutures.map(
-            session.request(new ViewIsDrawnRequest(handle), ViewIsDrawnResponse.DECODER),
-            ViewIsDrawnResponse::result);
+            session.request(MessageIds.VIEW_IS_DRAWN_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -336,7 +305,7 @@ public final class View implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:300</a>
      */
     public CompletableFuture<Void> setEnabled(int enabled) {
-        return CefFutures.discard(session.request(new ViewSetEnabledRequest(handle, enabled), ViewSetEnabledResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.VIEW_SET_ENABLED_REQUEST, new SelfHandleEnabledIntMessage(handle, enabled), EmptyMessage.DECODER));
     }
 
     /**
@@ -347,57 +316,57 @@ public final class View implements AutoCloseable {
      */
     public CompletableFuture<Integer> isEnabled() {
         return CefFutures.map(
-            session.request(new ViewIsEnabledRequest(handle), ViewIsEnabledResponse.DECODER),
-            ViewIsEnabledResponse::result);
+            session.request(MessageIds.VIEW_IS_ENABLED_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code set_focusable} to the runtime server. */
     public CompletableFuture<Void> setFocusable(int focusable) {
-        return CefFutures.discard(session.request(new ViewSetFocusableRequest(handle, focusable), ViewSetFocusableResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.VIEW_SET_FOCUSABLE_REQUEST, new ViewSetFocusableRequest(handle, focusable), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code is_focusable} to the runtime server. */
     public CompletableFuture<Integer> isFocusable() {
         return CefFutures.map(
-            session.request(new ViewIsFocusableRequest(handle), ViewIsFocusableResponse.DECODER),
-            ViewIsFocusableResponse::result);
+            session.request(MessageIds.VIEW_IS_FOCUSABLE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code is_accessibility_focusable} to the runtime server. */
     public CompletableFuture<Integer> isAccessibilityFocusable() {
         return CefFutures.map(
-            session.request(new ViewIsAccessibilityFocusableRequest(handle), ViewIsAccessibilityFocusableResponse.DECODER),
-            ViewIsAccessibilityFocusableResponse::result);
+            session.request(MessageIds.VIEW_IS_ACCESSIBILITY_FOCUSABLE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code has_focus} to the runtime server. */
     public CompletableFuture<Integer> hasFocus() {
         return CefFutures.map(
-            session.request(new ViewHasFocusRequest(handle), ViewHasFocusResponse.DECODER),
-            ViewHasFocusResponse::result);
+            session.request(MessageIds.VIEW_HAS_FOCUS_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code request_focus} to the runtime server. */
     public CompletableFuture<Void> requestFocus() {
-        return CefFutures.discard(session.request(new ViewRequestFocusRequest(handle), ViewRequestFocusResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.VIEW_REQUEST_FOCUS_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code set_background_color} to the runtime server. */
     public CompletableFuture<Void> setBackgroundColor(int color) {
-        return CefFutures.discard(session.request(new ViewSetBackgroundColorRequest(handle, color), ViewSetBackgroundColorResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.VIEW_SET_BACKGROUND_COLOR_REQUEST, new SelfHandleColorIntMessage(handle, color), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code get_background_color} to the runtime server. */
     public CompletableFuture<Integer> getBackgroundColor() {
         return CefFutures.map(
-            session.request(new ViewGetBackgroundColorRequest(handle), ViewGetBackgroundColorResponse.DECODER),
-            ViewGetBackgroundColorResponse::result);
+            session.request(MessageIds.VIEW_GET_BACKGROUND_COLOR_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code get_theme_color} to the runtime server. */
     public CompletableFuture<Integer> getThemeColor(int colorId) {
         return CefFutures.map(
-            session.request(new ViewGetThemeColorRequest(handle, colorId), ViewGetThemeColorResponse.DECODER),
-            ViewGetThemeColorResponse::result);
+            session.request(MessageIds.VIEW_GET_THEME_COLOR_REQUEST, new ViewGetThemeColorRequest(handle, colorId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

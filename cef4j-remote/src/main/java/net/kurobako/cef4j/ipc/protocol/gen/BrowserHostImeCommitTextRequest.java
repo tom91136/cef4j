@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,19 +9,18 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class BrowserHostImeCommitTextRequest implements CefMessageView, CefMessageEncoder {
 
-    public static final int MESSAGE_ID = 1733582209;
-
     private final RemoteHandle self;
     private final String text;
     private final byte[] textBytes;
-    private final Range replacementRange;
+    private final net.kurobako.cef4j.gen.CefRange replacementRange;
     private final int relativeCursorPos;
 
-    public BrowserHostImeCommitTextRequest(RemoteHandle self, String text, Range replacementRange, int relativeCursorPos) {
+    public BrowserHostImeCommitTextRequest(RemoteHandle self, String text, net.kurobako.cef4j.gen.CefRange replacementRange, int relativeCursorPos) {
         this.self = self;
         this.text = text;
         this.textBytes = text.getBytes(StandardCharsets.UTF_8);
@@ -38,7 +36,7 @@ public final class BrowserHostImeCommitTextRequest implements CefMessageView, Ce
         return text;
     }
 
-    public Range replacementRange() {
+    public net.kurobako.cef4j.gen.CefRange replacementRange() {
         return replacementRange;
     }
 
@@ -47,38 +45,25 @@ public final class BrowserHostImeCommitTextRequest implements CefMessageView, Ce
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return 12 + textBytes.length + replacementRange.encodedSize();
+        return 12 + textBytes.length + RangeCodec.encodedSize(replacementRange);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putInt(textBytes.length);
-            __dst.put(textBytes);
-            replacementRange.encodeInto(__dst);
-            __dst.putInt(relativeCursorPos);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            WireEncoder.bytes(__out, textBytes);
+            RangeCodec.encode(__out, replacementRange);
+            __out.putInt(relativeCursorPos);
+        });
     }
 
-    public static final CefMessageDecoder<BrowserHostImeCommitTextRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<BrowserHostImeCommitTextRequest> DECODER = WireDecoder.message("BrowserHostImeCommitTextRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final String text = WireDecoder.utf8(__buf, "text");
-        final Range replacementRange = Range.decode(__buf);
+        final net.kurobako.cef4j.gen.CefRange replacementRange = RangeCodec.decode(__buf);
         final int relativeCursorPos = WireDecoder.int32(__buf, "relativeCursorPos");
-        WireDecoder.requireFullyConsumed(__buf, "BrowserHostImeCommitTextRequest");
         return new BrowserHostImeCommitTextRequest(self, text, replacementRange, relativeCursorPos);
-    };
+    });
 }

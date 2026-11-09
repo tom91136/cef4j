@@ -7,12 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalLong;
 import java.util.function.Function;
 import net.kurobako.cef4j.policy.NullableBoundary;
 import org.jspecify.annotations.Nullable;
 
 /** Mutable, codec-independent CDP value object. Setters store wire-form values. */
-@NullableBoundary("CDP wire objects use null for absent optional fields")
 public abstract class CdpObject {
     protected final Map<String, Object> values = new LinkedHashMap<>();
 
@@ -26,6 +27,7 @@ public abstract class CdpObject {
         return values;
     }
 
+    @NullableBoundary("CDP wire objects use null for absent optional fields")
     protected final void set(String name, @Nullable Object value) {
         if (value == null) values.remove(name);
         else values.put(name, json(value));
@@ -41,7 +43,56 @@ public abstract class CdpObject {
         return value;
     }
 
+    protected final <T> T require(CdpField<T> field) {
+        return field.require(values);
+    }
+
+    protected final <T> Optional<T> optional(CdpField<T> field) {
+        return field.optional(values);
+    }
+
+    protected final String requireString(String name) {
+        return (String) require(name);
+    }
+
+    protected final boolean requireBoolean(String name) {
+        return (Boolean) require(name);
+    }
+
+    protected final long requireLong(String name) {
+        return ((Number) require(name)).longValue();
+    }
+
+    protected final double requireDouble(String name) {
+        return ((Number) require(name)).doubleValue();
+    }
+
+    protected final Map<String, Object> requireObject(String name) {
+        return requireObjectMap(require(name));
+    }
+
+    protected final Optional<String> optionalString(String name) {
+        return raw(name).map(value -> (String) value);
+    }
+
+    protected final Optional<Boolean> optionalBoolean(String name) {
+        return raw(name).map(value -> (Boolean) value);
+    }
+
+    protected final OptionalLong optionalLong(String name) {
+        return numberAsLong(values.get(name)).map(OptionalLong::of).orElseGet(OptionalLong::empty);
+    }
+
+    protected final OptionalDouble optionalDouble(String name) {
+        return numberAsDouble(values.get(name)).map(OptionalDouble::of).orElseGet(OptionalDouble::empty);
+    }
+
+    protected final Optional<Map<String, Object>> optionalObject(String name) {
+        return objectMap(values.get(name));
+    }
+
     @SuppressWarnings("unchecked")
+    @NullableBoundary("CDP wire objects use null for absent optional fields")
     public static Optional<Map<String, Object>> objectMap(@Nullable Object value) {
         return Optional.ofNullable((Map<String, Object>) value);
     }
@@ -51,6 +102,7 @@ public abstract class CdpObject {
         return (Map<String, Object>) Objects.requireNonNull(value);
     }
 
+    @NullableBoundary("CDP wire objects use null for absent optional fields")
     public static <T> Optional<List<T>> list(@Nullable Object value, Function<Object, T> mapper) {
         return Optional.ofNullable(value).map(source -> requireList(source, mapper));
     }
@@ -73,16 +125,19 @@ public abstract class CdpObject {
         return value;
     }
 
+    @NullableBoundary("CDP wire objects use null for absent optional fields")
     public static Optional<Long> numberAsLong(@Nullable Object value) {
         return Optional.ofNullable(value).map(number -> ((Number) number).longValue());
     }
 
+    @NullableBoundary("CDP wire objects use null for absent optional fields")
     public static Optional<Double> numberAsDouble(@Nullable Object value) {
         return Optional.ofNullable(value).map(number -> ((Number) number).doubleValue());
     }
 
     @Override
     @SuppressWarnings("EqualsGetClass")
+    @NullableBoundary("CDP wire objects use null for absent optional fields")
     public final boolean equals(@Nullable Object other) {
         return this == other
                 || (other != null && getClass() == other.getClass() && values.equals(((CdpObject) other).values));

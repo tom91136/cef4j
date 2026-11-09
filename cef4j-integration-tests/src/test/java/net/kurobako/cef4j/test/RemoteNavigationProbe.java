@@ -13,6 +13,7 @@ import net.kurobako.cef4j.ipc.protocol.gen.Browser;
 import net.kurobako.cef4j.ipc.protocol.gen.Frame;
 import net.kurobako.cef4j.ipc.protocol.gen.LoadHandlerOnLoadEndEvent;
 import net.kurobako.cef4j.ipc.protocol.gen.LoadHandlerOnLoadErrorEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.protocol.gen.RequestHandlerOnRenderProcessTerminatedEvent;
 import net.kurobako.cef4j.ipc.protocol.gen.V8ContextCreatedEvent;
 import net.kurobako.cef4j.ipc.session.CefSession;
@@ -35,13 +36,13 @@ public final class RemoteNavigationProbe implements AutoCloseable {
         this.session = session;
         this.browser = browser;
         contextRegistration =
-                session.on(V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, this::onContext);
-        loadEndRegistration =
-                session.on(LoadHandlerOnLoadEndEvent.MESSAGE_ID, LoadHandlerOnLoadEndEvent.DECODER, this::onLoadEnd);
+                session.on(MessageIds.V8_CONTEXT_CREATED_EVENT, V8ContextCreatedEvent.DECODER, this::onContext);
+        loadEndRegistration = session.on(
+                MessageIds.LOAD_HANDLER_ON_LOAD_END_EVENT, LoadHandlerOnLoadEndEvent.DECODER, this::onLoadEnd);
         loadErrorRegistration = session.on(
-                LoadHandlerOnLoadErrorEvent.MESSAGE_ID, LoadHandlerOnLoadErrorEvent.DECODER, this::onLoadError);
+                MessageIds.LOAD_HANDLER_ON_LOAD_ERROR_EVENT, LoadHandlerOnLoadErrorEvent.DECODER, this::onLoadError);
         rendererTerminatedRegistration = session.on(
-                RequestHandlerOnRenderProcessTerminatedEvent.MESSAGE_ID,
+                MessageIds.REQUEST_HANDLER_ON_RENDER_PROCESS_TERMINATED_EVENT,
                 RequestHandlerOnRenderProcessTerminatedEvent.DECODER,
                 this::onRendererTerminated);
         closeRegistration = session.onClose(this::onSessionClosed);

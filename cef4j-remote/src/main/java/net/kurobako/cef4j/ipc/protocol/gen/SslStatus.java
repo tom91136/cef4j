@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class SslStatus implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class SslStatus extends BrowserFacade {
 
     public SslStatus(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_sslstatus_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_sslstatus_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class SslStatus implements AutoCloseable {
      */
     public CompletableFuture<Integer> isSecureConnection() {
         return CefFutures.map(
-            session.request(new SslStatusIsSecureConnectionRequest(handle), SslStatusIsSecureConnectionResponse.DECODER),
-            SslStatusIsSecureConnectionResponse::result);
+            session.request(MessageIds.SSL_STATUS_IS_SECURE_CONNECTION_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class SslStatus implements AutoCloseable {
      */
     public CompletableFuture<Integer> getCertStatus() {
         return CefFutures.map(
-            session.request(new SslStatusGetCertStatusRequest(handle), SslStatusGetCertStatusResponse.DECODER),
-            SslStatusGetCertStatusResponse::result);
+            session.request(MessageIds.SSL_STATUS_GET_CERT_STATUS_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -82,8 +51,8 @@ public final class SslStatus implements AutoCloseable {
      */
     public CompletableFuture<Integer> getSslversion() {
         return CefFutures.map(
-            session.request(new SslStatusGetSslversionRequest(handle), SslStatusGetSslversionResponse.DECODER),
-            SslStatusGetSslversionResponse::result);
+            session.request(MessageIds.SSL_STATUS_GET_SSLVERSION_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -94,8 +63,8 @@ public final class SslStatus implements AutoCloseable {
      */
     public CompletableFuture<Integer> getContentStatus() {
         return CefFutures.map(
-            session.request(new SslStatusGetContentStatusRequest(handle), SslStatusGetContentStatusResponse.DECODER),
-            SslStatusGetContentStatusResponse::result);
+            session.request(MessageIds.SSL_STATUS_GET_CONTENT_STATUS_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -106,7 +75,7 @@ public final class SslStatus implements AutoCloseable {
      */
     public CompletableFuture<X509Certificate> getX509Certificate() {
         return CefFutures.map(
-            session.request(new SslStatusGetX509CertificateRequest(handle), SslStatusGetX509CertificateResponse.DECODER),
+            session.request(MessageIds.SSL_STATUS_GET_X509_CERTIFICATE_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new X509Certificate(session, __r.result()));
     }
 }

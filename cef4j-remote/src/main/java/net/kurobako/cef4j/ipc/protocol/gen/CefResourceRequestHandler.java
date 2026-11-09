@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -26,7 +27,7 @@ public interface CefResourceRequestHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:78</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.OptionalInt onBeforeResourceLoad(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle request, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return java.util.OptionalInt.empty(); }
+    default java.util.OptionalInt onBeforeResourceLoad(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle request, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return Unhandled.integer(); }
 
     /**
      * Called on the IO thread when a resource load is redirected. The {@code browser} and {@code frame} values represent the source of the request, and may be {@code null} for requests originating from service workers or CefURLRequest. The {@code request} parameter will contain the old URL and other request-related information. The {@code response} parameter will contain the response that resulted in the redirect. The {@code new_url} parameter will contain the new URL and can be changed if desired. The {@code request} and {@code response} objects cannot be modified in this callback.
@@ -52,7 +53,7 @@ public interface CefResourceRequestHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__request__handler_8h.html">cef_resource_request_handler.h:131</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onResourceResponse(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle request, net.kurobako.cef4j.ipc.session.RemoteHandle response) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onResourceResponse(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle request, net.kurobako.cef4j.ipc.session.RemoteHandle response) { return Unhandled.bool(); }
 
     /**
      * Called on the IO thread when a resource load has completed. The {@code browser} and {@code frame} values represent the source of the request, and may be {@code null} for requests originating from service workers or CefURLRequest. {@code request} and {@code response} represent the request and response respectively and cannot be modified in this callback. {@code status} indicates the load completion status. {@code received_content_length} is the number of response bytes actually read. This method will be called for all requests, including requests that are aborted due to CEF shutdown or destruction of the associated browser. In cases where the associated browser is destroyed this callback may arrive after the {@code CefLifeSpanHandler.onBeforeClose()} callback for that browser. The {@code CefFrame.isValid()} method can be used to test for this situation, and care should be taken not to call {@code browser} or {@code frame} methods that modify state (like LoadURL, SendProcessMessage, etc.) if the frame is invalid.
@@ -69,17 +70,17 @@ public interface CefResourceRequestHandler {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefResourceRequestHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.intercept(ResourceRequestHandlerOnBeforeResourceLoadEvent.MESSAGE_ID, ResourceRequestHandlerOnBeforeResourceLoadEvent.DECODER, ev -> {
+                session.intercept(MessageIds.RESOURCE_REQUEST_HANDLER_ON_BEFORE_RESOURCE_LOAD_EVENT, ResourceRequestHandlerOnBeforeResourceLoadEvent.DECODER, ev -> {
                     final java.util.OptionalInt answer = handler.onBeforeResourceLoad(ev.browser(), ev.frame(), ev.request(), ev.callback());
-                    return answer.stream().mapToObj(ResourceRequestHandlerOnBeforeResourceLoadResponse::new).findFirst();
+                    return answer.stream().mapToObj(__v -> new CefSession.Reply(MessageIds.RESOURCE_REQUEST_HANDLER_ON_BEFORE_RESOURCE_LOAD_RESPONSE, new ResultIntMessage(__v))).findFirst();
                 }),
-                session.on(ResourceRequestHandlerOnResourceRedirectEvent.MESSAGE_ID, ResourceRequestHandlerOnResourceRedirectEvent.DECODER,
+                session.on(MessageIds.RESOURCE_REQUEST_HANDLER_ON_RESOURCE_REDIRECT_EVENT, ResourceRequestHandlerOnResourceRedirectEvent.DECODER,
                         ev -> handler.onResourceRedirect(ev.browser(), ev.frame(), ev.request(), ev.response(), ev.newUrl())),
-                session.intercept(ResourceRequestHandlerOnResourceResponseEvent.MESSAGE_ID, ResourceRequestHandlerOnResourceResponseEvent.DECODER, ev -> {
+                session.intercept(MessageIds.RESOURCE_REQUEST_HANDLER_ON_RESOURCE_RESPONSE_EVENT, ResourceRequestHandlerOnResourceResponseEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onResourceResponse(ev.browser(), ev.frame(), ev.request(), ev.response());
-                    return java.util.Optional.of(new ResourceRequestHandlerOnResourceResponseResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.RESOURCE_REQUEST_HANDLER_ON_RESOURCE_RESPONSE_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.on(ResourceRequestHandlerOnResourceLoadCompleteEvent.MESSAGE_ID, ResourceRequestHandlerOnResourceLoadCompleteEvent.DECODER,
+                session.on(MessageIds.RESOURCE_REQUEST_HANDLER_ON_RESOURCE_LOAD_COMPLETE_EVENT, ResourceRequestHandlerOnResourceLoadCompleteEvent.DECODER,
                         ev -> handler.onResourceLoadComplete(ev.browser(), ev.frame(), ev.request(), ev.response(), ev.status(), ev.receivedContentLength())));
     }
 }

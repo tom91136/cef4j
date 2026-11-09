@@ -24,11 +24,11 @@ public interface CefDeleteCookiesCallback {
     void onComplete(int numDeleted);
 
     /**
-     * Wires inbound {@link DeleteCookiesCallbackOnCompleteCallbackEvent} frames into the supplied {@code table} so each visitor invocation
+     * Wires inbound {@code DeleteCookiesCallbackOnCompleteCallbackEvent} frames into the supplied {@code table} so each visitor invocation
      * dispatches to the {@code CefDeleteCookiesCallback} registered under that callbackId. Call once per session.
      */
     static CefSession.HandlerRegistration route(CefSession session, JvmCallbackTable<CefDeleteCookiesCallback> table) {
-        return session.on(DeleteCookiesCallbackOnCompleteCallbackEvent.MESSAGE_ID, DeleteCookiesCallbackOnCompleteCallbackEvent.DECODER, ev ->
+        return session.on(MessageIds.DELETE_COOKIES_CALLBACK_ON_COMPLETE_CALLBACK_EVENT, DeleteCookiesCallbackOnCompleteCallbackEvent.DECODER, ev ->
                 table.lookup(ev.callbackId()).ifPresent(v -> v.onComplete(ev.numDeleted())));
     }
 }

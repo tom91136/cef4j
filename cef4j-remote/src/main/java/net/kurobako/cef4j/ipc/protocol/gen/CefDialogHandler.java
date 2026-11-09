@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -29,14 +30,14 @@ public interface CefDialogHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__dialog__handler_8h.html">cef_dialog_handler.h:74</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onFileDialog(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int mode, String title, String defaultFilePath, String[] acceptFilters, String[] acceptExtensions, String[] acceptDescriptions, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onFileDialog(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int mode, String title, String defaultFilePath, String[] acceptFilters, String[] acceptExtensions, String[] acceptDescriptions, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return Unhandled.bool(); }
 
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefDialogHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.intercept(DialogHandlerOnFileDialogEvent.MESSAGE_ID, DialogHandlerOnFileDialogEvent.DECODER, ev -> {
+                session.intercept(MessageIds.DIALOG_HANDLER_ON_FILE_DIALOG_EVENT, DialogHandlerOnFileDialogEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onFileDialog(ev.browser(), ev.mode(), ev.title(), ev.defaultFilePath(), ev.acceptFilters(), ev.acceptExtensions(), ev.acceptDescriptions(), ev.callback());
-                    return java.util.Optional.of(new DialogHandlerOnFileDialogResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.DIALOG_HANDLER_ON_FILE_DIALOG_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }));
     }
 }

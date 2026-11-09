@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,18 +9,17 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class RenderHandlerOnTextSelectionChangedEvent implements CefMessageView, CefMessageEncoder {
 
-    public static final int MESSAGE_ID = 1887457745;
-
     private final RemoteHandle browser;
     private final String selectedText;
     private final byte[] selectedTextBytes;
-    private final Range selectedRange;
+    private final net.kurobako.cef4j.gen.CefRange selectedRange;
 
-    public RenderHandlerOnTextSelectionChangedEvent(RemoteHandle browser, String selectedText, Range selectedRange) {
+    public RenderHandlerOnTextSelectionChangedEvent(RemoteHandle browser, String selectedText, net.kurobako.cef4j.gen.CefRange selectedRange) {
         this.browser = browser;
         this.selectedText = selectedText;
         this.selectedTextBytes = selectedText.getBytes(StandardCharsets.UTF_8);
@@ -36,41 +34,28 @@ public final class RenderHandlerOnTextSelectionChangedEvent implements CefMessag
         return selectedText;
     }
 
-    public Range selectedRange() {
+    public net.kurobako.cef4j.gen.CefRange selectedRange() {
         return selectedRange;
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return 8 + selectedTextBytes.length + selectedRange.encodedSize();
+        return 8 + selectedTextBytes.length + RangeCodec.encodedSize(selectedRange);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(browser.id());
-            __dst.putInt(selectedTextBytes.length);
-            __dst.put(selectedTextBytes);
-            selectedRange.encodeInto(__dst);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(browser.id());
+            WireEncoder.bytes(__out, selectedTextBytes);
+            RangeCodec.encode(__out, selectedRange);
+        });
     }
 
-    public static final CefMessageDecoder<RenderHandlerOnTextSelectionChangedEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<RenderHandlerOnTextSelectionChangedEvent> DECODER = WireDecoder.message("RenderHandlerOnTextSelectionChangedEvent", __buf -> {
         final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
         final String selectedText = WireDecoder.utf8(__buf, "selectedText");
-        final Range selectedRange = Range.decode(__buf);
-        WireDecoder.requireFullyConsumed(__buf, "RenderHandlerOnTextSelectionChangedEvent");
+        final net.kurobako.cef4j.gen.CefRange selectedRange = RangeCodec.decode(__buf);
         return new RenderHandlerOnTextSelectionChangedEvent(browser, selectedText, selectedRange);
-    };
+    });
 }

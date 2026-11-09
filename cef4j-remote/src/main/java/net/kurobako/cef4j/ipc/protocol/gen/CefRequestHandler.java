@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -23,7 +24,7 @@ public interface CefRequestHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:79</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onBeforeBrowse(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle request, int userGesture, int isRedirect) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onBeforeBrowse(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle request, int userGesture, int isRedirect) { return Unhandled.bool(); }
 
     /**
      * Called on the UI thread before OnBeforeBrowse in certain limited cases where navigating a new or different browser might be desirable. This includes user-initiated navigation that might open in a special way (e.g. links clicked via middle-click or ctrl + left-click) and certain types of cross-origin navigation initiated from the renderer process (e.g. navigating the top-level frame to/from a file URL). The {@code browser} and {@code frame} values represent the source of the navigation. The {@code target_disposition} value indicates where the user intended to navigate the browser based on standard Chromium behaviors (e.g. current tab, new tab, etc). The {@code user_gesture} value will be {@code true} if the browser navigated via explicit user gesture (e.g. clicking a link) or {@code false} if it navigated automatically (e.g. via the DomContentLoaded event). Return {@code true} to cancel the navigation or {@code false} to allow the navigation to proceed in the source browser's top-level frame.
@@ -32,7 +33,7 @@ public interface CefRequestHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:100</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onOpenUrlfromTab(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, String targetUrl, int targetDisposition, int userGesture) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onOpenUrlfromTab(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, String targetUrl, int targetDisposition, int userGesture) { return Unhandled.bool(); }
 
     /**
      * Called on the IO thread when the browser needs credentials from the user. {@code origin_url} is the origin making this authentication request. {@code isProxy} indicates whether the host is a proxy server. {@code host} contains the hostname and {@code port} contains the port number. {@code realm} is the realm of the challenge and may be empty. {@code scheme} is the authentication scheme used, such as "basic" or "digest", and will be empty if the source of the request is an FTP server. Return {@code true} to continue the request and call net.kurobako.cef4j.ipc.protocol.gen.CefAuthCallback.continue() either in this method or at a later time when the authentication information is available. Return {@code false} to cancel the request immediately.
@@ -44,7 +45,7 @@ public interface CefRequestHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:152</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> getAuthCredentials(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String originUrl, int isProxy, String host, int port, String realm, String scheme, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> getAuthCredentials(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String originUrl, int isProxy, String host, int port, String realm, String scheme, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return Unhandled.bool(); }
 
     /**
      * Called on the UI thread to handle requests for URLs with an invalid SSL certificate. Return {@code true} and call CefCallback methods either in this method or at a later time to continue or cancel the request. Return {@code false} to cancel the request immediately. If cef_settings_t.ignore_certificate_errors is set all invalid certificates will be accepted without calling this method.
@@ -53,7 +54,7 @@ public interface CefRequestHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:176</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onCertificateError(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int certError, String requestUrl, net.kurobako.cef4j.ipc.session.RemoteHandle sslInfo, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onCertificateError(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int certError, String requestUrl, net.kurobako.cef4j.ipc.session.RemoteHandle sslInfo, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return Unhandled.bool(); }
 
     /**
      * Called on the browser process UI thread when the render view associated with {@code browser} is ready to receive/handle IPC messages in the render process.
@@ -71,7 +72,7 @@ public interface CefRequestHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__handler_8h.html">cef_request_handler.h:228</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onRenderProcessUnresponsive(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onRenderProcessUnresponsive(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return Unhandled.bool(); }
 
     /**
      * Called on the browser process UI thread when the render process becomes responsive after previously being unresponsive. See documentation on OnRenderProcessUnresponsive.
@@ -103,33 +104,33 @@ public interface CefRequestHandler {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefRequestHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.intercept(RequestHandlerOnBeforeBrowseEvent.MESSAGE_ID, RequestHandlerOnBeforeBrowseEvent.DECODER, ev -> {
+                session.intercept(MessageIds.REQUEST_HANDLER_ON_BEFORE_BROWSE_EVENT, RequestHandlerOnBeforeBrowseEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onBeforeBrowse(ev.browser(), ev.frame(), ev.request(), ev.userGesture(), ev.isRedirect());
-                    return java.util.Optional.of(new RequestHandlerOnBeforeBrowseResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.REQUEST_HANDLER_ON_BEFORE_BROWSE_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.intercept(RequestHandlerOnOpenUrlfromTabEvent.MESSAGE_ID, RequestHandlerOnOpenUrlfromTabEvent.DECODER, ev -> {
+                session.intercept(MessageIds.REQUEST_HANDLER_ON_OPEN_URLFROM_TAB_EVENT, RequestHandlerOnOpenUrlfromTabEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onOpenUrlfromTab(ev.browser(), ev.frame(), ev.targetUrl(), ev.targetDisposition(), ev.userGesture());
-                    return java.util.Optional.of(new RequestHandlerOnOpenUrlfromTabResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.REQUEST_HANDLER_ON_OPEN_URLFROM_TAB_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.intercept(RequestHandlerGetAuthCredentialsEvent.MESSAGE_ID, RequestHandlerGetAuthCredentialsEvent.DECODER, ev -> {
+                session.intercept(MessageIds.REQUEST_HANDLER_GET_AUTH_CREDENTIALS_EVENT, RequestHandlerGetAuthCredentialsEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.getAuthCredentials(ev.browser(), ev.originUrl(), ev.isProxy(), ev.host(), ev.port(), ev.realm(), ev.scheme(), ev.callback());
-                    return java.util.Optional.of(new RequestHandlerGetAuthCredentialsResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.REQUEST_HANDLER_GET_AUTH_CREDENTIALS_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.intercept(RequestHandlerOnCertificateErrorEvent.MESSAGE_ID, RequestHandlerOnCertificateErrorEvent.DECODER, ev -> {
+                session.intercept(MessageIds.REQUEST_HANDLER_ON_CERTIFICATE_ERROR_EVENT, RequestHandlerOnCertificateErrorEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onCertificateError(ev.browser(), ev.certError(), ev.requestUrl(), ev.sslInfo(), ev.callback());
-                    return java.util.Optional.of(new RequestHandlerOnCertificateErrorResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.REQUEST_HANDLER_ON_CERTIFICATE_ERROR_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.on(RequestHandlerOnRenderViewReadyEvent.MESSAGE_ID, RequestHandlerOnRenderViewReadyEvent.DECODER,
+                session.on(MessageIds.REQUEST_HANDLER_ON_RENDER_VIEW_READY_EVENT, BrowserHandleMessage.DECODER,
                         ev -> handler.onRenderViewReady(ev.browser())),
-                session.intercept(RequestHandlerOnRenderProcessUnresponsiveEvent.MESSAGE_ID, RequestHandlerOnRenderProcessUnresponsiveEvent.DECODER, ev -> {
+                session.intercept(MessageIds.REQUEST_HANDLER_ON_RENDER_PROCESS_UNRESPONSIVE_EVENT, RequestHandlerOnRenderProcessUnresponsiveEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onRenderProcessUnresponsive(ev.browser(), ev.callback());
-                    return java.util.Optional.of(new RequestHandlerOnRenderProcessUnresponsiveResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.REQUEST_HANDLER_ON_RENDER_PROCESS_UNRESPONSIVE_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.on(RequestHandlerOnRenderProcessResponsiveEvent.MESSAGE_ID, RequestHandlerOnRenderProcessResponsiveEvent.DECODER,
+                session.on(MessageIds.REQUEST_HANDLER_ON_RENDER_PROCESS_RESPONSIVE_EVENT, BrowserHandleMessage.DECODER,
                         ev -> handler.onRenderProcessResponsive(ev.browser())),
-                session.on(RequestHandlerOnRenderProcessTerminatedEvent.MESSAGE_ID, RequestHandlerOnRenderProcessTerminatedEvent.DECODER,
+                session.on(MessageIds.REQUEST_HANDLER_ON_RENDER_PROCESS_TERMINATED_EVENT, RequestHandlerOnRenderProcessTerminatedEvent.DECODER,
                         ev -> handler.onRenderProcessTerminated(ev.browser(), ev.status(), ev.errorCode(), ev.errorString())),
-                session.on(RequestHandlerOnDocumentAvailableInMainFrameEvent.MESSAGE_ID, RequestHandlerOnDocumentAvailableInMainFrameEvent.DECODER,
+                session.on(MessageIds.REQUEST_HANDLER_ON_DOCUMENT_AVAILABLE_IN_MAIN_FRAME_EVENT, BrowserHandleMessage.DECODER,
                         ev -> handler.onDocumentAvailableInMainFrame(ev.browser())));
     }
 }

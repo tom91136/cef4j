@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,11 +9,10 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class RendererReleaseHandleRequest implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 24;
 
     private final RemoteHandle frame;
     private final RemoteHandle handle;
@@ -41,36 +39,23 @@ public final class RendererReleaseHandleRequest implements CefMessageView, CefMe
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 12 + kindBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(frame.id());
-            __dst.putInt(handle.id());
-            __dst.putInt(kindBytes.length);
-            __dst.put(kindBytes);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(frame.id());
+            __out.putInt(handle.id());
+            WireEncoder.bytes(__out, kindBytes);
+        });
     }
 
-    public static final CefMessageDecoder<RendererReleaseHandleRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<RendererReleaseHandleRequest> DECODER = WireDecoder.message("RendererReleaseHandleRequest", __buf -> {
         final RemoteHandle frame = WireDecoder.handle(__buf, "frame");
         final RemoteHandle handle = WireDecoder.handle(__buf, "handle");
         final String kind = WireDecoder.utf8(__buf, "kind");
-        WireDecoder.requireFullyConsumed(__buf, "RendererReleaseHandleRequest");
         return new RendererReleaseHandleRequest(frame, handle, kind);
-    };
+    });
 }

@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -64,22 +65,22 @@ public interface CefUrlRequestClient {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__urlrequest_8h.html">cef_urlrequest.h:178</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> getAuthCredentials(int isProxy, String host, int port, String realm, String scheme, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> getAuthCredentials(int isProxy, String host, int port, String realm, String scheme, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return Unhandled.bool(); }
 
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefUrlRequestClient handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(UrlRequestClientOnRequestCompleteEvent.MESSAGE_ID, UrlRequestClientOnRequestCompleteEvent.DECODER,
+                session.on(MessageIds.URL_REQUEST_CLIENT_ON_REQUEST_COMPLETE_EVENT, UrlRequestClientOnRequestCompleteEvent.DECODER,
                         ev -> handler.onRequestComplete(ev.request())),
-                session.on(UrlRequestClientOnUploadProgressEvent.MESSAGE_ID, UrlRequestClientOnUploadProgressEvent.DECODER,
+                session.on(MessageIds.URL_REQUEST_CLIENT_ON_UPLOAD_PROGRESS_EVENT, RequestHandleCurrentLongTotalLongMessage.DECODER,
                         ev -> handler.onUploadProgress(ev.request(), ev.current(), ev.total())),
-                session.on(UrlRequestClientOnDownloadProgressEvent.MESSAGE_ID, UrlRequestClientOnDownloadProgressEvent.DECODER,
+                session.on(MessageIds.URL_REQUEST_CLIENT_ON_DOWNLOAD_PROGRESS_EVENT, RequestHandleCurrentLongTotalLongMessage.DECODER,
                         ev -> handler.onDownloadProgress(ev.request(), ev.current(), ev.total())),
-                session.on(UrlRequestClientOnDownloadDataEvent.MESSAGE_ID, UrlRequestClientOnDownloadDataEvent.DECODER,
+                session.on(MessageIds.URL_REQUEST_CLIENT_ON_DOWNLOAD_DATA_EVENT, UrlRequestClientOnDownloadDataEvent.DECODER,
                         ev -> handler.onDownloadData(ev.request(), ev.data())),
-                session.intercept(UrlRequestClientGetAuthCredentialsEvent.MESSAGE_ID, UrlRequestClientGetAuthCredentialsEvent.DECODER, ev -> {
+                session.intercept(MessageIds.URL_REQUEST_CLIENT_GET_AUTH_CREDENTIALS_EVENT, UrlRequestClientGetAuthCredentialsEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.getAuthCredentials(ev.isProxy(), ev.host(), ev.port(), ev.realm(), ev.scheme(), ev.callback());
-                    return java.util.Optional.of(new UrlRequestClientGetAuthCredentialsResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.URL_REQUEST_CLIENT_GET_AUTH_CREDENTIALS_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }));
     }
 }

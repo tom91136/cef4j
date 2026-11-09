@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
@@ -18,6 +20,8 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class CrashReportContext {
     private CrashReportContext() {}
+    private static final CdpField<java.util.List<CrashReportContext.CrashReportContextEntry>> ENTRIES = CdpField.of("entries", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CrashReportContext.CrashReportContextEntry.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Page.FrameId> FRAME_ID = CdpField.of("frameId", value -> new Page.FrameId((String) value));
     /**
      * Key-value pair in CrashReportContext.
      */
@@ -32,21 +36,21 @@ public final class CrashReportContext {
          * @return the protocol field value
          */
         public String key() {
-            return (String) require("key");
+            return requireString("key");
         }
         /**
          * Returns the value field.
          * @return the protocol field value
          */
         public String value() {
-            return (String) require("value");
+            return requireString("value");
         }
         /**
          * The ID of the frame where the key-value pair was set.
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Sets the key field.
@@ -76,15 +80,14 @@ public final class CrashReportContext {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Returns all entries in the CrashReportContext across all frames in the page.
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CrashReportContext.CrashReportContextEntry>> getEntries() {
-            return client.call("CrashReportContext.getEntries", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("entries")), element0 -> java.util.Objects.requireNonNull(CrashReportContext.CrashReportContextEntry.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("CrashReportContext.getEntries", ENTRIES::require);
         }
     }
 }

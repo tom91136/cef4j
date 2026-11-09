@@ -2,18 +2,16 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class ServerHandlerOnWebSocketMessageEvent implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 1552918378;
 
     private final RemoteHandle server;
     private final int connectionId;
@@ -38,36 +36,23 @@ public final class ServerHandlerOnWebSocketMessageEvent implements CefMessageVie
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 12 + data.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(server.id());
-            __dst.putInt(connectionId);
-            __dst.putInt(data.length);
-            __dst.put(data);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(server.id());
+            __out.putInt(connectionId);
+            WireEncoder.bytes(__out, data);
+        });
     }
 
-    public static final CefMessageDecoder<ServerHandlerOnWebSocketMessageEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<ServerHandlerOnWebSocketMessageEvent> DECODER = WireDecoder.message("ServerHandlerOnWebSocketMessageEvent", __buf -> {
         final RemoteHandle server = WireDecoder.handle(__buf, "server");
         final int connectionId = WireDecoder.int32(__buf, "connectionId");
         final byte[] data = WireDecoder.bytes(__buf, "data");
-        WireDecoder.requireFullyConsumed(__buf, "ServerHandlerOnWebSocketMessageEvent");
         return new ServerHandlerOnWebSocketMessageEvent(server, connectionId, data);
-    };
+    });
 }

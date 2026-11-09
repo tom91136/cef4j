@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,11 +9,10 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class RequestContextSetContentSettingRequest implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 209906973;
 
     private final RemoteHandle self;
     private final String requestingUrl;
@@ -55,41 +53,27 @@ public final class RequestContextSetContentSettingRequest implements CefMessageV
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 20 + requestingUrlBytes.length + topLevelUrlBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putInt(requestingUrlBytes.length);
-            __dst.put(requestingUrlBytes);
-            __dst.putInt(topLevelUrlBytes.length);
-            __dst.put(topLevelUrlBytes);
-            __dst.putInt(contentType);
-            __dst.putInt(value);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            WireEncoder.bytes(__out, requestingUrlBytes);
+            WireEncoder.bytes(__out, topLevelUrlBytes);
+            __out.putInt(contentType);
+            __out.putInt(value);
+        });
     }
 
-    public static final CefMessageDecoder<RequestContextSetContentSettingRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<RequestContextSetContentSettingRequest> DECODER = WireDecoder.message("RequestContextSetContentSettingRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final String requestingUrl = WireDecoder.utf8(__buf, "requestingUrl");
         final String topLevelUrl = WireDecoder.utf8(__buf, "topLevelUrl");
         final int contentType = WireDecoder.int32(__buf, "contentType");
         final int value = WireDecoder.int32(__buf, "value");
-        WireDecoder.requireFullyConsumed(__buf, "RequestContextSetContentSettingRequest");
         return new RequestContextSetContentSettingRequest(self, requestingUrl, topLevelUrl, contentType, value);
-    };
+    });
 }

@@ -1,7 +1,6 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -9,6 +8,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -25,6 +26,17 @@ import org.jspecify.annotations.Nullable;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class HeapProfiler {
     private HeapProfiler() {}
+    private static final CdpField<Runtime.CallFrame> CALL_FRAME = CdpField.of("callFrame", value -> java.util.Objects.requireNonNull(Runtime.CallFrame.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<HeapProfiler.SamplingHeapProfileNode>> CHILDREN = CdpField.of("children", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(HeapProfiler.SamplingHeapProfileNode.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<HeapProfiler.SamplingHeapProfileNode> HEAD = CdpField.of("head", value -> java.util.Objects.requireNonNull(HeapProfiler.SamplingHeapProfileNode.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<HeapProfiler.HeapSnapshotObjectId> HEAP_OBJECT_ID = CdpField.of("heapObjectId", value -> new HeapProfiler.HeapSnapshotObjectId((String) value));
+    private static final CdpField<HeapProfiler.HeapSnapshotObjectId> HEAP_SNAPSHOT_OBJECT_ID = CdpField.of("heapSnapshotObjectId", value -> new HeapProfiler.HeapSnapshotObjectId((String) value));
+    private static final CdpField<Runtime.RemoteObjectId> OBJECT_ID = CdpField.of("objectId", value -> new Runtime.RemoteObjectId((String) value));
+    private static final CdpField<HeapProfiler.HeapSnapshotObjectId> OBJECT_ID_2 = CdpField.of("objectId", value -> new HeapProfiler.HeapSnapshotObjectId((String) value));
+    private static final CdpField<HeapProfiler.SamplingHeapProfile> PROFILE = CdpField.of("profile", value -> java.util.Objects.requireNonNull(HeapProfiler.SamplingHeapProfile.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Runtime.RemoteObject> RESULT = CdpField.of("result", value -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<HeapProfiler.SamplingHeapProfileSample>> SAMPLES = CdpField.of("samples", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(HeapProfiler.SamplingHeapProfileSample.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Long>> STATS_UPDATE = CdpField.of("statsUpdate", value -> CdpObject.requireList(value, element0 -> ((Number) element0).longValue()));
     /**
      * Heap snapshot object id.
      */
@@ -54,28 +66,28 @@ public final class HeapProfiler {
          * @return the protocol field value
          */
         public Runtime.CallFrame callFrame() {
-            return java.util.Objects.requireNonNull(Runtime.CallFrame.fromMap(CdpObject.requireObjectMap(require("callFrame"))));
+            return require(CALL_FRAME);
         }
         /**
          * Allocations size in bytes for the node excluding children.
          * @return the protocol field value
          */
         public double selfSize() {
-            return ((Number) require("selfSize")).doubleValue();
+            return requireDouble("selfSize");
         }
         /**
          * Node id. Ids are unique across all profiles collected between startSampling and stopSampling.
          * @return the protocol field value
          */
         public long id() {
-            return ((Number) require("id")).longValue();
+            return requireLong("id");
         }
         /**
          * Child nodes.
          * @return the protocol field value
          */
         public java.util.List<HeapProfiler.SamplingHeapProfileNode> children() {
-            return CdpObject.requireList(require("children"), element0 -> java.util.Objects.requireNonNull(HeapProfiler.SamplingHeapProfileNode.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(CHILDREN);
         }
         /**
          * Function location.
@@ -128,21 +140,21 @@ public final class HeapProfiler {
          * @return the protocol field value
          */
         public double size() {
-            return ((Number) require("size")).doubleValue();
+            return requireDouble("size");
         }
         /**
          * Id of the corresponding profile tree node.
          * @return the protocol field value
          */
         public long nodeId() {
-            return ((Number) require("nodeId")).longValue();
+            return requireLong("nodeId");
         }
         /**
          * Time-ordered sample ordinal number. It is unique across all profiles retrieved between startSampling and stopSampling.
          * @return the protocol field value
          */
         public double ordinal() {
-            return ((Number) require("ordinal")).doubleValue();
+            return requireDouble("ordinal");
         }
         /**
          * Allocation size in bytes attributed to the sample.
@@ -186,14 +198,14 @@ public final class HeapProfiler {
          * @return the protocol field value
          */
         public HeapProfiler.SamplingHeapProfileNode head() {
-            return java.util.Objects.requireNonNull(HeapProfiler.SamplingHeapProfileNode.fromMap(CdpObject.requireObjectMap(require("head"))));
+            return require(HEAD);
         }
         /**
          * Returns the samples field.
          * @return the protocol field value
          */
         public java.util.List<HeapProfiler.SamplingHeapProfileSample> samples() {
-            return CdpObject.requireList(require("samples"), element0 -> java.util.Objects.requireNonNull(HeapProfiler.SamplingHeapProfileSample.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(SAMPLES);
         }
         /**
          * Sets the head field.
@@ -219,13 +231,6 @@ public final class HeapProfiler {
      */
     public static final class AddInspectedHeapObjectRequest extends CdpObject {
         public AddInspectedHeapObjectRequest() {}
-        /**
-         * Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
-         * @param heapObjectId protocol value
-         */
-        public AddInspectedHeapObjectRequest(HeapProfiler.HeapSnapshotObjectId heapObjectId) {
-            heapObjectId(heapObjectId);
-        }
         public static AddInspectedHeapObjectRequest fromMap(Map<String, Object> values) {
             final AddInspectedHeapObjectRequest instance_ = new AddInspectedHeapObjectRequest();
             if (values != null) instance_.values.putAll(values);
@@ -236,7 +241,7 @@ public final class HeapProfiler {
          * @return the protocol field value
          */
         public HeapProfiler.HeapSnapshotObjectId heapObjectId() {
-            return new HeapProfiler.HeapSnapshotObjectId((String) require("heapObjectId"));
+            return require(HEAP_OBJECT_ID);
         }
         /**
          * Heap snapshot object id to be accessible by means of $x command line API.
@@ -253,13 +258,6 @@ public final class HeapProfiler {
      */
     public static final class GetHeapObjectIdRequest extends CdpObject {
         public GetHeapObjectIdRequest() {}
-        /**
-         * Creates a new GetHeapObjectIdRequest with all required parameters.
-         * @param objectId protocol value
-         */
-        public GetHeapObjectIdRequest(Runtime.RemoteObjectId objectId) {
-            objectId(objectId);
-        }
         public static GetHeapObjectIdRequest fromMap(Map<String, Object> values) {
             final GetHeapObjectIdRequest instance_ = new GetHeapObjectIdRequest();
             if (values != null) instance_.values.putAll(values);
@@ -270,7 +268,7 @@ public final class HeapProfiler {
          * @return the protocol field value
          */
         public Runtime.RemoteObjectId objectId() {
-            return new Runtime.RemoteObjectId((String) require("objectId"));
+            return require(OBJECT_ID);
         }
         /**
          * Identifier of the object to get heap object id for.
@@ -287,13 +285,6 @@ public final class HeapProfiler {
      */
     public static final class GetObjectByHeapObjectIdRequest extends CdpObject {
         public GetObjectByHeapObjectIdRequest() {}
-        /**
-         * Creates a new GetObjectByHeapObjectIdRequest with all required parameters.
-         * @param objectId protocol value
-         */
-        public GetObjectByHeapObjectIdRequest(HeapProfiler.HeapSnapshotObjectId objectId) {
-            objectId(objectId);
-        }
         public static GetObjectByHeapObjectIdRequest fromMap(Map<String, Object> values) {
             final GetObjectByHeapObjectIdRequest instance_ = new GetObjectByHeapObjectIdRequest();
             if (values != null) instance_.values.putAll(values);
@@ -304,14 +295,14 @@ public final class HeapProfiler {
          * @return the protocol field value
          */
         public HeapProfiler.HeapSnapshotObjectId objectId() {
-            return new HeapProfiler.HeapSnapshotObjectId((String) require("objectId"));
+            return require(OBJECT_ID_2);
         }
         /**
          * Symbolic group name that can be used to release multiple objects.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> objectGroup() {
-            return raw("objectGroup").map(value -> (String) value);
+            return optionalString("objectGroup");
         }
         /**
          * Sets the objectId field.
@@ -347,28 +338,28 @@ public final class HeapProfiler {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble samplingInterval() {
-            return raw("samplingInterval").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("samplingInterval");
         }
         /**
          * Maximum stack depth. The default value is 128.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble stackDepth() {
-            return raw("stackDepth").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("stackDepth");
         }
         /**
          * By default, the sampling heap profiler reports only objects which are still alive when the profile is returned via getSamplingProfile or stopSampling, which is useful for determining what functions contribute the most to steady-state memory usage. This flag instructs the sampling heap profiler to also include information about objects discarded by major GC, which will show which functions cause large temporary memory usage or long GC pauses.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeObjectsCollectedByMajorGC() {
-            return raw("includeObjectsCollectedByMajorGC").map(value -> (Boolean) value);
+            return optionalBoolean("includeObjectsCollectedByMajorGC");
         }
         /**
          * By default, the sampling heap profiler reports only objects which are still alive when the profile is returned via getSamplingProfile or stopSampling, which is useful for determining what functions contribute the most to steady-state memory usage. This flag instructs the sampling heap profiler to also include information about objects discarded by minor GC, which is useful when tuning a latency-sensitive application for minimal GC activity.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeObjectsCollectedByMinorGC() {
-            return raw("includeObjectsCollectedByMinorGC").map(value -> (Boolean) value);
+            return optionalBoolean("includeObjectsCollectedByMinorGC");
         }
         /**
          * Average sample interval in bytes. Poisson distribution is used for the intervals. The default value is 32768 bytes.
@@ -422,7 +413,7 @@ public final class HeapProfiler {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> trackAllocations() {
-            return raw("trackAllocations").map(value -> (Boolean) value);
+            return optionalBoolean("trackAllocations");
         }
         /**
          * Sets the trackAllocations field.
@@ -449,7 +440,7 @@ public final class HeapProfiler {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> reportProgress() {
-            return raw("reportProgress").map(value -> (Boolean) value);
+            return optionalBoolean("reportProgress");
         }
         /**
          * Deprecated in favor of {@code exposeInternals}.
@@ -458,14 +449,14 @@ public final class HeapProfiler {
          */
         @Deprecated
         public Optional<Boolean> treatGlobalObjectsAsRoots() {
-            return raw("treatGlobalObjectsAsRoots").map(value -> (Boolean) value);
+            return optionalBoolean("treatGlobalObjectsAsRoots");
         }
         /**
          * If true, numerical values are included in the snapshot
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> captureNumericValue() {
-            return raw("captureNumericValue").map(value -> (Boolean) value);
+            return optionalBoolean("captureNumericValue");
         }
         /**
          * If true, exposes internals of the snapshot.
@@ -473,7 +464,7 @@ public final class HeapProfiler {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> exposeInternals() {
-            return raw("exposeInternals").map(value -> (Boolean) value);
+            return optionalBoolean("exposeInternals");
         }
         /**
          * If true &#x27;reportHeapSnapshotProgress&#x27; events will be generated while snapshot is being taken when the tracking is stopped.
@@ -530,7 +521,7 @@ public final class HeapProfiler {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> reportProgress() {
-            return raw("reportProgress").map(value -> (Boolean) value);
+            return optionalBoolean("reportProgress");
         }
         /**
          * If true, a raw snapshot without artificial roots will be generated. Deprecated in favor of {@code exposeInternals}.
@@ -539,14 +530,14 @@ public final class HeapProfiler {
          */
         @Deprecated
         public Optional<Boolean> treatGlobalObjectsAsRoots() {
-            return raw("treatGlobalObjectsAsRoots").map(value -> (Boolean) value);
+            return optionalBoolean("treatGlobalObjectsAsRoots");
         }
         /**
          * If true, numerical values are included in the snapshot
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> captureNumericValue() {
-            return raw("captureNumericValue").map(value -> (Boolean) value);
+            return optionalBoolean("captureNumericValue");
         }
         /**
          * If true, exposes internals of the snapshot.
@@ -554,7 +545,7 @@ public final class HeapProfiler {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> exposeInternals() {
-            return raw("exposeInternals").map(value -> (Boolean) value);
+            return optionalBoolean("exposeInternals");
         }
         /**
          * If true &#x27;reportHeapSnapshotProgress&#x27; events will be generated while snapshot is being taken.
@@ -610,7 +601,7 @@ public final class HeapProfiler {
          * @return the protocol field value
          */
         public String chunk() {
-            return (String) require("chunk");
+            return requireString("chunk");
         }
         /**
          * Sets the chunk field.
@@ -636,7 +627,7 @@ public final class HeapProfiler {
          * @return the protocol field value
          */
         public java.util.List<Long> statsUpdate() {
-            return CdpObject.requireList(require("statsUpdate"), element0 -> ((Number) element0).longValue());
+            return require(STATS_UPDATE);
         }
         /**
          * An array of triplets. Each triplet describes a fragment. The first integer is the fragment index, the second integer is a total count of objects for the fragment, the third integer is a total size of the objects for the fragment.
@@ -662,14 +653,14 @@ public final class HeapProfiler {
          * @return the protocol field value
          */
         public long lastSeenObjectId() {
-            return ((Number) require("lastSeenObjectId")).longValue();
+            return requireLong("lastSeenObjectId");
         }
         /**
          * Returns the timestamp field.
          * @return the protocol field value
          */
         public double timestamp() {
-            return ((Number) require("timestamp")).doubleValue();
+            return requireDouble("timestamp");
         }
         /**
          * Sets the lastSeenObjectId field.
@@ -704,21 +695,21 @@ public final class HeapProfiler {
          * @return the protocol field value
          */
         public long done() {
-            return ((Number) require("done")).longValue();
+            return requireLong("done");
         }
         /**
          * Returns the total field.
          * @return the protocol field value
          */
         public long total() {
-            return ((Number) require("total")).longValue();
+            return requireLong("total");
         }
         /**
          * Returns the finished field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> finished() {
-            return raw("finished").map(value -> (Boolean) value);
+            return optionalBoolean("finished");
         }
         /**
          * Sets the done field.
@@ -758,18 +749,15 @@ public final class HeapProfiler {
             return new ResetProfilesEvent(values);
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
          * @param heapObjectId protocol value
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> addInspectedHeapObject(HeapProfiler.HeapSnapshotObjectId heapObjectId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("heapObjectId", CdpObject.json(heapObjectId));
-            return client.call("HeapProfiler.addInspectedHeapObject", params);
+            return call("HeapProfiler.addInspectedHeapObject", params("heapObjectId", heapObjectId));
         }
         /**
          * Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
@@ -777,28 +765,28 @@ public final class HeapProfiler {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> addInspectedHeapObject(AddInspectedHeapObjectRequest request) {
-            return client.call("HeapProfiler.addInspectedHeapObject", request == null ? null : request.toMap());
+            return call("HeapProfiler.addInspectedHeapObject", request);
         }
         /**
          * Invokes HeapProfiler.collectGarbage.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> collectGarbage() {
-            return client.call("HeapProfiler.collectGarbage", null);
+            return call("HeapProfiler.collectGarbage");
         }
         /**
          * Invokes HeapProfiler.disable.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("HeapProfiler.disable", null);
+            return call("HeapProfiler.disable");
         }
         /**
          * Invokes HeapProfiler.enable.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("HeapProfiler.enable", null);
+            return call("HeapProfiler.enable");
         }
         /**
          * Invokes HeapProfiler.getHeapObjectId.
@@ -806,9 +794,7 @@ public final class HeapProfiler {
          * @return a stage completing with the command result
          */
         public CompletionStage<HeapProfiler.HeapSnapshotObjectId> getHeapObjectId(Runtime.RemoteObjectId objectId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("objectId", CdpObject.json(objectId));
-            return client.call("HeapProfiler.getHeapObjectId", params, result_ -> new HeapProfiler.HeapSnapshotObjectId((String) java.util.Objects.requireNonNull(result_.get("heapSnapshotObjectId"))));
+            return call("HeapProfiler.getHeapObjectId", params("objectId", objectId), HEAP_SNAPSHOT_OBJECT_ID::require);
         }
         /**
          * Invokes HeapProfiler.getHeapObjectId with a request object.
@@ -816,7 +802,7 @@ public final class HeapProfiler {
          * @return a stage completing with the command result
          */
         public CompletionStage<HeapProfiler.HeapSnapshotObjectId> getHeapObjectId(GetHeapObjectIdRequest request) {
-            return client.call("HeapProfiler.getHeapObjectId", request == null ? null : request.toMap(), result_ -> new HeapProfiler.HeapSnapshotObjectId((String) java.util.Objects.requireNonNull(result_.get("heapSnapshotObjectId"))));
+            return call("HeapProfiler.getHeapObjectId", request, HEAP_SNAPSHOT_OBJECT_ID::require);
         }
         /**
          * Invokes HeapProfiler.getObjectByHeapObjectId.
@@ -825,10 +811,7 @@ public final class HeapProfiler {
          * @return a stage completing with the command result
          */
         public CompletionStage<Runtime.RemoteObject> getObjectByHeapObjectId(HeapProfiler.HeapSnapshotObjectId objectId, String objectGroup) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("objectId", CdpObject.json(objectId));
-            params.put("objectGroup", CdpObject.json(objectGroup));
-            return client.call("HeapProfiler.getObjectByHeapObjectId", params, result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("result"))))));
+            return call("HeapProfiler.getObjectByHeapObjectId", params("objectId", objectId, "objectGroup", objectGroup), RESULT::require);
         }
         /**
          * Invokes HeapProfiler.getObjectByHeapObjectId with the required parameters.
@@ -836,9 +819,7 @@ public final class HeapProfiler {
          * @return a stage completing with the command result
          */
         public CompletionStage<Runtime.RemoteObject> getObjectByHeapObjectId(HeapProfiler.HeapSnapshotObjectId objectId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("objectId", CdpObject.json(objectId));
-            return client.call("HeapProfiler.getObjectByHeapObjectId", params, result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("result"))))));
+            return call("HeapProfiler.getObjectByHeapObjectId", params("objectId", objectId), RESULT::require);
         }
         /**
          * Invokes HeapProfiler.getObjectByHeapObjectId with a request object.
@@ -846,14 +827,14 @@ public final class HeapProfiler {
          * @return a stage completing with the command result
          */
         public CompletionStage<Runtime.RemoteObject> getObjectByHeapObjectId(GetObjectByHeapObjectIdRequest request) {
-            return client.call("HeapProfiler.getObjectByHeapObjectId", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("result"))))));
+            return call("HeapProfiler.getObjectByHeapObjectId", request, RESULT::require);
         }
         /**
          * Invokes HeapProfiler.getSamplingProfile.
          * @return a stage completing with the command result
          */
         public CompletionStage<HeapProfiler.SamplingHeapProfile> getSamplingProfile() {
-            return client.call("HeapProfiler.getSamplingProfile", null, result_ -> java.util.Objects.requireNonNull(HeapProfiler.SamplingHeapProfile.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("profile"))))));
+            return call("HeapProfiler.getSamplingProfile", PROFILE::require);
         }
         /**
          * Invokes HeapProfiler.startSampling.
@@ -864,19 +845,14 @@ public final class HeapProfiler {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startSampling(@Nullable Double samplingInterval, @Nullable Double stackDepth, @Nullable Boolean includeObjectsCollectedByMajorGC, @Nullable Boolean includeObjectsCollectedByMinorGC) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (samplingInterval != null) params.put("samplingInterval", CdpObject.json(samplingInterval));
-            if (stackDepth != null) params.put("stackDepth", CdpObject.json(stackDepth));
-            if (includeObjectsCollectedByMajorGC != null) params.put("includeObjectsCollectedByMajorGC", CdpObject.json(includeObjectsCollectedByMajorGC));
-            if (includeObjectsCollectedByMinorGC != null) params.put("includeObjectsCollectedByMinorGC", CdpObject.json(includeObjectsCollectedByMinorGC));
-            return client.call("HeapProfiler.startSampling", params);
+            return call("HeapProfiler.startSampling", params("samplingInterval", samplingInterval, "stackDepth", stackDepth, "includeObjectsCollectedByMajorGC", includeObjectsCollectedByMajorGC, "includeObjectsCollectedByMinorGC", includeObjectsCollectedByMinorGC));
         }
         /**
          * Invokes HeapProfiler.startSampling with default parameters.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startSampling() {
-            return client.call("HeapProfiler.startSampling", null);
+            return call("HeapProfiler.startSampling");
         }
         /**
          * Invokes HeapProfiler.startSampling with a request object.
@@ -884,7 +860,7 @@ public final class HeapProfiler {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startSampling(StartSamplingRequest request) {
-            return client.call("HeapProfiler.startSampling", request == null ? null : request.toMap());
+            return call("HeapProfiler.startSampling", request);
         }
         /**
          * Invokes HeapProfiler.startTrackingHeapObjects.
@@ -892,16 +868,14 @@ public final class HeapProfiler {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startTrackingHeapObjects(boolean trackAllocations) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("trackAllocations", CdpObject.json(trackAllocations));
-            return client.call("HeapProfiler.startTrackingHeapObjects", params);
+            return call("HeapProfiler.startTrackingHeapObjects", params("trackAllocations", trackAllocations));
         }
         /**
          * Invokes HeapProfiler.startTrackingHeapObjects with default parameters.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startTrackingHeapObjects() {
-            return client.call("HeapProfiler.startTrackingHeapObjects", null);
+            return call("HeapProfiler.startTrackingHeapObjects");
         }
         /**
          * Invokes HeapProfiler.startTrackingHeapObjects with a request object.
@@ -909,14 +883,14 @@ public final class HeapProfiler {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startTrackingHeapObjects(StartTrackingHeapObjectsRequest request) {
-            return client.call("HeapProfiler.startTrackingHeapObjects", request == null ? null : request.toMap());
+            return call("HeapProfiler.startTrackingHeapObjects", request);
         }
         /**
          * Invokes HeapProfiler.stopSampling.
          * @return a stage completing with the command result
          */
         public CompletionStage<HeapProfiler.SamplingHeapProfile> stopSampling() {
-            return client.call("HeapProfiler.stopSampling", null, result_ -> java.util.Objects.requireNonNull(HeapProfiler.SamplingHeapProfile.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("profile"))))));
+            return call("HeapProfiler.stopSampling", PROFILE::require);
         }
         /**
          * Invokes HeapProfiler.stopTrackingHeapObjects.
@@ -927,19 +901,14 @@ public final class HeapProfiler {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopTrackingHeapObjects(@Nullable Boolean reportProgress, @Nullable Boolean treatGlobalObjectsAsRoots, @Nullable Boolean captureNumericValue, @Nullable Boolean exposeInternals) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (reportProgress != null) params.put("reportProgress", CdpObject.json(reportProgress));
-            if (treatGlobalObjectsAsRoots != null) params.put("treatGlobalObjectsAsRoots", CdpObject.json(treatGlobalObjectsAsRoots));
-            if (captureNumericValue != null) params.put("captureNumericValue", CdpObject.json(captureNumericValue));
-            if (exposeInternals != null) params.put("exposeInternals", CdpObject.json(exposeInternals));
-            return client.call("HeapProfiler.stopTrackingHeapObjects", params);
+            return call("HeapProfiler.stopTrackingHeapObjects", params("reportProgress", reportProgress, "treatGlobalObjectsAsRoots", treatGlobalObjectsAsRoots, "captureNumericValue", captureNumericValue, "exposeInternals", exposeInternals));
         }
         /**
          * Invokes HeapProfiler.stopTrackingHeapObjects with default parameters.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopTrackingHeapObjects() {
-            return client.call("HeapProfiler.stopTrackingHeapObjects", null);
+            return call("HeapProfiler.stopTrackingHeapObjects");
         }
         /**
          * Invokes HeapProfiler.stopTrackingHeapObjects with a request object.
@@ -947,7 +916,7 @@ public final class HeapProfiler {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopTrackingHeapObjects(StopTrackingHeapObjectsRequest request) {
-            return client.call("HeapProfiler.stopTrackingHeapObjects", request == null ? null : request.toMap());
+            return call("HeapProfiler.stopTrackingHeapObjects", request);
         }
         /**
          * Invokes HeapProfiler.takeHeapSnapshot.
@@ -958,19 +927,14 @@ public final class HeapProfiler {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> takeHeapSnapshot(@Nullable Boolean reportProgress, @Nullable Boolean treatGlobalObjectsAsRoots, @Nullable Boolean captureNumericValue, @Nullable Boolean exposeInternals) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (reportProgress != null) params.put("reportProgress", CdpObject.json(reportProgress));
-            if (treatGlobalObjectsAsRoots != null) params.put("treatGlobalObjectsAsRoots", CdpObject.json(treatGlobalObjectsAsRoots));
-            if (captureNumericValue != null) params.put("captureNumericValue", CdpObject.json(captureNumericValue));
-            if (exposeInternals != null) params.put("exposeInternals", CdpObject.json(exposeInternals));
-            return client.call("HeapProfiler.takeHeapSnapshot", params);
+            return call("HeapProfiler.takeHeapSnapshot", params("reportProgress", reportProgress, "treatGlobalObjectsAsRoots", treatGlobalObjectsAsRoots, "captureNumericValue", captureNumericValue, "exposeInternals", exposeInternals));
         }
         /**
          * Invokes HeapProfiler.takeHeapSnapshot with default parameters.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> takeHeapSnapshot() {
-            return client.call("HeapProfiler.takeHeapSnapshot", null);
+            return call("HeapProfiler.takeHeapSnapshot");
         }
         /**
          * Invokes HeapProfiler.takeHeapSnapshot with a request object.
@@ -978,7 +942,7 @@ public final class HeapProfiler {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> takeHeapSnapshot(TakeHeapSnapshotRequest request) {
-            return client.call("HeapProfiler.takeHeapSnapshot", request == null ? null : request.toMap());
+            return call("HeapProfiler.takeHeapSnapshot", request);
         }
         /**
          * Subscribes to HeapProfiler.addHeapSnapshotChunk.
@@ -986,7 +950,7 @@ public final class HeapProfiler {
          * @return a removable subscription
          */
         public CdpSubscription onAddHeapSnapshotChunk(Consumer<AddHeapSnapshotChunkEvent> handler) {
-            return client.on("HeapProfiler.addHeapSnapshotChunk", AddHeapSnapshotChunkEvent::fromMap, handler);
+            return on("HeapProfiler.addHeapSnapshotChunk", AddHeapSnapshotChunkEvent::fromMap, handler);
         }
         /**
          * If heap objects tracking has been started then backend may send update for one or more fragments
@@ -994,7 +958,7 @@ public final class HeapProfiler {
          * @return a removable subscription
          */
         public CdpSubscription onHeapStatsUpdate(Consumer<HeapStatsUpdateEvent> handler) {
-            return client.on("HeapProfiler.heapStatsUpdate", HeapStatsUpdateEvent::fromMap, handler);
+            return on("HeapProfiler.heapStatsUpdate", HeapStatsUpdateEvent::fromMap, handler);
         }
         /**
          * If heap objects tracking has been started then backend regularly sends a current value for last seen object id and corresponding timestamp. If the were changes in the heap since last event then one or more heapStatsUpdate events will be sent before a new lastSeenObjectId event.
@@ -1002,7 +966,7 @@ public final class HeapProfiler {
          * @return a removable subscription
          */
         public CdpSubscription onLastSeenObjectId(Consumer<LastSeenObjectIdEvent> handler) {
-            return client.on("HeapProfiler.lastSeenObjectId", LastSeenObjectIdEvent::fromMap, handler);
+            return on("HeapProfiler.lastSeenObjectId", LastSeenObjectIdEvent::fromMap, handler);
         }
         /**
          * Subscribes to HeapProfiler.reportHeapSnapshotProgress.
@@ -1010,7 +974,7 @@ public final class HeapProfiler {
          * @return a removable subscription
          */
         public CdpSubscription onReportHeapSnapshotProgress(Consumer<ReportHeapSnapshotProgressEvent> handler) {
-            return client.on("HeapProfiler.reportHeapSnapshotProgress", ReportHeapSnapshotProgressEvent::fromMap, handler);
+            return on("HeapProfiler.reportHeapSnapshotProgress", ReportHeapSnapshotProgressEvent::fromMap, handler);
         }
         /**
          * Subscribes to HeapProfiler.resetProfiles.
@@ -1018,7 +982,7 @@ public final class HeapProfiler {
          * @return a removable subscription
          */
         public CdpSubscription onResetProfiles(Consumer<ResetProfilesEvent> handler) {
-            return client.on("HeapProfiler.resetProfiles", ResetProfilesEvent::fromMap, handler);
+            return on("HeapProfiler.resetProfiles", ResetProfilesEvent::fromMap, handler);
         }
     }
 }

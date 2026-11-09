@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class ContextMenuParams implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class ContextMenuParams extends BrowserFacade {
 
     public ContextMenuParams(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_context_menu_params_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_context_menu_params_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class ContextMenuParams implements AutoCloseable {
      */
     public CompletableFuture<Integer> getXcoord() {
         return CefFutures.map(
-            session.request(new ContextMenuParamsGetXcoordRequest(handle), ContextMenuParamsGetXcoordResponse.DECODER),
-            ContextMenuParamsGetXcoordResponse::result);
+            session.request(MessageIds.CONTEXT_MENU_PARAMS_GET_XCOORD_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class ContextMenuParams implements AutoCloseable {
      */
     public CompletableFuture<Integer> getYcoord() {
         return CefFutures.map(
-            session.request(new ContextMenuParamsGetYcoordRequest(handle), ContextMenuParamsGetYcoordResponse.DECODER),
-            ContextMenuParamsGetYcoordResponse::result);
+            session.request(MessageIds.CONTEXT_MENU_PARAMS_GET_YCOORD_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -82,8 +51,8 @@ public final class ContextMenuParams implements AutoCloseable {
      */
     public CompletableFuture<Integer> getTypeFlags() {
         return CefFutures.map(
-            session.request(new ContextMenuParamsGetTypeFlagsRequest(handle), ContextMenuParamsGetTypeFlagsResponse.DECODER),
-            ContextMenuParamsGetTypeFlagsResponse::result);
+            session.request(MessageIds.CONTEXT_MENU_PARAMS_GET_TYPE_FLAGS_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -94,8 +63,8 @@ public final class ContextMenuParams implements AutoCloseable {
      */
     public CompletableFuture<String> getLinkUrl() {
         return CefFutures.map(
-            session.request(new ContextMenuParamsGetLinkUrlRequest(handle), ContextMenuParamsGetLinkUrlResponse.DECODER),
-            ContextMenuParamsGetLinkUrlResponse::result);
+            session.request(MessageIds.CONTEXT_MENU_PARAMS_GET_LINK_URL_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -106,8 +75,8 @@ public final class ContextMenuParams implements AutoCloseable {
      */
     public CompletableFuture<String> getUnfilteredLinkUrl() {
         return CefFutures.map(
-            session.request(new ContextMenuParamsGetUnfilteredLinkUrlRequest(handle), ContextMenuParamsGetUnfilteredLinkUrlResponse.DECODER),
-            ContextMenuParamsGetUnfilteredLinkUrlResponse::result);
+            session.request(MessageIds.CONTEXT_MENU_PARAMS_GET_UNFILTERED_LINK_URL_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -118,8 +87,8 @@ public final class ContextMenuParams implements AutoCloseable {
      */
     public CompletableFuture<String> getSourceUrl() {
         return CefFutures.map(
-            session.request(new ContextMenuParamsGetSourceUrlRequest(handle), ContextMenuParamsGetSourceUrlResponse.DECODER),
-            ContextMenuParamsGetSourceUrlResponse::result);
+            session.request(MessageIds.CONTEXT_MENU_PARAMS_GET_SOURCE_URL_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -130,8 +99,8 @@ public final class ContextMenuParams implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasImageContents() {
         return CefFutures.map(
-            session.request(new ContextMenuParamsHasImageContentsRequest(handle), ContextMenuParamsHasImageContentsResponse.DECODER),
-            ContextMenuParamsHasImageContentsResponse::result);
+            session.request(MessageIds.CONTEXT_MENU_PARAMS_HAS_IMAGE_CONTENTS_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -142,8 +111,8 @@ public final class ContextMenuParams implements AutoCloseable {
      */
     public CompletableFuture<String> getTitleText() {
         return CefFutures.map(
-            session.request(new ContextMenuParamsGetTitleTextRequest(handle), ContextMenuParamsGetTitleTextResponse.DECODER),
-            ContextMenuParamsGetTitleTextResponse::result);
+            session.request(MessageIds.CONTEXT_MENU_PARAMS_GET_TITLE_TEXT_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -154,8 +123,8 @@ public final class ContextMenuParams implements AutoCloseable {
      */
     public CompletableFuture<String> getPageUrl() {
         return CefFutures.map(
-            session.request(new ContextMenuParamsGetPageUrlRequest(handle), ContextMenuParamsGetPageUrlResponse.DECODER),
-            ContextMenuParamsGetPageUrlResponse::result);
+            session.request(MessageIds.CONTEXT_MENU_PARAMS_GET_PAGE_URL_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -166,8 +135,8 @@ public final class ContextMenuParams implements AutoCloseable {
      */
     public CompletableFuture<String> getFrameUrl() {
         return CefFutures.map(
-            session.request(new ContextMenuParamsGetFrameUrlRequest(handle), ContextMenuParamsGetFrameUrlResponse.DECODER),
-            ContextMenuParamsGetFrameUrlResponse::result);
+            session.request(MessageIds.CONTEXT_MENU_PARAMS_GET_FRAME_URL_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -178,8 +147,8 @@ public final class ContextMenuParams implements AutoCloseable {
      */
     public CompletableFuture<String> getFrameCharset() {
         return CefFutures.map(
-            session.request(new ContextMenuParamsGetFrameCharsetRequest(handle), ContextMenuParamsGetFrameCharsetResponse.DECODER),
-            ContextMenuParamsGetFrameCharsetResponse::result);
+            session.request(MessageIds.CONTEXT_MENU_PARAMS_GET_FRAME_CHARSET_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -190,8 +159,8 @@ public final class ContextMenuParams implements AutoCloseable {
      */
     public CompletableFuture<Integer> getMediaType() {
         return CefFutures.map(
-            session.request(new ContextMenuParamsGetMediaTypeRequest(handle), ContextMenuParamsGetMediaTypeResponse.DECODER),
-            ContextMenuParamsGetMediaTypeResponse::result);
+            session.request(MessageIds.CONTEXT_MENU_PARAMS_GET_MEDIA_TYPE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -202,8 +171,8 @@ public final class ContextMenuParams implements AutoCloseable {
      */
     public CompletableFuture<Integer> getMediaStateFlags() {
         return CefFutures.map(
-            session.request(new ContextMenuParamsGetMediaStateFlagsRequest(handle), ContextMenuParamsGetMediaStateFlagsResponse.DECODER),
-            ContextMenuParamsGetMediaStateFlagsResponse::result);
+            session.request(MessageIds.CONTEXT_MENU_PARAMS_GET_MEDIA_STATE_FLAGS_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -214,8 +183,8 @@ public final class ContextMenuParams implements AutoCloseable {
      */
     public CompletableFuture<String> getSelectionText() {
         return CefFutures.map(
-            session.request(new ContextMenuParamsGetSelectionTextRequest(handle), ContextMenuParamsGetSelectionTextResponse.DECODER),
-            ContextMenuParamsGetSelectionTextResponse::result);
+            session.request(MessageIds.CONTEXT_MENU_PARAMS_GET_SELECTION_TEXT_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -226,8 +195,8 @@ public final class ContextMenuParams implements AutoCloseable {
      */
     public CompletableFuture<String> getMisspelledWord() {
         return CefFutures.map(
-            session.request(new ContextMenuParamsGetMisspelledWordRequest(handle), ContextMenuParamsGetMisspelledWordResponse.DECODER),
-            ContextMenuParamsGetMisspelledWordResponse::result);
+            session.request(MessageIds.CONTEXT_MENU_PARAMS_GET_MISSPELLED_WORD_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -238,8 +207,8 @@ public final class ContextMenuParams implements AutoCloseable {
      */
     public CompletableFuture<Integer> getDictionarySuggestions(String[] suggestions) {
         return CefFutures.map(
-            session.request(new ContextMenuParamsGetDictionarySuggestionsRequest(handle, suggestions), ContextMenuParamsGetDictionarySuggestionsResponse.DECODER),
-            ContextMenuParamsGetDictionarySuggestionsResponse::result);
+            session.request(MessageIds.CONTEXT_MENU_PARAMS_GET_DICTIONARY_SUGGESTIONS_REQUEST, new ContextMenuParamsGetDictionarySuggestionsRequest(handle, suggestions), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -250,8 +219,8 @@ public final class ContextMenuParams implements AutoCloseable {
      */
     public CompletableFuture<Integer> isEditable() {
         return CefFutures.map(
-            session.request(new ContextMenuParamsIsEditableRequest(handle), ContextMenuParamsIsEditableResponse.DECODER),
-            ContextMenuParamsIsEditableResponse::result);
+            session.request(MessageIds.CONTEXT_MENU_PARAMS_IS_EDITABLE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -262,8 +231,8 @@ public final class ContextMenuParams implements AutoCloseable {
      */
     public CompletableFuture<Integer> isSpellCheckEnabled() {
         return CefFutures.map(
-            session.request(new ContextMenuParamsIsSpellCheckEnabledRequest(handle), ContextMenuParamsIsSpellCheckEnabledResponse.DECODER),
-            ContextMenuParamsIsSpellCheckEnabledResponse::result);
+            session.request(MessageIds.CONTEXT_MENU_PARAMS_IS_SPELL_CHECK_ENABLED_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -274,8 +243,8 @@ public final class ContextMenuParams implements AutoCloseable {
      */
     public CompletableFuture<Integer> getEditStateFlags() {
         return CefFutures.map(
-            session.request(new ContextMenuParamsGetEditStateFlagsRequest(handle), ContextMenuParamsGetEditStateFlagsResponse.DECODER),
-            ContextMenuParamsGetEditStateFlagsResponse::result);
+            session.request(MessageIds.CONTEXT_MENU_PARAMS_GET_EDIT_STATE_FLAGS_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -286,7 +255,7 @@ public final class ContextMenuParams implements AutoCloseable {
      */
     public CompletableFuture<Integer> isCustomMenu() {
         return CefFutures.map(
-            session.request(new ContextMenuParamsIsCustomMenuRequest(handle), ContextMenuParamsIsCustomMenuResponse.DECODER),
-            ContextMenuParamsIsCustomMenuResponse::result);
+            session.request(MessageIds.CONTEXT_MENU_PARAMS_IS_CUSTOM_MENU_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

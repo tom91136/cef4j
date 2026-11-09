@@ -5,7 +5,8 @@ import net.kurobako.cef4j.codegen.Naming
 
 object JavaEmitter {
 
-  def emit(spec: MessageSpec)(using Naming.Context, Banners): String = {
+  /** A message class for one field layout; the session caller supplies the id of the RPC it carries. */
+  def emitShared(spec: SharedMessage)(using Naming.Context, Banners): String = {
     val pkg          = spec.packageName
     val cls          = spec.className
     val importsBlock = renderImports(spec)
@@ -16,14 +17,9 @@ object JavaEmitter {
     val encFn        = if (spec.fields.isEmpty) "" else renderEncodeInto(spec)
     val decFn        = renderDecoder(spec)
     val members      = List(
-      s"    public static final int MESSAGE_ID = ${spec.messageId};",
       fields,
       ctor,
       access,
-      """    @Override
-        |    public int messageId() {
-        |        return MESSAGE_ID;
-        |    }""".stripMargin,
       sizeFn,
       encFn,
       decFn
@@ -42,7 +38,7 @@ object JavaEmitter {
        |""".stripMargin
   }
 
-  private val IoImports      = List("import java.nio.ByteBuffer;", "import java.nio.ByteOrder;")
+  private val IoImports      = List("import java.nio.ByteBuffer;")
   private val MessageImports = List(
     "import net.kurobako.cef4j.ipc.session.CefMessageDecoder;",
     "import net.kurobako.cef4j.ipc.session.CefMessageEncoder;",
@@ -50,7 +46,7 @@ object JavaEmitter {
     "import net.kurobako.cef4j.ipc.session.WireDecoder;"
   )
 
-  private def renderImports(spec: MessageSpec): String = {
+  private def renderImports(spec: SharedMessage): String = {
     val needsString = spec.fields.exists(f => f.ty == FieldType.Utf8String || f.ty == FieldType.StringList)
     val needsHandle = spec.fields.exists(_.ty == FieldType.RemoteHandle)
     (
@@ -58,7 +54,8 @@ object JavaEmitter {
         Option.when(needsString)("import java.nio.charset.StandardCharsets;") ++
         List(Banners.javaAnnotationImport) ++
         MessageImports ++
-        Option.when(needsHandle)("import net.kurobako.cef4j.ipc.session.RemoteHandle;")
+        Option.when(needsHandle)("import net.kurobako.cef4j.ipc.session.RemoteHandle;") ++
+        Option.when(spec.fields.nonEmpty)("import net.kurobako.cef4j.ipc.session.WireEncoder;")
     ).mkString("\n")
   }
 
@@ -76,7 +73,7 @@ object JavaEmitter {
     case FieldType.Bytes               => "byte[]"
     case FieldType.StringList          => "String[]"
     case FieldType.RemoteHandle        => remoteHandleType
-    case FieldType.DataStruct(cefName) => SpecDeriver.cefStructToClassName(cefName)
+    case FieldType.DataStruct(cefName) => Naming.sharedTypeName(cefName)
   }
 
   private def constructorParam(field: FieldSpec)(using Naming.Context): String =
@@ -87,7 +84,7 @@ object JavaEmitter {
       case _ => s"${javaType(field.ty)} ${field.name}"
     }
 
-  private def renderFields(spec: MessageSpec)(using Naming.Context): String =
+  private def renderFields(spec: SharedMessage)(using Naming.Context): String =
     spec.fields.flatMap { f =>
       f.ty match {
         case FieldType.Utf8String =>
@@ -97,7 +94,7 @@ object JavaEmitter {
       }
     }.mkString("\n")
 
-  private def renderConstructor(spec: MessageSpec)(using Naming.Context): String = {
+  private def renderConstructor(spec: SharedMessage)(using Naming.Context): String = {
     val params = spec.fields.map(constructorParam(_)).mkString(", ")
     val body   = spec.fields.flatMap { f =>
       f.ty match {
@@ -115,7 +112,7 @@ object JavaEmitter {
        |    }""".stripMargin
   }
 
-  private def renderAccessors(spec: MessageSpec)(using Naming.Context): String =
+  private def renderAccessors(spec: SharedMessage)(using Naming.Context): String =
     spec.fields.map { f =>
       val ret = javaType(f.ty)
       f.ty match {
@@ -145,14 +142,13 @@ object JavaEmitter {
     case FieldType.Utf8String => Some(s"${field.name}Bytes.length")
     case FieldType.Bytes      => Some(s"${field.name}.length")
     case FieldType.StringList =>
-      Some(
-        s"java.util.Arrays.stream(${field.name}).mapToInt(__s -> 4 + __s.getBytes(StandardCharsets.UTF_8).length).sum()"
-      )
-    case FieldType.DataStruct(_) => Some(s"${field.name}.encodedSize()")
-    case _                       => None
+      Some(s"WireEncoder.utf8ListSize(${field.name})")
+    case FieldType.DataStruct(cefName) =>
+      Some(s"${SpecDeriver.codecName(cefName)}.encodedSize(${field.name})")
+    case _ => None
   }
 
-  private def renderEncodedSize(spec: MessageSpec): String = {
+  private def renderEncodedSize(spec: SharedMessage): String = {
     val fixed    = spec.fields.map(f => fixedSize(f.ty)).sum
     val variable = spec.fields.flatMap(variableLengthExpr(_)).mkString(" + ")
     val expr     =
@@ -165,58 +161,37 @@ object JavaEmitter {
        |    }""".stripMargin
   }
 
-  private def renderEncodeInto(spec: MessageSpec): String = {
-    val writes = spec.fields.flatMap(encodeWrite(_)).mkString("\n")
+  private def renderEncodeInto(spec: SharedMessage): String = {
+    val writes = spec.fields.map(f => encodeWrite(f)).mkString("\n")
     s"""    @Override
        |    public void encodeInto(ByteBuffer __dst) {
-       |        final ByteOrder originalOrder = __dst.order();
-       |        try {
-       |            __dst.order(ByteOrder.LITTLE_ENDIAN);
+       |        WireEncoder.littleEndian(__dst, __out -> {
        |$writes
-       |        } finally {
-       |            __dst.order(originalOrder);
-       |        }
+       |        });
        |    }""".stripMargin
   }
 
-  private def encodeWrite(field: FieldSpec): List[String] = field.ty match {
-    case FieldType.I32        => List(s"            __dst.putInt(${field.name});")
-    case FieldType.I64        => List(s"            __dst.putLong(${field.name});")
-    case FieldType.Bool       => List(s"            __dst.put((byte) (${field.name} ? 1 : 0));")
-    case FieldType.Utf8String =>
-      List(
-        s"            __dst.putInt(${field.name}Bytes.length);",
-        s"            __dst.put(${field.name}Bytes);"
-      )
-    case FieldType.Bytes =>
-      List(
-        s"            __dst.putInt(${field.name}.length);",
-        s"            __dst.put(${field.name});"
-      )
-    case FieldType.StringList =>
-      List(
-        s"            __dst.putInt(${field.name}.length);",
-        s"            for (final String __s : ${field.name}) {",
-        "                final byte[] __b = __s.getBytes(StandardCharsets.UTF_8);",
-        "                __dst.putInt(__b.length);",
-        "                __dst.put(__b);",
-        "            }"
-      )
-    case FieldType.RemoteHandle  => List(s"            __dst.putInt(${field.name}.id());")
-    case FieldType.DataStruct(_) =>
-      List(s"            ${field.name}.encodeInto(__dst);")
+  private def encodeWrite(field: FieldSpec): String = {
+    val name  = field.name
+    val write = field.ty match {
+      case FieldType.I32                 => s"__out.putInt($name);"
+      case FieldType.I64                 => s"__out.putLong($name);"
+      case FieldType.Bool                => s"WireEncoder.bool(__out, $name);"
+      case FieldType.Utf8String          => s"WireEncoder.bytes(__out, ${name}Bytes);"
+      case FieldType.Bytes               => s"WireEncoder.bytes(__out, $name);"
+      case FieldType.StringList          => s"WireEncoder.utf8List(__out, $name);"
+      case FieldType.RemoteHandle        => s"__out.putInt($name.id());"
+      case FieldType.DataStruct(cefName) => s"${SpecDeriver.codecName(cefName)}.encode(__out, $name);"
+    }
+    s"            $write"
   }
 
-  private def renderDecoder(spec: MessageSpec)(using Naming.Context): String = {
-    val reads = spec.fields.map(decodeRead(_)).mkString("\n")
+  private def renderDecoder(spec: SharedMessage)(using Naming.Context): String = {
+    val reads = spec.fields.map(decodeRead(_))
     val args  = spec.fields.map(_.name).mkString(", ")
-    s"""    public static final CefMessageDecoder<${spec.className}> DECODER = payload -> {
-       |        final ByteBuffer __buf = payload.duplicate();
-       |        __buf.order(ByteOrder.LITTLE_ENDIAN);
-       |$reads
-       |        WireDecoder.requireFullyConsumed(__buf, "${spec.className}");
-       |        return new ${spec.className}($args);
-       |    };""".stripMargin
+    val lines = s"""WireDecoder.message("${spec.className}", __buf -> {""" :: reads :::
+      List(s"        return new ${spec.className}($args);", "    });")
+    s"    public static final CefMessageDecoder<${spec.className}> DECODER = ${lines.mkString("\n")}"
   }
 
   def decodeRead(field: FieldSpec, qualified: Boolean = false)(using Naming.Context): String = {
@@ -229,7 +204,7 @@ object JavaEmitter {
       case FieldType.Bytes               => "WireDecoder.bytes"
       case FieldType.StringList          => "WireDecoder.utf8List"
       case FieldType.RemoteHandle        => "WireDecoder.handle"
-      case FieldType.DataStruct(cefName) => s"${SpecDeriver.cefStructToClassName(cefName)}.decode"
+      case FieldType.DataStruct(cefName) => s"${SpecDeriver.codecName(cefName)}.decode"
     }
     val args = field.ty match {
       case FieldType.DataStruct(_) => "__buf"

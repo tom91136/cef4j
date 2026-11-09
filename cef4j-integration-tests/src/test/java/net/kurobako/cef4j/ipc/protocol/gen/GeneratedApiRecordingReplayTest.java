@@ -46,13 +46,13 @@ class GeneratedApiRecordingReplayTest {
     private static final class CanGoBackSession implements CefSession {
         @Override
         public <R extends CefMessageView> CompletableFuture<R> request(
-                CefMessageEncoder request, CefMessageDecoder<R> decoder) {
-            if (request.messageId() != BrowserCanGoBackRequest.MESSAGE_ID) {
+                int messageId, CefMessageEncoder request, CefMessageDecoder<R> decoder) {
+            if (messageId != MessageIds.BROWSER_CAN_GO_BACK_REQUEST) {
                 CompletableFuture<R> failure = new CompletableFuture<>();
                 failure.completeExceptionally(new IllegalArgumentException("unexpected generated request"));
                 return failure;
             }
-            BrowserCanGoBackResponse response = new BrowserCanGoBackResponse(1);
+            ResultIntMessage response = new ResultIntMessage(1);
             ByteBuffer payload = ByteBuffer.allocate(response.encodedSize()).order(ByteOrder.LITTLE_ENDIAN);
             response.encodeInto(payload);
             payload.flip();

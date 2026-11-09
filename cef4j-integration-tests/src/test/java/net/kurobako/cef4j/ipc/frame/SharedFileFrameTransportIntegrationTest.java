@@ -11,8 +11,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
+import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessage;
 import net.kurobako.cef4j.ipc.protocol.gen.Frame;
-import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -39,10 +40,9 @@ class SharedFileFrameTransportIntegrationTest {
             AtomicInteger frameCount = new AtomicInteger();
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
-            session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, e -> {
-                        if (!handleFuture.isDone()) handleFuture.complete(e.browser());
-                    });
+            session.onLatest(MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, BrowserHandleMessage.DECODER, e -> {
+                if (!handleFuture.isDone()) handleFuture.complete(e.browser());
+            });
 
             Thread mainThread = Thread.currentThread();
             java.util.concurrent.atomic.AtomicReference<@Nullable String> consumerThreadName =
@@ -102,10 +102,9 @@ class SharedFileFrameTransportIntegrationTest {
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
-            session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, e -> {
-                        if (!handleFuture.isDone()) handleFuture.complete(e.browser());
-                    });
+            session.onLatest(MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, BrowserHandleMessage.DECODER, e -> {
+                if (!handleFuture.isDone()) handleFuture.complete(e.browser());
+            });
             RemoteHandle realBrowser = handleFuture.get(30, TimeUnit.SECONDS);
 
             RemoteHandle wrongHandle = new RemoteHandle(realBrowser.id() + 999);

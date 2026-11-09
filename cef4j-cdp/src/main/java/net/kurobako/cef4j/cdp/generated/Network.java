@@ -1,7 +1,6 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -10,6 +9,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -25,6 +26,150 @@ import org.jspecify.annotations.Nullable;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Network {
     private Network() {}
+    private static final CdpField<Network.ServiceWorkerRouterSource> ACTUAL_SOURCE_TYPE = CdpField.of("actualSourceType", value -> Network.ServiceWorkerRouterSource.of((String) value));
+    private static final CdpField<Network.AdAncestry> AD_SCRIPT_ANCESTRY = CdpField.of("adScriptAncestry", value -> java.util.Objects.requireNonNull(Network.AdAncestry.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<String>> ALLOWED_REFRESH_INITIATORS = CdpField.of("allowedRefreshInitiators", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Network.AlternateProtocolUsage> ALTERNATE_PROTOCOL_USAGE = CdpField.of("alternateProtocolUsage", value -> Network.AlternateProtocolUsage.of((String) value));
+    private static final CdpField<java.util.List<Network.AdScriptIdentifier>> ANCESTRY_CHAIN = CdpField.of("ancestryChain", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.AdScriptIdentifier.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Network.AssociatedCookie>> ASSOCIATED_COOKIES = CdpField.of("associatedCookies", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.AssociatedCookie.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Network.AuthChallenge> AUTH_CHALLENGE = CdpField.of("authChallenge", value -> java.util.Objects.requireNonNull(Network.AuthChallenge.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.AuthChallengeResponse> AUTH_CHALLENGE_RESPONSE = CdpField.of("authChallengeResponse", value -> java.util.Objects.requireNonNull(Network.AuthChallengeResponse.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Network.BlockedSetCookieWithReason>> BLOCKED_COOKIES = CdpField.of("blockedCookies", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.BlockedSetCookieWithReason.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Network.BlockedReason> BLOCKED_REASON = CdpField.of("blockedReason", value -> Network.BlockedReason.of((String) value));
+    private static final CdpField<java.util.List<Network.SetCookieBlockedReason>> BLOCKED_REASONS = CdpField.of("blockedReasons", value -> CdpObject.requireList(value, element0 -> Network.SetCookieBlockedReason.of((String) element0)));
+    private static final CdpField<java.util.List<Network.CookieBlockedReason>> BLOCKED_REASONS_2 = CdpField.of("blockedReasons", value -> CdpObject.requireList(value, element0 -> Network.CookieBlockedReason.of((String) element0)));
+    private static final CdpField<String> BUFFERED_DATA = CdpField.of("bufferedData", value -> (String) value);
+    private static final CdpField<java.util.List<String>> CERTIFICATES = CdpField.of("certificates", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Security.CertificateId> CERTIFICATE_ID = CdpField.of("certificateId", value -> new Security.CertificateId(((Number) value).longValue()));
+    private static final CdpField<Network.CertificateTransparencyCompliance> CERTIFICATE_TRANSPARENCY_COMPLIANCE = CdpField.of("certificateTransparencyCompliance", value -> Network.CertificateTransparencyCompliance.of((String) value));
+    private static final CdpField<Network.ChallengeEventDetails> CHALLENGE_EVENT_DETAILS = CdpField.of("challengeEventDetails", value -> java.util.Objects.requireNonNull(Network.ChallengeEventDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<ChallengeEventDetails.ChallengeResultValues> CHALLENGE_RESULT = CdpField.of("challengeResult", value -> ChallengeEventDetails.ChallengeResultValues.of((String) value));
+    private static final CdpField<Network.ClientSecurityState> CLIENT_SECURITY_STATE = CdpField.of("clientSecurityState", value -> java.util.Objects.requireNonNull(Network.ClientSecurityState.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.CrossOriginEmbedderPolicyStatus> COEP = CdpField.of("coep", value -> java.util.Objects.requireNonNull(Network.CrossOriginEmbedderPolicyStatus.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.ConnectionType> CONNECTION_TYPE = CdpField.of("connectionType", value -> Network.ConnectionType.of((String) value));
+    private static final CdpField<Network.ConnectTiming> CONNECT_TIMING = CdpField.of("connectTiming", value -> java.util.Objects.requireNonNull(Network.ConnectTiming.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.Cookie> COOKIE = CdpField.of("cookie", value -> java.util.Objects.requireNonNull(Network.Cookie.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Network.CookieParam>> COOKIES = CdpField.of("cookies", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.CookieParam.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Network.Cookie>> COOKIES_2 = CdpField.of("cookies", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.Cookie.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Network.DeviceBoundSessionCookieCraving>> COOKIE_CRAVINGS = CdpField.of("cookieCravings", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.DeviceBoundSessionCookieCraving.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Network.CookiePartitionKey> COOKIE_PARTITION_KEY = CdpField.of("cookiePartitionKey", value -> java.util.Objects.requireNonNull(Network.CookiePartitionKey.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.CrossOriginOpenerPolicyStatus> COOP = CdpField.of("coop", value -> java.util.Objects.requireNonNull(Network.CrossOriginOpenerPolicyStatus.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.CorsError> CORS_ERROR = CdpField.of("corsError", value -> Network.CorsError.of((String) value));
+    private static final CdpField<Network.CorsErrorStatus> CORS_ERROR_STATUS = CdpField.of("corsErrorStatus", value -> java.util.Objects.requireNonNull(Network.CorsErrorStatus.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.CreationEventDetails> CREATION_EVENT_DETAILS = CdpField.of("creationEventDetails", value -> java.util.Objects.requireNonNull(Network.CreationEventDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Network.ContentSecurityPolicyStatus>> CSP = CdpField.of("csp", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.ContentSecurityPolicyStatus.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Runtime.UniqueDebuggerId> DEBUGGER_ID = CdpField.of("debuggerId", value -> new Runtime.UniqueDebuggerId((String) value));
+    private static final CdpField<TerminationEventDetails.DeletionReasonValues> DELETION_REASON = CdpField.of("deletionReason", value -> TerminationEventDetails.DeletionReasonValues.of((String) value));
+    private static final CdpField<java.util.List<Network.DeviceBoundSessionWithUsage>> DEVICE_BOUND_SESSION_USAGES = CdpField.of("deviceBoundSessionUsages", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.DeviceBoundSessionWithUsage.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Network.DirectSocketDnsQueryType> DNS_QUERY_TYPE = CdpField.of("dnsQueryType", value -> Network.DirectSocketDnsQueryType.of((String) value));
+    private static final CdpField<java.util.List<Network.ContentEncoding>> ENCODINGS = CdpField.of("encodings", value -> CdpObject.requireList(value, element0 -> Network.ContentEncoding.of((String) element0)));
+    private static final CdpField<java.util.List<Network.ReportingApiEndpoint>> ENDPOINTS = CdpField.of("endpoints", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.ReportingApiEndpoint.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Network.SignedExchangeError>> ERRORS = CdpField.of("errors", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.SignedExchangeError.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Network.SignedExchangeErrorField> ERROR_FIELD = CdpField.of("errorField", value -> Network.SignedExchangeErrorField.of((String) value));
+    private static final CdpField<Network.ErrorReason> ERROR_REASON = CdpField.of("errorReason", value -> Network.ErrorReason.of((String) value));
+    private static final CdpField<Network.DeviceBoundSessionEventId> EVENT_ID = CdpField.of("eventId", value -> new Network.DeviceBoundSessionEventId((String) value));
+    private static final CdpField<java.util.List<Network.ExemptedSetCookieWithReason>> EXEMPTED_COOKIES = CdpField.of("exemptedCookies", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.ExemptedSetCookieWithReason.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Network.CookieExemptionReason> EXEMPTION_REASON = CdpField.of("exemptionReason", value -> Network.CookieExemptionReason.of((String) value));
+    private static final CdpField<Network.TimeSinceEpoch> EXPIRES = CdpField.of("expires", value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+    private static final CdpField<Network.TimeSinceEpoch> EXPIRY_DATE = CdpField.of("expiryDate", value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+    private static final CdpField<Network.DeviceBoundSessionFailedRequest> FAILED_REQUEST = CdpField.of("failedRequest", value -> java.util.Objects.requireNonNull(Network.DeviceBoundSessionFailedRequest.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.DeviceBoundSessionFetchResult> FETCH_RESULT = CdpField.of("fetchResult", value -> Network.DeviceBoundSessionFetchResult.of((String) value));
+    private static final CdpField<Page.FrameId> FRAME_ID = CdpField.of("frameId", value -> new Page.FrameId((String) value));
+    private static final CdpField<Network.SignedExchangeHeader> HEADER = CdpField.of("header", value -> java.util.Objects.requireNonNull(Network.SignedExchangeHeader.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.ReportId> ID = CdpField.of("id", value -> new Network.ReportId((String) value));
+    private static final CdpField<Network.RequestId> IDENTIFIER = CdpField.of("identifier", value -> new Network.RequestId((String) value));
+    private static final CdpField<Network.DeviceBoundSessionInclusionRules> INCLUSION_RULES = CdpField.of("inclusionRules", value -> java.util.Objects.requireNonNull(Network.DeviceBoundSessionInclusionRules.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.SignedExchangeInfo> INFO = CdpField.of("info", value -> java.util.Objects.requireNonNull(Network.SignedExchangeInfo.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.ResourcePriority> INITIAL_PRIORITY = CdpField.of("initialPriority", value -> Network.ResourcePriority.of((String) value));
+    private static final CdpField<Network.Initiator> INITIATOR = CdpField.of("initiator", value -> java.util.Objects.requireNonNull(Network.Initiator.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.IPAddressSpace> INITIATOR_IPADDRESS_SPACE = CdpField.of("initiatorIPAddressSpace", value -> Network.IPAddressSpace.of((String) value));
+    private static final CdpField<Network.InterceptionId> INTERCEPTION_ID = CdpField.of("interceptionId", value -> new Network.InterceptionId((String) value));
+    private static final CdpField<Network.InterceptionStage> INTERCEPTION_STAGE = CdpField.of("interceptionStage", value -> Network.InterceptionStage.of((String) value));
+    private static final CdpField<java.util.List<String>> ISSUERS = CdpField.of("issuers", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Network.DeviceBoundSessionKey> KEY = CdpField.of("key", value -> java.util.Objects.requireNonNull(Network.DeviceBoundSessionKey.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.LoaderId> LOADER_ID = CdpField.of("loaderId", value -> new Network.LoaderId((String) value));
+    private static final CdpField<Network.LocalNetworkAccessRequestPolicy> LOCAL_NETWORK_ACCESS_REQUEST_POLICY = CdpField.of("localNetworkAccessRequestPolicy", value -> Network.LocalNetworkAccessRequestPolicy.of((String) value));
+    private static final CdpField<java.util.List<Network.NetworkConditions>> MATCHED_NETWORK_CONDITIONS = CdpField.of("matchedNetworkConditions", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.NetworkConditions.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Network.ServiceWorkerRouterSource> MATCHED_SOURCE_TYPE = CdpField.of("matchedSourceType", value -> Network.ServiceWorkerRouterSource.of((String) value));
+    private static final CdpField<Network.DirectUDPMessage> MESSAGE = CdpField.of("message", value -> java.util.Objects.requireNonNull(Network.DirectUDPMessage.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Security.MixedContentType> MIXED_CONTENT_TYPE = CdpField.of("mixedContentType", value -> Security.MixedContentType.of((String) value));
+    private static final CdpField<Network.ResourcePriority> NEW_PRIORITY = CdpField.of("newPriority", value -> Network.ResourcePriority.of((String) value));
+    private static final CdpField<Network.DeviceBoundSession> NEW_SESSION = CdpField.of("newSession", value -> java.util.Objects.requireNonNull(Network.DeviceBoundSession.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.TrustTokenOperationType> OPERATION = CdpField.of("operation", value -> Network.TrustTokenOperationType.of((String) value));
+    private static final CdpField<Network.LoadNetworkResourceOptions> OPTIONS = CdpField.of("options", value -> java.util.Objects.requireNonNull(Network.LoadNetworkResourceOptions.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.DirectTCPSocketOptions> OPTIONS_2 = CdpField.of("options", value -> java.util.Objects.requireNonNull(Network.DirectTCPSocketOptions.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.DirectUDPSocketOptions> OPTIONS_3 = CdpField.of("options", value -> java.util.Objects.requireNonNull(Network.DirectUDPSocketOptions.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.Response> OUTER_RESPONSE = CdpField.of("outerResponse", value -> java.util.Objects.requireNonNull(Network.Response.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.CookiePartitionKey> PARTITION_KEY = CdpField.of("partitionKey", value -> java.util.Objects.requireNonNull(Network.CookiePartitionKey.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Network.RequestPattern>> PATTERNS = CdpField.of("patterns", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.RequestPattern.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Network.PostDataEntry>> POST_DATA_ENTRIES = CdpField.of("postDataEntries", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.PostDataEntry.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Network.CookiePriority> PRIORITY = CdpField.of("priority", value -> Network.CookiePriority.of((String) value));
+    private static final CdpField<Network.Response> REDIRECT_RESPONSE = CdpField.of("redirectResponse", value -> java.util.Objects.requireNonNull(Network.Response.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Request.ReferrerPolicyValues> REFERRER_POLICY = CdpField.of("referrerPolicy", value -> Request.ReferrerPolicyValues.of((String) value));
+    private static final CdpField<Network.RefreshEventDetails> REFRESH_EVENT_DETAILS = CdpField.of("refreshEventDetails", value -> java.util.Objects.requireNonNull(Network.RefreshEventDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<TrustTokenParams.RefreshPolicyValues> REFRESH_POLICY = CdpField.of("refreshPolicy", value -> TrustTokenParams.RefreshPolicyValues.of((String) value));
+    private static final CdpField<RefreshEventDetails.RefreshResultValues> REFRESH_RESULT = CdpField.of("refreshResult", value -> RefreshEventDetails.RefreshResultValues.of((String) value));
+    private static final CdpField<Network.RenderBlockingBehavior> RENDER_BLOCKING_BEHAVIOR = CdpField.of("renderBlockingBehavior", value -> Network.RenderBlockingBehavior.of((String) value));
+    private static final CdpField<Network.ReportingApiReport> REPORT = CdpField.of("report", value -> java.util.Objects.requireNonNull(Network.ReportingApiReport.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.CrossOriginOpenerPolicyValue> REPORT_ONLY_VALUE = CdpField.of("reportOnlyValue", value -> Network.CrossOriginOpenerPolicyValue.of((String) value));
+    private static final CdpField<Network.CrossOriginEmbedderPolicyValue> REPORT_ONLY_VALUE_2 = CdpField.of("reportOnlyValue", value -> Network.CrossOriginEmbedderPolicyValue.of((String) value));
+    private static final CdpField<Network.Request> REQUEST = CdpField.of("request", value -> java.util.Objects.requireNonNull(Network.Request.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.WebSocketRequest> REQUEST_2 = CdpField.of("request", value -> java.util.Objects.requireNonNull(Network.WebSocketRequest.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.RequestId> REQUEST_ID = CdpField.of("requestId", value -> new Network.RequestId((String) value));
+    private static final CdpField<Network.LoadNetworkResourcePageResult> RESOURCE = CdpField.of("resource", value -> java.util.Objects.requireNonNull(Network.LoadNetworkResourcePageResult.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.IPAddressSpace> RESOURCE_IPADDRESS_SPACE = CdpField.of("resourceIPAddressSpace", value -> Network.IPAddressSpace.of((String) value));
+    private static final CdpField<Network.ResourceType> RESOURCE_TYPE = CdpField.of("resourceType", value -> Network.ResourceType.of((String) value));
+    private static final CdpField<Network.Response> RESPONSE = CdpField.of("response", value -> java.util.Objects.requireNonNull(Network.Response.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<AuthChallengeResponse.ResponseValues> RESPONSE_2 = CdpField.of("response", value -> AuthChallengeResponse.ResponseValues.of((String) value));
+    private static final CdpField<Network.WebSocketFrame> RESPONSE_3 = CdpField.of("response", value -> java.util.Objects.requireNonNull(Network.WebSocketFrame.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.WebSocketResponse> RESPONSE_4 = CdpField.of("response", value -> java.util.Objects.requireNonNull(Network.WebSocketResponse.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.ErrorReason> RESPONSE_ERROR_REASON = CdpField.of("responseErrorReason", value -> Network.ErrorReason.of((String) value));
+    private static final CdpField<Network.TimeSinceEpoch> RESPONSE_TIME = CdpField.of("responseTime", value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+    private static final CdpField<Boolean> RESULT = CdpField.of("result", value -> (Boolean) value);
+    private static final CdpField<java.util.List<Debugger.SearchMatch>> RESULT_2 = CdpField.of("result", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Debugger.SearchMatch.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<String>> RULE_IDS = CdpField.of("ruleIds", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<DeviceBoundSessionUrlRule.RuleTypeValues> RULE_TYPE = CdpField.of("ruleType", value -> DeviceBoundSessionUrlRule.RuleTypeValues.of((String) value));
+    private static final CdpField<Network.CookieSameSite> SAME_SITE = CdpField.of("sameSite", value -> Network.CookieSameSite.of((String) value));
+    private static final CdpField<java.util.List<String>> SAN_LIST = CdpField.of("sanList", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<String> SCHEMEFUL_SITE = CdpField.of("schemefulSite", value -> (String) value);
+    private static final CdpField<Runtime.ScriptId> SCRIPT_ID = CdpField.of("scriptId", value -> new Runtime.ScriptId((String) value));
+    private static final CdpField<Network.SecurityDetails> SECURITY_DETAILS = CdpField.of("securityDetails", value -> java.util.Objects.requireNonNull(Network.SecurityDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Security.SecurityState> SECURITY_STATE = CdpField.of("securityState", value -> Security.SecurityState.of((String) value));
+    private static final CdpField<Network.ServiceWorkerResponseSource> SERVICE_WORKER_RESPONSE_SOURCE = CdpField.of("serviceWorkerResponseSource", value -> Network.ServiceWorkerResponseSource.of((String) value));
+    private static final CdpField<Network.ServiceWorkerRouterInfo> SERVICE_WORKER_ROUTER_INFO = CdpField.of("serviceWorkerRouterInfo", value -> java.util.Objects.requireNonNull(Network.ServiceWorkerRouterInfo.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Network.DeviceBoundSession>> SESSIONS = CdpField.of("sessions", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.DeviceBoundSession.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Network.DeviceBoundSessionKey> SESSION_KEY = CdpField.of("sessionKey", value -> java.util.Objects.requireNonNull(Network.DeviceBoundSessionKey.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Network.SignedExchangeSignature>> SIGNATURES = CdpField.of("signatures", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.SignedExchangeSignature.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Network.SignedCertificateTimestamp>> SIGNED_CERTIFICATE_TIMESTAMP_LIST = CdpField.of("signedCertificateTimestampList", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.SignedCertificateTimestamp.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<AuthChallenge.SourceValues> SOURCE = CdpField.of("source", value -> AuthChallenge.SourceValues.of((String) value));
+    private static final CdpField<Network.ContentSecurityPolicySource> SOURCE_2 = CdpField.of("source", value -> Network.ContentSecurityPolicySource.of((String) value));
+    private static final CdpField<Network.CookieSourceScheme> SOURCE_SCHEME = CdpField.of("sourceScheme", value -> Network.CookieSourceScheme.of((String) value));
+    private static final CdpField<Runtime.StackTrace> STACK = CdpField.of("stack", value -> java.util.Objects.requireNonNull(Runtime.StackTrace.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.ReportStatus> STATUS = CdpField.of("status", value -> Network.ReportStatus.of((String) value));
+    private static final CdpField<TrustTokenOperationDoneEvent.StatusValues> STATUS_2 = CdpField.of("status", value -> TrustTokenOperationDoneEvent.StatusValues.of((String) value));
+    private static final CdpField<Network.SecurityIsolationStatus> STATUS_3 = CdpField.of("status", value -> java.util.Objects.requireNonNull(Network.SecurityIsolationStatus.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<IO.StreamHandle> STREAM = CdpField.of("stream", value -> new IO.StreamHandle((String) value));
+    private static final CdpField<Boolean> SUCCESS = CdpField.of("success", value -> (Boolean) value);
+    private static final CdpField<java.util.List<String>> TABLE_NAMES = CdpField.of("tableNames", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Network.TerminationEventDetails> TERMINATION_EVENT_DETAILS = CdpField.of("terminationEventDetails", value -> java.util.Objects.requireNonNull(Network.TerminationEventDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.TimeSinceEpoch> TIMESTAMP = CdpField.of("timestamp", value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+    private static final CdpField<Network.MonotonicTime> TIMESTAMP_2 = CdpField.of("timestamp", value -> new Network.MonotonicTime(((Number) value).doubleValue()));
+    private static final CdpField<Network.ResourceTiming> TIMING = CdpField.of("timing", value -> java.util.Objects.requireNonNull(Network.ResourceTiming.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.RequestId> TRANSPORT_ID = CdpField.of("transportId", value -> new Network.RequestId((String) value));
+    private static final CdpField<Network.TrustTokenParams> TRUST_TOKEN_PARAMS = CdpField.of("trustTokenParams", value -> java.util.Objects.requireNonNull(Network.TrustTokenParams.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.ResourceType> TYPE = CdpField.of("type", value -> Network.ResourceType.of((String) value));
+    private static final CdpField<Initiator.TypeValues> TYPE_2 = CdpField.of("type", value -> Initiator.TypeValues.of((String) value));
+    private static final CdpField<Network.TrustTokenOperationType> TYPE_3 = CdpField.of("type", value -> Network.TrustTokenOperationType.of((String) value));
+    private static final CdpField<java.util.List<String>> URLS = CdpField.of("urls", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<java.util.List<Network.BlockPattern>> URL_PATTERNS = CdpField.of("urlPatterns", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.BlockPattern.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Network.DeviceBoundSessionUrlRule>> URL_RULES = CdpField.of("urlRules", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.DeviceBoundSessionUrlRule.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<DeviceBoundSessionWithUsage.UsageValues> USAGE = CdpField.of("usage", value -> DeviceBoundSessionWithUsage.UsageValues.of((String) value));
+    private static final CdpField<Emulation.UserAgentMetadata> USER_AGENT_METADATA = CdpField.of("userAgentMetadata", value -> java.util.Objects.requireNonNull(Emulation.UserAgentMetadata.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.TimeSinceEpoch> VALID_FROM = CdpField.of("validFrom", value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+    private static final CdpField<Network.TimeSinceEpoch> VALID_TO = CdpField.of("validTo", value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+    private static final CdpField<Network.CrossOriginOpenerPolicyValue> VALUE = CdpField.of("value", value -> Network.CrossOriginOpenerPolicyValue.of((String) value));
+    private static final CdpField<Network.CrossOriginEmbedderPolicyValue> VALUE_2 = CdpField.of("value", value -> Network.CrossOriginEmbedderPolicyValue.of((String) value));
+    private static final CdpField<Network.TimeSinceEpoch> WALL_TIME = CdpField.of("wallTime", value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
     /**
      * Resource type as it was perceived by the rendering engine.
      */
@@ -251,63 +396,63 @@ public final class Network {
          * @return the protocol field value
          */
         public double requestTime() {
-            return ((Number) require("requestTime")).doubleValue();
+            return requireDouble("requestTime");
         }
         /**
          * Started resolving proxy.
          * @return the protocol field value
          */
         public double proxyStart() {
-            return ((Number) require("proxyStart")).doubleValue();
+            return requireDouble("proxyStart");
         }
         /**
          * Finished resolving proxy.
          * @return the protocol field value
          */
         public double proxyEnd() {
-            return ((Number) require("proxyEnd")).doubleValue();
+            return requireDouble("proxyEnd");
         }
         /**
          * Started DNS address resolve.
          * @return the protocol field value
          */
         public double dnsStart() {
-            return ((Number) require("dnsStart")).doubleValue();
+            return requireDouble("dnsStart");
         }
         /**
          * Finished DNS address resolve.
          * @return the protocol field value
          */
         public double dnsEnd() {
-            return ((Number) require("dnsEnd")).doubleValue();
+            return requireDouble("dnsEnd");
         }
         /**
          * Started connecting to the remote host.
          * @return the protocol field value
          */
         public double connectStart() {
-            return ((Number) require("connectStart")).doubleValue();
+            return requireDouble("connectStart");
         }
         /**
          * Connected to the remote host.
          * @return the protocol field value
          */
         public double connectEnd() {
-            return ((Number) require("connectEnd")).doubleValue();
+            return requireDouble("connectEnd");
         }
         /**
          * Started SSL handshake.
          * @return the protocol field value
          */
         public double sslStart() {
-            return ((Number) require("sslStart")).doubleValue();
+            return requireDouble("sslStart");
         }
         /**
          * Finished SSL handshake.
          * @return the protocol field value
          */
         public double sslEnd() {
-            return ((Number) require("sslEnd")).doubleValue();
+            return requireDouble("sslEnd");
         }
         /**
          * Started running ServiceWorker.
@@ -315,7 +460,7 @@ public final class Network {
          * @return the protocol field value
          */
         public double workerStart() {
-            return ((Number) require("workerStart")).doubleValue();
+            return requireDouble("workerStart");
         }
         /**
          * Finished Starting ServiceWorker.
@@ -323,7 +468,7 @@ public final class Network {
          * @return the protocol field value
          */
         public double workerReady() {
-            return ((Number) require("workerReady")).doubleValue();
+            return requireDouble("workerReady");
         }
         /**
          * Started fetch event.
@@ -331,7 +476,7 @@ public final class Network {
          * @return the protocol field value
          */
         public double workerFetchStart() {
-            return ((Number) require("workerFetchStart")).doubleValue();
+            return requireDouble("workerFetchStart");
         }
         /**
          * Settled fetch event respondWith promise.
@@ -339,7 +484,7 @@ public final class Network {
          * @return the protocol field value
          */
         public double workerRespondWithSettled() {
-            return ((Number) require("workerRespondWithSettled")).doubleValue();
+            return requireDouble("workerRespondWithSettled");
         }
         /**
          * Started ServiceWorker static routing source evaluation.
@@ -347,7 +492,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble workerRouterEvaluationStart() {
-            return raw("workerRouterEvaluationStart").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("workerRouterEvaluationStart");
         }
         /**
          * Started cache lookup when the source was evaluated to {@code cache}.
@@ -355,21 +500,21 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble workerCacheLookupStart() {
-            return raw("workerCacheLookupStart").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("workerCacheLookupStart");
         }
         /**
          * Started sending request.
          * @return the protocol field value
          */
         public double sendStart() {
-            return ((Number) require("sendStart")).doubleValue();
+            return requireDouble("sendStart");
         }
         /**
          * Finished sending request.
          * @return the protocol field value
          */
         public double sendEnd() {
-            return ((Number) require("sendEnd")).doubleValue();
+            return requireDouble("sendEnd");
         }
         /**
          * Time the server started pushing request.
@@ -377,7 +522,7 @@ public final class Network {
          * @return the protocol field value
          */
         public double pushStart() {
-            return ((Number) require("pushStart")).doubleValue();
+            return requireDouble("pushStart");
         }
         /**
          * Time the server finished pushing request.
@@ -385,7 +530,7 @@ public final class Network {
          * @return the protocol field value
          */
         public double pushEnd() {
-            return ((Number) require("pushEnd")).doubleValue();
+            return requireDouble("pushEnd");
         }
         /**
          * Started receiving response headers.
@@ -393,14 +538,14 @@ public final class Network {
          * @return the protocol field value
          */
         public double receiveHeadersStart() {
-            return ((Number) require("receiveHeadersStart")).doubleValue();
+            return requireDouble("receiveHeadersStart");
         }
         /**
          * Finished receiving response headers.
          * @return the protocol field value
          */
         public double receiveHeadersEnd() {
-            return ((Number) require("receiveHeadersEnd")).doubleValue();
+            return requireDouble("receiveHeadersEnd");
         }
         /**
          * Timing&#x27;s requestTime is a baseline in seconds, while the other numbers are ticks in milliseconds relatively to this requestTime.
@@ -654,7 +799,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> bytes() {
-            return raw("bytes").map(value -> (String) value);
+            return optionalString("bytes");
         }
         /**
          * Sets the bytes field.
@@ -702,28 +847,28 @@ public final class Network {
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Fragment of the requested URL starting with hash, if present.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> urlFragment() {
-            return raw("urlFragment").map(value -> (String) value);
+            return optionalString("urlFragment");
         }
         /**
          * HTTP request method.
          * @return the protocol field value
          */
         public String method() {
-            return (String) require("method");
+            return requireString("method");
         }
         /**
          * HTTP request headers.
          * @return the protocol field value
          */
         public java.util.Map<String, Object> headers() {
-            return CdpObject.requireObjectMap(require("headers"));
+            return requireObject("headers");
         }
         /**
          * HTTP POST request data. Use postDataEntries instead.
@@ -732,14 +877,14 @@ public final class Network {
          */
         @Deprecated
         public Optional<String> postData() {
-            return raw("postData").map(value -> (String) value);
+            return optionalString("postData");
         }
         /**
          * True when the request has POST data. Note that postData might still be omitted when this flag is true when the data is too long.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> hasPostData() {
-            return raw("hasPostData").map(value -> (Boolean) value);
+            return optionalBoolean("hasPostData");
         }
         /**
          * Request body elements (post data broken into individual entries).
@@ -747,35 +892,35 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Network.PostDataEntry>> postDataEntries() {
-            return raw("postDataEntries").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Network.PostDataEntry.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(POST_DATA_ENTRIES);
         }
         /**
          * The mixed content type of the request.
          * @return the protocol field value, empty when absent
          */
         public Optional<Security.MixedContentType> mixedContentType() {
-            return raw("mixedContentType").map(value -> Security.MixedContentType.of((String) value));
+            return optional(MIXED_CONTENT_TYPE);
         }
         /**
          * Priority of the resource request at the time request is sent.
          * @return the protocol field value
          */
         public Network.ResourcePriority initialPriority() {
-            return Network.ResourcePriority.of((String) require("initialPriority"));
+            return require(INITIAL_PRIORITY);
         }
         /**
          * The referrer policy of the request, as defined in https://www.w3.org/TR/referrer-policy/
          * @return the protocol field value
          */
         public Request.ReferrerPolicyValues referrerPolicy() {
-            return Request.ReferrerPolicyValues.of((String) require("referrerPolicy"));
+            return require(REFERRER_POLICY);
         }
         /**
          * Whether is loaded via link preload.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isLinkPreload() {
-            return raw("isLinkPreload").map(value -> (Boolean) value);
+            return optionalBoolean("isLinkPreload");
         }
         /**
          * Set for requests when the TrustToken API is used. Contains the parameters passed by the developer (e.g. via &quot;fetch&quot;) as understood by the backend.
@@ -783,7 +928,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.TrustTokenParams> trustTokenParams() {
-            return raw("trustTokenParams").flatMap(CdpObject::objectMap).map(Network.TrustTokenParams::fromMap);
+            return optional(TRUST_TOKEN_PARAMS);
         }
         /**
          * True if this resource request is considered to be the &#x27;same site&#x27; as the request corresponding to the main frame.
@@ -791,7 +936,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isSameSite() {
-            return raw("isSameSite").map(value -> (Boolean) value);
+            return optionalBoolean("isSameSite");
         }
         /**
          * True when the resource request is ad-related.
@@ -799,7 +944,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isAdRelated() {
-            return raw("isAdRelated").map(value -> (Boolean) value);
+            return optionalBoolean("isAdRelated");
         }
         /**
          * Request URL (without fragment).
@@ -948,56 +1093,56 @@ public final class Network {
          * @return the protocol field value
          */
         public String status() {
-            return (String) require("status");
+            return requireString("status");
         }
         /**
          * Origin.
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * Log name / description.
          * @return the protocol field value
          */
         public String logDescription() {
-            return (String) require("logDescription");
+            return requireString("logDescription");
         }
         /**
          * Log ID.
          * @return the protocol field value
          */
         public String logId() {
-            return (String) require("logId");
+            return requireString("logId");
         }
         /**
          * Issuance date. Unlike TimeSinceEpoch, this contains the number of milliseconds since January 1, 1970, UTC, not the number of seconds.
          * @return the protocol field value
          */
         public double timestamp() {
-            return ((Number) require("timestamp")).doubleValue();
+            return requireDouble("timestamp");
         }
         /**
          * Hash algorithm.
          * @return the protocol field value
          */
         public String hashAlgorithm() {
-            return (String) require("hashAlgorithm");
+            return requireString("hashAlgorithm");
         }
         /**
          * Signature algorithm.
          * @return the protocol field value
          */
         public String signatureAlgorithm() {
-            return (String) require("signatureAlgorithm");
+            return requireString("signatureAlgorithm");
         }
         /**
          * Signature data.
          * @return the protocol field value
          */
         public String signatureData() {
-            return (String) require("signatureData");
+            return requireString("signatureData");
         }
         /**
          * Validation status.
@@ -1086,105 +1231,105 @@ public final class Network {
          * @return the protocol field value
          */
         public String protocol() {
-            return (String) require("protocol");
+            return requireString("protocol");
         }
         /**
          * Key Exchange used by the connection, or the empty string if not applicable.
          * @return the protocol field value
          */
         public String keyExchange() {
-            return (String) require("keyExchange");
+            return requireString("keyExchange");
         }
         /**
          * (EC)DH group used by the connection, if applicable.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> keyExchangeGroup() {
-            return raw("keyExchangeGroup").map(value -> (String) value);
+            return optionalString("keyExchangeGroup");
         }
         /**
          * Cipher name.
          * @return the protocol field value
          */
         public String cipher() {
-            return (String) require("cipher");
+            return requireString("cipher");
         }
         /**
          * TLS MAC. Note that AEAD ciphers do not have separate MACs.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> mac() {
-            return raw("mac").map(value -> (String) value);
+            return optionalString("mac");
         }
         /**
          * Certificate ID value.
          * @return the protocol field value
          */
         public Security.CertificateId certificateId() {
-            return new Security.CertificateId(((Number) require("certificateId")).longValue());
+            return require(CERTIFICATE_ID);
         }
         /**
          * Certificate subject name.
          * @return the protocol field value
          */
         public String subjectName() {
-            return (String) require("subjectName");
+            return requireString("subjectName");
         }
         /**
          * Subject Alternative Name (SAN) DNS names and IP addresses.
          * @return the protocol field value
          */
         public java.util.List<String> sanList() {
-            return CdpObject.requireList(require("sanList"), element0 -> (String) element0);
+            return require(SAN_LIST);
         }
         /**
          * Name of the issuing CA.
          * @return the protocol field value
          */
         public String issuer() {
-            return (String) require("issuer");
+            return requireString("issuer");
         }
         /**
          * Certificate valid from date.
          * @return the protocol field value
          */
         public Network.TimeSinceEpoch validFrom() {
-            return new Network.TimeSinceEpoch(((Number) require("validFrom")).doubleValue());
+            return require(VALID_FROM);
         }
         /**
          * Certificate valid to (expiration) date
          * @return the protocol field value
          */
         public Network.TimeSinceEpoch validTo() {
-            return new Network.TimeSinceEpoch(((Number) require("validTo")).doubleValue());
+            return require(VALID_TO);
         }
         /**
          * List of signed certificate timestamps (SCTs).
          * @return the protocol field value
          */
         public java.util.List<Network.SignedCertificateTimestamp> signedCertificateTimestampList() {
-            return CdpObject.requireList(require("signedCertificateTimestampList"), element0 -> java.util.Objects.requireNonNull(Network.SignedCertificateTimestamp.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(SIGNED_CERTIFICATE_TIMESTAMP_LIST);
         }
         /**
          * Whether the request complied with Certificate Transparency policy
          * @return the protocol field value
          */
         public Network.CertificateTransparencyCompliance certificateTransparencyCompliance() {
-            return Network.CertificateTransparencyCompliance.of((String) require("certificateTransparencyCompliance"));
+            return require(CERTIFICATE_TRANSPARENCY_COMPLIANCE);
         }
         /**
          * The signature algorithm used by the server in the TLS server signature, represented as a TLS SignatureScheme code point. Omitted if not applicable or not known.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong serverSignatureAlgorithm() {
-            return raw("serverSignatureAlgorithm").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("serverSignatureAlgorithm");
         }
         /**
          * Whether the connection used Encrypted ClientHello
          * @return the protocol field value
          */
         public boolean encryptedClientHello() {
-            return (Boolean) require("encryptedClientHello");
+            return requireBoolean("encryptedClientHello");
         }
         /**
          * Protocol name (e.g. &quot;TLS 1.2&quot; or &quot;QUIC&quot;).
@@ -1424,14 +1569,14 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.CorsError corsError() {
-            return Network.CorsError.of((String) require("corsError"));
+            return require(CORS_ERROR);
         }
         /**
          * Returns the failedParameter field.
          * @return the protocol field value
          */
         public String failedParameter() {
-            return (String) require("failedParameter");
+            return requireString("failedParameter");
         }
         /**
          * Sets the corsError field.
@@ -1501,21 +1646,21 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.TrustTokenOperationType operation() {
-            return Network.TrustTokenOperationType.of((String) require("operation"));
+            return require(OPERATION);
         }
         /**
          * Only set for &quot;token-redemption&quot; operation and determine whether to request a fresh SRR or use a still valid cached SRR.
          * @return the protocol field value
          */
         public TrustTokenParams.RefreshPolicyValues refreshPolicy() {
-            return TrustTokenParams.RefreshPolicyValues.of((String) require("refreshPolicy"));
+            return require(REFRESH_POLICY);
         }
         /**
          * Origins of issuers from whom to request tokens or redemption records.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> issuers() {
-            return raw("issuers").flatMap(value -> list(value, element0 -> (String) element0));
+            return optional(ISSUERS);
         }
         /**
          * Sets the operation field.
@@ -1619,21 +1764,21 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong ruleIdMatched() {
-            return raw("ruleIdMatched").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("ruleIdMatched");
         }
         /**
          * The router source of the matched rule. If there is a matched rule, this field will be set, otherwise no value will be set.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ServiceWorkerRouterSource> matchedSourceType() {
-            return raw("matchedSourceType").map(value -> Network.ServiceWorkerRouterSource.of((String) value));
+            return optional(MATCHED_SOURCE_TYPE);
         }
         /**
          * The actual router source used.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ServiceWorkerRouterSource> actualSourceType() {
-            return raw("actualSourceType").map(value -> Network.ServiceWorkerRouterSource.of((String) value));
+            return optional(ACTUAL_SOURCE_TYPE);
         }
         /**
          * ID of the rule matched. If there is a matched rule, this field will be set, otherwiser no value will be set.
@@ -1677,28 +1822,28 @@ public final class Network {
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * HTTP response status code.
          * @return the protocol field value
          */
         public long status() {
-            return ((Number) require("status")).longValue();
+            return requireLong("status");
         }
         /**
          * HTTP response status text.
          * @return the protocol field value
          */
         public String statusText() {
-            return (String) require("statusText");
+            return requireString("statusText");
         }
         /**
          * HTTP response headers.
          * @return the protocol field value
          */
         public java.util.Map<String, Object> headers() {
-            return CdpObject.requireObjectMap(require("headers"));
+            return requireObject("headers");
         }
         /**
          * HTTP response headers text. This has been replaced by the headers in Network.responseReceivedExtraInfo.
@@ -1707,28 +1852,28 @@ public final class Network {
          */
         @Deprecated
         public Optional<String> headersText() {
-            return raw("headersText").map(value -> (String) value);
+            return optionalString("headersText");
         }
         /**
          * Resource mimeType as determined by the browser.
          * @return the protocol field value
          */
         public String mimeType() {
-            return (String) require("mimeType");
+            return requireString("mimeType");
         }
         /**
          * Resource charset as determined by the browser (if applicable).
          * @return the protocol field value
          */
         public String charset() {
-            return (String) require("charset");
+            return requireString("charset");
         }
         /**
          * Refined HTTP request headers that were actually transmitted over the network.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> requestHeaders() {
-            return raw("requestHeaders").flatMap(CdpObject::objectMap);
+            return optionalObject("requestHeaders");
         }
         /**
          * HTTP request headers text. This has been replaced by the headers in Network.requestWillBeSentExtraInfo.
@@ -1737,63 +1882,63 @@ public final class Network {
          */
         @Deprecated
         public Optional<String> requestHeadersText() {
-            return raw("requestHeadersText").map(value -> (String) value);
+            return optionalString("requestHeadersText");
         }
         /**
          * Specifies whether physical connection was actually reused for this request.
          * @return the protocol field value
          */
         public boolean connectionReused() {
-            return (Boolean) require("connectionReused");
+            return requireBoolean("connectionReused");
         }
         /**
          * Physical connection id that was actually used for this request.
          * @return the protocol field value
          */
         public double connectionId() {
-            return ((Number) require("connectionId")).doubleValue();
+            return requireDouble("connectionId");
         }
         /**
          * Remote IP address.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> remoteIPAddress() {
-            return raw("remoteIPAddress").map(value -> (String) value);
+            return optionalString("remoteIPAddress");
         }
         /**
          * Remote port.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong remotePort() {
-            return raw("remotePort").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("remotePort");
         }
         /**
          * Specifies that the request was served from the disk cache.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> fromDiskCache() {
-            return raw("fromDiskCache").map(value -> (Boolean) value);
+            return optionalBoolean("fromDiskCache");
         }
         /**
          * Specifies that the request was served from the ServiceWorker.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> fromServiceWorker() {
-            return raw("fromServiceWorker").map(value -> (Boolean) value);
+            return optionalBoolean("fromServiceWorker");
         }
         /**
          * Specifies that the request was served from the prefetch cache.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> fromPrefetchCache() {
-            return raw("fromPrefetchCache").map(value -> (Boolean) value);
+            return optionalBoolean("fromPrefetchCache");
         }
         /**
          * Specifies that the request was served from the prefetch cache.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> fromEarlyHints() {
-            return raw("fromEarlyHints").map(value -> (Boolean) value);
+            return optionalBoolean("fromEarlyHints");
         }
         /**
          * Information about how ServiceWorker Static Router API was used. If this field is set with {@code matchedSourceType} field, a matching rule is found. If this field is set without {@code matchedSource}, no matching rule is found. Otherwise, the API is not used.
@@ -1801,49 +1946,49 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ServiceWorkerRouterInfo> serviceWorkerRouterInfo() {
-            return raw("serviceWorkerRouterInfo").flatMap(CdpObject::objectMap).map(Network.ServiceWorkerRouterInfo::fromMap);
+            return optional(SERVICE_WORKER_ROUTER_INFO);
         }
         /**
          * Total number of bytes received for this request so far.
          * @return the protocol field value
          */
         public double encodedDataLength() {
-            return ((Number) require("encodedDataLength")).doubleValue();
+            return requireDouble("encodedDataLength");
         }
         /**
          * Timing information for the given request.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ResourceTiming> timing() {
-            return raw("timing").flatMap(CdpObject::objectMap).map(Network.ResourceTiming::fromMap);
+            return optional(TIMING);
         }
         /**
          * Response source of response from ServiceWorker.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ServiceWorkerResponseSource> serviceWorkerResponseSource() {
-            return raw("serviceWorkerResponseSource").map(value -> Network.ServiceWorkerResponseSource.of((String) value));
+            return optional(SERVICE_WORKER_RESPONSE_SOURCE);
         }
         /**
          * The time at which the returned response was generated.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.TimeSinceEpoch> responseTime() {
-            return raw("responseTime").map(value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+            return optional(RESPONSE_TIME);
         }
         /**
          * Cache Storage Cache Name.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> cacheStorageCacheName() {
-            return raw("cacheStorageCacheName").map(value -> (String) value);
+            return optionalString("cacheStorageCacheName");
         }
         /**
          * Protocol used to fetch this request.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> protocol() {
-            return raw("protocol").map(value -> (String) value);
+            return optionalString("protocol");
         }
         /**
          * The reason why Chrome uses a specific transport protocol for HTTP semantics.
@@ -1851,21 +1996,21 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.AlternateProtocolUsage> alternateProtocolUsage() {
-            return raw("alternateProtocolUsage").map(value -> Network.AlternateProtocolUsage.of((String) value));
+            return optional(ALTERNATE_PROTOCOL_USAGE);
         }
         /**
          * Security state of the request resource.
          * @return the protocol field value
          */
         public Security.SecurityState securityState() {
-            return Security.SecurityState.of((String) require("securityState"));
+            return require(SECURITY_STATE);
         }
         /**
          * Security details for the request.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.SecurityDetails> securityDetails() {
-            return raw("securityDetails").flatMap(CdpObject::objectMap).map(Network.SecurityDetails::fromMap);
+            return optional(SECURITY_DETAILS);
         }
         /**
          * Response URL. This URL can be different from CachedResource.url in case of redirect.
@@ -2131,7 +2276,7 @@ public final class Network {
          * @return the protocol field value
          */
         public java.util.Map<String, Object> headers() {
-            return CdpObject.requireObjectMap(require("headers"));
+            return requireObject("headers");
         }
         /**
          * HTTP request headers.
@@ -2157,42 +2302,42 @@ public final class Network {
          * @return the protocol field value
          */
         public long status() {
-            return ((Number) require("status")).longValue();
+            return requireLong("status");
         }
         /**
          * HTTP response status text.
          * @return the protocol field value
          */
         public String statusText() {
-            return (String) require("statusText");
+            return requireString("statusText");
         }
         /**
          * HTTP response headers.
          * @return the protocol field value
          */
         public java.util.Map<String, Object> headers() {
-            return CdpObject.requireObjectMap(require("headers"));
+            return requireObject("headers");
         }
         /**
          * HTTP response headers text.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> headersText() {
-            return raw("headersText").map(value -> (String) value);
+            return optionalString("headersText");
         }
         /**
          * HTTP request headers.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> requestHeaders() {
-            return raw("requestHeaders").flatMap(CdpObject::objectMap);
+            return optionalObject("requestHeaders");
         }
         /**
          * HTTP request headers text.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> requestHeadersText() {
-            return raw("requestHeadersText").map(value -> (String) value);
+            return optionalString("requestHeadersText");
         }
         /**
          * HTTP response status code.
@@ -2263,21 +2408,21 @@ public final class Network {
          * @return the protocol field value
          */
         public double opcode() {
-            return ((Number) require("opcode")).doubleValue();
+            return requireDouble("opcode");
         }
         /**
          * WebSocket message mask.
          * @return the protocol field value
          */
         public boolean mask() {
-            return (Boolean) require("mask");
+            return requireBoolean("mask");
         }
         /**
          * WebSocket message payload data. If the opcode is 1, this is a text message and payloadData is a UTF-8 string. If the opcode isn&#x27;t 1, then payloadData is a base64 encoded string representing binary data.
          * @return the protocol field value
          */
         public String payloadData() {
-            return (String) require("payloadData");
+            return requireString("payloadData");
         }
         /**
          * WebSocket message opcode.
@@ -2321,28 +2466,28 @@ public final class Network {
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Type of this resource.
          * @return the protocol field value
          */
         public Network.ResourceType type() {
-            return Network.ResourceType.of((String) require("type"));
+            return require(TYPE);
         }
         /**
          * Cached response data.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.Response> response() {
-            return raw("response").flatMap(CdpObject::objectMap).map(Network.Response::fromMap);
+            return optional(RESPONSE);
         }
         /**
          * Cached response body size.
          * @return the protocol field value
          */
         public double bodySize() {
-            return ((Number) require("bodySize")).doubleValue();
+            return requireDouble("bodySize");
         }
         /**
          * Resource URL. This is the url of the original network request.
@@ -2416,42 +2561,42 @@ public final class Network {
          * @return the protocol field value
          */
         public Initiator.TypeValues type() {
-            return Initiator.TypeValues.of((String) require("type"));
+            return require(TYPE_2);
         }
         /**
          * Initiator JavaScript stack trace, set for Script only. Requires the Debugger domain to be enabled.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.StackTrace> stack() {
-            return raw("stack").flatMap(CdpObject::objectMap).map(Runtime.StackTrace::fromMap);
+            return optional(STACK);
         }
         /**
          * Initiator URL, set for Parser type or for Script type (when script is importing module) or for SignedExchange type.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return raw("url").map(value -> (String) value);
+            return optionalString("url");
         }
         /**
          * Initiator line number, set for Parser type or for Script type (when script is importing module) (0-based).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble lineNumber() {
-            return raw("lineNumber").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("lineNumber");
         }
         /**
          * Initiator column number, set for Parser type or for Script type (when script is importing module) (0-based).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble columnNumber() {
-            return raw("columnNumber").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("columnNumber");
         }
         /**
          * Set if another request triggered this request (e.g. preflight).
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.RequestId> requestId() {
-            return raw("requestId").map(value -> new Network.RequestId((String) value));
+            return optional(REQUEST_ID);
         }
         /**
          * Type of this initiator.
@@ -2523,14 +2668,14 @@ public final class Network {
          * @return the protocol field value
          */
         public String topLevelSite() {
-            return (String) require("topLevelSite");
+            return requireString("topLevelSite");
         }
         /**
          * Indicates if the cookie has any ancestors that are cross-site to the topLevelSite.
          * @return the protocol field value
          */
         public boolean hasCrossSiteAncestor() {
-            return (Boolean) require("hasCrossSiteAncestor");
+            return requireBoolean("hasCrossSiteAncestor");
         }
         /**
          * The site of the top-level URL the browser was visiting at the start of the request to the endpoint that set the cookie.
@@ -2565,70 +2710,70 @@ public final class Network {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Cookie value.
          * @return the protocol field value
          */
         public String value() {
-            return (String) require("value");
+            return requireString("value");
         }
         /**
          * Cookie domain.
          * @return the protocol field value
          */
         public String domain() {
-            return (String) require("domain");
+            return requireString("domain");
         }
         /**
          * Cookie path.
          * @return the protocol field value
          */
         public String path() {
-            return (String) require("path");
+            return requireString("path");
         }
         /**
          * Cookie expiration date as the number of seconds since the UNIX epoch. The value is set to -1 if the expiry date is not set. The value can be null for values that cannot be represented in JSON (±Inf).
          * @return the protocol field value
          */
         public double expires() {
-            return ((Number) require("expires")).doubleValue();
+            return requireDouble("expires");
         }
         /**
          * Cookie size.
          * @return the protocol field value
          */
         public long size() {
-            return ((Number) require("size")).longValue();
+            return requireLong("size");
         }
         /**
          * True if cookie is http-only.
          * @return the protocol field value
          */
         public boolean httpOnly() {
-            return (Boolean) require("httpOnly");
+            return requireBoolean("httpOnly");
         }
         /**
          * True if cookie is secure.
          * @return the protocol field value
          */
         public boolean secure() {
-            return (Boolean) require("secure");
+            return requireBoolean("secure");
         }
         /**
          * True in case of session cookie.
          * @return the protocol field value
          */
         public boolean session() {
-            return (Boolean) require("session");
+            return requireBoolean("session");
         }
         /**
          * Cookie SameSite type.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookieSameSite> sameSite() {
-            return raw("sameSite").map(value -> Network.CookieSameSite.of((String) value));
+            return optional(SAME_SITE);
         }
         /**
          * Cookie Priority
@@ -2636,7 +2781,7 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.CookiePriority priority() {
-            return Network.CookiePriority.of((String) require("priority"));
+            return require(PRIORITY);
         }
         /**
          * Cookie source scheme type.
@@ -2644,7 +2789,7 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.CookieSourceScheme sourceScheme() {
-            return Network.CookieSourceScheme.of((String) require("sourceScheme"));
+            return require(SOURCE_SCHEME);
         }
         /**
          * Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port. An unspecified port value allows protocol clients to emulate legacy cookie scope for the port. This is a temporary ability and it will be removed in the future.
@@ -2652,7 +2797,7 @@ public final class Network {
          * @return the protocol field value
          */
         public long sourcePort() {
-            return ((Number) require("sourcePort")).longValue();
+            return requireLong("sourcePort");
         }
         /**
          * Cookie partition key.
@@ -2660,7 +2805,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookiePartitionKey> partitionKey() {
-            return raw("partitionKey").flatMap(CdpObject::objectMap).map(Network.CookiePartitionKey::fromMap);
+            return optional(PARTITION_KEY);
         }
         /**
          * True if cookie partition key is opaque.
@@ -2668,7 +2813,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> partitionKeyOpaque() {
-            return raw("partitionKeyOpaque").map(value -> (Boolean) value);
+            return optionalBoolean("partitionKeyOpaque");
         }
         /**
          * Cookie name.
@@ -2920,21 +3065,21 @@ public final class Network {
          * @return the protocol field value
          */
         public java.util.List<Network.SetCookieBlockedReason> blockedReasons() {
-            return CdpObject.requireList(require("blockedReasons"), element0 -> Network.SetCookieBlockedReason.of((String) element0));
+            return require(BLOCKED_REASONS);
         }
         /**
          * The string representing this individual cookie as it would appear in the header. This is not the entire &quot;cookie&quot; or &quot;set-cookie&quot; header which could have multiple cookies.
          * @return the protocol field value
          */
         public String cookieLine() {
-            return (String) require("cookieLine");
+            return requireString("cookieLine");
         }
         /**
          * The cookie object which represents the cookie which was not stored. It is optional because sometimes complete cookie information is not available, such as in the case of parsing errors.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.Cookie> cookie() {
-            return raw("cookie").flatMap(CdpObject::objectMap).map(Network.Cookie::fromMap);
+            return optional(COOKIE);
         }
         /**
          * The reason(s) this cookie was blocked.
@@ -2979,21 +3124,21 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.CookieExemptionReason exemptionReason() {
-            return Network.CookieExemptionReason.of((String) require("exemptionReason"));
+            return require(EXEMPTION_REASON);
         }
         /**
          * The string representing this individual cookie as it would appear in the header.
          * @return the protocol field value
          */
         public String cookieLine() {
-            return (String) require("cookieLine");
+            return requireString("cookieLine");
         }
         /**
          * The cookie object representing the cookie.
          * @return the protocol field value
          */
         public Network.Cookie cookie() {
-            return java.util.Objects.requireNonNull(Network.Cookie.fromMap(CdpObject.requireObjectMap(require("cookie"))));
+            return require(COOKIE);
         }
         /**
          * The reason the cookie was exempted.
@@ -3038,21 +3183,21 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.Cookie cookie() {
-            return java.util.Objects.requireNonNull(Network.Cookie.fromMap(CdpObject.requireObjectMap(require("cookie"))));
+            return require(COOKIE);
         }
         /**
          * The reason(s) the cookie was blocked. If empty means the cookie is included.
          * @return the protocol field value
          */
         public java.util.List<Network.CookieBlockedReason> blockedReasons() {
-            return CdpObject.requireList(require("blockedReasons"), element0 -> Network.CookieBlockedReason.of((String) element0));
+            return require(BLOCKED_REASONS_2);
         }
         /**
          * The reason the cookie should have been blocked by 3PCD but is exempted. A cookie could only have at most one exemption reason.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookieExemptionReason> exemptionReason() {
-            return raw("exemptionReason").map(value -> Network.CookieExemptionReason.of((String) value));
+            return optional(EXEMPTION_REASON);
         }
         /**
          * The cookie object representing the cookie which was not sent.
@@ -3096,63 +3241,63 @@ public final class Network {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Cookie value.
          * @return the protocol field value
          */
         public String value() {
-            return (String) require("value");
+            return requireString("value");
         }
         /**
          * The request-URI to associate with the setting of the cookie. This value can affect the default domain, path, source port, and source scheme values of the created cookie.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return raw("url").map(value -> (String) value);
+            return optionalString("url");
         }
         /**
          * Cookie domain.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> domain() {
-            return raw("domain").map(value -> (String) value);
+            return optionalString("domain");
         }
         /**
          * Cookie path.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> path() {
-            return raw("path").map(value -> (String) value);
+            return optionalString("path");
         }
         /**
          * True if cookie is secure.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> secure() {
-            return raw("secure").map(value -> (Boolean) value);
+            return optionalBoolean("secure");
         }
         /**
          * True if cookie is http-only.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> httpOnly() {
-            return raw("httpOnly").map(value -> (Boolean) value);
+            return optionalBoolean("httpOnly");
         }
         /**
          * Cookie SameSite type.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookieSameSite> sameSite() {
-            return raw("sameSite").map(value -> Network.CookieSameSite.of((String) value));
+            return optional(SAME_SITE);
         }
         /**
          * Cookie expiration date, session cookie if not set
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.TimeSinceEpoch> expires() {
-            return raw("expires").map(value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+            return optional(EXPIRES);
         }
         /**
          * Cookie Priority.
@@ -3160,7 +3305,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookiePriority> priority() {
-            return raw("priority").map(value -> Network.CookiePriority.of((String) value));
+            return optional(PRIORITY);
         }
         /**
          * Cookie source scheme type.
@@ -3168,7 +3313,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookieSourceScheme> sourceScheme() {
-            return raw("sourceScheme").map(value -> Network.CookieSourceScheme.of((String) value));
+            return optional(SOURCE_SCHEME);
         }
         /**
          * Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port. An unspecified port value allows protocol clients to emulate legacy cookie scope for the port. This is a temporary ability and it will be removed in the future.
@@ -3176,7 +3321,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong sourcePort() {
-            return raw("sourcePort").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("sourcePort");
         }
         /**
          * Cookie partition key. If not set, the cookie will be set as not partitioned.
@@ -3184,7 +3329,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookiePartitionKey> partitionKey() {
-            return raw("partitionKey").flatMap(CdpObject::objectMap).map(Network.CookiePartitionKey::fromMap);
+            return optional(PARTITION_KEY);
         }
         /**
          * Cookie name.
@@ -3339,28 +3484,28 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<AuthChallenge.SourceValues> source() {
-            return raw("source").map(value -> AuthChallenge.SourceValues.of((String) value));
+            return optional(SOURCE);
         }
         /**
          * Origin of the challenger.
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * The authentication scheme used, such as basic or digest
          * @return the protocol field value
          */
         public String scheme() {
-            return (String) require("scheme");
+            return requireString("scheme");
         }
         /**
          * The realm of the challenge. May be empty.
          * @return the protocol field value
          */
         public String realm() {
-            return (String) require("realm");
+            return requireString("realm");
         }
         /**
          * Source of the authentication challenge.
@@ -3431,21 +3576,21 @@ public final class Network {
          * @return the protocol field value
          */
         public AuthChallengeResponse.ResponseValues response() {
-            return AuthChallengeResponse.ResponseValues.of((String) require("response"));
+            return require(RESPONSE_2);
         }
         /**
          * The username to provide, possibly empty. Should only be set if response is ProvideCredentials.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> username() {
-            return raw("username").map(value -> (String) value);
+            return optionalString("username");
         }
         /**
          * The password to provide, possibly empty. Should only be set if response is ProvideCredentials.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> password() {
-            return raw("password").map(value -> (String) value);
+            return optionalString("password");
         }
         /**
          * The decision on what to do in response to the authorization challenge. Default means deferring to the default behavior of the net stack, which will likely either the Cancel authentication or display a popup dialog box.
@@ -3507,21 +3652,21 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> urlPattern() {
-            return raw("urlPattern").map(value -> (String) value);
+            return optionalString("urlPattern");
         }
         /**
          * If set, only requests for matching resource types will be intercepted.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ResourceType> resourceType() {
-            return raw("resourceType").map(value -> Network.ResourceType.of((String) value));
+            return optional(RESOURCE_TYPE);
         }
         /**
          * Stage at which to begin intercepting requests. Default is Request.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.InterceptionStage> interceptionStage() {
-            return raw("interceptionStage").map(value -> Network.InterceptionStage.of((String) value));
+            return optional(INTERCEPTION_STAGE);
         }
         /**
          * Wildcards ({@code &#x27;*&#x27;} -&gt; zero or more, {@code &#x27;?&#x27;} -&gt; exactly one) are allowed. Escape character is backslash. Omitting is equivalent to {@code &quot;*&quot;}.
@@ -3566,63 +3711,63 @@ public final class Network {
          * @return the protocol field value
          */
         public String label() {
-            return (String) require("label");
+            return requireString("label");
         }
         /**
          * The hex string of signed exchange signature.
          * @return the protocol field value
          */
         public String signature() {
-            return (String) require("signature");
+            return requireString("signature");
         }
         /**
          * Signed exchange signature integrity.
          * @return the protocol field value
          */
         public String integrity() {
-            return (String) require("integrity");
+            return requireString("integrity");
         }
         /**
          * Signed exchange signature cert Url.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> certUrl() {
-            return raw("certUrl").map(value -> (String) value);
+            return optionalString("certUrl");
         }
         /**
          * The hex string of signed exchange signature cert sha256.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> certSha256() {
-            return raw("certSha256").map(value -> (String) value);
+            return optionalString("certSha256");
         }
         /**
          * Signed exchange signature validity Url.
          * @return the protocol field value
          */
         public String validityUrl() {
-            return (String) require("validityUrl");
+            return requireString("validityUrl");
         }
         /**
          * Signed exchange signature date.
          * @return the protocol field value
          */
         public long date() {
-            return ((Number) require("date")).longValue();
+            return requireLong("date");
         }
         /**
          * Signed exchange signature expires.
          * @return the protocol field value
          */
         public long expires() {
-            return ((Number) require("expires")).longValue();
+            return requireLong("expires");
         }
         /**
          * The encoded certificates.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> certificates() {
-            return raw("certificates").flatMap(value -> list(value, element0 -> (String) element0));
+            return optional(CERTIFICATES);
         }
         /**
          * Signed exchange signature label.
@@ -3721,35 +3866,35 @@ public final class Network {
          * @return the protocol field value
          */
         public String requestUrl() {
-            return (String) require("requestUrl");
+            return requireString("requestUrl");
         }
         /**
          * Signed exchange response code.
          * @return the protocol field value
          */
         public long responseCode() {
-            return ((Number) require("responseCode")).longValue();
+            return requireLong("responseCode");
         }
         /**
          * Signed exchange response headers.
          * @return the protocol field value
          */
         public java.util.Map<String, Object> responseHeaders() {
-            return CdpObject.requireObjectMap(require("responseHeaders"));
+            return requireObject("responseHeaders");
         }
         /**
          * Signed exchange response signature.
          * @return the protocol field value
          */
         public java.util.List<Network.SignedExchangeSignature> signatures() {
-            return CdpObject.requireList(require("signatures"), element0 -> java.util.Objects.requireNonNull(Network.SignedExchangeSignature.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(SIGNATURES);
         }
         /**
          * Signed exchange header integrity hash in the form of {@code sha256-&lt;base64-hash-value&gt;}.
          * @return the protocol field value
          */
         public String headerIntegrity() {
-            return (String) require("headerIntegrity");
+            return requireString("headerIntegrity");
         }
         /**
          * Signed exchange request URL.
@@ -3833,21 +3978,21 @@ public final class Network {
          * @return the protocol field value
          */
         public String message() {
-            return (String) require("message");
+            return requireString("message");
         }
         /**
          * The index of the signature which caused the error.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong signatureIndex() {
-            return raw("signatureIndex").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("signatureIndex");
         }
         /**
          * The field which caused the error.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.SignedExchangeErrorField> errorField() {
-            return raw("errorField").map(value -> Network.SignedExchangeErrorField.of((String) value));
+            return optional(ERROR_FIELD);
         }
         /**
          * Error message.
@@ -3892,35 +4037,35 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.Response outerResponse() {
-            return java.util.Objects.requireNonNull(Network.Response.fromMap(CdpObject.requireObjectMap(require("outerResponse"))));
+            return require(OUTER_RESPONSE);
         }
         /**
          * Whether network response for the signed exchange was accompanied by extra headers.
          * @return the protocol field value
          */
         public boolean hasExtraInfo() {
-            return (Boolean) require("hasExtraInfo");
+            return requireBoolean("hasExtraInfo");
         }
         /**
          * Information about the signed exchange header.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.SignedExchangeHeader> header() {
-            return raw("header").flatMap(CdpObject::objectMap).map(Network.SignedExchangeHeader::fromMap);
+            return optional(HEADER);
         }
         /**
          * Security details for the signed exchange header.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.SecurityDetails> securityDetails() {
-            return raw("securityDetails").flatMap(CdpObject::objectMap).map(Network.SecurityDetails::fromMap);
+            return optional(SECURITY_DETAILS);
         }
         /**
          * Errors occurred while handling the signed exchange.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Network.SignedExchangeError>> errors() {
-            return raw("errors").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Network.SignedExchangeError.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(ERRORS);
         }
         /**
          * The outer response of signed HTTP exchange which was received from network.
@@ -4001,63 +4146,63 @@ public final class Network {
          * @return the protocol field value
          */
         public String urlPattern() {
-            return (String) require("urlPattern");
+            return requireString("urlPattern");
         }
         /**
          * Minimum latency from request sent to response headers received (ms).
          * @return the protocol field value
          */
         public double latency() {
-            return ((Number) require("latency")).doubleValue();
+            return requireDouble("latency");
         }
         /**
          * Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
          * @return the protocol field value
          */
         public double downloadThroughput() {
-            return ((Number) require("downloadThroughput")).doubleValue();
+            return requireDouble("downloadThroughput");
         }
         /**
          * Maximal aggregated upload throughput (bytes/sec). -1 disables upload throttling.
          * @return the protocol field value
          */
         public double uploadThroughput() {
-            return ((Number) require("uploadThroughput")).doubleValue();
+            return requireDouble("uploadThroughput");
         }
         /**
          * Connection type if known.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ConnectionType> connectionType() {
-            return raw("connectionType").map(value -> Network.ConnectionType.of((String) value));
+            return optional(CONNECTION_TYPE);
         }
         /**
          * WebRTC packet loss (percent, 0-100). 0 disables packet loss emulation, 100 drops all the packets.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble packetLoss() {
-            return raw("packetLoss").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("packetLoss");
         }
         /**
          * WebRTC packet queue length (packet). 0 removes any queue length limitations.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong packetQueueLength() {
-            return raw("packetQueueLength").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("packetQueueLength");
         }
         /**
          * WebRTC packetReordering feature.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> packetReordering() {
-            return raw("packetReordering").map(value -> (Boolean) value);
+            return optionalBoolean("packetReordering");
         }
         /**
          * True to emulate internet disconnection.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> offline() {
-            return raw("offline").map(value -> (Boolean) value);
+            return optionalBoolean("offline");
         }
         /**
          * Only matching requests will be affected by these conditions. Patterns use the URLPattern constructor string syntax (https://urlpattern.spec.whatwg.org/) and must be absolute. If the pattern is empty, all requests are matched (including p2p connections).
@@ -4155,14 +4300,14 @@ public final class Network {
          * @return the protocol field value
          */
         public String urlPattern() {
-            return (String) require("urlPattern");
+            return requireString("urlPattern");
         }
         /**
          * Whether or not to block the pattern. If false, a matching request will not be blocked even if it matches a later {@code BlockPattern}.
          * @return the protocol field value
          */
         public boolean block() {
-            return (Boolean) require("block");
+            return requireBoolean("block");
         }
         /**
          * URL pattern to match. Patterns use the URLPattern constructor string syntax (https://urlpattern.spec.whatwg.org/) and must be absolute. Example: {@code *://*:*&amp;#47;*.css}.
@@ -4214,35 +4359,35 @@ public final class Network {
          * @return the protocol field value
          */
         public boolean noDelay() {
-            return (Boolean) require("noDelay");
+            return requireBoolean("noDelay");
         }
         /**
          * Expected to be unsigned integer.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble keepAliveDelay() {
-            return raw("keepAliveDelay").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("keepAliveDelay");
         }
         /**
          * Expected to be unsigned integer.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble sendBufferSize() {
-            return raw("sendBufferSize").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("sendBufferSize");
         }
         /**
          * Expected to be unsigned integer.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble receiveBufferSize() {
-            return raw("receiveBufferSize").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("receiveBufferSize");
         }
         /**
          * Returns the dnsQueryType field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.DirectSocketDnsQueryType> dnsQueryType() {
-            return raw("dnsQueryType").map(value -> Network.DirectSocketDnsQueryType.of((String) value));
+            return optional(DNS_QUERY_TYPE);
         }
         /**
          * TCP_NODELAY option
@@ -4304,70 +4449,70 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> remoteAddr() {
-            return raw("remoteAddr").map(value -> (String) value);
+            return optionalString("remoteAddr");
         }
         /**
          * Unsigned int 16.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong remotePort() {
-            return raw("remotePort").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("remotePort");
         }
         /**
          * Returns the localAddr field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> localAddr() {
-            return raw("localAddr").map(value -> (String) value);
+            return optionalString("localAddr");
         }
         /**
          * Unsigned int 16.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong localPort() {
-            return raw("localPort").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("localPort");
         }
         /**
          * Returns the dnsQueryType field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.DirectSocketDnsQueryType> dnsQueryType() {
-            return raw("dnsQueryType").map(value -> Network.DirectSocketDnsQueryType.of((String) value));
+            return optional(DNS_QUERY_TYPE);
         }
         /**
          * Expected to be unsigned integer.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble sendBufferSize() {
-            return raw("sendBufferSize").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("sendBufferSize");
         }
         /**
          * Expected to be unsigned integer.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble receiveBufferSize() {
-            return raw("receiveBufferSize").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("receiveBufferSize");
         }
         /**
          * Returns the multicastLoopback field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> multicastLoopback() {
-            return raw("multicastLoopback").map(value -> (Boolean) value);
+            return optionalBoolean("multicastLoopback");
         }
         /**
          * Unsigned int 8.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong multicastTimeToLive() {
-            return raw("multicastTimeToLive").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("multicastTimeToLive");
         }
         /**
          * Returns the multicastAllowAddressSharing field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> multicastAllowAddressSharing() {
-            return raw("multicastAllowAddressSharing").map(value -> (Boolean) value);
+            return optionalBoolean("multicastAllowAddressSharing");
         }
         /**
          * Sets the remoteAddr field.
@@ -4474,21 +4619,21 @@ public final class Network {
          * @return the protocol field value
          */
         public String data() {
-            return (String) require("data");
+            return requireString("data");
         }
         /**
          * Null for connected mode.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> remoteAddr() {
-            return raw("remoteAddr").map(value -> (String) value);
+            return optionalString("remoteAddr");
         }
         /**
          * Null for connected mode. Expected to be unsigned integer.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong remotePort() {
-            return raw("remotePort").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("remotePort");
         }
         /**
          * Sets the data field.
@@ -4571,7 +4716,7 @@ public final class Network {
          * @return the protocol field value
          */
         public double requestTime() {
-            return ((Number) require("requestTime")).doubleValue();
+            return requireDouble("requestTime");
         }
         /**
          * Timing&#x27;s requestTime is a baseline in seconds, while the other numbers are ticks in milliseconds relatively to this requestTime. Matches ResourceTiming&#x27;s requestTime for the same request (but not for redirected requests).
@@ -4597,21 +4742,21 @@ public final class Network {
          * @return the protocol field value
          */
         public boolean initiatorIsSecureContext() {
-            return (Boolean) require("initiatorIsSecureContext");
+            return requireBoolean("initiatorIsSecureContext");
         }
         /**
          * Returns the initiatorIPAddressSpace field.
          * @return the protocol field value
          */
         public Network.IPAddressSpace initiatorIPAddressSpace() {
-            return Network.IPAddressSpace.of((String) require("initiatorIPAddressSpace"));
+            return require(INITIATOR_IPADDRESS_SPACE);
         }
         /**
          * Returns the localNetworkAccessRequestPolicy field.
          * @return the protocol field value
          */
         public Network.LocalNetworkAccessRequestPolicy localNetworkAccessRequestPolicy() {
-            return Network.LocalNetworkAccessRequestPolicy.of((String) require("localNetworkAccessRequestPolicy"));
+            return require(LOCAL_NETWORK_ACCESS_REQUEST_POLICY);
         }
         /**
          * Sets the initiatorIsSecureContext field.
@@ -4656,21 +4801,21 @@ public final class Network {
          * @return the protocol field value
          */
         public Runtime.ScriptId scriptId() {
-            return new Runtime.ScriptId((String) require("scriptId"));
+            return require(SCRIPT_ID);
         }
         /**
          * V8&#x27;s debugging ID for the v8::Context.
          * @return the protocol field value
          */
         public Runtime.UniqueDebuggerId debuggerId() {
-            return new Runtime.UniqueDebuggerId((String) require("debuggerId"));
+            return require(DEBUGGER_ID);
         }
         /**
          * The script&#x27;s url (or generated name based on id if inline script).
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * The script&#x27;s V8 identifier.
@@ -4715,14 +4860,14 @@ public final class Network {
          * @return the protocol field value
          */
         public java.util.List<Network.AdScriptIdentifier> ancestryChain() {
-            return CdpObject.requireList(require("ancestryChain"), element0 -> java.util.Objects.requireNonNull(Network.AdScriptIdentifier.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(ANCESTRY_CHAIN);
         }
         /**
          * The filter list rule that caused the root (last) script in {@code ancestryChain} to be tagged as an ad.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> rootScriptFilterlistRule() {
-            return raw("rootScriptFilterlistRule").map(value -> (String) value);
+            return optionalString("rootScriptFilterlistRule");
         }
         /**
          * A chain of {@code AdScriptIdentifier}s representing the ancestry of an ad script that led to the creation of a resource or element. The chain is ordered from the script itself (lowest level) up to its root ancestor that was flagged by a filter list.
@@ -4758,14 +4903,14 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> filterlistRule() {
-            return raw("filterlistRule").map(value -> (String) value);
+            return optionalString("filterlistRule");
         }
         /**
          * The script ancestry that created the ad, if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.AdAncestry> adScriptAncestry() {
-            return raw("adScriptAncestry").flatMap(CdpObject::objectMap).map(Network.AdAncestry::fromMap);
+            return optional(AD_SCRIPT_ANCESTRY);
         }
         /**
          * The filterlist rule that matched, if any.
@@ -4822,28 +4967,28 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.CrossOriginOpenerPolicyValue value() {
-            return Network.CrossOriginOpenerPolicyValue.of((String) require("value"));
+            return require(VALUE);
         }
         /**
          * Returns the reportOnlyValue field.
          * @return the protocol field value
          */
         public Network.CrossOriginOpenerPolicyValue reportOnlyValue() {
-            return Network.CrossOriginOpenerPolicyValue.of((String) require("reportOnlyValue"));
+            return require(REPORT_ONLY_VALUE);
         }
         /**
          * Returns the reportingEndpoint field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> reportingEndpoint() {
-            return raw("reportingEndpoint").map(value -> (String) value);
+            return optionalString("reportingEndpoint");
         }
         /**
          * Returns the reportOnlyReportingEndpoint field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> reportOnlyReportingEndpoint() {
-            return raw("reportOnlyReportingEndpoint").map(value -> (String) value);
+            return optionalString("reportOnlyReportingEndpoint");
         }
         /**
          * Sets the value field.
@@ -4914,28 +5059,28 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.CrossOriginEmbedderPolicyValue value() {
-            return Network.CrossOriginEmbedderPolicyValue.of((String) require("value"));
+            return require(VALUE_2);
         }
         /**
          * Returns the reportOnlyValue field.
          * @return the protocol field value
          */
         public Network.CrossOriginEmbedderPolicyValue reportOnlyValue() {
-            return Network.CrossOriginEmbedderPolicyValue.of((String) require("reportOnlyValue"));
+            return require(REPORT_ONLY_VALUE_2);
         }
         /**
          * Returns the reportingEndpoint field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> reportingEndpoint() {
-            return raw("reportingEndpoint").map(value -> (String) value);
+            return optionalString("reportingEndpoint");
         }
         /**
          * Returns the reportOnlyReportingEndpoint field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> reportOnlyReportingEndpoint() {
-            return raw("reportOnlyReportingEndpoint").map(value -> (String) value);
+            return optionalString("reportOnlyReportingEndpoint");
         }
         /**
          * Sets the value field.
@@ -5005,21 +5150,21 @@ public final class Network {
          * @return the protocol field value
          */
         public String effectiveDirectives() {
-            return (String) require("effectiveDirectives");
+            return requireString("effectiveDirectives");
         }
         /**
          * Returns the isEnforced field.
          * @return the protocol field value
          */
         public boolean isEnforced() {
-            return (Boolean) require("isEnforced");
+            return requireBoolean("isEnforced");
         }
         /**
          * Returns the source field.
          * @return the protocol field value
          */
         public Network.ContentSecurityPolicySource source() {
-            return Network.ContentSecurityPolicySource.of((String) require("source"));
+            return require(SOURCE_2);
         }
         /**
          * Sets the effectiveDirectives field.
@@ -5063,21 +5208,21 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CrossOriginOpenerPolicyStatus> coop() {
-            return raw("coop").flatMap(CdpObject::objectMap).map(Network.CrossOriginOpenerPolicyStatus::fromMap);
+            return optional(COOP);
         }
         /**
          * Returns the coep field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CrossOriginEmbedderPolicyStatus> coep() {
-            return raw("coep").flatMap(CdpObject::objectMap).map(Network.CrossOriginEmbedderPolicyStatus::fromMap);
+            return optional(COEP);
         }
         /**
          * Returns the csp field.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Network.ContentSecurityPolicyStatus>> csp() {
-            return raw("csp").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Network.ContentSecurityPolicyStatus.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(CSP);
         }
         /**
          * Sets the coop field.
@@ -5157,63 +5302,63 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.ReportId id() {
-            return new Network.ReportId((String) require("id"));
+            return require(ID);
         }
         /**
          * The URL of the document that triggered the report.
          * @return the protocol field value
          */
         public String initiatorUrl() {
-            return (String) require("initiatorUrl");
+            return requireString("initiatorUrl");
         }
         /**
          * The name of the endpoint group that should be used to deliver the report.
          * @return the protocol field value
          */
         public String destination() {
-            return (String) require("destination");
+            return requireString("destination");
         }
         /**
          * The type of the report (specifies the set of data that is contained in the report body).
          * @return the protocol field value
          */
         public String type() {
-            return (String) require("type");
+            return requireString("type");
         }
         /**
          * When the report was generated.
          * @return the protocol field value
          */
         public Network.TimeSinceEpoch timestamp() {
-            return new Network.TimeSinceEpoch(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP);
         }
         /**
          * How many uploads deep the related request was.
          * @return the protocol field value
          */
         public long depth() {
-            return ((Number) require("depth")).longValue();
+            return requireLong("depth");
         }
         /**
          * The number of delivery attempts made so far, not including an active attempt.
          * @return the protocol field value
          */
         public long completedAttempts() {
-            return ((Number) require("completedAttempts")).longValue();
+            return requireLong("completedAttempts");
         }
         /**
          * Returns the body field.
          * @return the protocol field value
          */
         public java.util.Map<String, Object> body() {
-            return CdpObject.requireObjectMap(require("body"));
+            return requireObject("body");
         }
         /**
          * Returns the status field.
          * @return the protocol field value
          */
         public Network.ReportStatus status() {
-            return Network.ReportStatus.of((String) require("status"));
+            return require(STATUS);
         }
         /**
          * Sets the id field.
@@ -5311,14 +5456,14 @@ public final class Network {
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Name of the endpoint group.
          * @return the protocol field value
          */
         public String groupName() {
-            return (String) require("groupName");
+            return requireString("groupName");
         }
         /**
          * The URL of the endpoint to which reports may be delivered.
@@ -5354,14 +5499,14 @@ public final class Network {
          * @return the protocol field value
          */
         public String site() {
-            return (String) require("site");
+            return requireString("site");
         }
         /**
          * The id of the session.
          * @return the protocol field value
          */
         public String id() {
-            return (String) require("id");
+            return requireString("id");
         }
         /**
          * The site the session is set up for.
@@ -5417,14 +5562,14 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.DeviceBoundSessionKey sessionKey() {
-            return java.util.Objects.requireNonNull(Network.DeviceBoundSessionKey.fromMap(CdpObject.requireObjectMap(require("sessionKey"))));
+            return require(SESSION_KEY);
         }
         /**
          * How the session was used (or not used).
          * @return the protocol field value
          */
         public DeviceBoundSessionWithUsage.UsageValues usage() {
-            return DeviceBoundSessionWithUsage.UsageValues.of((String) require("usage"));
+            return require(USAGE);
         }
         /**
          * The key for the session.
@@ -5460,42 +5605,42 @@ public final class Network {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * The domain of the craving.
          * @return the protocol field value
          */
         public String domain() {
-            return (String) require("domain");
+            return requireString("domain");
         }
         /**
          * The path of the craving.
          * @return the protocol field value
          */
         public String path() {
-            return (String) require("path");
+            return requireString("path");
         }
         /**
          * The {@code Secure} attribute of the craving attributes.
          * @return the protocol field value
          */
         public boolean secure() {
-            return (Boolean) require("secure");
+            return requireBoolean("secure");
         }
         /**
          * The {@code HttpOnly} attribute of the craving attributes.
          * @return the protocol field value
          */
         public boolean httpOnly() {
-            return (Boolean) require("httpOnly");
+            return requireBoolean("httpOnly");
         }
         /**
          * The {@code SameSite} attribute of the craving attributes.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookieSameSite> sameSite() {
-            return raw("sameSite").map(value -> Network.CookieSameSite.of((String) value));
+            return optional(SAME_SITE);
         }
         /**
          * The name of the craving.
@@ -5583,21 +5728,21 @@ public final class Network {
          * @return the protocol field value
          */
         public DeviceBoundSessionUrlRule.RuleTypeValues ruleType() {
-            return DeviceBoundSessionUrlRule.RuleTypeValues.of((String) require("ruleType"));
+            return require(RULE_TYPE);
         }
         /**
          * See comments on {@code net::device_bound_sessions::SessionInclusionRules::UrlRule::host_pattern}.
          * @return the protocol field value
          */
         public String hostPattern() {
-            return (String) require("hostPattern");
+            return requireString("hostPattern");
         }
         /**
          * See comments on {@code net::device_bound_sessions::SessionInclusionRules::UrlRule::path_prefix}.
          * @return the protocol field value
          */
         public String pathPrefix() {
-            return (String) require("pathPrefix");
+            return requireString("pathPrefix");
         }
         /**
          * See comments on {@code net::device_bound_sessions::SessionInclusionRules::UrlRule::rule_type}.
@@ -5642,21 +5787,21 @@ public final class Network {
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * Whether the whole site is included. See comments on {@code net::device_bound_sessions::SessionInclusionRules::include_site_} for more details; this boolean is true if that value is populated.
          * @return the protocol field value
          */
         public boolean includeSite() {
-            return (Boolean) require("includeSite");
+            return requireBoolean("includeSite");
         }
         /**
          * See comments on {@code net::device_bound_sessions::SessionInclusionRules::url_rules_}.
          * @return the protocol field value
          */
         public java.util.List<Network.DeviceBoundSessionUrlRule> urlRules() {
-            return CdpObject.requireList(require("urlRules"), element0 -> java.util.Objects.requireNonNull(Network.DeviceBoundSessionUrlRule.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(URL_RULES);
         }
         /**
          * See comments on {@code net::device_bound_sessions::SessionInclusionRules::origin_}.
@@ -5701,49 +5846,49 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.DeviceBoundSessionKey key() {
-            return java.util.Objects.requireNonNull(Network.DeviceBoundSessionKey.fromMap(CdpObject.requireObjectMap(require("key"))));
+            return require(KEY);
         }
         /**
          * See comments on {@code net::device_bound_sessions::Session::refresh_url_}.
          * @return the protocol field value
          */
         public String refreshUrl() {
-            return (String) require("refreshUrl");
+            return requireString("refreshUrl");
         }
         /**
          * See comments on {@code net::device_bound_sessions::Session::inclusion_rules_}.
          * @return the protocol field value
          */
         public Network.DeviceBoundSessionInclusionRules inclusionRules() {
-            return java.util.Objects.requireNonNull(Network.DeviceBoundSessionInclusionRules.fromMap(CdpObject.requireObjectMap(require("inclusionRules"))));
+            return require(INCLUSION_RULES);
         }
         /**
          * See comments on {@code net::device_bound_sessions::Session::cookie_cravings_}.
          * @return the protocol field value
          */
         public java.util.List<Network.DeviceBoundSessionCookieCraving> cookieCravings() {
-            return CdpObject.requireList(require("cookieCravings"), element0 -> java.util.Objects.requireNonNull(Network.DeviceBoundSessionCookieCraving.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(COOKIE_CRAVINGS);
         }
         /**
          * See comments on {@code net::device_bound_sessions::Session::expiry_date_}.
          * @return the protocol field value
          */
         public Network.TimeSinceEpoch expiryDate() {
-            return new Network.TimeSinceEpoch(((Number) require("expiryDate")).doubleValue());
+            return require(EXPIRY_DATE);
         }
         /**
          * See comments on {@code net::device_bound_sessions::Session::cached_challenge__}.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> cachedChallenge() {
-            return raw("cachedChallenge").map(value -> (String) value);
+            return optionalString("cachedChallenge");
         }
         /**
          * See comments on {@code net::device_bound_sessions::Session::allowed_refresh_initiators_}.
          * @return the protocol field value
          */
         public java.util.List<String> allowedRefreshInitiators() {
-            return CdpObject.requireList(require("allowedRefreshInitiators"), element0 -> (String) element0);
+            return require(ALLOWED_REFRESH_INITIATORS);
         }
         /**
          * The site and session ID of the session.
@@ -5925,28 +6070,28 @@ public final class Network {
          * @return the protocol field value
          */
         public String requestUrl() {
-            return (String) require("requestUrl");
+            return requireString("requestUrl");
         }
         /**
          * The net error of the response if it was not OK.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> netError() {
-            return raw("netError").map(value -> (String) value);
+            return optionalString("netError");
         }
         /**
          * The response code if the net error was OK and the response code was not 200.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong responseError() {
-            return raw("responseError").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("responseError");
         }
         /**
          * The body of the response if the net error was OK, the response code was not 200, and the response body was not empty.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> responseErrorBody() {
-            return raw("responseErrorBody").map(value -> (String) value);
+            return optionalString("responseErrorBody");
         }
         /**
          * The failed request URL.
@@ -6000,21 +6145,21 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.DeviceBoundSessionFetchResult fetchResult() {
-            return Network.DeviceBoundSessionFetchResult.of((String) require("fetchResult"));
+            return require(FETCH_RESULT);
         }
         /**
          * The session if there was a newly created session. This is populated for all successful creation events.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.DeviceBoundSession> newSession() {
-            return raw("newSession").flatMap(CdpObject::objectMap).map(Network.DeviceBoundSession::fromMap);
+            return optional(NEW_SESSION);
         }
         /**
          * Details about a failed device bound session network request if there was one.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.DeviceBoundSessionFailedRequest> failedRequest() {
-            return raw("failedRequest").flatMap(CdpObject::objectMap).map(Network.DeviceBoundSessionFailedRequest::fromMap);
+            return optional(FAILED_REQUEST);
         }
         /**
          * The result of the fetch attempt.
@@ -6082,35 +6227,35 @@ public final class Network {
          * @return the protocol field value
          */
         public RefreshEventDetails.RefreshResultValues refreshResult() {
-            return RefreshEventDetails.RefreshResultValues.of((String) require("refreshResult"));
+            return require(REFRESH_RESULT);
         }
         /**
          * If there was a fetch attempt, the result of that.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.DeviceBoundSessionFetchResult> fetchResult() {
-            return raw("fetchResult").map(value -> Network.DeviceBoundSessionFetchResult.of((String) value));
+            return optional(FETCH_RESULT);
         }
         /**
          * The session display if there was a newly created session. This is populated for any refresh event that modifies the session config.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.DeviceBoundSession> newSession() {
-            return raw("newSession").flatMap(CdpObject::objectMap).map(Network.DeviceBoundSession::fromMap);
+            return optional(NEW_SESSION);
         }
         /**
          * See comments on {@code net::device_bound_sessions::RefreshEventResult::was_fully_proactive_refresh}.
          * @return the protocol field value
          */
         public boolean wasFullyProactiveRefresh() {
-            return (Boolean) require("wasFullyProactiveRefresh");
+            return requireBoolean("wasFullyProactiveRefresh");
         }
         /**
          * Details about a failed device bound session network request if there was one.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.DeviceBoundSessionFailedRequest> failedRequest() {
-            return raw("failedRequest").flatMap(CdpObject::objectMap).map(Network.DeviceBoundSessionFailedRequest::fromMap);
+            return optional(FAILED_REQUEST);
         }
         /**
          * The result of a refresh.
@@ -6196,7 +6341,7 @@ public final class Network {
          * @return the protocol field value
          */
         public TerminationEventDetails.DeletionReasonValues deletionReason() {
-            return TerminationEventDetails.DeletionReasonValues.of((String) require("deletionReason"));
+            return require(DELETION_REASON);
         }
         /**
          * The reason for a session being deleted.
@@ -6241,14 +6386,14 @@ public final class Network {
          * @return the protocol field value
          */
         public ChallengeEventDetails.ChallengeResultValues challengeResult() {
-            return ChallengeEventDetails.ChallengeResultValues.of((String) require("challengeResult"));
+            return require(CHALLENGE_RESULT);
         }
         /**
          * The challenge set.
          * @return the protocol field value
          */
         public String challenge() {
-            return (String) require("challenge");
+            return requireString("challenge");
         }
         /**
          * The result of a challenge.
@@ -6284,42 +6429,42 @@ public final class Network {
          * @return the protocol field value
          */
         public boolean success() {
-            return (Boolean) require("success");
+            return requireBoolean("success");
         }
         /**
          * Optional values used for error reporting.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble netError() {
-            return raw("netError").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("netError");
         }
         /**
          * Returns the netErrorName field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> netErrorName() {
-            return raw("netErrorName").map(value -> (String) value);
+            return optionalString("netErrorName");
         }
         /**
          * Returns the httpStatusCode field.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble httpStatusCode() {
-            return raw("httpStatusCode").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("httpStatusCode");
         }
         /**
          * If successful, one of the following two fields holds the result.
          * @return the protocol field value, empty when absent
          */
         public Optional<IO.StreamHandle> stream() {
-            return raw("stream").map(value -> new IO.StreamHandle((String) value));
+            return optional(STREAM);
         }
         /**
          * Response headers.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> headers() {
-            return raw("headers").flatMap(CdpObject::objectMap);
+            return optionalObject("headers");
         }
         /**
          * Sets the success field.
@@ -6391,14 +6536,14 @@ public final class Network {
          * @return the protocol field value
          */
         public boolean disableCache() {
-            return (Boolean) require("disableCache");
+            return requireBoolean("disableCache");
         }
         /**
          * Returns the includeCredentials field.
          * @return the protocol field value
          */
         public boolean includeCredentials() {
-            return (Boolean) require("includeCredentials");
+            return requireBoolean("includeCredentials");
         }
         /**
          * Sets the disableCache field.
@@ -6425,14 +6570,6 @@ public final class Network {
      */
     public static final class SetAcceptedEncodingsRequest extends CdpObject {
         public SetAcceptedEncodingsRequest() {}
-        /**
-         * Sets a list of content encodings that will be accepted. Empty list means no encoding is accepted.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param encodings protocol value
-         */
-        public SetAcceptedEncodingsRequest(java.util.List<Network.ContentEncoding> encodings) {
-            encodings(encodings);
-        }
         public static SetAcceptedEncodingsRequest fromMap(Map<String, Object> values) {
             final SetAcceptedEncodingsRequest instance_ = new SetAcceptedEncodingsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -6443,7 +6580,7 @@ public final class Network {
          * @return the protocol field value
          */
         public java.util.List<Network.ContentEncoding> encodings() {
-            return CdpObject.requireList(require("encodings"), element0 -> Network.ContentEncoding.of((String) element0));
+            return require(ENCODINGS);
         }
         /**
          * List of accepted content encodings.
@@ -6463,16 +6600,6 @@ public final class Network {
     @Deprecated
     public static final class ContinueInterceptedRequestRequest extends CdpObject {
         public ContinueInterceptedRequestRequest() {}
-        /**
-         * Response to Network.requestIntercepted which either modifies the request to continue with any modifications, or blocks it, or completes it with the provided response bytes. If a network fetch occurs as a result which encounters a redirect an additional Network.requestIntercepted event will be sent with the same InterceptionId. Deprecated, use Fetch.continueRequest, Fetch.fulfillRequest and Fetch.failRequest instead.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param interceptionId protocol value
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public ContinueInterceptedRequestRequest(Network.InterceptionId interceptionId) {
-            interceptionId(interceptionId);
-        }
         public static ContinueInterceptedRequestRequest fromMap(Map<String, Object> values) {
             final ContinueInterceptedRequestRequest instance_ = new ContinueInterceptedRequestRequest();
             if (values != null) instance_.values.putAll(values);
@@ -6483,56 +6610,56 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.InterceptionId interceptionId() {
-            return new Network.InterceptionId((String) require("interceptionId"));
+            return require(INTERCEPTION_ID);
         }
         /**
          * If set this causes the request to fail with the given reason. Passing {@code Aborted} for requests marked with {@code isNavigationRequest} also cancels the navigation. Must not be set in response to an authChallenge.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ErrorReason> errorReason() {
-            return raw("errorReason").map(value -> Network.ErrorReason.of((String) value));
+            return optional(ERROR_REASON);
         }
         /**
          * If set the requests completes using with the provided base64 encoded raw response, including HTTP status line and headers etc... Must not be set in response to an authChallenge. (Encoded as a base64 string when passed over JSON)
          * @return the protocol field value, empty when absent
          */
         public Optional<String> rawResponse() {
-            return raw("rawResponse").map(value -> (String) value);
+            return optionalString("rawResponse");
         }
         /**
          * If set the request url will be modified in a way that&#x27;s not observable by page. Must not be set in response to an authChallenge.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return raw("url").map(value -> (String) value);
+            return optionalString("url");
         }
         /**
          * If set this allows the request method to be overridden. Must not be set in response to an authChallenge.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> method() {
-            return raw("method").map(value -> (String) value);
+            return optionalString("method");
         }
         /**
          * If set this allows postData to be set. Must not be set in response to an authChallenge.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> postData() {
-            return raw("postData").map(value -> (String) value);
+            return optionalString("postData");
         }
         /**
          * If set this allows the request headers to be changed. Must not be set in response to an authChallenge.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> headers() {
-            return raw("headers").flatMap(CdpObject::objectMap);
+            return optionalObject("headers");
         }
         /**
          * Response to a requestIntercepted with an authChallenge. Must not be set otherwise.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.AuthChallengeResponse> authChallengeResponse() {
-            return raw("authChallengeResponse").flatMap(CdpObject::objectMap).map(Network.AuthChallengeResponse::fromMap);
+            return optional(AUTH_CHALLENGE_RESPONSE);
         }
         /**
          * Sets the interceptionId field.
@@ -6612,13 +6739,6 @@ public final class Network {
      */
     public static final class DeleteCookiesRequest extends CdpObject {
         public DeleteCookiesRequest() {}
-        /**
-         * Deletes browser cookies with matching name and url or domain/path/partitionKey pair.
-         * @param name protocol value
-         */
-        public DeleteCookiesRequest(String name) {
-            name(name);
-        }
         public static DeleteCookiesRequest fromMap(Map<String, Object> values) {
             final DeleteCookiesRequest instance_ = new DeleteCookiesRequest();
             if (values != null) instance_.values.putAll(values);
@@ -6629,28 +6749,28 @@ public final class Network {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * If specified, deletes all the cookies with the given name where domain and path match provided URL.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return raw("url").map(value -> (String) value);
+            return optionalString("url");
         }
         /**
          * If specified, deletes only cookies with the exact domain.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> domain() {
-            return raw("domain").map(value -> (String) value);
+            return optionalString("domain");
         }
         /**
          * If specified, deletes only cookies with the exact path.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> path() {
-            return raw("path").map(value -> (String) value);
+            return optionalString("path");
         }
         /**
          * If specified, deletes only cookies with the the given name and partitionKey where all partition key attributes match the cookie partition key attribute.
@@ -6658,7 +6778,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookiePartitionKey> partitionKey() {
-            return raw("partitionKey").flatMap(CdpObject::objectMap).map(Network.CookiePartitionKey::fromMap);
+            return optional(PARTITION_KEY);
         }
         /**
          * Name of the cookies to remove.
@@ -6714,18 +6834,6 @@ public final class Network {
     @Deprecated
     public static final class EmulateNetworkConditionsRequest extends CdpObject {
         public EmulateNetworkConditionsRequest() {}
-        /**
-         * Activates emulation of network conditions. This command is deprecated in favor of the emulateNetworkConditionsByRule and overrideNetworkState commands, which can be used together to the same effect.
-         * @param offline protocol value
-         * @param latency protocol value
-         * @param downloadThroughput protocol value
-         * @param uploadThroughput protocol value
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public EmulateNetworkConditionsRequest(boolean offline, double latency, double downloadThroughput, double uploadThroughput) {
-            offline(offline).latency(latency).downloadThroughput(downloadThroughput).uploadThroughput(uploadThroughput);
-        }
         public static EmulateNetworkConditionsRequest fromMap(Map<String, Object> values) {
             final EmulateNetworkConditionsRequest instance_ = new EmulateNetworkConditionsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -6736,35 +6844,35 @@ public final class Network {
          * @return the protocol field value
          */
         public boolean offline() {
-            return (Boolean) require("offline");
+            return requireBoolean("offline");
         }
         /**
          * Minimum latency from request sent to response headers received (ms).
          * @return the protocol field value
          */
         public double latency() {
-            return ((Number) require("latency")).doubleValue();
+            return requireDouble("latency");
         }
         /**
          * Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
          * @return the protocol field value
          */
         public double downloadThroughput() {
-            return ((Number) require("downloadThroughput")).doubleValue();
+            return requireDouble("downloadThroughput");
         }
         /**
          * Maximal aggregated upload throughput (bytes/sec). -1 disables upload throttling.
          * @return the protocol field value
          */
         public double uploadThroughput() {
-            return ((Number) require("uploadThroughput")).doubleValue();
+            return requireDouble("uploadThroughput");
         }
         /**
          * Connection type if known.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ConnectionType> connectionType() {
-            return raw("connectionType").map(value -> Network.ConnectionType.of((String) value));
+            return optional(CONNECTION_TYPE);
         }
         /**
          * WebRTC packet loss (percent, 0-100). 0 disables packet loss emulation, 100 drops all the packets.
@@ -6772,7 +6880,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble packetLoss() {
-            return raw("packetLoss").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("packetLoss");
         }
         /**
          * WebRTC packet queue length (packet). 0 removes any queue length limitations.
@@ -6780,7 +6888,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong packetQueueLength() {
-            return raw("packetQueueLength").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("packetQueueLength");
         }
         /**
          * WebRTC packetReordering feature.
@@ -6788,7 +6896,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> packetReordering() {
-            return raw("packetReordering").map(value -> (Boolean) value);
+            return optionalBoolean("packetReordering");
         }
         /**
          * True to emulate internet disconnection.
@@ -6872,14 +6980,6 @@ public final class Network {
      */
     public static final class EmulateNetworkConditionsByRuleRequest extends CdpObject {
         public EmulateNetworkConditionsByRuleRequest() {}
-        /**
-         * Activates emulation of network conditions for individual requests using URL match patterns. Unlike the deprecated Network.emulateNetworkConditions this method does not affect {@code navigator} state. Use Network.overrideNetworkState to explicitly modify {@code navigator} behavior.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param matchedNetworkConditions protocol value
-         */
-        public EmulateNetworkConditionsByRuleRequest(java.util.List<Network.NetworkConditions> matchedNetworkConditions) {
-            matchedNetworkConditions(matchedNetworkConditions);
-        }
         public static EmulateNetworkConditionsByRuleRequest fromMap(Map<String, Object> values) {
             final EmulateNetworkConditionsByRuleRequest instance_ = new EmulateNetworkConditionsByRuleRequest();
             if (values != null) instance_.values.putAll(values);
@@ -6892,21 +6992,21 @@ public final class Network {
          */
         @Deprecated
         public Optional<Boolean> offline() {
-            return raw("offline").map(value -> (Boolean) value);
+            return optionalBoolean("offline");
         }
         /**
          * True to emulate offline service worker.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> emulateOfflineServiceWorker() {
-            return raw("emulateOfflineServiceWorker").map(value -> (Boolean) value);
+            return optionalBoolean("emulateOfflineServiceWorker");
         }
         /**
          * Configure conditions for matching requests. If multiple entries match a request, the first entry wins. Global conditions can be configured by leaving the urlPattern for the conditions empty. These global conditions are also applied for throttling of p2p connections.
          * @return the protocol field value
          */
         public java.util.List<Network.NetworkConditions> matchedNetworkConditions() {
-            return CdpObject.requireList(require("matchedNetworkConditions"), element0 -> java.util.Objects.requireNonNull(Network.NetworkConditions.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(MATCHED_NETWORK_CONDITIONS);
         }
         /**
          * True to emulate internet disconnection. Deprecated, use the offline property in matchedNetworkConditions or emulateOfflineServiceWorker instead.
@@ -6944,17 +7044,6 @@ public final class Network {
      */
     public static final class OverrideNetworkStateRequest extends CdpObject {
         public OverrideNetworkStateRequest() {}
-        /**
-         * Override the state of navigator.onLine and navigator.connection.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param offline protocol value
-         * @param latency protocol value
-         * @param downloadThroughput protocol value
-         * @param uploadThroughput protocol value
-         */
-        public OverrideNetworkStateRequest(boolean offline, double latency, double downloadThroughput, double uploadThroughput) {
-            offline(offline).latency(latency).downloadThroughput(downloadThroughput).uploadThroughput(uploadThroughput);
-        }
         public static OverrideNetworkStateRequest fromMap(Map<String, Object> values) {
             final OverrideNetworkStateRequest instance_ = new OverrideNetworkStateRequest();
             if (values != null) instance_.values.putAll(values);
@@ -6965,35 +7054,35 @@ public final class Network {
          * @return the protocol field value
          */
         public boolean offline() {
-            return (Boolean) require("offline");
+            return requireBoolean("offline");
         }
         /**
          * Minimum latency from request sent to response headers received (ms).
          * @return the protocol field value
          */
         public double latency() {
-            return ((Number) require("latency")).doubleValue();
+            return requireDouble("latency");
         }
         /**
          * Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
          * @return the protocol field value
          */
         public double downloadThroughput() {
-            return ((Number) require("downloadThroughput")).doubleValue();
+            return requireDouble("downloadThroughput");
         }
         /**
          * Maximal aggregated upload throughput (bytes/sec). -1 disables upload throttling.
          * @return the protocol field value
          */
         public double uploadThroughput() {
-            return ((Number) require("uploadThroughput")).doubleValue();
+            return requireDouble("uploadThroughput");
         }
         /**
          * Connection type if known.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ConnectionType> connectionType() {
-            return raw("connectionType").map(value -> Network.ConnectionType.of((String) value));
+            return optional(CONNECTION_TYPE);
         }
         /**
          * True to emulate internet disconnection.
@@ -7057,7 +7146,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong maxTotalBufferSize() {
-            return raw("maxTotalBufferSize").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("maxTotalBufferSize");
         }
         /**
          * Per-resource buffer size in bytes to use when preserving network payloads (XHRs, etc).
@@ -7065,14 +7154,14 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong maxResourceBufferSize() {
-            return raw("maxResourceBufferSize").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("maxResourceBufferSize");
         }
         /**
          * Longest post body size (in bytes) that would be included in requestWillBeSent notification
          * @return the protocol field value, empty when absent
          */
         public OptionalLong maxPostDataSize() {
-            return raw("maxPostDataSize").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("maxPostDataSize");
         }
         /**
          * Whether DirectSocket chunk send/receive events should be reported.
@@ -7080,7 +7169,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> reportDirectSocketTraffic() {
-            return raw("reportDirectSocketTraffic").map(value -> (Boolean) value);
+            return optionalBoolean("reportDirectSocketTraffic");
         }
         /**
          * Enable storing response bodies outside of renderer, so that these survive a cross-process navigation. Requires maxTotalBufferSize to be set. Currently defaults to false. This field is being deprecated in favor of the dedicated configureDurableMessages command, due to the possibility of deadlocks when awaiting Network.enable before issuing Runtime.runIfWaitingForDebugger.
@@ -7088,7 +7177,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> enableDurableMessages() {
-            return raw("enableDurableMessages").map(value -> (Boolean) value);
+            return optionalBoolean("enableDurableMessages");
         }
         /**
          * Buffer size in bytes to use when preserving network payloads (XHRs, etc). This is the maximum number of bytes that will be collected by this DevTools session.
@@ -7156,14 +7245,14 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong maxTotalBufferSize() {
-            return raw("maxTotalBufferSize").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("maxTotalBufferSize");
         }
         /**
          * Per-resource buffer size in bytes to use when preserving network payloads (XHRs, etc).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong maxResourceBufferSize() {
-            return raw("maxResourceBufferSize").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("maxResourceBufferSize");
         }
         /**
          * Buffer size in bytes to use when preserving network payloads (XHRs, etc).
@@ -7190,14 +7279,6 @@ public final class Network {
      */
     public static final class GetCertificateRequest extends CdpObject {
         public GetCertificateRequest() {}
-        /**
-         * Returns the DER-encoded certificate.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param origin protocol value
-         */
-        public GetCertificateRequest(String origin) {
-            origin(origin);
-        }
         public static GetCertificateRequest fromMap(Map<String, Object> values) {
             final GetCertificateRequest instance_ = new GetCertificateRequest();
             if (values != null) instance_.values.putAll(values);
@@ -7208,7 +7289,7 @@ public final class Network {
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * Origin to get certificate for.
@@ -7235,7 +7316,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> urls() {
-            return raw("urls").flatMap(value -> list(value, element0 -> (String) element0));
+            return optional(URLS);
         }
         /**
          * The list of URLs for which applicable cookies will be fetched. If not specified, it&#x27;s assumed to be set to the list containing the URLs of the page and all of its subframes.
@@ -7252,13 +7333,6 @@ public final class Network {
      */
     public static final class GetResponseBodyRequest extends CdpObject {
         public GetResponseBodyRequest() {}
-        /**
-         * Returns content served for the given request.
-         * @param requestId protocol value
-         */
-        public GetResponseBodyRequest(Network.RequestId requestId) {
-            requestId(requestId);
-        }
         public static GetResponseBodyRequest fromMap(Map<String, Object> values) {
             final GetResponseBodyRequest instance_ = new GetResponseBodyRequest();
             if (values != null) instance_.values.putAll(values);
@@ -7269,7 +7343,7 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Identifier of the network request to get content for.
@@ -7286,13 +7360,6 @@ public final class Network {
      */
     public static final class GetRequestPostDataRequest extends CdpObject {
         public GetRequestPostDataRequest() {}
-        /**
-         * Returns post data sent with the request. Returns an error when no data was sent with the request.
-         * @param requestId protocol value
-         */
-        public GetRequestPostDataRequest(Network.RequestId requestId) {
-            requestId(requestId);
-        }
         public static GetRequestPostDataRequest fromMap(Map<String, Object> values) {
             final GetRequestPostDataRequest instance_ = new GetRequestPostDataRequest();
             if (values != null) instance_.values.putAll(values);
@@ -7303,7 +7370,7 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Identifier of the network request to get content for.
@@ -7321,14 +7388,6 @@ public final class Network {
      */
     public static final class GetResponseBodyForInterceptionRequest extends CdpObject {
         public GetResponseBodyForInterceptionRequest() {}
-        /**
-         * Returns content served for the given currently intercepted request.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param interceptionId protocol value
-         */
-        public GetResponseBodyForInterceptionRequest(Network.InterceptionId interceptionId) {
-            interceptionId(interceptionId);
-        }
         public static GetResponseBodyForInterceptionRequest fromMap(Map<String, Object> values) {
             final GetResponseBodyForInterceptionRequest instance_ = new GetResponseBodyForInterceptionRequest();
             if (values != null) instance_.values.putAll(values);
@@ -7339,7 +7398,7 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.InterceptionId interceptionId() {
-            return new Network.InterceptionId((String) require("interceptionId"));
+            return require(INTERCEPTION_ID);
         }
         /**
          * Identifier for the intercepted request to get body for.
@@ -7357,14 +7416,6 @@ public final class Network {
      */
     public static final class TakeResponseBodyForInterceptionAsStreamRequest extends CdpObject {
         public TakeResponseBodyForInterceptionAsStreamRequest() {}
-        /**
-         * Returns a handle to the stream representing the response body. Note that after this command, the intercepted request can&#x27;t be continued as is -- you either need to cancel it or to provide the response body. The stream only supports sequential read, IO.read will fail if the position is specified.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param interceptionId protocol value
-         */
-        public TakeResponseBodyForInterceptionAsStreamRequest(Network.InterceptionId interceptionId) {
-            interceptionId(interceptionId);
-        }
         public static TakeResponseBodyForInterceptionAsStreamRequest fromMap(Map<String, Object> values) {
             final TakeResponseBodyForInterceptionAsStreamRequest instance_ = new TakeResponseBodyForInterceptionAsStreamRequest();
             if (values != null) instance_.values.putAll(values);
@@ -7375,7 +7426,7 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.InterceptionId interceptionId() {
-            return new Network.InterceptionId((String) require("interceptionId"));
+            return require(INTERCEPTION_ID);
         }
         /**
          * Sets the interceptionId field.
@@ -7393,14 +7444,6 @@ public final class Network {
      */
     public static final class ReplayXHRRequest extends CdpObject {
         public ReplayXHRRequest() {}
-        /**
-         * This method sends a new XMLHttpRequest which is identical to the original one. The following parameters should be identical: method, url, async, request body, extra headers, withCredentials attribute, user, password.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param requestId protocol value
-         */
-        public ReplayXHRRequest(Network.RequestId requestId) {
-            requestId(requestId);
-        }
         public static ReplayXHRRequest fromMap(Map<String, Object> values) {
             final ReplayXHRRequest instance_ = new ReplayXHRRequest();
             if (values != null) instance_.values.putAll(values);
@@ -7411,7 +7454,7 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Identifier of XHR to replay.
@@ -7429,15 +7472,6 @@ public final class Network {
      */
     public static final class SearchInResponseBodyRequest extends CdpObject {
         public SearchInResponseBodyRequest() {}
-        /**
-         * Searches for given string in response content.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param requestId protocol value
-         * @param query protocol value
-         */
-        public SearchInResponseBodyRequest(Network.RequestId requestId, String query) {
-            requestId(requestId).query(query);
-        }
         public static SearchInResponseBodyRequest fromMap(Map<String, Object> values) {
             final SearchInResponseBodyRequest instance_ = new SearchInResponseBodyRequest();
             if (values != null) instance_.values.putAll(values);
@@ -7448,28 +7482,28 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * String to search for.
          * @return the protocol field value
          */
         public String query() {
-            return (String) require("query");
+            return requireString("query");
         }
         /**
          * If true, search is case sensitive.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> caseSensitive() {
-            return raw("caseSensitive").map(value -> (Boolean) value);
+            return optionalBoolean("caseSensitive");
         }
         /**
          * If true, treats string parameter as regex.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isRegex() {
-            return raw("isRegex").map(value -> (Boolean) value);
+            return optionalBoolean("isRegex");
         }
         /**
          * Identifier of the network response to search.
@@ -7524,7 +7558,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Network.BlockPattern>> urlPatterns() {
-            return raw("urlPatterns").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Network.BlockPattern.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(URL_PATTERNS);
         }
         /**
          * URL patterns to block. Wildcards (&#x27;*&#x27;) are allowed.
@@ -7533,7 +7567,7 @@ public final class Network {
          */
         @Deprecated
         public Optional<java.util.List<String>> urls() {
-            return raw("urls").flatMap(value -> list(value, element0 -> (String) element0));
+            return optional(URLS);
         }
         /**
          * Patterns to match in the order in which they are given. These patterns also take precedence over any wildcard patterns defined in {@code urls}.
@@ -7561,13 +7595,6 @@ public final class Network {
      */
     public static final class SetBypassServiceWorkerRequest extends CdpObject {
         public SetBypassServiceWorkerRequest() {}
-        /**
-         * Toggles ignoring of service worker for each request.
-         * @param bypass protocol value
-         */
-        public SetBypassServiceWorkerRequest(boolean bypass) {
-            bypass(bypass);
-        }
         public static SetBypassServiceWorkerRequest fromMap(Map<String, Object> values) {
             final SetBypassServiceWorkerRequest instance_ = new SetBypassServiceWorkerRequest();
             if (values != null) instance_.values.putAll(values);
@@ -7578,7 +7605,7 @@ public final class Network {
          * @return the protocol field value
          */
         public boolean bypass() {
-            return (Boolean) require("bypass");
+            return requireBoolean("bypass");
         }
         /**
          * Bypass service worker and load from network.
@@ -7595,13 +7622,6 @@ public final class Network {
      */
     public static final class SetCacheDisabledRequest extends CdpObject {
         public SetCacheDisabledRequest() {}
-        /**
-         * Toggles ignoring cache for each request. If {@code true}, cache will not be used.
-         * @param cacheDisabled protocol value
-         */
-        public SetCacheDisabledRequest(boolean cacheDisabled) {
-            cacheDisabled(cacheDisabled);
-        }
         public static SetCacheDisabledRequest fromMap(Map<String, Object> values) {
             final SetCacheDisabledRequest instance_ = new SetCacheDisabledRequest();
             if (values != null) instance_.values.putAll(values);
@@ -7612,7 +7632,7 @@ public final class Network {
          * @return the protocol field value
          */
         public boolean cacheDisabled() {
-            return (Boolean) require("cacheDisabled");
+            return requireBoolean("cacheDisabled");
         }
         /**
          * Cache disabled state.
@@ -7629,14 +7649,6 @@ public final class Network {
      */
     public static final class SetCookieRequest extends CdpObject {
         public SetCookieRequest() {}
-        /**
-         * Sets a cookie with the given cookie data; may overwrite equivalent cookies if they exist.
-         * @param name protocol value
-         * @param value protocol value
-         */
-        public SetCookieRequest(String name, String value) {
-            name(name).value(value);
-        }
         public static SetCookieRequest fromMap(Map<String, Object> values) {
             final SetCookieRequest instance_ = new SetCookieRequest();
             if (values != null) instance_.values.putAll(values);
@@ -7647,63 +7659,63 @@ public final class Network {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Cookie value.
          * @return the protocol field value
          */
         public String value() {
-            return (String) require("value");
+            return requireString("value");
         }
         /**
          * The request-URI to associate with the setting of the cookie. This value can affect the default domain, path, source port, and source scheme values of the created cookie.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return raw("url").map(value -> (String) value);
+            return optionalString("url");
         }
         /**
          * Cookie domain.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> domain() {
-            return raw("domain").map(value -> (String) value);
+            return optionalString("domain");
         }
         /**
          * Cookie path.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> path() {
-            return raw("path").map(value -> (String) value);
+            return optionalString("path");
         }
         /**
          * True if cookie is secure.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> secure() {
-            return raw("secure").map(value -> (Boolean) value);
+            return optionalBoolean("secure");
         }
         /**
          * True if cookie is http-only.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> httpOnly() {
-            return raw("httpOnly").map(value -> (Boolean) value);
+            return optionalBoolean("httpOnly");
         }
         /**
          * Cookie SameSite type.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookieSameSite> sameSite() {
-            return raw("sameSite").map(value -> Network.CookieSameSite.of((String) value));
+            return optional(SAME_SITE);
         }
         /**
          * Cookie expiration date, session cookie if not set
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.TimeSinceEpoch> expires() {
-            return raw("expires").map(value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+            return optional(EXPIRES);
         }
         /**
          * Cookie Priority type.
@@ -7711,7 +7723,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookiePriority> priority() {
-            return raw("priority").map(value -> Network.CookiePriority.of((String) value));
+            return optional(PRIORITY);
         }
         /**
          * Cookie source scheme type.
@@ -7719,7 +7731,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookieSourceScheme> sourceScheme() {
-            return raw("sourceScheme").map(value -> Network.CookieSourceScheme.of((String) value));
+            return optional(SOURCE_SCHEME);
         }
         /**
          * Cookie source port. Valid values are {-1, [1, 65535]}, -1 indicates an unspecified port. An unspecified port value allows protocol clients to emulate legacy cookie scope for the port. This is a temporary ability and it will be removed in the future.
@@ -7727,7 +7739,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong sourcePort() {
-            return raw("sourcePort").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("sourcePort");
         }
         /**
          * Cookie partition key. If not set, the cookie will be set as not partitioned.
@@ -7735,7 +7747,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookiePartitionKey> partitionKey() {
-            return raw("partitionKey").flatMap(CdpObject::objectMap).map(Network.CookiePartitionKey::fromMap);
+            return optional(PARTITION_KEY);
         }
         /**
          * Cookie name.
@@ -7864,13 +7876,6 @@ public final class Network {
      */
     public static final class SetCookiesRequest extends CdpObject {
         public SetCookiesRequest() {}
-        /**
-         * Sets given cookies.
-         * @param cookies protocol value
-         */
-        public SetCookiesRequest(java.util.List<Network.CookieParam> cookies) {
-            cookies(cookies);
-        }
         public static SetCookiesRequest fromMap(Map<String, Object> values) {
             final SetCookiesRequest instance_ = new SetCookiesRequest();
             if (values != null) instance_.values.putAll(values);
@@ -7881,7 +7886,7 @@ public final class Network {
          * @return the protocol field value
          */
         public java.util.List<Network.CookieParam> cookies() {
-            return CdpObject.requireList(require("cookies"), element0 -> java.util.Objects.requireNonNull(Network.CookieParam.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(COOKIES);
         }
         /**
          * Cookies to be set.
@@ -7898,13 +7903,6 @@ public final class Network {
      */
     public static final class SetExtraHTTPHeadersRequest extends CdpObject {
         public SetExtraHTTPHeadersRequest() {}
-        /**
-         * Specifies whether to always send extra HTTP headers with the requests from this page.
-         * @param headers protocol value
-         */
-        public SetExtraHTTPHeadersRequest(java.util.Map<String, Object> headers) {
-            headers(headers);
-        }
         public static SetExtraHTTPHeadersRequest fromMap(Map<String, Object> values) {
             final SetExtraHTTPHeadersRequest instance_ = new SetExtraHTTPHeadersRequest();
             if (values != null) instance_.values.putAll(values);
@@ -7915,7 +7913,7 @@ public final class Network {
          * @return the protocol field value
          */
         public java.util.Map<String, Object> headers() {
-            return CdpObject.requireObjectMap(require("headers"));
+            return requireObject("headers");
         }
         /**
          * Map with extra HTTP headers.
@@ -7933,14 +7931,6 @@ public final class Network {
      */
     public static final class SetAttachDebugStackRequest extends CdpObject {
         public SetAttachDebugStackRequest() {}
-        /**
-         * Specifies whether to attach a page script stack id in requests
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param enabled protocol value
-         */
-        public SetAttachDebugStackRequest(boolean enabled) {
-            enabled(enabled);
-        }
         public static SetAttachDebugStackRequest fromMap(Map<String, Object> values) {
             final SetAttachDebugStackRequest instance_ = new SetAttachDebugStackRequest();
             if (values != null) instance_.values.putAll(values);
@@ -7951,7 +7941,7 @@ public final class Network {
          * @return the protocol field value
          */
         public boolean enabled() {
-            return (Boolean) require("enabled");
+            return requireBoolean("enabled");
         }
         /**
          * Whether to attach a page script stack for debugging purpose.
@@ -7971,16 +7961,6 @@ public final class Network {
     @Deprecated
     public static final class SetRequestInterceptionRequest extends CdpObject {
         public SetRequestInterceptionRequest() {}
-        /**
-         * Sets the requests to intercept that match the provided patterns and optionally resource types. Deprecated, please use Fetch.enable instead.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param patterns protocol value
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public SetRequestInterceptionRequest(java.util.List<Network.RequestPattern> patterns) {
-            patterns(patterns);
-        }
         public static SetRequestInterceptionRequest fromMap(Map<String, Object> values) {
             final SetRequestInterceptionRequest instance_ = new SetRequestInterceptionRequest();
             if (values != null) instance_.values.putAll(values);
@@ -7991,7 +7971,7 @@ public final class Network {
          * @return the protocol field value
          */
         public java.util.List<Network.RequestPattern> patterns() {
-            return CdpObject.requireList(require("patterns"), element0 -> java.util.Objects.requireNonNull(Network.RequestPattern.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(PATTERNS);
         }
         /**
          * Requests matching any of these patterns will be forwarded and wait for the corresponding continueInterceptedRequest call.
@@ -8008,13 +7988,6 @@ public final class Network {
      */
     public static final class SetUserAgentOverrideRequest extends CdpObject {
         public SetUserAgentOverrideRequest() {}
-        /**
-         * Allows overriding user agent with the given string.
-         * @param userAgent protocol value
-         */
-        public SetUserAgentOverrideRequest(String userAgent) {
-            userAgent(userAgent);
-        }
         public static SetUserAgentOverrideRequest fromMap(Map<String, Object> values) {
             final SetUserAgentOverrideRequest instance_ = new SetUserAgentOverrideRequest();
             if (values != null) instance_.values.putAll(values);
@@ -8025,21 +7998,21 @@ public final class Network {
          * @return the protocol field value
          */
         public String userAgent() {
-            return (String) require("userAgent");
+            return requireString("userAgent");
         }
         /**
          * Browser language to emulate.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> acceptLanguage() {
-            return raw("acceptLanguage").map(value -> (String) value);
+            return optionalString("acceptLanguage");
         }
         /**
          * The platform navigator.platform should return.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> platform() {
-            return raw("platform").map(value -> (String) value);
+            return optionalString("platform");
         }
         /**
          * To be sent in Sec-CH-UA-* headers and returned in navigator.userAgentData
@@ -8047,7 +8020,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Emulation.UserAgentMetadata> userAgentMetadata() {
-            return raw("userAgentMetadata").flatMap(CdpObject::objectMap).map(Emulation.UserAgentMetadata::fromMap);
+            return optional(USER_AGENT_METADATA);
         }
         /**
          * User agent to use.
@@ -8093,14 +8066,6 @@ public final class Network {
      */
     public static final class StreamResourceContentRequest extends CdpObject {
         public StreamResourceContentRequest() {}
-        /**
-         * Enables streaming of the response for the given requestId. If enabled, the dataReceived event contains the data that was received during streaming.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param requestId protocol value
-         */
-        public StreamResourceContentRequest(Network.RequestId requestId) {
-            requestId(requestId);
-        }
         public static StreamResourceContentRequest fromMap(Map<String, Object> values) {
             final StreamResourceContentRequest instance_ = new StreamResourceContentRequest();
             if (values != null) instance_.values.putAll(values);
@@ -8111,7 +8076,7 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Identifier of the request to stream.
@@ -8139,7 +8104,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return raw("frameId").map(value -> new Page.FrameId((String) value));
+            return optional(FRAME_ID);
         }
         /**
          * If no frameId is provided, the status of the target is provided.
@@ -8157,14 +8122,6 @@ public final class Network {
      */
     public static final class EnableReportingApiRequest extends CdpObject {
         public EnableReportingApiRequest() {}
-        /**
-         * Enables tracking for the Reporting API, events generated by the Reporting API will now be delivered to the client. Enabling triggers &#x27;reportingApiReportAdded&#x27; for all existing reports.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param enable protocol value
-         */
-        public EnableReportingApiRequest(boolean enable) {
-            enable(enable);
-        }
         public static EnableReportingApiRequest fromMap(Map<String, Object> values) {
             final EnableReportingApiRequest instance_ = new EnableReportingApiRequest();
             if (values != null) instance_.values.putAll(values);
@@ -8175,7 +8132,7 @@ public final class Network {
          * @return the protocol field value
          */
         public boolean enable() {
-            return (Boolean) require("enable");
+            return requireBoolean("enable");
         }
         /**
          * Whether to enable or disable events for the Reporting API
@@ -8193,14 +8150,6 @@ public final class Network {
      */
     public static final class EnableDeviceBoundSessionsRequest extends CdpObject {
         public EnableDeviceBoundSessionsRequest() {}
-        /**
-         * Sets up tracking device bound sessions and fetching of initial set of sessions.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param enable protocol value
-         */
-        public EnableDeviceBoundSessionsRequest(boolean enable) {
-            enable(enable);
-        }
         public static EnableDeviceBoundSessionsRequest fromMap(Map<String, Object> values) {
             final EnableDeviceBoundSessionsRequest instance_ = new EnableDeviceBoundSessionsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -8211,7 +8160,7 @@ public final class Network {
          * @return the protocol field value
          */
         public boolean enable() {
-            return (Boolean) require("enable");
+            return requireBoolean("enable");
         }
         /**
          * Whether to enable or disable events.
@@ -8229,14 +8178,6 @@ public final class Network {
      */
     public static final class DeleteDeviceBoundSessionRequest extends CdpObject {
         public DeleteDeviceBoundSessionRequest() {}
-        /**
-         * Deletes a device bound session.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param key protocol value
-         */
-        public DeleteDeviceBoundSessionRequest(Network.DeviceBoundSessionKey key) {
-            key(key);
-        }
         public static DeleteDeviceBoundSessionRequest fromMap(Map<String, Object> values) {
             final DeleteDeviceBoundSessionRequest instance_ = new DeleteDeviceBoundSessionRequest();
             if (values != null) instance_.values.putAll(values);
@@ -8247,7 +8188,7 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.DeviceBoundSessionKey key() {
-            return java.util.Objects.requireNonNull(Network.DeviceBoundSessionKey.fromMap(CdpObject.requireObjectMap(require("key"))));
+            return require(KEY);
         }
         /**
          * Sets the key field.
@@ -8265,14 +8206,6 @@ public final class Network {
      */
     public static final class FetchSchemefulSiteRequest extends CdpObject {
         public FetchSchemefulSiteRequest() {}
-        /**
-         * Fetches the schemeful site for a specific origin.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param origin protocol value
-         */
-        public FetchSchemefulSiteRequest(String origin) {
-            origin(origin);
-        }
         public static FetchSchemefulSiteRequest fromMap(Map<String, Object> values) {
             final FetchSchemefulSiteRequest instance_ = new FetchSchemefulSiteRequest();
             if (values != null) instance_.values.putAll(values);
@@ -8283,7 +8216,7 @@ public final class Network {
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * The URL origin.
@@ -8301,15 +8234,6 @@ public final class Network {
      */
     public static final class LoadNetworkResourceRequest extends CdpObject {
         public LoadNetworkResourceRequest() {}
-        /**
-         * Fetches the resource and returns the content.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param url protocol value
-         * @param options protocol value
-         */
-        public LoadNetworkResourceRequest(String url, Network.LoadNetworkResourceOptions options) {
-            url(url).options(options);
-        }
         public static LoadNetworkResourceRequest fromMap(Map<String, Object> values) {
             final LoadNetworkResourceRequest instance_ = new LoadNetworkResourceRequest();
             if (values != null) instance_.values.putAll(values);
@@ -8320,21 +8244,21 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return raw("frameId").map(value -> new Page.FrameId((String) value));
+            return optional(FRAME_ID);
         }
         /**
          * URL of the resource to get content for.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Options for the request.
          * @return the protocol field value
          */
         public Network.LoadNetworkResourceOptions options() {
-            return java.util.Objects.requireNonNull(Network.LoadNetworkResourceOptions.fromMap(CdpObject.requireObjectMap(require("options"))));
+            return require(OPTIONS);
         }
         /**
          * Frame id to get the resource for. Mandatory for frame targets, and should be omitted for worker targets.
@@ -8370,14 +8294,6 @@ public final class Network {
      */
     public static final class SetCookieControlsRequest extends CdpObject {
         public SetCookieControlsRequest() {}
-        /**
-         * Sets Controls for third-party cookie access Page reload is required before the new cookie behavior will be observed
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param enableThirdPartyCookieRestriction protocol value
-         */
-        public SetCookieControlsRequest(boolean enableThirdPartyCookieRestriction) {
-            enableThirdPartyCookieRestriction(enableThirdPartyCookieRestriction);
-        }
         public static SetCookieControlsRequest fromMap(Map<String, Object> values) {
             final SetCookieControlsRequest instance_ = new SetCookieControlsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -8388,7 +8304,7 @@ public final class Network {
          * @return the protocol field value
          */
         public boolean enableThirdPartyCookieRestriction() {
-            return (Boolean) require("enableThirdPartyCookieRestriction");
+            return requireBoolean("enableThirdPartyCookieRestriction");
         }
         /**
          * Whether 3pc restriction is enabled.
@@ -8414,14 +8330,14 @@ public final class Network {
          * @return the protocol field value
          */
         public String body() {
-            return (String) require("body");
+            return requireString("body");
         }
         /**
          * True, if content was sent as base64.
          * @return the protocol field value
          */
         public boolean base64Encoded() {
-            return (Boolean) require("base64Encoded");
+            return requireBoolean("base64Encoded");
         }
         /**
          * Response body.
@@ -8456,14 +8372,14 @@ public final class Network {
          * @return the protocol field value
          */
         public String postData() {
-            return (String) require("postData");
+            return requireString("postData");
         }
         /**
          * True, if content was sent as base64.
          * @return the protocol field value
          */
         public boolean base64Encoded() {
-            return (Boolean) require("base64Encoded");
+            return requireBoolean("base64Encoded");
         }
         /**
          * Request body string, omitting files from multipart requests
@@ -8499,14 +8415,14 @@ public final class Network {
          * @return the protocol field value
          */
         public String body() {
-            return (String) require("body");
+            return requireString("body");
         }
         /**
          * True, if content was sent as base64.
          * @return the protocol field value
          */
         public boolean base64Encoded() {
-            return (Boolean) require("base64Encoded");
+            return requireBoolean("base64Encoded");
         }
         /**
          * Response body.
@@ -8541,28 +8457,28 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Timestamp.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Data chunk length.
          * @return the protocol field value
          */
         public long dataLength() {
-            return ((Number) require("dataLength")).longValue();
+            return requireLong("dataLength");
         }
         /**
          * Actual bytes received (might be less than dataLength for compressed encodings).
          * @return the protocol field value
          */
         public long encodedDataLength() {
-            return ((Number) require("encodedDataLength")).longValue();
+            return requireLong("encodedDataLength");
         }
         /**
          * Data that was received. (Encoded as a base64 string when passed over JSON)
@@ -8570,7 +8486,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> data() {
-            return raw("data").map(value -> (String) value);
+            return optionalString("data");
         }
         /**
          * Request identifier.
@@ -8633,35 +8549,35 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Timestamp.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Message type.
          * @return the protocol field value
          */
         public String eventName() {
-            return (String) require("eventName");
+            return requireString("eventName");
         }
         /**
          * Message identifier.
          * @return the protocol field value
          */
         public String eventId() {
-            return (String) require("eventId");
+            return requireString("eventId");
         }
         /**
          * Message content.
          * @return the protocol field value
          */
         public String data() {
-            return (String) require("data");
+            return requireString("data");
         }
         /**
          * Request identifier.
@@ -8723,49 +8639,49 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Timestamp.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Resource type.
          * @return the protocol field value
          */
         public Network.ResourceType type() {
-            return Network.ResourceType.of((String) require("type"));
+            return require(TYPE);
         }
         /**
          * Error message. List of network errors: https://cs.chromium.org/chromium/src/net/base/net_error_list.h
          * @return the protocol field value
          */
         public String errorText() {
-            return (String) require("errorText");
+            return requireString("errorText");
         }
         /**
          * True if loading was canceled.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> canceled() {
-            return raw("canceled").map(value -> (Boolean) value);
+            return optionalBoolean("canceled");
         }
         /**
          * The reason why loading was blocked, if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.BlockedReason> blockedReason() {
-            return raw("blockedReason").map(value -> Network.BlockedReason.of((String) value));
+            return optional(BLOCKED_REASON);
         }
         /**
          * The reason why loading was blocked by CORS, if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CorsErrorStatus> corsErrorStatus() {
-            return raw("corsErrorStatus").flatMap(CdpObject::objectMap).map(Network.CorsErrorStatus::fromMap);
+            return optional(CORS_ERROR_STATUS);
         }
         /**
          * Request identifier.
@@ -8845,21 +8761,21 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Timestamp.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Total number of bytes received for this request.
          * @return the protocol field value
          */
         public double encodedDataLength() {
-            return ((Number) require("encodedDataLength")).doubleValue();
+            return requireDouble("encodedDataLength");
         }
         /**
          * Request identifier.
@@ -8906,84 +8822,84 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.InterceptionId interceptionId() {
-            return new Network.InterceptionId((String) require("interceptionId"));
+            return require(INTERCEPTION_ID);
         }
         /**
          * Returns the request field.
          * @return the protocol field value
          */
         public Network.Request request() {
-            return java.util.Objects.requireNonNull(Network.Request.fromMap(CdpObject.requireObjectMap(require("request"))));
+            return require(REQUEST);
         }
         /**
          * The id of the frame that initiated the request.
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * How the requested resource will be used.
          * @return the protocol field value
          */
         public Network.ResourceType resourceType() {
-            return Network.ResourceType.of((String) require("resourceType"));
+            return require(RESOURCE_TYPE);
         }
         /**
          * Whether this is a navigation request, which can abort the navigation completely.
          * @return the protocol field value
          */
         public boolean isNavigationRequest() {
-            return (Boolean) require("isNavigationRequest");
+            return requireBoolean("isNavigationRequest");
         }
         /**
          * Set if the request is a navigation that will result in a download. Only present after response is received from the server (i.e. HeadersReceived stage).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isDownload() {
-            return raw("isDownload").map(value -> (Boolean) value);
+            return optionalBoolean("isDownload");
         }
         /**
          * Redirect location, only sent if a redirect was intercepted.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> redirectUrl() {
-            return raw("redirectUrl").map(value -> (String) value);
+            return optionalString("redirectUrl");
         }
         /**
          * Details of the Authorization Challenge encountered. If this is set then continueInterceptedRequest must contain an authChallengeResponse.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.AuthChallenge> authChallenge() {
-            return raw("authChallenge").flatMap(CdpObject::objectMap).map(Network.AuthChallenge::fromMap);
+            return optional(AUTH_CHALLENGE);
         }
         /**
          * Response error if intercepted at response stage or if redirect occurred while intercepting request.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ErrorReason> responseErrorReason() {
-            return raw("responseErrorReason").map(value -> Network.ErrorReason.of((String) value));
+            return optional(RESPONSE_ERROR_REASON);
         }
         /**
          * Response code if intercepted at response stage or if redirect occurred while intercepting request or auth retry occurred.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong responseStatusCode() {
-            return raw("responseStatusCode").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("responseStatusCode");
         }
         /**
          * Response headers if intercepted at the response stage or if redirect occurred while intercepting request or auth retry occurred.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> responseHeaders() {
-            return raw("responseHeaders").flatMap(CdpObject::objectMap);
+            return optionalObject("responseHeaders");
         }
         /**
          * If the intercepted request had a corresponding requestWillBeSent event fired for it, then this requestId will be the same as the requestId present in the requestWillBeSent event.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.RequestId> requestId() {
-            return raw("requestId").map(value -> new Network.RequestId((String) value));
+            return optional(REQUEST_ID);
         }
         /**
          * Each request the page makes will have a unique id, however if any redirects are encountered while processing that fetch, they will be reported with the same id as the original fetch. Likewise if HTTP authentication is needed then the same fetch id will be used.
@@ -9108,7 +9024,7 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Request identifier.
@@ -9134,49 +9050,49 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Loader identifier. Empty string if the request is fetched from worker.
          * @return the protocol field value
          */
         public Network.LoaderId loaderId() {
-            return new Network.LoaderId((String) require("loaderId"));
+            return require(LOADER_ID);
         }
         /**
          * URL of the document this request is loaded for.
          * @return the protocol field value
          */
         public String documentURL() {
-            return (String) require("documentURL");
+            return requireString("documentURL");
         }
         /**
          * Request data.
          * @return the protocol field value
          */
         public Network.Request request() {
-            return java.util.Objects.requireNonNull(Network.Request.fromMap(CdpObject.requireObjectMap(require("request"))));
+            return require(REQUEST);
         }
         /**
          * Timestamp.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Timestamp.
          * @return the protocol field value
          */
         public Network.TimeSinceEpoch wallTime() {
-            return new Network.TimeSinceEpoch(((Number) require("wallTime")).doubleValue());
+            return require(WALL_TIME);
         }
         /**
          * Request initiator.
          * @return the protocol field value
          */
         public Network.Initiator initiator() {
-            return java.util.Objects.requireNonNull(Network.Initiator.fromMap(CdpObject.requireObjectMap(require("initiator"))));
+            return require(INITIATOR);
         }
         /**
          * In the case that redirectResponse is populated, this flag indicates whether requestWillBeSentExtraInfo and responseReceivedExtraInfo events will be or were emitted for the request which was just redirected.
@@ -9184,35 +9100,35 @@ public final class Network {
          * @return the protocol field value
          */
         public boolean redirectHasExtraInfo() {
-            return (Boolean) require("redirectHasExtraInfo");
+            return requireBoolean("redirectHasExtraInfo");
         }
         /**
          * Redirect response data.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.Response> redirectResponse() {
-            return raw("redirectResponse").flatMap(CdpObject::objectMap).map(Network.Response::fromMap);
+            return optional(REDIRECT_RESPONSE);
         }
         /**
          * Type of this resource.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ResourceType> type() {
-            return raw("type").map(value -> Network.ResourceType.of((String) value));
+            return optional(TYPE);
         }
         /**
          * Frame identifier.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return raw("frameId").map(value -> new Page.FrameId((String) value));
+            return optional(FRAME_ID);
         }
         /**
          * Whether the request is initiated by a user gesture. Defaults to false.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> hasUserGesture() {
-            return raw("hasUserGesture").map(value -> (Boolean) value);
+            return optionalBoolean("hasUserGesture");
         }
         /**
          * The render-blocking behavior of the request.
@@ -9220,7 +9136,7 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.RenderBlockingBehavior> renderBlockingBehavior() {
-            return raw("renderBlockingBehavior").map(value -> Network.RenderBlockingBehavior.of((String) value));
+            return optional(RENDER_BLOCKING_BEHAVIOR);
         }
         /**
          * Request identifier.
@@ -9357,21 +9273,21 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * New priority
          * @return the protocol field value
          */
         public Network.ResourcePriority newPriority() {
-            return Network.ResourcePriority.of((String) require("newPriority"));
+            return require(NEW_PRIORITY);
         }
         /**
          * Timestamp.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Request identifier.
@@ -9416,14 +9332,14 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Information about the signed exchange response.
          * @return the protocol field value
          */
         public Network.SignedExchangeInfo info() {
-            return java.util.Objects.requireNonNull(Network.SignedExchangeInfo.fromMap(CdpObject.requireObjectMap(require("info"))));
+            return require(INFO);
         }
         /**
          * Request identifier.
@@ -9458,35 +9374,35 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Loader identifier. Empty string if the request is fetched from worker.
          * @return the protocol field value
          */
         public Network.LoaderId loaderId() {
-            return new Network.LoaderId((String) require("loaderId"));
+            return require(LOADER_ID);
         }
         /**
          * Timestamp.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Resource type.
          * @return the protocol field value
          */
         public Network.ResourceType type() {
-            return Network.ResourceType.of((String) require("type"));
+            return require(TYPE);
         }
         /**
          * Response data.
          * @return the protocol field value
          */
         public Network.Response response() {
-            return java.util.Objects.requireNonNull(Network.Response.fromMap(CdpObject.requireObjectMap(require("response"))));
+            return require(RESPONSE);
         }
         /**
          * Indicates whether requestWillBeSentExtraInfo and responseReceivedExtraInfo events will be or were emitted for this request.
@@ -9494,14 +9410,14 @@ public final class Network {
          * @return the protocol field value
          */
         public boolean hasExtraInfo() {
-            return (Boolean) require("hasExtraInfo");
+            return requireBoolean("hasExtraInfo");
         }
         /**
          * Frame identifier.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return raw("frameId").map(value -> new Page.FrameId((String) value));
+            return optional(FRAME_ID);
         }
         /**
          * Request identifier.
@@ -9582,14 +9498,14 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Timestamp.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Request identifier.
@@ -9624,21 +9540,21 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * WebSocket request URL.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Request initiator.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.Initiator> initiator() {
-            return raw("initiator").flatMap(CdpObject::objectMap).map(Network.Initiator::fromMap);
+            return optional(INITIATOR);
         }
         /**
          * Request identifier.
@@ -9682,21 +9598,21 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Timestamp.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * WebSocket error message.
          * @return the protocol field value
          */
         public String errorMessage() {
-            return (String) require("errorMessage");
+            return requireString("errorMessage");
         }
         /**
          * Request identifier.
@@ -9740,21 +9656,21 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Timestamp.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * WebSocket response data.
          * @return the protocol field value
          */
         public Network.WebSocketFrame response() {
-            return java.util.Objects.requireNonNull(Network.WebSocketFrame.fromMap(CdpObject.requireObjectMap(require("response"))));
+            return require(RESPONSE_3);
         }
         /**
          * Request identifier.
@@ -9798,21 +9714,21 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Timestamp.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * WebSocket response data.
          * @return the protocol field value
          */
         public Network.WebSocketFrame response() {
-            return java.util.Objects.requireNonNull(Network.WebSocketFrame.fromMap(CdpObject.requireObjectMap(require("response"))));
+            return require(RESPONSE_3);
         }
         /**
          * Request identifier.
@@ -9856,21 +9772,21 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Timestamp.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * WebSocket response data.
          * @return the protocol field value
          */
         public Network.WebSocketResponse response() {
-            return java.util.Objects.requireNonNull(Network.WebSocketResponse.fromMap(CdpObject.requireObjectMap(require("response"))));
+            return require(RESPONSE_4);
         }
         /**
          * Request identifier.
@@ -9914,28 +9830,28 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Timestamp.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * UTC Timestamp.
          * @return the protocol field value
          */
         public Network.TimeSinceEpoch wallTime() {
-            return new Network.TimeSinceEpoch(((Number) require("wallTime")).doubleValue());
+            return require(WALL_TIME);
         }
         /**
          * WebSocket request data.
          * @return the protocol field value
          */
         public Network.WebSocketRequest request() {
-            return java.util.Objects.requireNonNull(Network.WebSocketRequest.fromMap(CdpObject.requireObjectMap(require("request"))));
+            return require(REQUEST_2);
         }
         /**
          * Request identifier.
@@ -9988,28 +9904,28 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId transportId() {
-            return new Network.RequestId((String) require("transportId"));
+            return require(TRANSPORT_ID);
         }
         /**
          * WebTransport request URL.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Timestamp.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Request initiator.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.Initiator> initiator() {
-            return raw("initiator").flatMap(CdpObject::objectMap).map(Network.Initiator::fromMap);
+            return optional(INITIATOR);
         }
         /**
          * WebTransport identifier.
@@ -10062,14 +9978,14 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId transportId() {
-            return new Network.RequestId((String) require("transportId"));
+            return require(TRANSPORT_ID);
         }
         /**
          * Timestamp.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * WebTransport identifier.
@@ -10104,14 +10020,14 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId transportId() {
-            return new Network.RequestId((String) require("transportId"));
+            return require(TRANSPORT_ID);
         }
         /**
          * Timestamp.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * WebTransport identifier.
@@ -10147,42 +10063,42 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId identifier() {
-            return new Network.RequestId((String) require("identifier"));
+            return require(IDENTIFIER);
         }
         /**
          * Returns the remoteAddr field.
          * @return the protocol field value
          */
         public String remoteAddr() {
-            return (String) require("remoteAddr");
+            return requireString("remoteAddr");
         }
         /**
          * Unsigned int 16.
          * @return the protocol field value
          */
         public long remotePort() {
-            return ((Number) require("remotePort")).longValue();
+            return requireLong("remotePort");
         }
         /**
          * Returns the options field.
          * @return the protocol field value
          */
         public Network.DirectTCPSocketOptions options() {
-            return java.util.Objects.requireNonNull(Network.DirectTCPSocketOptions.fromMap(CdpObject.requireObjectMap(require("options"))));
+            return require(OPTIONS_2);
         }
         /**
          * Returns the timestamp field.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Returns the initiator field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.Initiator> initiator() {
-            return raw("initiator").flatMap(CdpObject::objectMap).map(Network.Initiator::fromMap);
+            return optional(INITIATOR);
         }
         /**
          * Sets the identifier field.
@@ -10254,42 +10170,42 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId identifier() {
-            return new Network.RequestId((String) require("identifier"));
+            return require(IDENTIFIER);
         }
         /**
          * Returns the remoteAddr field.
          * @return the protocol field value
          */
         public String remoteAddr() {
-            return (String) require("remoteAddr");
+            return requireString("remoteAddr");
         }
         /**
          * Expected to be unsigned integer.
          * @return the protocol field value
          */
         public long remotePort() {
-            return ((Number) require("remotePort")).longValue();
+            return requireLong("remotePort");
         }
         /**
          * Returns the timestamp field.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Returns the localAddr field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> localAddr() {
-            return raw("localAddr").map(value -> (String) value);
+            return optionalString("localAddr");
         }
         /**
          * Expected to be unsigned integer.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong localPort() {
-            return raw("localPort").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("localPort");
         }
         /**
          * Sets the identifier field.
@@ -10361,21 +10277,21 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId identifier() {
-            return new Network.RequestId((String) require("identifier"));
+            return require(IDENTIFIER);
         }
         /**
          * Returns the errorMessage field.
          * @return the protocol field value
          */
         public String errorMessage() {
-            return (String) require("errorMessage");
+            return requireString("errorMessage");
         }
         /**
          * Returns the timestamp field.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Sets the identifier field.
@@ -10420,14 +10336,14 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId identifier() {
-            return new Network.RequestId((String) require("identifier"));
+            return require(IDENTIFIER);
         }
         /**
          * Returns the timestamp field.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Sets the identifier field.
@@ -10463,21 +10379,21 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId identifier() {
-            return new Network.RequestId((String) require("identifier"));
+            return require(IDENTIFIER);
         }
         /**
          * Returns the data field.
          * @return the protocol field value
          */
         public String data() {
-            return (String) require("data");
+            return requireString("data");
         }
         /**
          * Returns the timestamp field.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Sets the identifier field.
@@ -10522,21 +10438,21 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId identifier() {
-            return new Network.RequestId((String) require("identifier"));
+            return require(IDENTIFIER);
         }
         /**
          * Returns the data field.
          * @return the protocol field value
          */
         public String data() {
-            return (String) require("data");
+            return requireString("data");
         }
         /**
          * Returns the timestamp field.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Sets the identifier field.
@@ -10581,14 +10497,14 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId identifier() {
-            return new Network.RequestId((String) require("identifier"));
+            return require(IDENTIFIER);
         }
         /**
          * Returns the IPAddress field.
          * @return the protocol field value
          */
         public String IPAddress() {
-            return (String) require("IPAddress");
+            return requireString("IPAddress");
         }
         /**
          * Sets the identifier field.
@@ -10624,14 +10540,14 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId identifier() {
-            return new Network.RequestId((String) require("identifier"));
+            return require(IDENTIFIER);
         }
         /**
          * Returns the IPAddress field.
          * @return the protocol field value
          */
         public String IPAddress() {
-            return (String) require("IPAddress");
+            return requireString("IPAddress");
         }
         /**
          * Sets the identifier field.
@@ -10667,28 +10583,28 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId identifier() {
-            return new Network.RequestId((String) require("identifier"));
+            return require(IDENTIFIER);
         }
         /**
          * Returns the options field.
          * @return the protocol field value
          */
         public Network.DirectUDPSocketOptions options() {
-            return java.util.Objects.requireNonNull(Network.DirectUDPSocketOptions.fromMap(CdpObject.requireObjectMap(require("options"))));
+            return require(OPTIONS_3);
         }
         /**
          * Returns the timestamp field.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Returns the initiator field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.Initiator> initiator() {
-            return raw("initiator").flatMap(CdpObject::objectMap).map(Network.Initiator::fromMap);
+            return optional(INITIATOR);
         }
         /**
          * Sets the identifier field.
@@ -10742,42 +10658,42 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId identifier() {
-            return new Network.RequestId((String) require("identifier"));
+            return require(IDENTIFIER);
         }
         /**
          * Returns the localAddr field.
          * @return the protocol field value
          */
         public String localAddr() {
-            return (String) require("localAddr");
+            return requireString("localAddr");
         }
         /**
          * Expected to be unsigned integer.
          * @return the protocol field value
          */
         public long localPort() {
-            return ((Number) require("localPort")).longValue();
+            return requireLong("localPort");
         }
         /**
          * Returns the timestamp field.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Returns the remoteAddr field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> remoteAddr() {
-            return raw("remoteAddr").map(value -> (String) value);
+            return optionalString("remoteAddr");
         }
         /**
          * Expected to be unsigned integer.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong remotePort() {
-            return raw("remotePort").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("remotePort");
         }
         /**
          * Sets the identifier field.
@@ -10849,21 +10765,21 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId identifier() {
-            return new Network.RequestId((String) require("identifier"));
+            return require(IDENTIFIER);
         }
         /**
          * Returns the errorMessage field.
          * @return the protocol field value
          */
         public String errorMessage() {
-            return (String) require("errorMessage");
+            return requireString("errorMessage");
         }
         /**
          * Returns the timestamp field.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Sets the identifier field.
@@ -10908,14 +10824,14 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId identifier() {
-            return new Network.RequestId((String) require("identifier"));
+            return require(IDENTIFIER);
         }
         /**
          * Returns the timestamp field.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Sets the identifier field.
@@ -10951,21 +10867,21 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId identifier() {
-            return new Network.RequestId((String) require("identifier"));
+            return require(IDENTIFIER);
         }
         /**
          * Returns the message field.
          * @return the protocol field value
          */
         public Network.DirectUDPMessage message() {
-            return java.util.Objects.requireNonNull(Network.DirectUDPMessage.fromMap(CdpObject.requireObjectMap(require("message"))));
+            return require(MESSAGE);
         }
         /**
          * Returns the timestamp field.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Sets the identifier field.
@@ -11010,21 +10926,21 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId identifier() {
-            return new Network.RequestId((String) require("identifier"));
+            return require(IDENTIFIER);
         }
         /**
          * Returns the message field.
          * @return the protocol field value
          */
         public Network.DirectUDPMessage message() {
-            return java.util.Objects.requireNonNull(Network.DirectUDPMessage.fromMap(CdpObject.requireObjectMap(require("message"))));
+            return require(MESSAGE);
         }
         /**
          * Returns the timestamp field.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Sets the identifier field.
@@ -11069,21 +10985,21 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * A list of cookies potentially associated to the requested URL. This includes both cookies sent with the request and the ones not sent; the latter are distinguished by having blockedReasons field set.
          * @return the protocol field value
          */
         public java.util.List<Network.AssociatedCookie> associatedCookies() {
-            return CdpObject.requireList(require("associatedCookies"), element0 -> java.util.Objects.requireNonNull(Network.AssociatedCookie.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(ASSOCIATED_COOKIES);
         }
         /**
          * Raw request headers as they will be sent over the wire.
          * @return the protocol field value
          */
         public java.util.Map<String, Object> headers() {
-            return CdpObject.requireObjectMap(require("headers"));
+            return requireObject("headers");
         }
         /**
          * Connection timing information for the request.
@@ -11091,35 +11007,35 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.ConnectTiming connectTiming() {
-            return java.util.Objects.requireNonNull(Network.ConnectTiming.fromMap(CdpObject.requireObjectMap(require("connectTiming"))));
+            return require(CONNECT_TIMING);
         }
         /**
          * How the request site&#x27;s device bound sessions were used during this request.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Network.DeviceBoundSessionWithUsage>> deviceBoundSessionUsages() {
-            return raw("deviceBoundSessionUsages").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Network.DeviceBoundSessionWithUsage.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(DEVICE_BOUND_SESSION_USAGES);
         }
         /**
          * The client security state set for the request.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ClientSecurityState> clientSecurityState() {
-            return raw("clientSecurityState").flatMap(CdpObject::objectMap).map(Network.ClientSecurityState::fromMap);
+            return optional(CLIENT_SECURITY_STATE);
         }
         /**
          * Whether the site has partitioned cookies stored in a partition different than the current one.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> siteHasCookieInOtherPartition() {
-            return raw("siteHasCookieInOtherPartition").map(value -> (Boolean) value);
+            return optionalBoolean("siteHasCookieInOtherPartition");
         }
         /**
          * The network conditions id if this request was affected by network conditions configured via emulateNetworkConditionsByRule.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> appliedNetworkConditionsId() {
-            return raw("appliedNetworkConditionsId").map(value -> (String) value);
+            return optionalString("appliedNetworkConditionsId");
         }
         /**
          * Request identifier. Used to match this information to an existing requestWillBeSent event.
@@ -11210,42 +11126,42 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * A list of cookies which were not stored from the response along with the corresponding reasons for blocking. The cookies here may not be valid due to syntax errors, which are represented by the invalid cookie line string instead of a proper cookie.
          * @return the protocol field value
          */
         public java.util.List<Network.BlockedSetCookieWithReason> blockedCookies() {
-            return CdpObject.requireList(require("blockedCookies"), element0 -> java.util.Objects.requireNonNull(Network.BlockedSetCookieWithReason.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(BLOCKED_COOKIES);
         }
         /**
          * Raw response headers as they were received over the wire. Duplicate headers in the response are represented as a single key with their values concatentated using {@code \n} as the separator. See also {@code headersText} that contains verbatim text for HTTP/1.*.
          * @return the protocol field value
          */
         public java.util.Map<String, Object> headers() {
-            return CdpObject.requireObjectMap(require("headers"));
+            return requireObject("headers");
         }
         /**
          * The IP address space of the resource. The address space can only be determined once the transport established the connection, so we can&#x27;t send it in {@code requestWillBeSentExtraInfo}.
          * @return the protocol field value
          */
         public Network.IPAddressSpace resourceIPAddressSpace() {
-            return Network.IPAddressSpace.of((String) require("resourceIPAddressSpace"));
+            return require(RESOURCE_IPADDRESS_SPACE);
         }
         /**
          * The status code of the response. This is useful in cases the request failed and no responseReceived event is triggered, which is the case for, e.g., CORS errors. This is also the correct status code for cached requests, where the status in responseReceived is a 200 and this will be 304.
          * @return the protocol field value
          */
         public long statusCode() {
-            return ((Number) require("statusCode")).longValue();
+            return requireLong("statusCode");
         }
         /**
          * Raw response header text as it was received over the wire. The raw text may not always be available, such as in the case of HTTP/2 or QUIC.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> headersText() {
-            return raw("headersText").map(value -> (String) value);
+            return optionalString("headersText");
         }
         /**
          * The cookie partition key that will be used to store partitioned cookies set in this response. Only sent when partitioned cookies are enabled.
@@ -11253,21 +11169,21 @@ public final class Network {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CookiePartitionKey> cookiePartitionKey() {
-            return raw("cookiePartitionKey").flatMap(CdpObject::objectMap).map(Network.CookiePartitionKey::fromMap);
+            return optional(COOKIE_PARTITION_KEY);
         }
         /**
          * True if partitioned cookies are enabled, but the partition key is not serializable to string.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> cookiePartitionKeyOpaque() {
-            return raw("cookiePartitionKeyOpaque").map(value -> (Boolean) value);
+            return optionalBoolean("cookiePartitionKeyOpaque");
         }
         /**
          * A list of cookies which should have been blocked by 3PCD but are exempted and stored from the response with the corresponding reason.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Network.ExemptedSetCookieWithReason>> exemptedCookies() {
-            return raw("exemptedCookies").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Network.ExemptedSetCookieWithReason.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(EXEMPTED_COOKIES);
         }
         /**
          * Request identifier. Used to match this information to another responseReceived event.
@@ -11367,14 +11283,14 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Raw response headers as they were received over the wire. Duplicate headers in the response are represented as a single key with their values concatentated using {@code \n} as the separator. See also {@code headersText} that contains verbatim text for HTTP/1.*.
          * @return the protocol field value
          */
         public java.util.Map<String, Object> headers() {
-            return CdpObject.requireObjectMap(require("headers"));
+            return requireObject("headers");
         }
         /**
          * Request identifier. Used to match this information to another responseReceived event.
@@ -11437,42 +11353,42 @@ public final class Network {
          * @return the protocol field value
          */
         public TrustTokenOperationDoneEvent.StatusValues status() {
-            return TrustTokenOperationDoneEvent.StatusValues.of((String) require("status"));
+            return require(STATUS_2);
         }
         /**
          * Returns the type field.
          * @return the protocol field value
          */
         public Network.TrustTokenOperationType type() {
-            return Network.TrustTokenOperationType.of((String) require("type"));
+            return require(TYPE_3);
         }
         /**
          * Returns the requestId field.
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Top level origin. The context in which the operation was attempted.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> topLevelOrigin() {
-            return raw("topLevelOrigin").map(value -> (String) value);
+            return optionalString("topLevelOrigin");
         }
         /**
          * Origin of the issuer in case of a &quot;Issuance&quot; or &quot;Redemption&quot; operation.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> issuerOrigin() {
-            return raw("issuerOrigin").map(value -> (String) value);
+            return optionalString("issuerOrigin");
         }
         /**
          * The number of obtained Trust Tokens on a successful &quot;Issuance&quot; operation.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong issuedTokenCount() {
-            return raw("issuedTokenCount").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("issuedTokenCount");
         }
         /**
          * Detailed success or error status of the operation. &#x27;AlreadyExists&#x27; also signifies a successful operation, as the result of the operation already exists und thus, the operation was abort preemptively (e.g. a cache hit).
@@ -11555,7 +11471,7 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.ReportingApiReport report() {
-            return java.util.Objects.requireNonNull(Network.ReportingApiReport.fromMap(CdpObject.requireObjectMap(require("report"))));
+            return require(REPORT);
         }
         /**
          * Sets the report field.
@@ -11582,7 +11498,7 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.ReportingApiReport report() {
-            return java.util.Objects.requireNonNull(Network.ReportingApiReport.fromMap(CdpObject.requireObjectMap(require("report"))));
+            return require(REPORT);
         }
         /**
          * Sets the report field.
@@ -11609,14 +11525,14 @@ public final class Network {
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * Returns the endpoints field.
          * @return the protocol field value
          */
         public java.util.List<Network.ReportingApiEndpoint> endpoints() {
-            return CdpObject.requireList(require("endpoints"), element0 -> java.util.Objects.requireNonNull(Network.ReportingApiEndpoint.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(ENDPOINTS);
         }
         /**
          * Origin of the document(s) which configured the endpoints.
@@ -11652,7 +11568,7 @@ public final class Network {
          * @return the protocol field value
          */
         public java.util.List<Network.DeviceBoundSession> sessions() {
-            return CdpObject.requireList(require("sessions"), element0 -> java.util.Objects.requireNonNull(Network.DeviceBoundSession.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(SESSIONS);
         }
         /**
          * The device bound sessions.
@@ -11679,56 +11595,56 @@ public final class Network {
          * @return the protocol field value
          */
         public Network.DeviceBoundSessionEventId eventId() {
-            return new Network.DeviceBoundSessionEventId((String) require("eventId"));
+            return require(EVENT_ID);
         }
         /**
          * The site this session event is associated with.
          * @return the protocol field value
          */
         public String site() {
-            return (String) require("site");
+            return requireString("site");
         }
         /**
          * Whether this event was considered successful.
          * @return the protocol field value
          */
         public boolean succeeded() {
-            return (Boolean) require("succeeded");
+            return requireBoolean("succeeded");
         }
         /**
          * The session ID this event is associated with. May not be populated for failed events.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> sessionId() {
-            return raw("sessionId").map(value -> (String) value);
+            return optionalString("sessionId");
         }
         /**
          * The below are the different session event type details. Exactly one is populated.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.CreationEventDetails> creationEventDetails() {
-            return raw("creationEventDetails").flatMap(CdpObject::objectMap).map(Network.CreationEventDetails::fromMap);
+            return optional(CREATION_EVENT_DETAILS);
         }
         /**
          * Returns the refreshEventDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.RefreshEventDetails> refreshEventDetails() {
-            return raw("refreshEventDetails").flatMap(CdpObject::objectMap).map(Network.RefreshEventDetails::fromMap);
+            return optional(REFRESH_EVENT_DETAILS);
         }
         /**
          * Returns the terminationEventDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.TerminationEventDetails> terminationEventDetails() {
-            return raw("terminationEventDetails").flatMap(CdpObject::objectMap).map(Network.TerminationEventDetails::fromMap);
+            return optional(TERMINATION_EVENT_DETAILS);
         }
         /**
          * Returns the challengeEventDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ChallengeEventDetails> challengeEventDetails() {
-            return raw("challengeEventDetails").flatMap(CdpObject::objectMap).map(Network.ChallengeEventDetails::fromMap);
+            return optional(CHALLENGE_EVENT_DETAILS);
         }
         /**
          * A unique identifier for this session event.
@@ -11803,9 +11719,8 @@ public final class Network {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Sets a list of content encodings that will be accepted. Empty list means no encoding is accepted.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
@@ -11813,9 +11728,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAcceptedEncodings(java.util.List<Network.ContentEncoding> encodings) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("encodings", CdpObject.json(encodings));
-            return client.call("Network.setAcceptedEncodings", params);
+            return call("Network.setAcceptedEncodings", params("encodings", encodings));
         }
         /**
          * Sets a list of content encodings that will be accepted. Empty list means no encoding is accepted.
@@ -11824,7 +11737,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAcceptedEncodings(SetAcceptedEncodingsRequest request) {
-            return client.call("Network.setAcceptedEncodings", request == null ? null : request.toMap());
+            return call("Network.setAcceptedEncodings", request);
         }
         /**
          * Clears accepted encodings set by setAcceptedEncodings
@@ -11832,7 +11745,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearAcceptedEncodingsOverride() {
-            return client.call("Network.clearAcceptedEncodingsOverride", null);
+            return call("Network.clearAcceptedEncodingsOverride");
         }
         /**
          * Tells whether clearing browser cache is supported.
@@ -11841,7 +11754,7 @@ public final class Network {
          */
         @Deprecated
         public CompletionStage<Boolean> canClearBrowserCache() {
-            return client.call("Network.canClearBrowserCache", null, result_ -> (Boolean) java.util.Objects.requireNonNull(result_.get("result")));
+            return call("Network.canClearBrowserCache", RESULT::require);
         }
         /**
          * Tells whether clearing browser cookies is supported.
@@ -11850,7 +11763,7 @@ public final class Network {
          */
         @Deprecated
         public CompletionStage<Boolean> canClearBrowserCookies() {
-            return client.call("Network.canClearBrowserCookies", null, result_ -> (Boolean) java.util.Objects.requireNonNull(result_.get("result")));
+            return call("Network.canClearBrowserCookies", RESULT::require);
         }
         /**
          * Tells whether emulation of network conditions is supported.
@@ -11859,21 +11772,21 @@ public final class Network {
          */
         @Deprecated
         public CompletionStage<Boolean> canEmulateNetworkConditions() {
-            return client.call("Network.canEmulateNetworkConditions", null, result_ -> (Boolean) java.util.Objects.requireNonNull(result_.get("result")));
+            return call("Network.canEmulateNetworkConditions", RESULT::require);
         }
         /**
          * Clears browser cache.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearBrowserCache() {
-            return client.call("Network.clearBrowserCache", null);
+            return call("Network.clearBrowserCache");
         }
         /**
          * Clears browser cookies.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearBrowserCookies() {
-            return client.call("Network.clearBrowserCookies", null);
+            return call("Network.clearBrowserCookies");
         }
         /**
          * Response to Network.requestIntercepted which either modifies the request to continue with any modifications, or blocks it, or completes it with the provided response bytes. If a network fetch occurs as a result which encounters a redirect an additional Network.requestIntercepted event will be sent with the same InterceptionId. Deprecated, use Fetch.continueRequest, Fetch.fulfillRequest and Fetch.failRequest instead.
@@ -11891,16 +11804,7 @@ public final class Network {
          */
         @Deprecated
         public CompletionStage<Void> continueInterceptedRequest(Network.InterceptionId interceptionId, Network.@Nullable ErrorReason errorReason, @Nullable String rawResponse, @Nullable String url, @Nullable String method, @Nullable String postData, java.util.@Nullable Map<String, Object> headers, Network.@Nullable AuthChallengeResponse authChallengeResponse) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("interceptionId", CdpObject.json(interceptionId));
-            if (errorReason != null) params.put("errorReason", CdpObject.json(errorReason));
-            if (rawResponse != null) params.put("rawResponse", CdpObject.json(rawResponse));
-            if (url != null) params.put("url", CdpObject.json(url));
-            if (method != null) params.put("method", CdpObject.json(method));
-            if (postData != null) params.put("postData", CdpObject.json(postData));
-            if (headers != null) params.put("headers", CdpObject.json(headers));
-            if (authChallengeResponse != null) params.put("authChallengeResponse", CdpObject.json(authChallengeResponse));
-            return client.call("Network.continueInterceptedRequest", params);
+            return call("Network.continueInterceptedRequest", params("interceptionId", interceptionId, "errorReason", errorReason, "rawResponse", rawResponse, "url", url, "method", method, "postData", postData, "headers", headers, "authChallengeResponse", authChallengeResponse));
         }
         /**
          * Response to Network.requestIntercepted which either modifies the request to continue with any modifications, or blocks it, or completes it with the provided response bytes. If a network fetch occurs as a result which encounters a redirect an additional Network.requestIntercepted event will be sent with the same InterceptionId. Deprecated, use Fetch.continueRequest, Fetch.fulfillRequest and Fetch.failRequest instead.
@@ -11911,9 +11815,7 @@ public final class Network {
          */
         @Deprecated
         public CompletionStage<Void> continueInterceptedRequest(Network.InterceptionId interceptionId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("interceptionId", CdpObject.json(interceptionId));
-            return client.call("Network.continueInterceptedRequest", params);
+            return call("Network.continueInterceptedRequest", params("interceptionId", interceptionId));
         }
         /**
          * Response to Network.requestIntercepted which either modifies the request to continue with any modifications, or blocks it, or completes it with the provided response bytes. If a network fetch occurs as a result which encounters a redirect an additional Network.requestIntercepted event will be sent with the same InterceptionId. Deprecated, use Fetch.continueRequest, Fetch.fulfillRequest and Fetch.failRequest instead.
@@ -11924,7 +11826,7 @@ public final class Network {
          */
         @Deprecated
         public CompletionStage<Void> continueInterceptedRequest(ContinueInterceptedRequestRequest request) {
-            return client.call("Network.continueInterceptedRequest", request == null ? null : request.toMap());
+            return call("Network.continueInterceptedRequest", request);
         }
         /**
          * Deletes browser cookies with matching name and url or domain/path/partitionKey pair.
@@ -11936,13 +11838,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteCookies(String name, @Nullable String url, @Nullable String domain, @Nullable String path, Network.@Nullable CookiePartitionKey partitionKey) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("name", CdpObject.json(name));
-            if (url != null) params.put("url", CdpObject.json(url));
-            if (domain != null) params.put("domain", CdpObject.json(domain));
-            if (path != null) params.put("path", CdpObject.json(path));
-            if (partitionKey != null) params.put("partitionKey", CdpObject.json(partitionKey));
-            return client.call("Network.deleteCookies", params);
+            return call("Network.deleteCookies", params("name", name, "url", url, "domain", domain, "path", path, "partitionKey", partitionKey));
         }
         /**
          * Deletes browser cookies with matching name and url or domain/path/partitionKey pair.
@@ -11950,9 +11846,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteCookies(String name) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("name", CdpObject.json(name));
-            return client.call("Network.deleteCookies", params);
+            return call("Network.deleteCookies", params("name", name));
         }
         /**
          * Deletes browser cookies with matching name and url or domain/path/partitionKey pair.
@@ -11960,14 +11854,14 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteCookies(DeleteCookiesRequest request) {
-            return client.call("Network.deleteCookies", request == null ? null : request.toMap());
+            return call("Network.deleteCookies", request);
         }
         /**
          * Disables network tracking, prevents network events from being sent to the client.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Network.disable", null);
+            return call("Network.disable");
         }
         /**
          * Activates emulation of network conditions. This command is deprecated in favor of the emulateNetworkConditionsByRule and overrideNetworkState commands, which can be used together to the same effect.
@@ -11984,16 +11878,7 @@ public final class Network {
          */
         @Deprecated
         public CompletionStage<Void> emulateNetworkConditions(boolean offline, double latency, double downloadThroughput, double uploadThroughput, Network.@Nullable ConnectionType connectionType, @Nullable Double packetLoss, @Nullable Long packetQueueLength, @Nullable Boolean packetReordering) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("offline", CdpObject.json(offline));
-            params.put("latency", CdpObject.json(latency));
-            params.put("downloadThroughput", CdpObject.json(downloadThroughput));
-            params.put("uploadThroughput", CdpObject.json(uploadThroughput));
-            if (connectionType != null) params.put("connectionType", CdpObject.json(connectionType));
-            if (packetLoss != null) params.put("packetLoss", CdpObject.json(packetLoss));
-            if (packetQueueLength != null) params.put("packetQueueLength", CdpObject.json(packetQueueLength));
-            if (packetReordering != null) params.put("packetReordering", CdpObject.json(packetReordering));
-            return client.call("Network.emulateNetworkConditions", params);
+            return call("Network.emulateNetworkConditions", params("offline", offline, "latency", latency, "downloadThroughput", downloadThroughput, "uploadThroughput", uploadThroughput, "connectionType", connectionType, "packetLoss", packetLoss, "packetQueueLength", packetQueueLength, "packetReordering", packetReordering));
         }
         /**
          * Activates emulation of network conditions. This command is deprecated in favor of the emulateNetworkConditionsByRule and overrideNetworkState commands, which can be used together to the same effect.
@@ -12006,12 +11891,7 @@ public final class Network {
          */
         @Deprecated
         public CompletionStage<Void> emulateNetworkConditions(boolean offline, double latency, double downloadThroughput, double uploadThroughput) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("offline", CdpObject.json(offline));
-            params.put("latency", CdpObject.json(latency));
-            params.put("downloadThroughput", CdpObject.json(downloadThroughput));
-            params.put("uploadThroughput", CdpObject.json(uploadThroughput));
-            return client.call("Network.emulateNetworkConditions", params);
+            return call("Network.emulateNetworkConditions", params("offline", offline, "latency", latency, "downloadThroughput", downloadThroughput, "uploadThroughput", uploadThroughput));
         }
         /**
          * Activates emulation of network conditions. This command is deprecated in favor of the emulateNetworkConditionsByRule and overrideNetworkState commands, which can be used together to the same effect.
@@ -12021,7 +11901,7 @@ public final class Network {
          */
         @Deprecated
         public CompletionStage<Void> emulateNetworkConditions(EmulateNetworkConditionsRequest request) {
-            return client.call("Network.emulateNetworkConditions", request == null ? null : request.toMap());
+            return call("Network.emulateNetworkConditions", request);
         }
         /**
          * Activates emulation of network conditions for individual requests using URL match patterns. Unlike the deprecated Network.emulateNetworkConditions this method does not affect {@code navigator} state. Use Network.overrideNetworkState to explicitly modify {@code navigator} behavior.
@@ -12032,11 +11912,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> emulateNetworkConditionsByRule(@Nullable Boolean offline, @Nullable Boolean emulateOfflineServiceWorker, java.util.List<Network.NetworkConditions> matchedNetworkConditions) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (offline != null) params.put("offline", CdpObject.json(offline));
-            if (emulateOfflineServiceWorker != null) params.put("emulateOfflineServiceWorker", CdpObject.json(emulateOfflineServiceWorker));
-            params.put("matchedNetworkConditions", CdpObject.json(matchedNetworkConditions));
-            return client.call("Network.emulateNetworkConditionsByRule", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("ruleIds")), element0 -> (String) element0));
+            return call("Network.emulateNetworkConditionsByRule", params("offline", offline, "emulateOfflineServiceWorker", emulateOfflineServiceWorker, "matchedNetworkConditions", matchedNetworkConditions), RULE_IDS::require);
         }
         /**
          * Activates emulation of network conditions for individual requests using URL match patterns. Unlike the deprecated Network.emulateNetworkConditions this method does not affect {@code navigator} state. Use Network.overrideNetworkState to explicitly modify {@code navigator} behavior.
@@ -12045,9 +11921,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> emulateNetworkConditionsByRule(java.util.List<Network.NetworkConditions> matchedNetworkConditions) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("matchedNetworkConditions", CdpObject.json(matchedNetworkConditions));
-            return client.call("Network.emulateNetworkConditionsByRule", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("ruleIds")), element0 -> (String) element0));
+            return call("Network.emulateNetworkConditionsByRule", params("matchedNetworkConditions", matchedNetworkConditions), RULE_IDS::require);
         }
         /**
          * Activates emulation of network conditions for individual requests using URL match patterns. Unlike the deprecated Network.emulateNetworkConditions this method does not affect {@code navigator} state. Use Network.overrideNetworkState to explicitly modify {@code navigator} behavior.
@@ -12056,7 +11930,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> emulateNetworkConditionsByRule(EmulateNetworkConditionsByRuleRequest request) {
-            return client.call("Network.emulateNetworkConditionsByRule", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("ruleIds")), element0 -> (String) element0));
+            return call("Network.emulateNetworkConditionsByRule", request, RULE_IDS::require);
         }
         /**
          * Override the state of navigator.onLine and navigator.connection.
@@ -12069,13 +11943,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> overrideNetworkState(boolean offline, double latency, double downloadThroughput, double uploadThroughput, Network.ConnectionType connectionType) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("offline", CdpObject.json(offline));
-            params.put("latency", CdpObject.json(latency));
-            params.put("downloadThroughput", CdpObject.json(downloadThroughput));
-            params.put("uploadThroughput", CdpObject.json(uploadThroughput));
-            params.put("connectionType", CdpObject.json(connectionType));
-            return client.call("Network.overrideNetworkState", params);
+            return call("Network.overrideNetworkState", params("offline", offline, "latency", latency, "downloadThroughput", downloadThroughput, "uploadThroughput", uploadThroughput, "connectionType", connectionType));
         }
         /**
          * Override the state of navigator.onLine and navigator.connection.
@@ -12087,12 +11955,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> overrideNetworkState(boolean offline, double latency, double downloadThroughput, double uploadThroughput) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("offline", CdpObject.json(offline));
-            params.put("latency", CdpObject.json(latency));
-            params.put("downloadThroughput", CdpObject.json(downloadThroughput));
-            params.put("uploadThroughput", CdpObject.json(uploadThroughput));
-            return client.call("Network.overrideNetworkState", params);
+            return call("Network.overrideNetworkState", params("offline", offline, "latency", latency, "downloadThroughput", downloadThroughput, "uploadThroughput", uploadThroughput));
         }
         /**
          * Override the state of navigator.onLine and navigator.connection.
@@ -12101,7 +11964,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> overrideNetworkState(OverrideNetworkStateRequest request) {
-            return client.call("Network.overrideNetworkState", request == null ? null : request.toMap());
+            return call("Network.overrideNetworkState", request);
         }
         /**
          * Enables network tracking, network events will now be delivered to the client.
@@ -12113,20 +11976,14 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable(@Nullable Long maxTotalBufferSize, @Nullable Long maxResourceBufferSize, @Nullable Long maxPostDataSize, @Nullable Boolean reportDirectSocketTraffic, @Nullable Boolean enableDurableMessages) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (maxTotalBufferSize != null) params.put("maxTotalBufferSize", CdpObject.json(maxTotalBufferSize));
-            if (maxResourceBufferSize != null) params.put("maxResourceBufferSize", CdpObject.json(maxResourceBufferSize));
-            if (maxPostDataSize != null) params.put("maxPostDataSize", CdpObject.json(maxPostDataSize));
-            if (reportDirectSocketTraffic != null) params.put("reportDirectSocketTraffic", CdpObject.json(reportDirectSocketTraffic));
-            if (enableDurableMessages != null) params.put("enableDurableMessages", CdpObject.json(enableDurableMessages));
-            return client.call("Network.enable", params);
+            return call("Network.enable", params("maxTotalBufferSize", maxTotalBufferSize, "maxResourceBufferSize", maxResourceBufferSize, "maxPostDataSize", maxPostDataSize, "reportDirectSocketTraffic", reportDirectSocketTraffic, "enableDurableMessages", enableDurableMessages));
         }
         /**
          * Enables network tracking, network events will now be delivered to the client.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Network.enable", null);
+            return call("Network.enable");
         }
         /**
          * Enables network tracking, network events will now be delivered to the client.
@@ -12134,7 +11991,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable(EnableRequest request) {
-            return client.call("Network.enable", request == null ? null : request.toMap());
+            return call("Network.enable", request);
         }
         /**
          * Configures storing response bodies outside of renderer, so that these survive a cross-process navigation. If maxTotalBufferSize is not set, durable messages are disabled.
@@ -12144,10 +12001,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> configureDurableMessages(@Nullable Long maxTotalBufferSize, @Nullable Long maxResourceBufferSize) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (maxTotalBufferSize != null) params.put("maxTotalBufferSize", CdpObject.json(maxTotalBufferSize));
-            if (maxResourceBufferSize != null) params.put("maxResourceBufferSize", CdpObject.json(maxResourceBufferSize));
-            return client.call("Network.configureDurableMessages", params);
+            return call("Network.configureDurableMessages", params("maxTotalBufferSize", maxTotalBufferSize, "maxResourceBufferSize", maxResourceBufferSize));
         }
         /**
          * Configures storing response bodies outside of renderer, so that these survive a cross-process navigation. If maxTotalBufferSize is not set, durable messages are disabled.
@@ -12155,7 +12009,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> configureDurableMessages() {
-            return client.call("Network.configureDurableMessages", null);
+            return call("Network.configureDurableMessages");
         }
         /**
          * Configures storing response bodies outside of renderer, so that these survive a cross-process navigation. If maxTotalBufferSize is not set, durable messages are disabled.
@@ -12164,7 +12018,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> configureDurableMessages(ConfigureDurableMessagesRequest request) {
-            return client.call("Network.configureDurableMessages", request == null ? null : request.toMap());
+            return call("Network.configureDurableMessages", request);
         }
         /**
          * Returns all browser cookies. Depending on the backend support, will return detailed cookie information in the {@code cookies} field. Deprecated. Use Storage.getCookies instead.
@@ -12173,7 +12027,7 @@ public final class Network {
          */
         @Deprecated
         public CompletionStage<java.util.List<Network.Cookie>> getAllCookies() {
-            return client.call("Network.getAllCookies", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("cookies")), element0 -> java.util.Objects.requireNonNull(Network.Cookie.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Network.getAllCookies", COOKIES_2::require);
         }
         /**
          * Returns the DER-encoded certificate.
@@ -12182,9 +12036,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> getCertificate(String origin) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("origin", CdpObject.json(origin));
-            return client.call("Network.getCertificate", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("tableNames")), element0 -> (String) element0));
+            return call("Network.getCertificate", params("origin", origin), TABLE_NAMES::require);
         }
         /**
          * Returns the DER-encoded certificate.
@@ -12193,7 +12045,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> getCertificate(GetCertificateRequest request) {
-            return client.call("Network.getCertificate", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("tableNames")), element0 -> (String) element0));
+            return call("Network.getCertificate", request, TABLE_NAMES::require);
         }
         /**
          * Returns all browser cookies for the current URL. Depending on the backend support, will return detailed cookie information in the {@code cookies} field.
@@ -12201,16 +12053,14 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Network.Cookie>> getCookies(java.util.List<String> urls) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("urls", CdpObject.json(urls));
-            return client.call("Network.getCookies", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("cookies")), element0 -> java.util.Objects.requireNonNull(Network.Cookie.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Network.getCookies", params("urls", urls), COOKIES_2::require);
         }
         /**
          * Returns all browser cookies for the current URL. Depending on the backend support, will return detailed cookie information in the {@code cookies} field.
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Network.Cookie>> getCookies() {
-            return client.call("Network.getCookies", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("cookies")), element0 -> java.util.Objects.requireNonNull(Network.Cookie.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Network.getCookies", COOKIES_2::require);
         }
         /**
          * Returns all browser cookies for the current URL. Depending on the backend support, will return detailed cookie information in the {@code cookies} field.
@@ -12218,7 +12068,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Network.Cookie>> getCookies(GetCookiesRequest request) {
-            return client.call("Network.getCookies", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("cookies")), element0 -> java.util.Objects.requireNonNull(Network.Cookie.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Network.getCookies", request, COOKIES_2::require);
         }
         /**
          * Returns content served for the given request.
@@ -12226,9 +12076,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetResponseBodyResult> getResponseBody(Network.RequestId requestId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("requestId", CdpObject.json(requestId));
-            return client.call("Network.getResponseBody", params, result_ -> new GetResponseBodyResult(result_));
+            return call("Network.getResponseBody", params("requestId", requestId), GetResponseBodyResult::fromMap);
         }
         /**
          * Returns content served for the given request.
@@ -12236,7 +12084,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetResponseBodyResult> getResponseBody(GetResponseBodyRequest request) {
-            return client.call("Network.getResponseBody", request == null ? null : request.toMap(), result_ -> new GetResponseBodyResult(result_));
+            return call("Network.getResponseBody", request, GetResponseBodyResult::fromMap);
         }
         /**
          * Returns post data sent with the request. Returns an error when no data was sent with the request.
@@ -12244,9 +12092,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetRequestPostDataResult> getRequestPostData(Network.RequestId requestId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("requestId", CdpObject.json(requestId));
-            return client.call("Network.getRequestPostData", params, result_ -> new GetRequestPostDataResult(result_));
+            return call("Network.getRequestPostData", params("requestId", requestId), GetRequestPostDataResult::fromMap);
         }
         /**
          * Returns post data sent with the request. Returns an error when no data was sent with the request.
@@ -12254,7 +12100,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetRequestPostDataResult> getRequestPostData(GetRequestPostDataRequest request) {
-            return client.call("Network.getRequestPostData", request == null ? null : request.toMap(), result_ -> new GetRequestPostDataResult(result_));
+            return call("Network.getRequestPostData", request, GetRequestPostDataResult::fromMap);
         }
         /**
          * Returns content served for the given currently intercepted request.
@@ -12263,9 +12109,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetResponseBodyForInterceptionResult> getResponseBodyForInterception(Network.InterceptionId interceptionId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("interceptionId", CdpObject.json(interceptionId));
-            return client.call("Network.getResponseBodyForInterception", params, result_ -> new GetResponseBodyForInterceptionResult(result_));
+            return call("Network.getResponseBodyForInterception", params("interceptionId", interceptionId), GetResponseBodyForInterceptionResult::fromMap);
         }
         /**
          * Returns content served for the given currently intercepted request.
@@ -12274,7 +12118,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetResponseBodyForInterceptionResult> getResponseBodyForInterception(GetResponseBodyForInterceptionRequest request) {
-            return client.call("Network.getResponseBodyForInterception", request == null ? null : request.toMap(), result_ -> new GetResponseBodyForInterceptionResult(result_));
+            return call("Network.getResponseBodyForInterception", request, GetResponseBodyForInterceptionResult::fromMap);
         }
         /**
          * Returns a handle to the stream representing the response body. Note that after this command, the intercepted request can&#x27;t be continued as is -- you either need to cancel it or to provide the response body. The stream only supports sequential read, IO.read will fail if the position is specified.
@@ -12283,9 +12127,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<IO.StreamHandle> takeResponseBodyForInterceptionAsStream(Network.InterceptionId interceptionId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("interceptionId", CdpObject.json(interceptionId));
-            return client.call("Network.takeResponseBodyForInterceptionAsStream", params, result_ -> new IO.StreamHandle((String) java.util.Objects.requireNonNull(result_.get("stream"))));
+            return call("Network.takeResponseBodyForInterceptionAsStream", params("interceptionId", interceptionId), STREAM::require);
         }
         /**
          * Returns a handle to the stream representing the response body. Note that after this command, the intercepted request can&#x27;t be continued as is -- you either need to cancel it or to provide the response body. The stream only supports sequential read, IO.read will fail if the position is specified.
@@ -12294,7 +12136,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<IO.StreamHandle> takeResponseBodyForInterceptionAsStream(TakeResponseBodyForInterceptionAsStreamRequest request) {
-            return client.call("Network.takeResponseBodyForInterceptionAsStream", request == null ? null : request.toMap(), result_ -> new IO.StreamHandle((String) java.util.Objects.requireNonNull(result_.get("stream"))));
+            return call("Network.takeResponseBodyForInterceptionAsStream", request, STREAM::require);
         }
         /**
          * This method sends a new XMLHttpRequest which is identical to the original one. The following parameters should be identical: method, url, async, request body, extra headers, withCredentials attribute, user, password.
@@ -12303,9 +12145,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> replayXHR(Network.RequestId requestId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("requestId", CdpObject.json(requestId));
-            return client.call("Network.replayXHR", params);
+            return call("Network.replayXHR", params("requestId", requestId));
         }
         /**
          * This method sends a new XMLHttpRequest which is identical to the original one. The following parameters should be identical: method, url, async, request body, extra headers, withCredentials attribute, user, password.
@@ -12314,7 +12154,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> replayXHR(ReplayXHRRequest request) {
-            return client.call("Network.replayXHR", request == null ? null : request.toMap());
+            return call("Network.replayXHR", request);
         }
         /**
          * Searches for given string in response content.
@@ -12326,12 +12166,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Debugger.SearchMatch>> searchInResponseBody(Network.RequestId requestId, String query, @Nullable Boolean caseSensitive, @Nullable Boolean isRegex) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("requestId", CdpObject.json(requestId));
-            params.put("query", CdpObject.json(query));
-            if (caseSensitive != null) params.put("caseSensitive", CdpObject.json(caseSensitive));
-            if (isRegex != null) params.put("isRegex", CdpObject.json(isRegex));
-            return client.call("Network.searchInResponseBody", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("result")), element0 -> java.util.Objects.requireNonNull(Debugger.SearchMatch.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Network.searchInResponseBody", params("requestId", requestId, "query", query, "caseSensitive", caseSensitive, "isRegex", isRegex), RESULT_2::require);
         }
         /**
          * Searches for given string in response content.
@@ -12341,10 +12176,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Debugger.SearchMatch>> searchInResponseBody(Network.RequestId requestId, String query) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("requestId", CdpObject.json(requestId));
-            params.put("query", CdpObject.json(query));
-            return client.call("Network.searchInResponseBody", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("result")), element0 -> java.util.Objects.requireNonNull(Debugger.SearchMatch.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Network.searchInResponseBody", params("requestId", requestId, "query", query), RESULT_2::require);
         }
         /**
          * Searches for given string in response content.
@@ -12353,7 +12185,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Debugger.SearchMatch>> searchInResponseBody(SearchInResponseBodyRequest request) {
-            return client.call("Network.searchInResponseBody", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("result")), element0 -> java.util.Objects.requireNonNull(Debugger.SearchMatch.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Network.searchInResponseBody", request, RESULT_2::require);
         }
         /**
          * Blocks URLs from loading.
@@ -12363,10 +12195,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setBlockedURLs(java.util.@Nullable List<Network.BlockPattern> urlPatterns, java.util.@Nullable List<String> urls) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (urlPatterns != null) params.put("urlPatterns", CdpObject.json(urlPatterns));
-            if (urls != null) params.put("urls", CdpObject.json(urls));
-            return client.call("Network.setBlockedURLs", params);
+            return call("Network.setBlockedURLs", params("urlPatterns", urlPatterns, "urls", urls));
         }
         /**
          * Blocks URLs from loading.
@@ -12374,7 +12203,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setBlockedURLs() {
-            return client.call("Network.setBlockedURLs", null);
+            return call("Network.setBlockedURLs");
         }
         /**
          * Blocks URLs from loading.
@@ -12383,7 +12212,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setBlockedURLs(SetBlockedURLsRequest request) {
-            return client.call("Network.setBlockedURLs", request == null ? null : request.toMap());
+            return call("Network.setBlockedURLs", request);
         }
         /**
          * Toggles ignoring of service worker for each request.
@@ -12391,9 +12220,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setBypassServiceWorker(boolean bypass) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("bypass", CdpObject.json(bypass));
-            return client.call("Network.setBypassServiceWorker", params);
+            return call("Network.setBypassServiceWorker", params("bypass", bypass));
         }
         /**
          * Toggles ignoring of service worker for each request.
@@ -12401,7 +12228,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setBypassServiceWorker(SetBypassServiceWorkerRequest request) {
-            return client.call("Network.setBypassServiceWorker", request == null ? null : request.toMap());
+            return call("Network.setBypassServiceWorker", request);
         }
         /**
          * Toggles ignoring cache for each request. If {@code true}, cache will not be used.
@@ -12409,9 +12236,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setCacheDisabled(boolean cacheDisabled) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("cacheDisabled", CdpObject.json(cacheDisabled));
-            return client.call("Network.setCacheDisabled", params);
+            return call("Network.setCacheDisabled", params("cacheDisabled", cacheDisabled));
         }
         /**
          * Toggles ignoring cache for each request. If {@code true}, cache will not be used.
@@ -12419,7 +12244,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setCacheDisabled(SetCacheDisabledRequest request) {
-            return client.call("Network.setCacheDisabled", request == null ? null : request.toMap());
+            return call("Network.setCacheDisabled", request);
         }
         /**
          * Sets a cookie with the given cookie data; may overwrite equivalent cookies if they exist.
@@ -12439,21 +12264,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<Boolean> setCookie(String name, String value, @Nullable String url, @Nullable String domain, @Nullable String path, @Nullable Boolean secure, @Nullable Boolean httpOnly, Network.@Nullable CookieSameSite sameSite, Network.@Nullable TimeSinceEpoch expires, Network.@Nullable CookiePriority priority, Network.@Nullable CookieSourceScheme sourceScheme, @Nullable Long sourcePort, Network.@Nullable CookiePartitionKey partitionKey) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("name", CdpObject.json(name));
-            params.put("value", CdpObject.json(value));
-            if (url != null) params.put("url", CdpObject.json(url));
-            if (domain != null) params.put("domain", CdpObject.json(domain));
-            if (path != null) params.put("path", CdpObject.json(path));
-            if (secure != null) params.put("secure", CdpObject.json(secure));
-            if (httpOnly != null) params.put("httpOnly", CdpObject.json(httpOnly));
-            if (sameSite != null) params.put("sameSite", CdpObject.json(sameSite));
-            if (expires != null) params.put("expires", CdpObject.json(expires));
-            if (priority != null) params.put("priority", CdpObject.json(priority));
-            if (sourceScheme != null) params.put("sourceScheme", CdpObject.json(sourceScheme));
-            if (sourcePort != null) params.put("sourcePort", CdpObject.json(sourcePort));
-            if (partitionKey != null) params.put("partitionKey", CdpObject.json(partitionKey));
-            return client.call("Network.setCookie", params, result_ -> (Boolean) java.util.Objects.requireNonNull(result_.get("success")));
+            return call("Network.setCookie", params("name", name, "value", value, "url", url, "domain", domain, "path", path, "secure", secure, "httpOnly", httpOnly, "sameSite", sameSite, "expires", expires, "priority", priority, "sourceScheme", sourceScheme, "sourcePort", sourcePort, "partitionKey", partitionKey), SUCCESS::require);
         }
         /**
          * Sets a cookie with the given cookie data; may overwrite equivalent cookies if they exist.
@@ -12462,10 +12273,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<Boolean> setCookie(String name, String value) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("name", CdpObject.json(name));
-            params.put("value", CdpObject.json(value));
-            return client.call("Network.setCookie", params, result_ -> (Boolean) java.util.Objects.requireNonNull(result_.get("success")));
+            return call("Network.setCookie", params("name", name, "value", value), SUCCESS::require);
         }
         /**
          * Sets a cookie with the given cookie data; may overwrite equivalent cookies if they exist.
@@ -12473,7 +12281,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<Boolean> setCookie(SetCookieRequest request) {
-            return client.call("Network.setCookie", request == null ? null : request.toMap(), result_ -> (Boolean) java.util.Objects.requireNonNull(result_.get("success")));
+            return call("Network.setCookie", request, SUCCESS::require);
         }
         /**
          * Sets given cookies.
@@ -12481,9 +12289,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setCookies(java.util.List<Network.CookieParam> cookies) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("cookies", CdpObject.json(cookies));
-            return client.call("Network.setCookies", params);
+            return call("Network.setCookies", params("cookies", cookies));
         }
         /**
          * Sets given cookies.
@@ -12491,7 +12297,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setCookies(SetCookiesRequest request) {
-            return client.call("Network.setCookies", request == null ? null : request.toMap());
+            return call("Network.setCookies", request);
         }
         /**
          * Specifies whether to always send extra HTTP headers with the requests from this page.
@@ -12499,9 +12305,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setExtraHTTPHeaders(java.util.Map<String, Object> headers) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("headers", CdpObject.json(headers));
-            return client.call("Network.setExtraHTTPHeaders", params);
+            return call("Network.setExtraHTTPHeaders", params("headers", headers));
         }
         /**
          * Specifies whether to always send extra HTTP headers with the requests from this page.
@@ -12509,7 +12313,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setExtraHTTPHeaders(SetExtraHTTPHeadersRequest request) {
-            return client.call("Network.setExtraHTTPHeaders", request == null ? null : request.toMap());
+            return call("Network.setExtraHTTPHeaders", request);
         }
         /**
          * Specifies whether to attach a page script stack id in requests
@@ -12518,9 +12322,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAttachDebugStack(boolean enabled) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("enabled", CdpObject.json(enabled));
-            return client.call("Network.setAttachDebugStack", params);
+            return call("Network.setAttachDebugStack", params("enabled", enabled));
         }
         /**
          * Specifies whether to attach a page script stack id in requests
@@ -12529,7 +12331,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAttachDebugStack(SetAttachDebugStackRequest request) {
-            return client.call("Network.setAttachDebugStack", request == null ? null : request.toMap());
+            return call("Network.setAttachDebugStack", request);
         }
         /**
          * Sets the requests to intercept that match the provided patterns and optionally resource types. Deprecated, please use Fetch.enable instead.
@@ -12540,9 +12342,7 @@ public final class Network {
          */
         @Deprecated
         public CompletionStage<Void> setRequestInterception(java.util.List<Network.RequestPattern> patterns) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("patterns", CdpObject.json(patterns));
-            return client.call("Network.setRequestInterception", params);
+            return call("Network.setRequestInterception", params("patterns", patterns));
         }
         /**
          * Sets the requests to intercept that match the provided patterns and optionally resource types. Deprecated, please use Fetch.enable instead.
@@ -12553,7 +12353,7 @@ public final class Network {
          */
         @Deprecated
         public CompletionStage<Void> setRequestInterception(SetRequestInterceptionRequest request) {
-            return client.call("Network.setRequestInterception", request == null ? null : request.toMap());
+            return call("Network.setRequestInterception", request);
         }
         /**
          * Allows overriding user agent with the given string.
@@ -12564,12 +12364,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setUserAgentOverride(String userAgent, @Nullable String acceptLanguage, @Nullable String platform, Emulation.@Nullable UserAgentMetadata userAgentMetadata) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("userAgent", CdpObject.json(userAgent));
-            if (acceptLanguage != null) params.put("acceptLanguage", CdpObject.json(acceptLanguage));
-            if (platform != null) params.put("platform", CdpObject.json(platform));
-            if (userAgentMetadata != null) params.put("userAgentMetadata", CdpObject.json(userAgentMetadata));
-            return client.call("Network.setUserAgentOverride", params);
+            return call("Network.setUserAgentOverride", params("userAgent", userAgent, "acceptLanguage", acceptLanguage, "platform", platform, "userAgentMetadata", userAgentMetadata));
         }
         /**
          * Allows overriding user agent with the given string.
@@ -12577,9 +12372,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setUserAgentOverride(String userAgent) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("userAgent", CdpObject.json(userAgent));
-            return client.call("Network.setUserAgentOverride", params);
+            return call("Network.setUserAgentOverride", params("userAgent", userAgent));
         }
         /**
          * Allows overriding user agent with the given string.
@@ -12587,7 +12380,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setUserAgentOverride(SetUserAgentOverrideRequest request) {
-            return client.call("Network.setUserAgentOverride", request == null ? null : request.toMap());
+            return call("Network.setUserAgentOverride", request);
         }
         /**
          * Enables streaming of the response for the given requestId. If enabled, the dataReceived event contains the data that was received during streaming.
@@ -12596,9 +12389,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> streamResourceContent(Network.RequestId requestId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("requestId", CdpObject.json(requestId));
-            return client.call("Network.streamResourceContent", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("bufferedData")));
+            return call("Network.streamResourceContent", params("requestId", requestId), BUFFERED_DATA::require);
         }
         /**
          * Enables streaming of the response for the given requestId. If enabled, the dataReceived event contains the data that was received during streaming.
@@ -12607,7 +12398,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> streamResourceContent(StreamResourceContentRequest request) {
-            return client.call("Network.streamResourceContent", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("bufferedData")));
+            return call("Network.streamResourceContent", request, BUFFERED_DATA::require);
         }
         /**
          * Returns information about the COEP/COOP isolation status.
@@ -12616,9 +12407,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<Network.SecurityIsolationStatus> getSecurityIsolationStatus(Page.FrameId frameId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("frameId", CdpObject.json(frameId));
-            return client.call("Network.getSecurityIsolationStatus", params, result_ -> java.util.Objects.requireNonNull(Network.SecurityIsolationStatus.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("status"))))));
+            return call("Network.getSecurityIsolationStatus", params("frameId", frameId), STATUS_3::require);
         }
         /**
          * Returns information about the COEP/COOP isolation status.
@@ -12626,7 +12415,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<Network.SecurityIsolationStatus> getSecurityIsolationStatus() {
-            return client.call("Network.getSecurityIsolationStatus", null, result_ -> java.util.Objects.requireNonNull(Network.SecurityIsolationStatus.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("status"))))));
+            return call("Network.getSecurityIsolationStatus", STATUS_3::require);
         }
         /**
          * Returns information about the COEP/COOP isolation status.
@@ -12635,7 +12424,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<Network.SecurityIsolationStatus> getSecurityIsolationStatus(GetSecurityIsolationStatusRequest request) {
-            return client.call("Network.getSecurityIsolationStatus", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Network.SecurityIsolationStatus.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("status"))))));
+            return call("Network.getSecurityIsolationStatus", request, STATUS_3::require);
         }
         /**
          * Enables tracking for the Reporting API, events generated by the Reporting API will now be delivered to the client. Enabling triggers &#x27;reportingApiReportAdded&#x27; for all existing reports.
@@ -12644,9 +12433,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enableReportingApi(boolean enable) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("enable", CdpObject.json(enable));
-            return client.call("Network.enableReportingApi", params);
+            return call("Network.enableReportingApi", params("enable", enable));
         }
         /**
          * Enables tracking for the Reporting API, events generated by the Reporting API will now be delivered to the client. Enabling triggers &#x27;reportingApiReportAdded&#x27; for all existing reports.
@@ -12655,7 +12442,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enableReportingApi(EnableReportingApiRequest request) {
-            return client.call("Network.enableReportingApi", request == null ? null : request.toMap());
+            return call("Network.enableReportingApi", request);
         }
         /**
          * Sets up tracking device bound sessions and fetching of initial set of sessions.
@@ -12664,9 +12451,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enableDeviceBoundSessions(boolean enable) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("enable", CdpObject.json(enable));
-            return client.call("Network.enableDeviceBoundSessions", params);
+            return call("Network.enableDeviceBoundSessions", params("enable", enable));
         }
         /**
          * Sets up tracking device bound sessions and fetching of initial set of sessions.
@@ -12675,7 +12460,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enableDeviceBoundSessions(EnableDeviceBoundSessionsRequest request) {
-            return client.call("Network.enableDeviceBoundSessions", request == null ? null : request.toMap());
+            return call("Network.enableDeviceBoundSessions", request);
         }
         /**
          * Deletes a device bound session.
@@ -12684,9 +12469,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteDeviceBoundSession(Network.DeviceBoundSessionKey key) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("key", CdpObject.json(key));
-            return client.call("Network.deleteDeviceBoundSession", params);
+            return call("Network.deleteDeviceBoundSession", params("key", key));
         }
         /**
          * Deletes a device bound session.
@@ -12695,7 +12478,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteDeviceBoundSession(DeleteDeviceBoundSessionRequest request) {
-            return client.call("Network.deleteDeviceBoundSession", request == null ? null : request.toMap());
+            return call("Network.deleteDeviceBoundSession", request);
         }
         /**
          * Fetches the schemeful site for a specific origin.
@@ -12704,9 +12487,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> fetchSchemefulSite(String origin) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("origin", CdpObject.json(origin));
-            return client.call("Network.fetchSchemefulSite", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("schemefulSite")));
+            return call("Network.fetchSchemefulSite", params("origin", origin), SCHEMEFUL_SITE::require);
         }
         /**
          * Fetches the schemeful site for a specific origin.
@@ -12715,7 +12496,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> fetchSchemefulSite(FetchSchemefulSiteRequest request) {
-            return client.call("Network.fetchSchemefulSite", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("schemefulSite")));
+            return call("Network.fetchSchemefulSite", request, SCHEMEFUL_SITE::require);
         }
         /**
          * Fetches the resource and returns the content.
@@ -12726,11 +12507,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<Network.LoadNetworkResourcePageResult> loadNetworkResource(Page.FrameId frameId, String url, Network.LoadNetworkResourceOptions options) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("frameId", CdpObject.json(frameId));
-            params.put("url", CdpObject.json(url));
-            params.put("options", CdpObject.json(options));
-            return client.call("Network.loadNetworkResource", params, result_ -> java.util.Objects.requireNonNull(Network.LoadNetworkResourcePageResult.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("resource"))))));
+            return call("Network.loadNetworkResource", params("frameId", frameId, "url", url, "options", options), RESOURCE::require);
         }
         /**
          * Fetches the resource and returns the content.
@@ -12740,10 +12517,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<Network.LoadNetworkResourcePageResult> loadNetworkResource(String url, Network.LoadNetworkResourceOptions options) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("url", CdpObject.json(url));
-            params.put("options", CdpObject.json(options));
-            return client.call("Network.loadNetworkResource", params, result_ -> java.util.Objects.requireNonNull(Network.LoadNetworkResourcePageResult.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("resource"))))));
+            return call("Network.loadNetworkResource", params("url", url, "options", options), RESOURCE::require);
         }
         /**
          * Fetches the resource and returns the content.
@@ -12752,7 +12526,7 @@ public final class Network {
          * @return a stage completing with the command result
          */
         public CompletionStage<Network.LoadNetworkResourcePageResult> loadNetworkResource(LoadNetworkResourceRequest request) {
-            return client.call("Network.loadNetworkResource", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Network.LoadNetworkResourcePageResult.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("resource"))))));
+            return call("Network.loadNetworkResource", request, RESOURCE::require);
         }
         /**
          * Sets Controls for third-party cookie access Page reload is required before the new cookie behavior will be observed
@@ -12761,9 +12535,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setCookieControls(boolean enableThirdPartyCookieRestriction) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("enableThirdPartyCookieRestriction", CdpObject.json(enableThirdPartyCookieRestriction));
-            return client.call("Network.setCookieControls", params);
+            return call("Network.setCookieControls", params("enableThirdPartyCookieRestriction", enableThirdPartyCookieRestriction));
         }
         /**
          * Sets Controls for third-party cookie access Page reload is required before the new cookie behavior will be observed
@@ -12772,7 +12544,7 @@ public final class Network {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setCookieControls(SetCookieControlsRequest request) {
-            return client.call("Network.setCookieControls", request == null ? null : request.toMap());
+            return call("Network.setCookieControls", request);
         }
         /**
          * Fired when data chunk was received over the network.
@@ -12780,7 +12552,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onDataReceived(Consumer<DataReceivedEvent> handler) {
-            return client.on("Network.dataReceived", DataReceivedEvent::fromMap, handler);
+            return on("Network.dataReceived", DataReceivedEvent::fromMap, handler);
         }
         /**
          * Fired when EventSource message is received.
@@ -12788,7 +12560,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onEventSourceMessageReceived(Consumer<EventSourceMessageReceivedEvent> handler) {
-            return client.on("Network.eventSourceMessageReceived", EventSourceMessageReceivedEvent::fromMap, handler);
+            return on("Network.eventSourceMessageReceived", EventSourceMessageReceivedEvent::fromMap, handler);
         }
         /**
          * Fired when HTTP request has failed to load.
@@ -12796,7 +12568,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onLoadingFailed(Consumer<LoadingFailedEvent> handler) {
-            return client.on("Network.loadingFailed", LoadingFailedEvent::fromMap, handler);
+            return on("Network.loadingFailed", LoadingFailedEvent::fromMap, handler);
         }
         /**
          * Fired when HTTP request has finished loading.
@@ -12804,7 +12576,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onLoadingFinished(Consumer<LoadingFinishedEvent> handler) {
-            return client.on("Network.loadingFinished", LoadingFinishedEvent::fromMap, handler);
+            return on("Network.loadingFinished", LoadingFinishedEvent::fromMap, handler);
         }
         /**
          * Details of an intercepted HTTP request, which must be either allowed, blocked, modified or mocked. Deprecated, use Fetch.requestPaused instead.
@@ -12815,7 +12587,7 @@ public final class Network {
          */
         @Deprecated
         public CdpSubscription onRequestIntercepted(Consumer<RequestInterceptedEvent> handler) {
-            return client.on("Network.requestIntercepted", RequestInterceptedEvent::fromMap, handler);
+            return on("Network.requestIntercepted", RequestInterceptedEvent::fromMap, handler);
         }
         /**
          * Fired if request ended up loading from cache.
@@ -12823,7 +12595,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onRequestServedFromCache(Consumer<RequestServedFromCacheEvent> handler) {
-            return client.on("Network.requestServedFromCache", RequestServedFromCacheEvent::fromMap, handler);
+            return on("Network.requestServedFromCache", RequestServedFromCacheEvent::fromMap, handler);
         }
         /**
          * Fired when page is about to send HTTP request.
@@ -12831,7 +12603,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onRequestWillBeSent(Consumer<RequestWillBeSentEvent> handler) {
-            return client.on("Network.requestWillBeSent", RequestWillBeSentEvent::fromMap, handler);
+            return on("Network.requestWillBeSent", RequestWillBeSentEvent::fromMap, handler);
         }
         /**
          * Fired when resource loading priority is changed
@@ -12840,7 +12612,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onResourceChangedPriority(Consumer<ResourceChangedPriorityEvent> handler) {
-            return client.on("Network.resourceChangedPriority", ResourceChangedPriorityEvent::fromMap, handler);
+            return on("Network.resourceChangedPriority", ResourceChangedPriorityEvent::fromMap, handler);
         }
         /**
          * Fired when a signed exchange was received over the network
@@ -12849,7 +12621,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onSignedExchangeReceived(Consumer<SignedExchangeReceivedEvent> handler) {
-            return client.on("Network.signedExchangeReceived", SignedExchangeReceivedEvent::fromMap, handler);
+            return on("Network.signedExchangeReceived", SignedExchangeReceivedEvent::fromMap, handler);
         }
         /**
          * Fired when HTTP response is available.
@@ -12857,7 +12629,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onResponseReceived(Consumer<ResponseReceivedEvent> handler) {
-            return client.on("Network.responseReceived", ResponseReceivedEvent::fromMap, handler);
+            return on("Network.responseReceived", ResponseReceivedEvent::fromMap, handler);
         }
         /**
          * Fired when WebSocket is closed.
@@ -12865,7 +12637,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onWebSocketClosed(Consumer<WebSocketClosedEvent> handler) {
-            return client.on("Network.webSocketClosed", WebSocketClosedEvent::fromMap, handler);
+            return on("Network.webSocketClosed", WebSocketClosedEvent::fromMap, handler);
         }
         /**
          * Fired upon WebSocket creation.
@@ -12873,7 +12645,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onWebSocketCreated(Consumer<WebSocketCreatedEvent> handler) {
-            return client.on("Network.webSocketCreated", WebSocketCreatedEvent::fromMap, handler);
+            return on("Network.webSocketCreated", WebSocketCreatedEvent::fromMap, handler);
         }
         /**
          * Fired when WebSocket message error occurs.
@@ -12881,7 +12653,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onWebSocketFrameError(Consumer<WebSocketFrameErrorEvent> handler) {
-            return client.on("Network.webSocketFrameError", WebSocketFrameErrorEvent::fromMap, handler);
+            return on("Network.webSocketFrameError", WebSocketFrameErrorEvent::fromMap, handler);
         }
         /**
          * Fired when WebSocket message is received.
@@ -12889,7 +12661,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onWebSocketFrameReceived(Consumer<WebSocketFrameReceivedEvent> handler) {
-            return client.on("Network.webSocketFrameReceived", WebSocketFrameReceivedEvent::fromMap, handler);
+            return on("Network.webSocketFrameReceived", WebSocketFrameReceivedEvent::fromMap, handler);
         }
         /**
          * Fired when WebSocket message is sent.
@@ -12897,7 +12669,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onWebSocketFrameSent(Consumer<WebSocketFrameSentEvent> handler) {
-            return client.on("Network.webSocketFrameSent", WebSocketFrameSentEvent::fromMap, handler);
+            return on("Network.webSocketFrameSent", WebSocketFrameSentEvent::fromMap, handler);
         }
         /**
          * Fired when WebSocket handshake response becomes available.
@@ -12905,7 +12677,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onWebSocketHandshakeResponseReceived(Consumer<WebSocketHandshakeResponseReceivedEvent> handler) {
-            return client.on("Network.webSocketHandshakeResponseReceived", WebSocketHandshakeResponseReceivedEvent::fromMap, handler);
+            return on("Network.webSocketHandshakeResponseReceived", WebSocketHandshakeResponseReceivedEvent::fromMap, handler);
         }
         /**
          * Fired when WebSocket is about to initiate handshake.
@@ -12913,7 +12685,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onWebSocketWillSendHandshakeRequest(Consumer<WebSocketWillSendHandshakeRequestEvent> handler) {
-            return client.on("Network.webSocketWillSendHandshakeRequest", WebSocketWillSendHandshakeRequestEvent::fromMap, handler);
+            return on("Network.webSocketWillSendHandshakeRequest", WebSocketWillSendHandshakeRequestEvent::fromMap, handler);
         }
         /**
          * Fired upon WebTransport creation.
@@ -12921,7 +12693,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onWebTransportCreated(Consumer<WebTransportCreatedEvent> handler) {
-            return client.on("Network.webTransportCreated", WebTransportCreatedEvent::fromMap, handler);
+            return on("Network.webTransportCreated", WebTransportCreatedEvent::fromMap, handler);
         }
         /**
          * Fired when WebTransport handshake is finished.
@@ -12929,7 +12701,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onWebTransportConnectionEstablished(Consumer<WebTransportConnectionEstablishedEvent> handler) {
-            return client.on("Network.webTransportConnectionEstablished", WebTransportConnectionEstablishedEvent::fromMap, handler);
+            return on("Network.webTransportConnectionEstablished", WebTransportConnectionEstablishedEvent::fromMap, handler);
         }
         /**
          * Fired when WebTransport is disposed.
@@ -12937,7 +12709,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onWebTransportClosed(Consumer<WebTransportClosedEvent> handler) {
-            return client.on("Network.webTransportClosed", WebTransportClosedEvent::fromMap, handler);
+            return on("Network.webTransportClosed", WebTransportClosedEvent::fromMap, handler);
         }
         /**
          * Fired upon direct_socket.TCPSocket creation.
@@ -12946,7 +12718,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onDirectTCPSocketCreated(Consumer<DirectTCPSocketCreatedEvent> handler) {
-            return client.on("Network.directTCPSocketCreated", DirectTCPSocketCreatedEvent::fromMap, handler);
+            return on("Network.directTCPSocketCreated", DirectTCPSocketCreatedEvent::fromMap, handler);
         }
         /**
          * Fired when direct_socket.TCPSocket connection is opened.
@@ -12955,7 +12727,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onDirectTCPSocketOpened(Consumer<DirectTCPSocketOpenedEvent> handler) {
-            return client.on("Network.directTCPSocketOpened", DirectTCPSocketOpenedEvent::fromMap, handler);
+            return on("Network.directTCPSocketOpened", DirectTCPSocketOpenedEvent::fromMap, handler);
         }
         /**
          * Fired when direct_socket.TCPSocket is aborted.
@@ -12964,7 +12736,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onDirectTCPSocketAborted(Consumer<DirectTCPSocketAbortedEvent> handler) {
-            return client.on("Network.directTCPSocketAborted", DirectTCPSocketAbortedEvent::fromMap, handler);
+            return on("Network.directTCPSocketAborted", DirectTCPSocketAbortedEvent::fromMap, handler);
         }
         /**
          * Fired when direct_socket.TCPSocket is closed.
@@ -12973,7 +12745,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onDirectTCPSocketClosed(Consumer<DirectTCPSocketClosedEvent> handler) {
-            return client.on("Network.directTCPSocketClosed", DirectTCPSocketClosedEvent::fromMap, handler);
+            return on("Network.directTCPSocketClosed", DirectTCPSocketClosedEvent::fromMap, handler);
         }
         /**
          * Fired when data is sent to tcp direct socket stream.
@@ -12982,7 +12754,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onDirectTCPSocketChunkSent(Consumer<DirectTCPSocketChunkSentEvent> handler) {
-            return client.on("Network.directTCPSocketChunkSent", DirectTCPSocketChunkSentEvent::fromMap, handler);
+            return on("Network.directTCPSocketChunkSent", DirectTCPSocketChunkSentEvent::fromMap, handler);
         }
         /**
          * Fired when data is received from tcp direct socket stream.
@@ -12991,7 +12763,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onDirectTCPSocketChunkReceived(Consumer<DirectTCPSocketChunkReceivedEvent> handler) {
-            return client.on("Network.directTCPSocketChunkReceived", DirectTCPSocketChunkReceivedEvent::fromMap, handler);
+            return on("Network.directTCPSocketChunkReceived", DirectTCPSocketChunkReceivedEvent::fromMap, handler);
         }
         /**
          * Subscribes to Network.directUDPSocketJoinedMulticastGroup.
@@ -13000,7 +12772,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onDirectUDPSocketJoinedMulticastGroup(Consumer<DirectUDPSocketJoinedMulticastGroupEvent> handler) {
-            return client.on("Network.directUDPSocketJoinedMulticastGroup", DirectUDPSocketJoinedMulticastGroupEvent::fromMap, handler);
+            return on("Network.directUDPSocketJoinedMulticastGroup", DirectUDPSocketJoinedMulticastGroupEvent::fromMap, handler);
         }
         /**
          * Subscribes to Network.directUDPSocketLeftMulticastGroup.
@@ -13009,7 +12781,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onDirectUDPSocketLeftMulticastGroup(Consumer<DirectUDPSocketLeftMulticastGroupEvent> handler) {
-            return client.on("Network.directUDPSocketLeftMulticastGroup", DirectUDPSocketLeftMulticastGroupEvent::fromMap, handler);
+            return on("Network.directUDPSocketLeftMulticastGroup", DirectUDPSocketLeftMulticastGroupEvent::fromMap, handler);
         }
         /**
          * Fired upon direct_socket.UDPSocket creation.
@@ -13018,7 +12790,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onDirectUDPSocketCreated(Consumer<DirectUDPSocketCreatedEvent> handler) {
-            return client.on("Network.directUDPSocketCreated", DirectUDPSocketCreatedEvent::fromMap, handler);
+            return on("Network.directUDPSocketCreated", DirectUDPSocketCreatedEvent::fromMap, handler);
         }
         /**
          * Fired when direct_socket.UDPSocket connection is opened.
@@ -13027,7 +12799,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onDirectUDPSocketOpened(Consumer<DirectUDPSocketOpenedEvent> handler) {
-            return client.on("Network.directUDPSocketOpened", DirectUDPSocketOpenedEvent::fromMap, handler);
+            return on("Network.directUDPSocketOpened", DirectUDPSocketOpenedEvent::fromMap, handler);
         }
         /**
          * Fired when direct_socket.UDPSocket is aborted.
@@ -13036,7 +12808,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onDirectUDPSocketAborted(Consumer<DirectUDPSocketAbortedEvent> handler) {
-            return client.on("Network.directUDPSocketAborted", DirectUDPSocketAbortedEvent::fromMap, handler);
+            return on("Network.directUDPSocketAborted", DirectUDPSocketAbortedEvent::fromMap, handler);
         }
         /**
          * Fired when direct_socket.UDPSocket is closed.
@@ -13045,7 +12817,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onDirectUDPSocketClosed(Consumer<DirectUDPSocketClosedEvent> handler) {
-            return client.on("Network.directUDPSocketClosed", DirectUDPSocketClosedEvent::fromMap, handler);
+            return on("Network.directUDPSocketClosed", DirectUDPSocketClosedEvent::fromMap, handler);
         }
         /**
          * Fired when message is sent to udp direct socket stream.
@@ -13054,7 +12826,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onDirectUDPSocketChunkSent(Consumer<DirectUDPSocketChunkSentEvent> handler) {
-            return client.on("Network.directUDPSocketChunkSent", DirectUDPSocketChunkSentEvent::fromMap, handler);
+            return on("Network.directUDPSocketChunkSent", DirectUDPSocketChunkSentEvent::fromMap, handler);
         }
         /**
          * Fired when message is received from udp direct socket stream.
@@ -13063,7 +12835,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onDirectUDPSocketChunkReceived(Consumer<DirectUDPSocketChunkReceivedEvent> handler) {
-            return client.on("Network.directUDPSocketChunkReceived", DirectUDPSocketChunkReceivedEvent::fromMap, handler);
+            return on("Network.directUDPSocketChunkReceived", DirectUDPSocketChunkReceivedEvent::fromMap, handler);
         }
         /**
          * Fired when additional information about a requestWillBeSent event is available from the network stack. Not every requestWillBeSent event will have an additional requestWillBeSentExtraInfo fired for it, and there is no guarantee whether requestWillBeSent or requestWillBeSentExtraInfo will be fired first for the same request.
@@ -13072,7 +12844,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onRequestWillBeSentExtraInfo(Consumer<RequestWillBeSentExtraInfoEvent> handler) {
-            return client.on("Network.requestWillBeSentExtraInfo", RequestWillBeSentExtraInfoEvent::fromMap, handler);
+            return on("Network.requestWillBeSentExtraInfo", RequestWillBeSentExtraInfoEvent::fromMap, handler);
         }
         /**
          * Fired when additional information about a responseReceived event is available from the network stack. Not every responseReceived event will have an additional responseReceivedExtraInfo for it, and responseReceivedExtraInfo may be fired before or after responseReceived.
@@ -13081,7 +12853,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onResponseReceivedExtraInfo(Consumer<ResponseReceivedExtraInfoEvent> handler) {
-            return client.on("Network.responseReceivedExtraInfo", ResponseReceivedExtraInfoEvent::fromMap, handler);
+            return on("Network.responseReceivedExtraInfo", ResponseReceivedExtraInfoEvent::fromMap, handler);
         }
         /**
          * Fired when 103 Early Hints headers is received in addition to the common response. Not every responseReceived event will have an responseReceivedEarlyHints fired. Only one responseReceivedEarlyHints may be fired for eached responseReceived event.
@@ -13090,7 +12862,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onResponseReceivedEarlyHints(Consumer<ResponseReceivedEarlyHintsEvent> handler) {
-            return client.on("Network.responseReceivedEarlyHints", ResponseReceivedEarlyHintsEvent::fromMap, handler);
+            return on("Network.responseReceivedEarlyHints", ResponseReceivedEarlyHintsEvent::fromMap, handler);
         }
         /**
          * Fired exactly once for each Trust Token operation. Depending on the type of the operation and whether the operation succeeded or failed, the event is fired before the corresponding request was sent or after the response was received.
@@ -13099,7 +12871,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onTrustTokenOperationDone(Consumer<TrustTokenOperationDoneEvent> handler) {
-            return client.on("Network.trustTokenOperationDone", TrustTokenOperationDoneEvent::fromMap, handler);
+            return on("Network.trustTokenOperationDone", TrustTokenOperationDoneEvent::fromMap, handler);
         }
         /**
          * Fired once security policy has been updated.
@@ -13108,7 +12880,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onPolicyUpdated(Consumer<PolicyUpdatedEvent> handler) {
-            return client.on("Network.policyUpdated", PolicyUpdatedEvent::fromMap, handler);
+            return on("Network.policyUpdated", PolicyUpdatedEvent::fromMap, handler);
         }
         /**
          * Is sent whenever a new report is added. And after &#x27;enableReportingApi&#x27; for all existing reports.
@@ -13117,7 +12889,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onReportingApiReportAdded(Consumer<ReportingApiReportAddedEvent> handler) {
-            return client.on("Network.reportingApiReportAdded", ReportingApiReportAddedEvent::fromMap, handler);
+            return on("Network.reportingApiReportAdded", ReportingApiReportAddedEvent::fromMap, handler);
         }
         /**
          * Subscribes to Network.reportingApiReportUpdated.
@@ -13126,7 +12898,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onReportingApiReportUpdated(Consumer<ReportingApiReportUpdatedEvent> handler) {
-            return client.on("Network.reportingApiReportUpdated", ReportingApiReportUpdatedEvent::fromMap, handler);
+            return on("Network.reportingApiReportUpdated", ReportingApiReportUpdatedEvent::fromMap, handler);
         }
         /**
          * Subscribes to Network.reportingApiEndpointsChangedForOrigin.
@@ -13135,7 +12907,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onReportingApiEndpointsChangedForOrigin(Consumer<ReportingApiEndpointsChangedForOriginEvent> handler) {
-            return client.on("Network.reportingApiEndpointsChangedForOrigin", ReportingApiEndpointsChangedForOriginEvent::fromMap, handler);
+            return on("Network.reportingApiEndpointsChangedForOrigin", ReportingApiEndpointsChangedForOriginEvent::fromMap, handler);
         }
         /**
          * Triggered when the initial set of device bound sessions is added.
@@ -13144,7 +12916,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onDeviceBoundSessionsAdded(Consumer<DeviceBoundSessionsAddedEvent> handler) {
-            return client.on("Network.deviceBoundSessionsAdded", DeviceBoundSessionsAddedEvent::fromMap, handler);
+            return on("Network.deviceBoundSessionsAdded", DeviceBoundSessionsAddedEvent::fromMap, handler);
         }
         /**
          * Triggered when a device bound session event occurs.
@@ -13153,7 +12925,7 @@ public final class Network {
          * @return a removable subscription
          */
         public CdpSubscription onDeviceBoundSessionEventOccurred(Consumer<DeviceBoundSessionEventOccurredEvent> handler) {
-            return client.on("Network.deviceBoundSessionEventOccurred", DeviceBoundSessionEventOccurredEvent::fromMap, handler);
+            return on("Network.deviceBoundSessionEventOccurred", DeviceBoundSessionEventOccurredEvent::fromMap, handler);
         }
     }
 }

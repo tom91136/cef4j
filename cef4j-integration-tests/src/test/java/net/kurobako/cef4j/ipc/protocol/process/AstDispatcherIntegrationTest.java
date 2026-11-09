@@ -6,13 +6,15 @@ import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import net.kurobako.cef4j.gen.CefBrowserSettings;
+import net.kurobako.cef4j.gen.CefState;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
-import net.kurobako.cef4j.ipc.protocol.gen.BrowserSettings;
+import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessage;
 import net.kurobako.cef4j.ipc.protocol.gen.CefLifeSpanHandler;
 import net.kurobako.cef4j.ipc.protocol.gen.CreateBrowserRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.CreateBrowserResponse;
+import net.kurobako.cef4j.ipc.protocol.gen.EmptyMessage;
 import net.kurobako.cef4j.ipc.protocol.gen.Frame;
-import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -35,10 +37,9 @@ class AstDispatcherIntegrationTest {
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
-            session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, ev -> {
-                        if (!handleFuture.isDone()) handleFuture.complete(ev.browser());
-                    });
+            session.onLatest(MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, BrowserHandleMessage.DECODER, ev -> {
+                if (!handleFuture.isDone()) handleFuture.complete(ev.browser());
+            });
 
             RemoteHandle handle = handleFuture.get(20, TimeUnit.SECONDS);
             assertThat(handle.isNull()).isFalse();
@@ -65,10 +66,9 @@ class AstDispatcherIntegrationTest {
                     if (!viaTyped.isDone()) viaTyped.complete(browser);
                 }
             });
-            session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, ev -> {
-                        if (!viaRaw.isDone()) viaRaw.complete(ev.browser());
-                    });
+            session.onLatest(MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, BrowserHandleMessage.DECODER, ev -> {
+                if (!viaRaw.isDone()) viaRaw.complete(ev.browser());
+            });
 
             assertThat(viaTyped.get(20, TimeUnit.SECONDS)).isEqualTo(viaRaw.get(20, TimeUnit.SECONDS));
         }
@@ -81,10 +81,9 @@ class AstDispatcherIntegrationTest {
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
-            session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, ev -> {
-                        if (!handleFuture.isDone()) handleFuture.complete(ev.browser());
-                    });
+            session.onLatest(MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, BrowserHandleMessage.DECODER, ev -> {
+                if (!handleFuture.isDone()) handleFuture.complete(ev.browser());
+            });
 
             RemoteHandle browserHandle = handleFuture.get(20, TimeUnit.SECONDS);
             Browser browser = new Browser(session, browserHandle);
@@ -118,10 +117,9 @@ class AstDispatcherIntegrationTest {
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
-            session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, ev -> {
-                        if (!handleFuture.isDone()) handleFuture.complete(ev.browser());
-                    });
+            session.onLatest(MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, BrowserHandleMessage.DECODER, ev -> {
+                if (!handleFuture.isDone()) handleFuture.complete(ev.browser());
+            });
 
             RemoteHandle browserHandle = handleFuture.get(20, TimeUnit.SECONDS);
             Browser browser = new Browser(session, browserHandle);
@@ -141,10 +139,9 @@ class AstDispatcherIntegrationTest {
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
-            session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, ev -> {
-                        if (!handleFuture.isDone()) handleFuture.complete(ev.browser());
-                    });
+            session.onLatest(MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, BrowserHandleMessage.DECODER, ev -> {
+                if (!handleFuture.isDone()) handleFuture.complete(ev.browser());
+            });
 
             String dataUrl = "data:text/html,<html><body>hi</body></html>";
 
@@ -176,19 +173,25 @@ class AstDispatcherIntegrationTest {
 
             LinkedBlockingQueue<RemoteHandle> handles = new LinkedBlockingQueue<>();
             session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
-                    LifeSpanHandlerOnAfterCreatedEvent.DECODER,
+                    MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT,
+                    BrowserHandleMessage.DECODER,
                     ev -> handles.offer(ev.browser()));
 
             RemoteHandle bootstrap = handles.poll(20, TimeUnit.SECONDS);
             assertThat(bootstrap).isNotNull();
 
-            BrowserSettings settings = BrowserSettings.builder().build();
+            CefBrowserSettings settings = new CefBrowserSettings.Mutable().toImmutable();
             String urlA = "data:text/html,<html><body>A</body></html>";
             String urlB = "data:text/html,<html><body>B</body></html>";
-            session.request(new CreateBrowserRequest(urlA, settings), CreateBrowserResponse.DECODER)
+            session.request(
+                            MessageIds.CREATE_BROWSER_REQUEST,
+                            new CreateBrowserRequest(urlA, settings),
+                            EmptyMessage.DECODER)
                     .get(5, TimeUnit.SECONDS);
-            session.request(new CreateBrowserRequest(urlB, settings), CreateBrowserResponse.DECODER)
+            session.request(
+                            MessageIds.CREATE_BROWSER_REQUEST,
+                            new CreateBrowserRequest(urlB, settings),
+                            EmptyMessage.DECODER)
                     .get(5, TimeUnit.SECONDS);
 
             RemoteHandle handleA = handles.poll(45, TimeUnit.SECONDS);
@@ -230,20 +233,23 @@ class AstDispatcherIntegrationTest {
 
             LinkedBlockingQueue<RemoteHandle> handles = new LinkedBlockingQueue<>();
             session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
-                    LifeSpanHandlerOnAfterCreatedEvent.DECODER,
+                    MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT,
+                    BrowserHandleMessage.DECODER,
                     ev -> handles.offer(ev.browser()));
 
             RemoteHandle bootstrap = handles.poll(20, TimeUnit.SECONDS);
             assertThat(bootstrap).isNotNull();
 
-            BrowserSettings settings = BrowserSettings.builder()
-                    .windowlessFrameRate(60)
-                    .defaultEncoding("UTF-8")
-                    .javascript(1)
-                    .build();
+            CefBrowserSettings.Mutable mutableSettings = new CefBrowserSettings.Mutable();
+            mutableSettings.windowlessFrameRate = 60;
+            mutableSettings.defaultEncoding = "UTF-8";
+            mutableSettings.javascript = CefState.of(CefState.Kind.ENABLED);
+            CefBrowserSettings settings = mutableSettings.toImmutable();
 
-            session.request(new CreateBrowserRequest("about:blank", settings), CreateBrowserResponse.DECODER)
+            session.request(
+                            MessageIds.CREATE_BROWSER_REQUEST,
+                            new CreateBrowserRequest("about:blank", settings),
+                            EmptyMessage.DECODER)
                     .get(5, TimeUnit.SECONDS);
 
             RemoteHandle created = handles.poll(20, TimeUnit.SECONDS);

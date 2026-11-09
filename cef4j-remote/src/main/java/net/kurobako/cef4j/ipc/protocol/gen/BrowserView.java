@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class BrowserView implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class BrowserView extends BrowserFacade {
 
     public BrowserView(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_browser_view_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_browser_view_t");
     }
 
     /**
@@ -58,20 +27,20 @@ public final class BrowserView implements AutoCloseable {
      */
     public CompletableFuture<Browser> getBrowser() {
         return CefFutures.map(
-            session.request(new BrowserViewGetBrowserRequest(handle), BrowserViewGetBrowserResponse.DECODER),
+            session.request(MessageIds.BROWSER_VIEW_GET_BROWSER_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new Browser(session, __r.result()));
     }
 
     /** Dispatches {@code get_chrome_toolbar} to the runtime server. */
     public CompletableFuture<View> getChromeToolbar() {
         return CefFutures.map(
-            session.request(new BrowserViewGetChromeToolbarRequest(handle), BrowserViewGetChromeToolbarResponse.DECODER),
+            session.request(MessageIds.BROWSER_VIEW_GET_CHROME_TOOLBAR_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new View(session, __r.result()));
     }
 
     /** Dispatches {@code set_prefer_accelerators} to the runtime server. */
     public CompletableFuture<Void> setPreferAccelerators(int preferAccelerators) {
-        return CefFutures.discard(session.request(new BrowserViewSetPreferAcceleratorsRequest(handle, preferAccelerators), BrowserViewSetPreferAcceleratorsResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_VIEW_SET_PREFER_ACCELERATORS_REQUEST, new BrowserViewSetPreferAcceleratorsRequest(handle, preferAccelerators), EmptyMessage.DECODER));
     }
 
     /**
@@ -82,7 +51,7 @@ public final class BrowserView implements AutoCloseable {
      */
     public CompletableFuture<Integer> getRuntimeStyle() {
         return CefFutures.map(
-            session.request(new BrowserViewGetRuntimeStyleRequest(handle), BrowserViewGetRuntimeStyleResponse.DECODER),
-            BrowserViewGetRuntimeStyleResponse::result);
+            session.request(MessageIds.BROWSER_VIEW_GET_RUNTIME_STYLE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

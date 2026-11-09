@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -23,14 +24,14 @@ public interface CefResponseFilter {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response__filter_8h.html">cef_response_filter.h:52</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> initFilter() { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> initFilter() { return Unhandled.bool(); }
 
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefResponseFilter handler) {
         return CefSession.HandlerRegistration.combine(
-                session.intercept(ResponseFilterInitFilterEvent.MESSAGE_ID, ResponseFilterInitFilterEvent.DECODER, ev -> {
+                session.intercept(MessageIds.RESPONSE_FILTER_INIT_FILTER_EVENT, EmptyMessage.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.initFilter();
-                    return java.util.Optional.of(new ResponseFilterInitFilterResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.RESPONSE_FILTER_INIT_FILTER_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }));
     }
 }

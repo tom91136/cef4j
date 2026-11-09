@@ -24,11 +24,11 @@ public interface CefSetCookieCallback {
     void onComplete(int success);
 
     /**
-     * Wires inbound {@link SetCookieCallbackOnCompleteCallbackEvent} frames into the supplied {@code table} so each visitor invocation
+     * Wires inbound {@code SetCookieCallbackOnCompleteCallbackEvent} frames into the supplied {@code table} so each visitor invocation
      * dispatches to the {@code CefSetCookieCallback} registered under that callbackId. Call once per session.
      */
     static CefSession.HandlerRegistration route(CefSession session, JvmCallbackTable<CefSetCookieCallback> table) {
-        return session.on(SetCookieCallbackOnCompleteCallbackEvent.MESSAGE_ID, SetCookieCallbackOnCompleteCallbackEvent.DECODER, ev ->
+        return session.on(MessageIds.SET_COOKIE_CALLBACK_ON_COMPLETE_CALLBACK_EVENT, SetCookieCallbackOnCompleteCallbackEvent.DECODER, ev ->
                 table.lookup(ev.callbackId()).ifPresent(v -> v.onComplete(ev.success())));
     }
 }

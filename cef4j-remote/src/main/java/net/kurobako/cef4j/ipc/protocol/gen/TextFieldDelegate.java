@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class TextFieldDelegate implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class TextFieldDelegate extends BrowserFacade {
 
     public TextFieldDelegate(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_textfield_delegate_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_textfield_delegate_t");
     }
 
     /**
@@ -56,14 +25,14 @@ public final class TextFieldDelegate implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__keyboard__handler_8h.html">cef_keyboard_handler.h:66</a>
      */
-    public CompletableFuture<Integer> onKeyEvent(RemoteHandle textfield, KeyEvent event) {
+    public CompletableFuture<Integer> onKeyEvent(RemoteHandle textfield, net.kurobako.cef4j.gen.CefKeyEvent event) {
         return CefFutures.map(
-            session.request(new TextFieldDelegateOnKeyEventRequest(handle, textfield, event), TextFieldDelegateOnKeyEventResponse.DECODER),
-            TextFieldDelegateOnKeyEventResponse::result);
+            session.request(MessageIds.TEXT_FIELD_DELEGATE_ON_KEY_EVENT_REQUEST, new TextFieldDelegateOnKeyEventRequest(handle, textfield, event), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code on_after_user_action} to the runtime server. */
     public CompletableFuture<Void> onAfterUserAction(RemoteHandle textfield) {
-        return CefFutures.discard(session.request(new TextFieldDelegateOnAfterUserActionRequest(handle, textfield), TextFieldDelegateOnAfterUserActionResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.TEXT_FIELD_DELEGATE_ON_AFTER_USER_ACTION_REQUEST, new TextFieldDelegateOnAfterUserActionRequest(handle, textfield), EmptyMessage.DECODER));
     }
 }

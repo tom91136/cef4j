@@ -31,7 +31,7 @@ final class ReplayCefSessionCloseTest {
         AtomicBoolean closed = new AtomicBoolean();
         replay.onClose(() -> closed.set(true));
         replay.start();
-        CompletableFuture<TextView> first = replay.request(encoder(REQUEST, "first"), decoder(REQUEST));
+        CompletableFuture<TextView> first = replay.request(REQUEST, encoder("first"), decoder());
         assertThat(first.get(5, TimeUnit.SECONDS).text).isEqualTo("answer");
 
         assertThatThrownBy(replay::close).isInstanceOf(ReplayMismatchException.class);
@@ -40,15 +40,15 @@ final class ReplayCefSessionCloseTest {
         assertThat(closed).isTrue();
     }
 
-    private static CefMessageEncoder encoder(int messageId, String text) {
-        return new TextEncoder(messageId, bytes(text));
+    private static CefMessageEncoder encoder(String text) {
+        return new TextEncoder(bytes(text));
     }
 
-    private static CefMessageDecoder<TextView> decoder(int messageId) {
+    private static CefMessageDecoder<TextView> decoder() {
         return payload -> {
             byte[] bytes = new byte[payload.remaining()];
             payload.get(bytes);
-            return new TextView(messageId, new String(bytes, StandardCharsets.UTF_8));
+            return new TextView(new String(bytes, StandardCharsets.UTF_8));
         };
     }
 
@@ -57,17 +57,10 @@ final class ReplayCefSessionCloseTest {
     }
 
     private static final class TextEncoder implements CefMessageEncoder {
-        private final int messageId;
         private final byte[] bytes;
 
-        TextEncoder(int messageId, byte[] bytes) {
-            this.messageId = messageId;
+        TextEncoder(byte[] bytes) {
             this.bytes = bytes;
-        }
-
-        @Override
-        public int messageId() {
-            return messageId;
         }
 
         @Override
@@ -82,17 +75,10 @@ final class ReplayCefSessionCloseTest {
     }
 
     private static final class TextView implements CefMessageView {
-        private final int messageId;
         private final String text;
 
-        TextView(int messageId, String text) {
-            this.messageId = messageId;
+        TextView(String text) {
             this.text = text;
-        }
-
-        @Override
-        public int messageId() {
-            return messageId;
         }
     }
 }

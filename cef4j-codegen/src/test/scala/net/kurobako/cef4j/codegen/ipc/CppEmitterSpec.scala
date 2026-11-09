@@ -83,15 +83,23 @@ class CppEmitterSpec extends TempDirectorySuite {
     assert(!src.contains("auto* task = new LambdaTask"))
   }
 
-  test("Specs.all produces both Java and C++ output without overlap") {
-    val specs = Specs.all("net.kurobako.cef4j.ipc.protocol.gen")
+  test("Specs.all produces both Java and C++ output and keeps every id in MessageIds") {
+    val specs  = Specs.all("net.kurobako.cef4j.ipc.protocol.gen")
+    val shared = SharedMessages.derive(specs)
+    val ids    = shared.ids.toSet
     specs.foreach { s =>
-      val cpp  = CppEmitter.emit(s)
-      val java = JavaEmitter.emit(s)
+      val cpp = CppEmitter.emit(s)
       assert(cpp.nonEmpty)
-      assert(java.nonEmpty)
       assert(cpp.contains(s"MessageId = ${s.messageId}"), s"C++ output missing messageId for ${s.className}")
-      assert(java.contains(s"MESSAGE_ID = ${s.messageId}"), s"Java output missing MESSAGE_ID for ${s.className}")
+      assert(
+        ids.contains(MessageId(MessageId.constant(s.className), s.messageId)),
+        s"MessageIds missing ${s.className}"
+      )
+    }
+    shared.messages.foreach { m =>
+      val java = JavaEmitter.emitShared(m)
+      assert(java.nonEmpty)
+      assert(!java.contains("MESSAGE_ID"), m.className)
     }
   }
 

@@ -6,13 +6,14 @@ import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessage;
+import net.kurobako.cef4j.ipc.protocol.gen.EmptyMessage;
 import net.kurobako.cef4j.ipc.protocol.gen.EvaluateJavascriptRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.EvaluateJavascriptResponse;
 import net.kurobako.cef4j.ipc.protocol.gen.JsFunctionCallEvent;
-import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.protocol.gen.RegisterJsFunctionRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.RegisterJsFunctionResponse;
 import net.kurobako.cef4j.ipc.protocol.gen.V8ContextCreatedEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.ValueKindIntBoolValueBoolIntValueIntDoubleValueLongStringValueStringErrorMessageStringEtc6a348bMessage;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.JvmCallbackTable;
@@ -41,17 +42,17 @@ class JsFunctionRegistrationTest {
 
             JvmCallbackTable<JsFunctionCallback> jsCallbacks = new JvmCallbackTable<>();
             session.on(
-                    JsFunctionCallEvent.MESSAGE_ID,
+                    MessageIds.JS_FUNCTION_CALL_EVENT,
                     JsFunctionCallEvent.DECODER,
                     ev -> jsCallbacks.lookup(ev.callbackId()).ifPresent(cb -> cb.invoke(ev.argsJson())));
 
             LinkedBlockingQueue<RemoteHandle> browsers = new LinkedBlockingQueue<>();
             session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
-                    LifeSpanHandlerOnAfterCreatedEvent.DECODER,
+                    MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT,
+                    BrowserHandleMessage.DECODER,
                     ev -> browsers.offer(ev.browser()));
             LinkedBlockingQueue<V8ContextCreatedEvent> contexts = new LinkedBlockingQueue<>();
-            session.onLatest(V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, contexts::offer);
+            session.onLatest(MessageIds.V8_CONTEXT_CREATED_EVENT, V8ContextCreatedEvent.DECODER, contexts::offer);
             RemoteHandle browser = browsers.poll(20, TimeUnit.SECONDS);
             assertThat(browser).isNotNull();
             net.kurobako.cef4j.ipc.protocol.gen.Browser facade =
@@ -70,14 +71,19 @@ class JsFunctionRegistrationTest {
                 if (!received.isDone()) received.complete(argsJson);
             });
             session.request(
+                            MessageIds.REGISTER_JS_FUNCTION_REQUEST,
                             new RegisterJsFunctionRequest(frame.handle(), "javaTalk", callbackId),
-                            RegisterJsFunctionResponse.DECODER)
+                            EmptyMessage.DECODER)
                     .get(5, TimeUnit.SECONDS);
 
-            EvaluateJavascriptResponse evalResp = session.request(
-                            new EvaluateJavascriptRequest(frame.handle(), "window.javaTalk('hi', 42, true)", false),
-                            EvaluateJavascriptResponse.DECODER)
-                    .get(5, TimeUnit.SECONDS);
+            ValueKindIntBoolValueBoolIntValueIntDoubleValueLongStringValueStringErrorMessageStringEtc6a348bMessage
+                    evalResp = session.request(
+                                    MessageIds.EVALUATE_JAVASCRIPT_REQUEST,
+                                    new EvaluateJavascriptRequest(
+                                            frame.handle(), "window.javaTalk('hi', 42, true)", false),
+                                    ValueKindIntBoolValueBoolIntValueIntDoubleValueLongStringValueStringErrorMessageStringEtc6a348bMessage
+                                            .DECODER)
+                            .get(5, TimeUnit.SECONDS);
             assertThat(evalResp.errorMessage()).isEmpty();
 
             String observed = received.get(10, TimeUnit.SECONDS);

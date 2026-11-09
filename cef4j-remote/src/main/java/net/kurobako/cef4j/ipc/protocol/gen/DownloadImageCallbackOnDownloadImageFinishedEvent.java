@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,11 +9,10 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class DownloadImageCallbackOnDownloadImageFinishedEvent implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 1894568552;
 
     private final String imageUrl;
     private final byte[] imageUrlBytes;
@@ -41,36 +39,23 @@ public final class DownloadImageCallbackOnDownloadImageFinishedEvent implements 
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 12 + imageUrlBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(imageUrlBytes.length);
-            __dst.put(imageUrlBytes);
-            __dst.putInt(httpStatusCode);
-            __dst.putInt(image.id());
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            WireEncoder.bytes(__out, imageUrlBytes);
+            __out.putInt(httpStatusCode);
+            __out.putInt(image.id());
+        });
     }
 
-    public static final CefMessageDecoder<DownloadImageCallbackOnDownloadImageFinishedEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<DownloadImageCallbackOnDownloadImageFinishedEvent> DECODER = WireDecoder.message("DownloadImageCallbackOnDownloadImageFinishedEvent", __buf -> {
         final String imageUrl = WireDecoder.utf8(__buf, "imageUrl");
         final int httpStatusCode = WireDecoder.int32(__buf, "httpStatusCode");
         final RemoteHandle image = WireDecoder.handle(__buf, "image");
-        WireDecoder.requireFullyConsumed(__buf, "DownloadImageCallbackOnDownloadImageFinishedEvent");
         return new DownloadImageCallbackOnDownloadImageFinishedEvent(imageUrl, httpStatusCode, image);
-    };
+    });
 }

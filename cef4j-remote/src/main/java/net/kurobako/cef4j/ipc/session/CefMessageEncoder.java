@@ -5,9 +5,6 @@ import java.nio.ByteBuffer;
 /** Writes one complete message payload into a destination buffer. */
 public interface CefMessageEncoder {
 
-    /** The wire-protocol message ID. */
-    int messageId();
-
     /** Number of payload bytes that {@link #encodeInto} will write. */
     default int encodedSize() {
         return 0;

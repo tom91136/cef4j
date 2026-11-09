@@ -24,11 +24,11 @@ public interface CefComponentUpdateCallback {
     void onComplete(String componentId, int error);
 
     /**
-     * Wires inbound {@link ComponentUpdateCallbackOnCompleteCallbackEvent} frames into the supplied {@code table} so each visitor invocation
+     * Wires inbound {@code ComponentUpdateCallbackOnCompleteCallbackEvent} frames into the supplied {@code table} so each visitor invocation
      * dispatches to the {@code CefComponentUpdateCallback} registered under that callbackId. Call once per session.
      */
     static CefSession.HandlerRegistration route(CefSession session, JvmCallbackTable<CefComponentUpdateCallback> table) {
-        return session.on(ComponentUpdateCallbackOnCompleteCallbackEvent.MESSAGE_ID, ComponentUpdateCallbackOnCompleteCallbackEvent.DECODER, ev ->
+        return session.on(MessageIds.COMPONENT_UPDATE_CALLBACK_ON_COMPLETE_CALLBACK_EVENT, ComponentUpdateCallbackOnCompleteCallbackEvent.DECODER, ev ->
                 table.lookup(ev.callbackId()).ifPresent(v -> v.onComplete(ev.componentId(), ev.error())));
     }
 }

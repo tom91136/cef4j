@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,11 +9,10 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class BrowserHostExecuteDevToolsMethodRequest implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 1758231224;
 
     private final RemoteHandle self;
     private final int messageId_;
@@ -47,38 +45,25 @@ public final class BrowserHostExecuteDevToolsMethodRequest implements CefMessage
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 16 + methodBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putInt(messageId_);
-            __dst.putInt(methodBytes.length);
-            __dst.put(methodBytes);
-            __dst.putInt(params.id());
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            __out.putInt(messageId_);
+            WireEncoder.bytes(__out, methodBytes);
+            __out.putInt(params.id());
+        });
     }
 
-    public static final CefMessageDecoder<BrowserHostExecuteDevToolsMethodRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<BrowserHostExecuteDevToolsMethodRequest> DECODER = WireDecoder.message("BrowserHostExecuteDevToolsMethodRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final int messageId_ = WireDecoder.int32(__buf, "messageId_");
         final String method = WireDecoder.utf8(__buf, "method");
         final RemoteHandle params = WireDecoder.handle(__buf, "params");
-        WireDecoder.requireFullyConsumed(__buf, "BrowserHostExecuteDevToolsMethodRequest");
         return new BrowserHostExecuteDevToolsMethodRequest(self, messageId_, method, params);
-    };
+    });
 }

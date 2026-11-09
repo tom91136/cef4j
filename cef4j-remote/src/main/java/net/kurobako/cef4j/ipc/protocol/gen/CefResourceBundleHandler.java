@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -23,14 +24,14 @@ public interface CefResourceBundleHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__bundle__handler_8h.html">cef_resource_bundle_handler.h:53</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> getLocalizedString(int stringId, String string) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> getLocalizedString(int stringId, String string) { return Unhandled.bool(); }
 
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefResourceBundleHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.intercept(ResourceBundleHandlerGetLocalizedStringEvent.MESSAGE_ID, ResourceBundleHandlerGetLocalizedStringEvent.DECODER, ev -> {
+                session.intercept(MessageIds.RESOURCE_BUNDLE_HANDLER_GET_LOCALIZED_STRING_EVENT, ResourceBundleHandlerGetLocalizedStringEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.getLocalizedString(ev.stringId(), ev.string());
-                    return java.util.Optional.of(new ResourceBundleHandlerGetLocalizedStringResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.RESOURCE_BUNDLE_HANDLER_GET_LOCALIZED_STRING_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }));
     }
 }

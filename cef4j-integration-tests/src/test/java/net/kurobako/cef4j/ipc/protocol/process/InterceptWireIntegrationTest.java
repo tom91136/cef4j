@@ -7,6 +7,7 @@ import java.nio.ByteOrder;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.protocol.gen.TriggerInterceptRequest;
 import net.kurobako.cef4j.ipc.protocol.gen.TriggerInterceptResponse;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
@@ -37,10 +38,11 @@ class InterceptWireIntegrationTest {
 
             session.intercept(ECHO_MESSAGE_ID, RawPayloadView.DECODER, observed -> {
                 assertThat(observed.bytes()).isEqualTo(requestPayload);
-                return Optional.of(encoderFor(ECHO_MESSAGE_ID, expectedReply));
+                return Optional.of(new CefSession.Reply(ECHO_MESSAGE_ID, encoderFor(expectedReply)));
             });
 
             TriggerInterceptResponse resp = session.request(
+                            MessageIds.TRIGGER_INTERCEPT_REQUEST,
                             new TriggerInterceptRequest(ECHO_MESSAGE_ID, requestPayload),
                             TriggerInterceptResponse.DECODER)
                     .get(10, TimeUnit.SECONDS);
@@ -65,20 +67,10 @@ class InterceptWireIntegrationTest {
         byte[] bytes() {
             return bytes;
         }
-
-        @Override
-        public int messageId() {
-            return ECHO_MESSAGE_ID;
-        }
     }
 
-    private static CefMessageEncoder encoderFor(int messageId, byte[] payload) {
+    private static CefMessageEncoder encoderFor(byte[] payload) {
         return new CefMessageEncoder() {
-            @Override
-            public int messageId() {
-                return messageId;
-            }
-
             @Override
             public int encodedSize() {
                 return payload.length;

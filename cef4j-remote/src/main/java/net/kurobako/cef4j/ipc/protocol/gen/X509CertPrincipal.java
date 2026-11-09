@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class X509CertPrincipal implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class X509CertPrincipal extends BrowserFacade {
 
     public X509CertPrincipal(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_x509_cert_principal_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_x509_cert_principal_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class X509CertPrincipal implements AutoCloseable {
      */
     public CompletableFuture<String> getDisplayName() {
         return CefFutures.map(
-            session.request(new X509CertPrincipalGetDisplayNameRequest(handle), X509CertPrincipalGetDisplayNameResponse.DECODER),
-            X509CertPrincipalGetDisplayNameResponse::result);
+            session.request(MessageIds.X509_CERT_PRINCIPAL_GET_DISPLAY_NAME_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class X509CertPrincipal implements AutoCloseable {
      */
     public CompletableFuture<String> getCommonName() {
         return CefFutures.map(
-            session.request(new X509CertPrincipalGetCommonNameRequest(handle), X509CertPrincipalGetCommonNameResponse.DECODER),
-            X509CertPrincipalGetCommonNameResponse::result);
+            session.request(MessageIds.X509_CERT_PRINCIPAL_GET_COMMON_NAME_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -82,8 +51,8 @@ public final class X509CertPrincipal implements AutoCloseable {
      */
     public CompletableFuture<String> getLocalityName() {
         return CefFutures.map(
-            session.request(new X509CertPrincipalGetLocalityNameRequest(handle), X509CertPrincipalGetLocalityNameResponse.DECODER),
-            X509CertPrincipalGetLocalityNameResponse::result);
+            session.request(MessageIds.X509_CERT_PRINCIPAL_GET_LOCALITY_NAME_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -94,8 +63,8 @@ public final class X509CertPrincipal implements AutoCloseable {
      */
     public CompletableFuture<String> getStateOrProvinceName() {
         return CefFutures.map(
-            session.request(new X509CertPrincipalGetStateOrProvinceNameRequest(handle), X509CertPrincipalGetStateOrProvinceNameResponse.DECODER),
-            X509CertPrincipalGetStateOrProvinceNameResponse::result);
+            session.request(MessageIds.X509_CERT_PRINCIPAL_GET_STATE_OR_PROVINCE_NAME_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -106,8 +75,8 @@ public final class X509CertPrincipal implements AutoCloseable {
      */
     public CompletableFuture<String> getCountryName() {
         return CefFutures.map(
-            session.request(new X509CertPrincipalGetCountryNameRequest(handle), X509CertPrincipalGetCountryNameResponse.DECODER),
-            X509CertPrincipalGetCountryNameResponse::result);
+            session.request(MessageIds.X509_CERT_PRINCIPAL_GET_COUNTRY_NAME_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -117,7 +86,7 @@ public final class X509CertPrincipal implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:84</a>
      */
     public CompletableFuture<Void> getOrganizationNames(String[] names) {
-        return CefFutures.discard(session.request(new X509CertPrincipalGetOrganizationNamesRequest(handle, names), X509CertPrincipalGetOrganizationNamesResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.X509_CERT_PRINCIPAL_GET_ORGANIZATION_NAMES_REQUEST, new SelfHandleNamesStringsMessage(handle, names), EmptyMessage.DECODER));
     }
 
     /**
@@ -127,6 +96,6 @@ public final class X509CertPrincipal implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:90</a>
      */
     public CompletableFuture<Void> getOrganizationUnitNames(String[] names) {
-        return CefFutures.discard(session.request(new X509CertPrincipalGetOrganizationUnitNamesRequest(handle, names), X509CertPrincipalGetOrganizationUnitNamesResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.X509_CERT_PRINCIPAL_GET_ORGANIZATION_UNIT_NAMES_REQUEST, new SelfHandleNamesStringsMessage(handle, names), EmptyMessage.DECODER));
     }
 }

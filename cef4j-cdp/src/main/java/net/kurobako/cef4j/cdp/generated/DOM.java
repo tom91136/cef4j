@@ -1,7 +1,6 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -10,6 +9,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -25,6 +26,65 @@ import org.jspecify.annotations.Nullable;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class DOM {
     private DOM() {}
+    private static final CdpField<java.util.List<DOM.StyleSheetId>> ADOPTED_STYLE_SHEETS = CdpField.of("adoptedStyleSheets", value -> CdpObject.requireList(value, element0 -> new DOM.StyleSheetId((String) element0)));
+    private static final CdpField<Network.AdProvenance> AD_PROVENANCE = CdpField.of("adProvenance", value -> java.util.Objects.requireNonNull(Network.AdProvenance.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<DOM.BackendNode> ASSIGNED_SLOT = CdpField.of("assignedSlot", value -> java.util.Objects.requireNonNull(DOM.BackendNode.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<String>> ATTRIBUTES = CdpField.of("attributes", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<DOM.BackendNodeId> BACKEND_NODE_ID = CdpField.of("backendNodeId", value -> new DOM.BackendNodeId(((Number) value).longValue()));
+    private static final CdpField<java.util.List<DOM.BackendNodeId>> BACKEND_NODE_IDS = CdpField.of("backendNodeIds", value -> CdpObject.requireList(value, element0 -> new DOM.BackendNodeId(((Number) element0).longValue())));
+    private static final CdpField<java.util.List<Double>> BORDER = CdpField.of("border", value -> CdpObject.requireList(value, element0 -> ((Number) element0).doubleValue()));
+    private static final CdpField<java.util.List<Double>> BOUNDS = CdpField.of("bounds", value -> CdpObject.requireList(value, element0 -> ((Number) element0).doubleValue()));
+    private static final CdpField<java.util.List<DOM.Node>> CHILDREN = CdpField.of("children", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<String>> CLASS_NAMES = CdpField.of("classNames", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<DOM.CompatibilityMode> COMPATIBILITY_MODE = CdpField.of("compatibilityMode", value -> DOM.CompatibilityMode.of((String) value));
+    private static final CdpField<java.util.List<DOM.CSSComputedStyleProperty>> COMPUTED_STYLES = CdpField.of("computedStyles", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(DOM.CSSComputedStyleProperty.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Double>> CONTENT = CdpField.of("content", value -> CdpObject.requireList(value, element0 -> ((Number) element0).doubleValue()));
+    private static final CdpField<DOM.Node> CONTENT_DOCUMENT = CdpField.of("contentDocument", value -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Runtime.StackTrace> CREATION = CdpField.of("creation", value -> java.util.Objects.requireNonNull(Runtime.StackTrace.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<DOM.DetachedElementInfo>> DETACHED_NODES = CdpField.of("detachedNodes", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(DOM.DetachedElementInfo.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<DOM.BackendNode>> DISTRIBUTED_NODES = CdpField.of("distributedNodes", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(DOM.BackendNode.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Runtime.ExecutionContextId> EXECUTION_CONTEXT_ID = CdpField.of("executionContextId", value -> new Runtime.ExecutionContextId(((Number) value).longValue()));
+    private static final CdpField<java.util.List<String>> FILES = CdpField.of("files", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Page.FrameId> FRAME_ID = CdpField.of("frameId", value -> new Page.FrameId((String) value));
+    private static final CdpField<DOM.NodeId> HOST_ID = CdpField.of("hostId", value -> new DOM.NodeId(((Number) value).longValue()));
+    private static final CdpField<DOM.Node> IMPORTED_DOCUMENT = CdpField.of("importedDocument", value -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<EnableIncludeWhitespaceValues> INCLUDE_WHITESPACE = CdpField.of("includeWhitespace", value -> EnableIncludeWhitespaceValues.of((String) value));
+    private static final CdpField<DOM.NodeId> INSERTION_POINT_ID = CdpField.of("insertionPointId", value -> new DOM.NodeId(((Number) value).longValue()));
+    private static final CdpField<DOM.NodeId> INSERT_BEFORE_NODE_ID = CdpField.of("insertBeforeNodeId", value -> new DOM.NodeId(((Number) value).longValue()));
+    private static final CdpField<DOM.LogicalAxes> LOGICAL_AXES = CdpField.of("logicalAxes", value -> DOM.LogicalAxes.of((String) value));
+    private static final CdpField<java.util.List<Double>> MARGIN = CdpField.of("margin", value -> CdpObject.requireList(value, element0 -> ((Number) element0).doubleValue()));
+    private static final CdpField<java.util.List<Object>> MARGIN_SHAPE = CdpField.of("marginShape", value -> CdpObject.requireList(value, element0 -> element0));
+    private static final CdpField<DOM.BoxModel> MODEL = CdpField.of("model", value -> java.util.Objects.requireNonNull(DOM.BoxModel.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<DOM.Node> NODE = CdpField.of("node", value -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<DOM.Node>> NODES = CdpField.of("nodes", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<DOM.NodeId> NODE_ID = CdpField.of("nodeId", value -> new DOM.NodeId(((Number) value).longValue()));
+    private static final CdpField<java.util.List<DOM.NodeId>> NODE_IDS = CdpField.of("nodeIds", value -> CdpObject.requireList(value, element0 -> new DOM.NodeId(((Number) element0).longValue())));
+    private static final CdpField<Runtime.RemoteObject> OBJECT = CdpField.of("object", value -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Runtime.RemoteObjectId> OBJECT_ID = CdpField.of("objectId", value -> new Runtime.RemoteObjectId((String) value));
+    private static final CdpField<String> OUTER_HTML = CdpField.of("outerHTML", value -> (String) value);
+    private static final CdpField<java.util.List<Double>> PADDING = CdpField.of("padding", value -> CdpObject.requireList(value, element0 -> ((Number) element0).doubleValue()));
+    private static final CdpField<DOM.NodeId> PARENT_ID = CdpField.of("parentId", value -> new DOM.NodeId(((Number) value).longValue()));
+    private static final CdpField<DOM.NodeId> PARENT_NODE_ID = CdpField.of("parentNodeId", value -> new DOM.NodeId(((Number) value).longValue()));
+    private static final CdpField<String> PATH = CdpField.of("path", value -> (String) value);
+    private static final CdpField<DOM.PhysicalAxes> PHYSICAL_AXES = CdpField.of("physicalAxes", value -> DOM.PhysicalAxes.of((String) value));
+    private static final CdpField<DOM.NodeId> PREVIOUS_NODE_ID = CdpField.of("previousNodeId", value -> new DOM.NodeId(((Number) value).longValue()));
+    private static final CdpField<DOM.Node> PSEUDO_ELEMENT = CdpField.of("pseudoElement", value -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<DOM.Node>> PSEUDO_ELEMENTS = CdpField.of("pseudoElements", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<DOM.NodeId> PSEUDO_ELEMENT_ID = CdpField.of("pseudoElementId", value -> new DOM.NodeId(((Number) value).longValue()));
+    private static final CdpField<DOM.PseudoType> PSEUDO_TYPE = CdpField.of("pseudoType", value -> DOM.PseudoType.of((String) value));
+    private static final CdpField<java.util.List<java.util.List<Double>>> QUADS = CdpField.of("quads", value -> CdpObject.requireList(value, element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
+    private static final CdpField<DOM.Rect> RECT = CdpField.of("rect", value -> java.util.Objects.requireNonNull(DOM.Rect.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<GetElementByRelationRelationValues> RELATION = CdpField.of("relation", value -> GetElementByRelationRelationValues.of((String) value));
+    private static final CdpField<java.util.List<DOM.NodeId>> RETAINED_NODE_IDS = CdpField.of("retainedNodeIds", value -> CdpObject.requireList(value, element0 -> new DOM.NodeId(((Number) element0).longValue())));
+    private static final CdpField<DOM.Node> ROOT = CdpField.of("root", value -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<DOM.NodeId> ROOT_ID = CdpField.of("rootId", value -> new DOM.NodeId(((Number) value).longValue()));
+    private static final CdpField<java.util.List<DOM.Node>> SHADOW_ROOTS = CdpField.of("shadowRoots", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<DOM.ShadowRootType> SHADOW_ROOT_TYPE = CdpField.of("shadowRootType", value -> DOM.ShadowRootType.of((String) value));
+    private static final CdpField<java.util.List<Object>> SHAPE = CdpField.of("shape", value -> CdpObject.requireList(value, element0 -> element0));
+    private static final CdpField<DOM.ShapeOutsideInfo> SHAPE_OUTSIDE = CdpField.of("shapeOutside", value -> java.util.Objects.requireNonNull(DOM.ShapeOutsideInfo.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<DOM.NodeId> TARGET_NODE_ID = CdpField.of("targetNodeId", value -> new DOM.NodeId(((Number) value).longValue()));
+    private static final CdpField<DOM.Node> TEMPLATE_CONTENT = CdpField.of("templateContent", value -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<DOM.Node> TREE_NODE = CdpField.of("treeNode", value -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(value))));
     /**
      * Unique DOM node identifier.
      */
@@ -84,21 +144,21 @@ public final class DOM {
          * @return the protocol field value
          */
         public long nodeType() {
-            return ((Number) require("nodeType")).longValue();
+            return requireLong("nodeType");
         }
         /**
          * {@code Node}&#x27;s nodeName.
          * @return the protocol field value
          */
         public String nodeName() {
-            return (String) require("nodeName");
+            return requireString("nodeName");
         }
         /**
          * Returns the backendNodeId field.
          * @return the protocol field value
          */
         public DOM.BackendNodeId backendNodeId() {
-            return new DOM.BackendNodeId(((Number) require("backendNodeId")).longValue());
+            return require(BACKEND_NODE_ID);
         }
         /**
          * {@code Node}&#x27;s nodeType.
@@ -281,182 +341,182 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * The id of the parent node if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> parentId() {
-            return raw("parentId").map(value -> new DOM.NodeId(((Number) value).longValue()));
+            return optional(PARENT_ID);
         }
         /**
          * The BackendNodeId for this node.
          * @return the protocol field value
          */
         public DOM.BackendNodeId backendNodeId() {
-            return new DOM.BackendNodeId(((Number) require("backendNodeId")).longValue());
+            return require(BACKEND_NODE_ID);
         }
         /**
          * {@code Node}&#x27;s nodeType.
          * @return the protocol field value
          */
         public long nodeType() {
-            return ((Number) require("nodeType")).longValue();
+            return requireLong("nodeType");
         }
         /**
          * {@code Node}&#x27;s nodeName.
          * @return the protocol field value
          */
         public String nodeName() {
-            return (String) require("nodeName");
+            return requireString("nodeName");
         }
         /**
          * {@code Node}&#x27;s localName.
          * @return the protocol field value
          */
         public String localName() {
-            return (String) require("localName");
+            return requireString("localName");
         }
         /**
          * {@code Node}&#x27;s nodeValue.
          * @return the protocol field value
          */
         public String nodeValue() {
-            return (String) require("nodeValue");
+            return requireString("nodeValue");
         }
         /**
          * Child count for {@code Container} nodes.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong childNodeCount() {
-            return raw("childNodeCount").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("childNodeCount");
         }
         /**
          * Child nodes of this node when requested with children.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOM.Node>> children() {
-            return raw("children").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(CHILDREN);
         }
         /**
          * Attributes of the {@code Element} node in the form of flat array {@code [name1, value1, name2, value2]}.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> attributes() {
-            return raw("attributes").flatMap(value -> list(value, element0 -> (String) element0));
+            return optional(ATTRIBUTES);
         }
         /**
          * Document URL that {@code Document} or {@code FrameOwner} node points to.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> documentURL() {
-            return raw("documentURL").map(value -> (String) value);
+            return optionalString("documentURL");
         }
         /**
          * Base URL that {@code Document} or {@code FrameOwner} node uses for URL completion.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> baseURL() {
-            return raw("baseURL").map(value -> (String) value);
+            return optionalString("baseURL");
         }
         /**
          * {@code DocumentType}&#x27;s publicId.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> publicId() {
-            return raw("publicId").map(value -> (String) value);
+            return optionalString("publicId");
         }
         /**
          * {@code DocumentType}&#x27;s systemId.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> systemId() {
-            return raw("systemId").map(value -> (String) value);
+            return optionalString("systemId");
         }
         /**
          * {@code DocumentType}&#x27;s internalSubset.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> internalSubset() {
-            return raw("internalSubset").map(value -> (String) value);
+            return optionalString("internalSubset");
         }
         /**
          * {@code Document}&#x27;s XML version in case of XML documents.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> xmlVersion() {
-            return raw("xmlVersion").map(value -> (String) value);
+            return optionalString("xmlVersion");
         }
         /**
          * {@code Attr}&#x27;s name.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            return raw("name").map(value -> (String) value);
+            return optionalString("name");
         }
         /**
          * {@code Attr}&#x27;s value.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> value() {
-            return raw("value").map(value -> (String) value);
+            return optionalString("value");
         }
         /**
          * Pseudo element type for this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.PseudoType> pseudoType() {
-            return raw("pseudoType").map(value -> DOM.PseudoType.of((String) value));
+            return optional(PSEUDO_TYPE);
         }
         /**
          * Pseudo element identifier for this node. Only present if there is a valid pseudoType.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> pseudoIdentifier() {
-            return raw("pseudoIdentifier").map(value -> (String) value);
+            return optionalString("pseudoIdentifier");
         }
         /**
          * Shadow root type.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.ShadowRootType> shadowRootType() {
-            return raw("shadowRootType").map(value -> DOM.ShadowRootType.of((String) value));
+            return optional(SHADOW_ROOT_TYPE);
         }
         /**
          * Frame ID for frame owner elements.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return raw("frameId").map(value -> new Page.FrameId((String) value));
+            return optional(FRAME_ID);
         }
         /**
          * Content document for frame owner elements.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.Node> contentDocument() {
-            return raw("contentDocument").flatMap(CdpObject::objectMap).map(DOM.Node::fromMap);
+            return optional(CONTENT_DOCUMENT);
         }
         /**
          * Shadow root list for given element host.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOM.Node>> shadowRoots() {
-            return raw("shadowRoots").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(SHADOW_ROOTS);
         }
         /**
          * Content document fragment for template elements.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.Node> templateContent() {
-            return raw("templateContent").flatMap(CdpObject::objectMap).map(DOM.Node::fromMap);
+            return optional(TEMPLATE_CONTENT);
         }
         /**
          * Pseudo elements associated with this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOM.Node>> pseudoElements() {
-            return raw("pseudoElements").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(PSEUDO_ELEMENTS);
         }
         /**
          * Deprecated, as the HTML Imports API has been removed (crbug.com/937746). This property used to return the imported document for the HTMLImport links. The property is always undefined now.
@@ -465,35 +525,35 @@ public final class DOM {
          */
         @Deprecated
         public Optional<DOM.Node> importedDocument() {
-            return raw("importedDocument").flatMap(CdpObject::objectMap).map(DOM.Node::fromMap);
+            return optional(IMPORTED_DOCUMENT);
         }
         /**
          * Distributed nodes for given insertion point.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOM.BackendNode>> distributedNodes() {
-            return raw("distributedNodes").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(DOM.BackendNode.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(DISTRIBUTED_NODES);
         }
         /**
          * Whether the node is SVG.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isSVG() {
-            return raw("isSVG").map(value -> (Boolean) value);
+            return optionalBoolean("isSVG");
         }
         /**
          * Returns the compatibilityMode field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.CompatibilityMode> compatibilityMode() {
-            return raw("compatibilityMode").map(value -> DOM.CompatibilityMode.of((String) value));
+            return optional(COMPATIBILITY_MODE);
         }
         /**
          * Returns the assignedSlot field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNode> assignedSlot() {
-            return raw("assignedSlot").flatMap(CdpObject::objectMap).map(DOM.BackendNode::fromMap);
+            return optional(ASSIGNED_SLOT);
         }
         /**
          * Returns the isScrollable field.
@@ -501,7 +561,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isScrollable() {
-            return raw("isScrollable").map(value -> (Boolean) value);
+            return optionalBoolean("isScrollable");
         }
         /**
          * Returns the affectedByStartingStyles field.
@@ -509,7 +569,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> affectedByStartingStyles() {
-            return raw("affectedByStartingStyles").map(value -> (Boolean) value);
+            return optionalBoolean("affectedByStartingStyles");
         }
         /**
          * Returns the adoptedStyleSheets field.
@@ -517,7 +577,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<DOM.StyleSheetId>> adoptedStyleSheets() {
-            return raw("adoptedStyleSheets").flatMap(value -> list(value, element0 -> new DOM.StyleSheetId((String) element0)));
+            return optional(ADOPTED_STYLE_SHEETS);
         }
         /**
          * Returns the adProvenance field.
@@ -525,7 +585,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.AdProvenance> adProvenance() {
-            return raw("adProvenance").flatMap(CdpObject::objectMap).map(Network.AdProvenance::fromMap);
+            return optional(AD_PROVENANCE);
         }
         /**
          * Node identifier that is passed into the rest of the DOM messages as the {@code nodeId}. Backend will only push node with given {@code id} once. It is aware of all requested nodes and will only fire DOM events for nodes known to the client.
@@ -863,14 +923,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.Node treeNode() {
-            return java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(require("treeNode"))));
+            return require(TREE_NODE);
         }
         /**
          * Returns the retainedNodeIds field.
          * @return the protocol field value
          */
         public java.util.List<DOM.NodeId> retainedNodeIds() {
-            return CdpObject.requireList(require("retainedNodeIds"), element0 -> new DOM.NodeId(((Number) element0).longValue()));
+            return require(RETAINED_NODE_IDS);
         }
         /**
          * Sets the treeNode field.
@@ -905,28 +965,28 @@ public final class DOM {
          * @return the protocol field value
          */
         public long r() {
-            return ((Number) require("r")).longValue();
+            return requireLong("r");
         }
         /**
          * The green component, in the [0-255] range.
          * @return the protocol field value
          */
         public long g() {
-            return ((Number) require("g")).longValue();
+            return requireLong("g");
         }
         /**
          * The blue component, in the [0-255] range.
          * @return the protocol field value
          */
         public long b() {
-            return ((Number) require("b")).longValue();
+            return requireLong("b");
         }
         /**
          * The alpha component, in the [0-1] range (default: 1).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble a() {
-            return raw("a").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("a");
         }
         /**
          * The red component, in the [0-255] range.
@@ -979,49 +1039,49 @@ public final class DOM {
          * @return the protocol field value
          */
         public java.util.List<Double> content() {
-            return CdpObject.requireList(require("content"), element0 -> ((Number) element0).doubleValue());
+            return require(CONTENT);
         }
         /**
          * Padding box
          * @return the protocol field value
          */
         public java.util.List<Double> padding() {
-            return CdpObject.requireList(require("padding"), element0 -> ((Number) element0).doubleValue());
+            return require(PADDING);
         }
         /**
          * Border box
          * @return the protocol field value
          */
         public java.util.List<Double> border() {
-            return CdpObject.requireList(require("border"), element0 -> ((Number) element0).doubleValue());
+            return require(BORDER);
         }
         /**
          * Margin box
          * @return the protocol field value
          */
         public java.util.List<Double> margin() {
-            return CdpObject.requireList(require("margin"), element0 -> ((Number) element0).doubleValue());
+            return require(MARGIN);
         }
         /**
          * Node width
          * @return the protocol field value
          */
         public long width() {
-            return ((Number) require("width")).longValue();
+            return requireLong("width");
         }
         /**
          * Node height
          * @return the protocol field value
          */
         public long height() {
-            return ((Number) require("height")).longValue();
+            return requireLong("height");
         }
         /**
          * Shape outside coordinates
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.ShapeOutsideInfo> shapeOutside() {
-            return raw("shapeOutside").flatMap(CdpObject::objectMap).map(DOM.ShapeOutsideInfo::fromMap);
+            return optional(SHAPE_OUTSIDE);
         }
         /**
          * Content box
@@ -1101,21 +1161,21 @@ public final class DOM {
          * @return the protocol field value
          */
         public java.util.List<Double> bounds() {
-            return CdpObject.requireList(require("bounds"), element0 -> ((Number) element0).doubleValue());
+            return require(BOUNDS);
         }
         /**
          * Shape coordinate details
          * @return the protocol field value
          */
         public java.util.List<Object> shape() {
-            return CdpObject.requireList(require("shape"), element0 -> element0);
+            return require(SHAPE);
         }
         /**
          * Margin shape bounds
          * @return the protocol field value
          */
         public java.util.List<Object> marginShape() {
-            return CdpObject.requireList(require("marginShape"), element0 -> element0);
+            return require(MARGIN_SHAPE);
         }
         /**
          * Shape bounds
@@ -1159,28 +1219,28 @@ public final class DOM {
          * @return the protocol field value
          */
         public double x() {
-            return ((Number) require("x")).doubleValue();
+            return requireDouble("x");
         }
         /**
          * Y coordinate
          * @return the protocol field value
          */
         public double y() {
-            return ((Number) require("y")).doubleValue();
+            return requireDouble("y");
         }
         /**
          * Rectangle width
          * @return the protocol field value
          */
         public double width() {
-            return ((Number) require("width")).doubleValue();
+            return requireDouble("width");
         }
         /**
          * Rectangle height
          * @return the protocol field value
          */
         public double height() {
-            return ((Number) require("height")).doubleValue();
+            return requireDouble("height");
         }
         /**
          * X coordinate
@@ -1232,14 +1292,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Computed style property value.
          * @return the protocol field value
          */
         public String value() {
-            return (String) require("value");
+            return requireString("value");
         }
         /**
          * Computed style property name.
@@ -1266,14 +1326,6 @@ public final class DOM {
      */
     public static final class CollectClassNamesFromSubtreeRequest extends CdpObject {
         public CollectClassNamesFromSubtreeRequest() {}
-        /**
-         * Collects class names for the node with given id and all of it&#x27;s child nodes.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param nodeId protocol value
-         */
-        public CollectClassNamesFromSubtreeRequest(DOM.NodeId nodeId) {
-            nodeId(nodeId);
-        }
         public static CollectClassNamesFromSubtreeRequest fromMap(Map<String, Object> values) {
             final CollectClassNamesFromSubtreeRequest instance_ = new CollectClassNamesFromSubtreeRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1284,7 +1336,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Id of the node to collect class names.
@@ -1302,15 +1354,6 @@ public final class DOM {
      */
     public static final class CopyToRequest extends CdpObject {
         public CopyToRequest() {}
-        /**
-         * Creates a deep copy of the specified node and places it into the target container before the given anchor.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param nodeId protocol value
-         * @param targetNodeId protocol value
-         */
-        public CopyToRequest(DOM.NodeId nodeId, DOM.NodeId targetNodeId) {
-            nodeId(nodeId).targetNodeId(targetNodeId);
-        }
         public static CopyToRequest fromMap(Map<String, Object> values) {
             final CopyToRequest instance_ = new CopyToRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1321,21 +1364,21 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Id of the element to drop the copy into.
          * @return the protocol field value
          */
         public DOM.NodeId targetNodeId() {
-            return new DOM.NodeId(((Number) require("targetNodeId")).longValue());
+            return require(TARGET_NODE_ID);
         }
         /**
          * Drop the copy before this node (if absent, the copy becomes the last child of {@code targetNodeId}).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> insertBeforeNodeId() {
-            return raw("insertBeforeNodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
+            return optional(INSERT_BEFORE_NODE_ID);
         }
         /**
          * Id of the node to copy.
@@ -1380,35 +1423,35 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
+            return optional(NODE_ID);
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(BACKEND_NODE_ID);
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return raw("objectId").map(value -> new Runtime.RemoteObjectId((String) value));
+            return optional(OBJECT_ID);
         }
         /**
          * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong depth() {
-            return raw("depth").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("depth");
         }
         /**
          * Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> pierce() {
-            return raw("pierce").map(value -> (Boolean) value);
+            return optionalBoolean("pierce");
         }
         /**
          * Identifier of the node.
@@ -1471,28 +1514,28 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
+            return optional(NODE_ID);
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(BACKEND_NODE_ID);
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return raw("objectId").map(value -> new Runtime.RemoteObjectId((String) value));
+            return optional(OBJECT_ID);
         }
         /**
          * The rect to be scrolled into view, relative to the node&#x27;s border box, in CSS pixels. When omitted, center of the node will be used, similar to Element.scrollIntoView.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.Rect> rect() {
-            return raw("rect").flatMap(CdpObject::objectMap).map(DOM.Rect::fromMap);
+            return optional(RECT);
         }
         /**
          * Identifier of the node.
@@ -1537,14 +1580,6 @@ public final class DOM {
      */
     public static final class DiscardSearchResultsRequest extends CdpObject {
         public DiscardSearchResultsRequest() {}
-        /**
-         * Discards search results from the session with the given id. {@code getSearchResults} should no longer be called for that search.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param searchId protocol value
-         */
-        public DiscardSearchResultsRequest(String searchId) {
-            searchId(searchId);
-        }
         public static DiscardSearchResultsRequest fromMap(Map<String, Object> values) {
             final DiscardSearchResultsRequest instance_ = new DiscardSearchResultsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1555,7 +1590,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public String searchId() {
-            return (String) require("searchId");
+            return requireString("searchId");
         }
         /**
          * Unique search session identifier.
@@ -1583,7 +1618,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<EnableIncludeWhitespaceValues> includeWhitespace() {
-            return raw("includeWhitespace").map(value -> EnableIncludeWhitespaceValues.of((String) value));
+            return optional(INCLUDE_WHITESPACE);
         }
         /**
          * Whether to include whitespaces in the children array of returned Nodes.
@@ -1611,21 +1646,21 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
+            return optional(NODE_ID);
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(BACKEND_NODE_ID);
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return raw("objectId").map(value -> new Runtime.RemoteObjectId((String) value));
+            return optional(OBJECT_ID);
         }
         /**
          * Identifier of the node.
@@ -1660,13 +1695,6 @@ public final class DOM {
      */
     public static final class GetAttributesRequest extends CdpObject {
         public GetAttributesRequest() {}
-        /**
-         * Returns attributes for the specified node.
-         * @param nodeId protocol value
-         */
-        public GetAttributesRequest(DOM.NodeId nodeId) {
-            nodeId(nodeId);
-        }
         public static GetAttributesRequest fromMap(Map<String, Object> values) {
             final GetAttributesRequest instance_ = new GetAttributesRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1677,7 +1705,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Id of the node to retrieve attributes for.
@@ -1704,21 +1732,21 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
+            return optional(NODE_ID);
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(BACKEND_NODE_ID);
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return raw("objectId").map(value -> new Runtime.RemoteObjectId((String) value));
+            return optional(OBJECT_ID);
         }
         /**
          * Identifier of the node.
@@ -1764,21 +1792,21 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
+            return optional(NODE_ID);
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(BACKEND_NODE_ID);
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return raw("objectId").map(value -> new Runtime.RemoteObjectId((String) value));
+            return optional(OBJECT_ID);
         }
         /**
          * Identifier of the node.
@@ -1823,14 +1851,14 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong depth() {
-            return raw("depth").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("depth");
         }
         /**
          * Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> pierce() {
-            return raw("pierce").map(value -> (Boolean) value);
+            return optionalBoolean("pierce");
         }
         /**
          * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
@@ -1868,14 +1896,14 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong depth() {
-            return raw("depth").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("depth");
         }
         /**
          * Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> pierce() {
-            return raw("pierce").map(value -> (Boolean) value);
+            return optionalBoolean("pierce");
         }
         /**
          * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
@@ -1902,15 +1930,6 @@ public final class DOM {
      */
     public static final class GetNodesForSubtreeByStyleRequest extends CdpObject {
         public GetNodesForSubtreeByStyleRequest() {}
-        /**
-         * Finds nodes with a given computed style in a subtree.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param nodeId protocol value
-         * @param computedStyles protocol value
-         */
-        public GetNodesForSubtreeByStyleRequest(DOM.NodeId nodeId, java.util.List<DOM.CSSComputedStyleProperty> computedStyles) {
-            nodeId(nodeId).computedStyles(computedStyles);
-        }
         public static GetNodesForSubtreeByStyleRequest fromMap(Map<String, Object> values) {
             final GetNodesForSubtreeByStyleRequest instance_ = new GetNodesForSubtreeByStyleRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1921,21 +1940,21 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * The style to filter nodes by (includes nodes if any of properties matches).
          * @return the protocol field value
          */
         public java.util.List<DOM.CSSComputedStyleProperty> computedStyles() {
-            return CdpObject.requireList(require("computedStyles"), element0 -> java.util.Objects.requireNonNull(DOM.CSSComputedStyleProperty.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(COMPUTED_STYLES);
         }
         /**
          * Whether or not iframes and shadow roots in the same target should be traversed when returning the results (default is false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> pierce() {
-            return raw("pierce").map(value -> (Boolean) value);
+            return optionalBoolean("pierce");
         }
         /**
          * Node ID pointing to the root of a subtree.
@@ -1970,14 +1989,6 @@ public final class DOM {
      */
     public static final class GetNodeForLocationRequest extends CdpObject {
         public GetNodeForLocationRequest() {}
-        /**
-         * Returns node id at given location. Depending on whether DOM domain is enabled, nodeId is either returned or not.
-         * @param x protocol value
-         * @param y protocol value
-         */
-        public GetNodeForLocationRequest(long x, long y) {
-            x(x).y(y);
-        }
         public static GetNodeForLocationRequest fromMap(Map<String, Object> values) {
             final GetNodeForLocationRequest instance_ = new GetNodeForLocationRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1988,28 +1999,28 @@ public final class DOM {
          * @return the protocol field value
          */
         public long x() {
-            return ((Number) require("x")).longValue();
+            return requireLong("x");
         }
         /**
          * Y coordinate.
          * @return the protocol field value
          */
         public long y() {
-            return ((Number) require("y")).longValue();
+            return requireLong("y");
         }
         /**
          * False to skip to the nearest non-UA shadow root ancestor (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeUserAgentShadowDOM() {
-            return raw("includeUserAgentShadowDOM").map(value -> (Boolean) value);
+            return optionalBoolean("includeUserAgentShadowDOM");
         }
         /**
          * Whether to ignore pointer-events: none on elements and hit test them.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> ignorePointerEventsNone() {
-            return raw("ignorePointerEventsNone").map(value -> (Boolean) value);
+            return optionalBoolean("ignorePointerEventsNone");
         }
         /**
          * X coordinate.
@@ -2063,21 +2074,21 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
+            return optional(NODE_ID);
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(BACKEND_NODE_ID);
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return raw("objectId").map(value -> new Runtime.RemoteObjectId((String) value));
+            return optional(OBJECT_ID);
         }
         /**
          * Include all shadow roots. Equals to false if not specified.
@@ -2085,7 +2096,7 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeShadowDOM() {
-            return raw("includeShadowDOM").map(value -> (Boolean) value);
+            return optionalBoolean("includeShadowDOM");
         }
         /**
          * Identifier of the node.
@@ -2131,14 +2142,6 @@ public final class DOM {
      */
     public static final class GetRelayoutBoundaryRequest extends CdpObject {
         public GetRelayoutBoundaryRequest() {}
-        /**
-         * Returns the id of the nearest ancestor that is a relayout boundary.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param nodeId protocol value
-         */
-        public GetRelayoutBoundaryRequest(DOM.NodeId nodeId) {
-            nodeId(nodeId);
-        }
         public static GetRelayoutBoundaryRequest fromMap(Map<String, Object> values) {
             final GetRelayoutBoundaryRequest instance_ = new GetRelayoutBoundaryRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2149,7 +2152,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Id of the node.
@@ -2167,16 +2170,6 @@ public final class DOM {
      */
     public static final class GetSearchResultsRequest extends CdpObject {
         public GetSearchResultsRequest() {}
-        /**
-         * Returns search results from given {@code fromIndex} to given {@code toIndex} from the search with the given identifier.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param searchId protocol value
-         * @param fromIndex protocol value
-         * @param toIndex protocol value
-         */
-        public GetSearchResultsRequest(String searchId, long fromIndex, long toIndex) {
-            searchId(searchId).fromIndex(fromIndex).toIndex(toIndex);
-        }
         public static GetSearchResultsRequest fromMap(Map<String, Object> values) {
             final GetSearchResultsRequest instance_ = new GetSearchResultsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2187,21 +2180,21 @@ public final class DOM {
          * @return the protocol field value
          */
         public String searchId() {
-            return (String) require("searchId");
+            return requireString("searchId");
         }
         /**
          * Start index of the search result to be returned.
          * @return the protocol field value
          */
         public long fromIndex() {
-            return ((Number) require("fromIndex")).longValue();
+            return requireLong("fromIndex");
         }
         /**
          * End index of the search result to be returned.
          * @return the protocol field value
          */
         public long toIndex() {
-            return ((Number) require("toIndex")).longValue();
+            return requireLong("toIndex");
         }
         /**
          * Unique search session identifier.
@@ -2236,14 +2229,6 @@ public final class DOM {
      */
     public static final class MoveToRequest extends CdpObject {
         public MoveToRequest() {}
-        /**
-         * Moves node into the new container, places it before the given anchor.
-         * @param nodeId protocol value
-         * @param targetNodeId protocol value
-         */
-        public MoveToRequest(DOM.NodeId nodeId, DOM.NodeId targetNodeId) {
-            nodeId(nodeId).targetNodeId(targetNodeId);
-        }
         public static MoveToRequest fromMap(Map<String, Object> values) {
             final MoveToRequest instance_ = new MoveToRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2254,21 +2239,21 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Id of the element to drop the moved node into.
          * @return the protocol field value
          */
         public DOM.NodeId targetNodeId() {
-            return new DOM.NodeId(((Number) require("targetNodeId")).longValue());
+            return require(TARGET_NODE_ID);
         }
         /**
          * Drop node before this one (if absent, the moved node becomes the last child of {@code targetNodeId}).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> insertBeforeNodeId() {
-            return raw("insertBeforeNodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
+            return optional(INSERT_BEFORE_NODE_ID);
         }
         /**
          * Id of the node to move.
@@ -2304,14 +2289,6 @@ public final class DOM {
      */
     public static final class PerformSearchRequest extends CdpObject {
         public PerformSearchRequest() {}
-        /**
-         * Searches for a given string in the DOM tree. Use {@code getSearchResults} to access search results or {@code cancelSearch} to end this search session.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param query protocol value
-         */
-        public PerformSearchRequest(String query) {
-            query(query);
-        }
         public static PerformSearchRequest fromMap(Map<String, Object> values) {
             final PerformSearchRequest instance_ = new PerformSearchRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2322,14 +2299,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public String query() {
-            return (String) require("query");
+            return requireString("query");
         }
         /**
          * True to search in user agent shadow DOM.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeUserAgentShadowDOM() {
-            return raw("includeUserAgentShadowDOM").map(value -> (Boolean) value);
+            return optionalBoolean("includeUserAgentShadowDOM");
         }
         /**
          * Plain text or query selector or XPath search query.
@@ -2356,14 +2333,6 @@ public final class DOM {
      */
     public static final class PushNodeByPathToFrontendRequest extends CdpObject {
         public PushNodeByPathToFrontendRequest() {}
-        /**
-         * Requests that the node is sent to the caller given its path. // FIXME, use XPath
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param path protocol value
-         */
-        public PushNodeByPathToFrontendRequest(String path) {
-            path(path);
-        }
         public static PushNodeByPathToFrontendRequest fromMap(Map<String, Object> values) {
             final PushNodeByPathToFrontendRequest instance_ = new PushNodeByPathToFrontendRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2374,7 +2343,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public String path() {
-            return (String) require("path");
+            return requireString("path");
         }
         /**
          * Path to node in the proprietary format.
@@ -2392,14 +2361,6 @@ public final class DOM {
      */
     public static final class PushNodesByBackendIdsToFrontendRequest extends CdpObject {
         public PushNodesByBackendIdsToFrontendRequest() {}
-        /**
-         * Requests that a batch of nodes is sent to the caller given their backend node ids.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param backendNodeIds protocol value
-         */
-        public PushNodesByBackendIdsToFrontendRequest(java.util.List<DOM.BackendNodeId> backendNodeIds) {
-            backendNodeIds(backendNodeIds);
-        }
         public static PushNodesByBackendIdsToFrontendRequest fromMap(Map<String, Object> values) {
             final PushNodesByBackendIdsToFrontendRequest instance_ = new PushNodesByBackendIdsToFrontendRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2410,7 +2371,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public java.util.List<DOM.BackendNodeId> backendNodeIds() {
-            return CdpObject.requireList(require("backendNodeIds"), element0 -> new DOM.BackendNodeId(((Number) element0).longValue()));
+            return require(BACKEND_NODE_IDS);
         }
         /**
          * The array of backend node ids.
@@ -2427,14 +2388,6 @@ public final class DOM {
      */
     public static final class QuerySelectorRequest extends CdpObject {
         public QuerySelectorRequest() {}
-        /**
-         * Executes {@code querySelector} on a given node.
-         * @param nodeId protocol value
-         * @param selector protocol value
-         */
-        public QuerySelectorRequest(DOM.NodeId nodeId, String selector) {
-            nodeId(nodeId).selector(selector);
-        }
         public static QuerySelectorRequest fromMap(Map<String, Object> values) {
             final QuerySelectorRequest instance_ = new QuerySelectorRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2445,14 +2398,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Selector string.
          * @return the protocol field value
          */
         public String selector() {
-            return (String) require("selector");
+            return requireString("selector");
         }
         /**
          * Id of the node to query upon.
@@ -2478,14 +2431,6 @@ public final class DOM {
      */
     public static final class QuerySelectorAllRequest extends CdpObject {
         public QuerySelectorAllRequest() {}
-        /**
-         * Executes {@code querySelectorAll} on a given node.
-         * @param nodeId protocol value
-         * @param selector protocol value
-         */
-        public QuerySelectorAllRequest(DOM.NodeId nodeId, String selector) {
-            nodeId(nodeId).selector(selector);
-        }
         public static QuerySelectorAllRequest fromMap(Map<String, Object> values) {
             final QuerySelectorAllRequest instance_ = new QuerySelectorAllRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2496,14 +2441,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Selector string.
          * @return the protocol field value
          */
         public String selector() {
-            return (String) require("selector");
+            return requireString("selector");
         }
         /**
          * Id of the node to query upon.
@@ -2530,15 +2475,6 @@ public final class DOM {
      */
     public static final class GetElementByRelationRequest extends CdpObject {
         public GetElementByRelationRequest() {}
-        /**
-         * Returns the NodeId of the matched element according to certain relations.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param nodeId protocol value
-         * @param relation protocol value
-         */
-        public GetElementByRelationRequest(DOM.NodeId nodeId, GetElementByRelationRelationValues relation) {
-            nodeId(nodeId).relation(relation);
-        }
         public static GetElementByRelationRequest fromMap(Map<String, Object> values) {
             final GetElementByRelationRequest instance_ = new GetElementByRelationRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2549,14 +2485,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Type of relation to get.
          * @return the protocol field value
          */
         public GetElementByRelationRelationValues relation() {
-            return GetElementByRelationRelationValues.of((String) require("relation"));
+            return require(RELATION);
         }
         /**
          * Id of the node from which to query the relation.
@@ -2582,14 +2518,6 @@ public final class DOM {
      */
     public static final class RemoveAttributeRequest extends CdpObject {
         public RemoveAttributeRequest() {}
-        /**
-         * Removes attribute with given name from an element with given id.
-         * @param nodeId protocol value
-         * @param name protocol value
-         */
-        public RemoveAttributeRequest(DOM.NodeId nodeId, String name) {
-            nodeId(nodeId).name(name);
-        }
         public static RemoveAttributeRequest fromMap(Map<String, Object> values) {
             final RemoveAttributeRequest instance_ = new RemoveAttributeRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2600,14 +2528,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Name of the attribute to remove.
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Id of the element to remove attribute from.
@@ -2633,13 +2561,6 @@ public final class DOM {
      */
     public static final class RemoveNodeRequest extends CdpObject {
         public RemoveNodeRequest() {}
-        /**
-         * Removes node with given id.
-         * @param nodeId protocol value
-         */
-        public RemoveNodeRequest(DOM.NodeId nodeId) {
-            nodeId(nodeId);
-        }
         public static RemoveNodeRequest fromMap(Map<String, Object> values) {
             final RemoveNodeRequest instance_ = new RemoveNodeRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2650,7 +2571,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Id of the node to remove.
@@ -2667,13 +2588,6 @@ public final class DOM {
      */
     public static final class RequestChildNodesRequest extends CdpObject {
         public RequestChildNodesRequest() {}
-        /**
-         * Requests that children of the node with given id are returned to the caller in form of {@code setChildNodes} events where not only immediate children are retrieved, but all children down to the specified depth.
-         * @param nodeId protocol value
-         */
-        public RequestChildNodesRequest(DOM.NodeId nodeId) {
-            nodeId(nodeId);
-        }
         public static RequestChildNodesRequest fromMap(Map<String, Object> values) {
             final RequestChildNodesRequest instance_ = new RequestChildNodesRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2684,21 +2598,21 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong depth() {
-            return raw("depth").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("depth");
         }
         /**
          * Whether or not iframes and shadow roots should be traversed when returning the sub-tree (default is false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> pierce() {
-            return raw("pierce").map(value -> (Boolean) value);
+            return optionalBoolean("pierce");
         }
         /**
          * Id of the node to get children for.
@@ -2733,13 +2647,6 @@ public final class DOM {
      */
     public static final class RequestNodeRequest extends CdpObject {
         public RequestNodeRequest() {}
-        /**
-         * Requests that the node is sent to the caller given the JavaScript node object reference. All nodes that form the path from the node to the root are also sent to the client as a series of {@code setChildNodes} notifications.
-         * @param objectId protocol value
-         */
-        public RequestNodeRequest(Runtime.RemoteObjectId objectId) {
-            objectId(objectId);
-        }
         public static RequestNodeRequest fromMap(Map<String, Object> values) {
             final RequestNodeRequest instance_ = new RequestNodeRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2750,7 +2657,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public Runtime.RemoteObjectId objectId() {
-            return new Runtime.RemoteObjectId((String) require("objectId"));
+            return require(OBJECT_ID);
         }
         /**
          * JavaScript object id to convert into node.
@@ -2777,28 +2684,28 @@ public final class DOM {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
+            return optional(NODE_ID);
         }
         /**
          * Backend identifier of the node to resolve.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(BACKEND_NODE_ID);
         }
         /**
          * Symbolic group name that can be used to release multiple objects.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> objectGroup() {
-            return raw("objectGroup").map(value -> (String) value);
+            return optionalString("objectGroup");
         }
         /**
          * Execution context in which to resolve the node.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ExecutionContextId> executionContextId() {
-            return raw("executionContextId").map(value -> new Runtime.ExecutionContextId(((Number) value).longValue()));
+            return optional(EXECUTION_CONTEXT_ID);
         }
         /**
          * Id of the node to resolve.
@@ -2842,15 +2749,6 @@ public final class DOM {
      */
     public static final class SetAttributeValueRequest extends CdpObject {
         public SetAttributeValueRequest() {}
-        /**
-         * Sets attribute for an element with given id.
-         * @param nodeId protocol value
-         * @param name protocol value
-         * @param value protocol value
-         */
-        public SetAttributeValueRequest(DOM.NodeId nodeId, String name, String value) {
-            nodeId(nodeId).name(name).value(value);
-        }
         public static SetAttributeValueRequest fromMap(Map<String, Object> values) {
             final SetAttributeValueRequest instance_ = new SetAttributeValueRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2861,21 +2759,21 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Attribute name.
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Attribute value.
          * @return the protocol field value
          */
         public String value() {
-            return (String) require("value");
+            return requireString("value");
         }
         /**
          * Id of the element to set attribute for.
@@ -2910,14 +2808,6 @@ public final class DOM {
      */
     public static final class SetAttributesAsTextRequest extends CdpObject {
         public SetAttributesAsTextRequest() {}
-        /**
-         * Sets attributes on element with given id. This method is useful when user edits some existing attribute value and types in several attribute name/value pairs.
-         * @param nodeId protocol value
-         * @param text protocol value
-         */
-        public SetAttributesAsTextRequest(DOM.NodeId nodeId, String text) {
-            nodeId(nodeId).text(text);
-        }
         public static SetAttributesAsTextRequest fromMap(Map<String, Object> values) {
             final SetAttributesAsTextRequest instance_ = new SetAttributesAsTextRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2928,21 +2818,21 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Text with a number of attributes. Will parse this text using HTML parser.
          * @return the protocol field value
          */
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * Attribute name to replace with new attributes derived from text in case text parsed successfully.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            return raw("name").map(value -> (String) value);
+            return optionalString("name");
         }
         /**
          * Id of the element to set attributes for.
@@ -2977,13 +2867,6 @@ public final class DOM {
      */
     public static final class SetFileInputFilesRequest extends CdpObject {
         public SetFileInputFilesRequest() {}
-        /**
-         * Sets files for the given file input element.
-         * @param files protocol value
-         */
-        public SetFileInputFilesRequest(java.util.List<String> files) {
-            files(files);
-        }
         public static SetFileInputFilesRequest fromMap(Map<String, Object> values) {
             final SetFileInputFilesRequest instance_ = new SetFileInputFilesRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2994,28 +2877,28 @@ public final class DOM {
          * @return the protocol field value
          */
         public java.util.List<String> files() {
-            return CdpObject.requireList(require("files"), element0 -> (String) element0);
+            return require(FILES);
         }
         /**
          * Identifier of the node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
+            return optional(NODE_ID);
         }
         /**
          * Identifier of the backend node.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(BACKEND_NODE_ID);
         }
         /**
          * JavaScript object id of the node wrapper.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObjectId> objectId() {
-            return raw("objectId").map(value -> new Runtime.RemoteObjectId((String) value));
+            return optional(OBJECT_ID);
         }
         /**
          * Array of file paths to set.
@@ -3060,14 +2943,6 @@ public final class DOM {
      */
     public static final class SetNodeStackTracesEnabledRequest extends CdpObject {
         public SetNodeStackTracesEnabledRequest() {}
-        /**
-         * Sets if stack traces should be captured for Nodes. See {@code Node.getNodeStackTraces}. Default is disabled.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param enable protocol value
-         */
-        public SetNodeStackTracesEnabledRequest(boolean enable) {
-            enable(enable);
-        }
         public static SetNodeStackTracesEnabledRequest fromMap(Map<String, Object> values) {
             final SetNodeStackTracesEnabledRequest instance_ = new SetNodeStackTracesEnabledRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3078,7 +2953,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public boolean enable() {
-            return (Boolean) require("enable");
+            return requireBoolean("enable");
         }
         /**
          * Enable or disable.
@@ -3096,14 +2971,6 @@ public final class DOM {
      */
     public static final class GetNodeStackTracesRequest extends CdpObject {
         public GetNodeStackTracesRequest() {}
-        /**
-         * Gets stack traces associated with a Node. As of now, only provides stack trace for Node creation.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param nodeId protocol value
-         */
-        public GetNodeStackTracesRequest(DOM.NodeId nodeId) {
-            nodeId(nodeId);
-        }
         public static GetNodeStackTracesRequest fromMap(Map<String, Object> values) {
             final GetNodeStackTracesRequest instance_ = new GetNodeStackTracesRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3114,7 +2981,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Id of the node to get stack traces for.
@@ -3132,14 +2999,6 @@ public final class DOM {
      */
     public static final class GetFileInfoRequest extends CdpObject {
         public GetFileInfoRequest() {}
-        /**
-         * Returns file information for the given File wrapper.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param objectId protocol value
-         */
-        public GetFileInfoRequest(Runtime.RemoteObjectId objectId) {
-            objectId(objectId);
-        }
         public static GetFileInfoRequest fromMap(Map<String, Object> values) {
             final GetFileInfoRequest instance_ = new GetFileInfoRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3150,7 +3009,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public Runtime.RemoteObjectId objectId() {
-            return new Runtime.RemoteObjectId((String) require("objectId"));
+            return require(OBJECT_ID);
         }
         /**
          * JavaScript object id of the node wrapper.
@@ -3168,14 +3027,6 @@ public final class DOM {
      */
     public static final class SetInspectedNodeRequest extends CdpObject {
         public SetInspectedNodeRequest() {}
-        /**
-         * Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param nodeId protocol value
-         */
-        public SetInspectedNodeRequest(DOM.NodeId nodeId) {
-            nodeId(nodeId);
-        }
         public static SetInspectedNodeRequest fromMap(Map<String, Object> values) {
             final SetInspectedNodeRequest instance_ = new SetInspectedNodeRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3186,7 +3037,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * DOM node id to be accessible by means of $x command line API.
@@ -3203,14 +3054,6 @@ public final class DOM {
      */
     public static final class SetNodeNameRequest extends CdpObject {
         public SetNodeNameRequest() {}
-        /**
-         * Sets node name for a node with given id.
-         * @param nodeId protocol value
-         * @param name protocol value
-         */
-        public SetNodeNameRequest(DOM.NodeId nodeId, String name) {
-            nodeId(nodeId).name(name);
-        }
         public static SetNodeNameRequest fromMap(Map<String, Object> values) {
             final SetNodeNameRequest instance_ = new SetNodeNameRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3221,14 +3064,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * New node&#x27;s name.
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Id of the node to set name for.
@@ -3254,14 +3097,6 @@ public final class DOM {
      */
     public static final class SetNodeValueRequest extends CdpObject {
         public SetNodeValueRequest() {}
-        /**
-         * Sets node value for a node with given id.
-         * @param nodeId protocol value
-         * @param value protocol value
-         */
-        public SetNodeValueRequest(DOM.NodeId nodeId, String value) {
-            nodeId(nodeId).value(value);
-        }
         public static SetNodeValueRequest fromMap(Map<String, Object> values) {
             final SetNodeValueRequest instance_ = new SetNodeValueRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3272,14 +3107,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * New node&#x27;s value.
          * @return the protocol field value
          */
         public String value() {
-            return (String) require("value");
+            return requireString("value");
         }
         /**
          * Id of the node to set value for.
@@ -3305,14 +3140,6 @@ public final class DOM {
      */
     public static final class SetOuterHTMLRequest extends CdpObject {
         public SetOuterHTMLRequest() {}
-        /**
-         * Sets node HTML markup, returns new node id.
-         * @param nodeId protocol value
-         * @param outerHTML protocol value
-         */
-        public SetOuterHTMLRequest(DOM.NodeId nodeId, String outerHTML) {
-            nodeId(nodeId).outerHTML(outerHTML);
-        }
         public static SetOuterHTMLRequest fromMap(Map<String, Object> values) {
             final SetOuterHTMLRequest instance_ = new SetOuterHTMLRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3323,14 +3150,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Outer HTML markup to set.
          * @return the protocol field value
          */
         public String outerHTML() {
-            return (String) require("outerHTML");
+            return requireString("outerHTML");
         }
         /**
          * Id of the node to set markup for.
@@ -3357,14 +3184,6 @@ public final class DOM {
      */
     public static final class GetFrameOwnerRequest extends CdpObject {
         public GetFrameOwnerRequest() {}
-        /**
-         * Returns iframe node that owns iframe with the given domain.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param frameId protocol value
-         */
-        public GetFrameOwnerRequest(Page.FrameId frameId) {
-            frameId(frameId);
-        }
         public static GetFrameOwnerRequest fromMap(Map<String, Object> values) {
             final GetFrameOwnerRequest instance_ = new GetFrameOwnerRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3375,7 +3194,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Sets the frameId field.
@@ -3393,14 +3212,6 @@ public final class DOM {
      */
     public static final class GetContainerForNodeRequest extends CdpObject {
         public GetContainerForNodeRequest() {}
-        /**
-         * Returns the query container of the given node based on container query conditions: containerName, physical and logical axes, and whether it queries scroll-state or anchored elements. If no axes are provided and queriesScrollState is false, the style container is returned, which is the direct parent or the closest element with a matching container-name.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param nodeId protocol value
-         */
-        public GetContainerForNodeRequest(DOM.NodeId nodeId) {
-            nodeId(nodeId);
-        }
         public static GetContainerForNodeRequest fromMap(Map<String, Object> values) {
             final GetContainerForNodeRequest instance_ = new GetContainerForNodeRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3411,42 +3222,42 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Returns the containerName field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> containerName() {
-            return raw("containerName").map(value -> (String) value);
+            return optionalString("containerName");
         }
         /**
          * Returns the physicalAxes field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.PhysicalAxes> physicalAxes() {
-            return raw("physicalAxes").map(value -> DOM.PhysicalAxes.of((String) value));
+            return optional(PHYSICAL_AXES);
         }
         /**
          * Returns the logicalAxes field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.LogicalAxes> logicalAxes() {
-            return raw("logicalAxes").map(value -> DOM.LogicalAxes.of((String) value));
+            return optional(LOGICAL_AXES);
         }
         /**
          * Returns the queriesScrollState field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> queriesScrollState() {
-            return raw("queriesScrollState").map(value -> (Boolean) value);
+            return optionalBoolean("queriesScrollState");
         }
         /**
          * Returns the queriesAnchored field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> queriesAnchored() {
-            return raw("queriesAnchored").map(value -> (Boolean) value);
+            return optionalBoolean("queriesAnchored");
         }
         /**
          * Sets the nodeId field.
@@ -3509,14 +3320,6 @@ public final class DOM {
      */
     public static final class GetQueryingDescendantsForContainerRequest extends CdpObject {
         public GetQueryingDescendantsForContainerRequest() {}
-        /**
-         * Returns the descendants of a container query container that have container queries against this container.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param nodeId protocol value
-         */
-        public GetQueryingDescendantsForContainerRequest(DOM.NodeId nodeId) {
-            nodeId(nodeId);
-        }
         public static GetQueryingDescendantsForContainerRequest fromMap(Map<String, Object> values) {
             final GetQueryingDescendantsForContainerRequest instance_ = new GetQueryingDescendantsForContainerRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3527,7 +3330,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Id of the container node to find querying descendants from.
@@ -3545,14 +3348,6 @@ public final class DOM {
      */
     public static final class GetAnchorElementRequest extends CdpObject {
         public GetAnchorElementRequest() {}
-        /**
-         * Returns the target anchor element of the given anchor query according to https://www.w3.org/TR/css-anchor-position-1/#target.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param nodeId protocol value
-         */
-        public GetAnchorElementRequest(DOM.NodeId nodeId) {
-            nodeId(nodeId);
-        }
         public static GetAnchorElementRequest fromMap(Map<String, Object> values) {
             final GetAnchorElementRequest instance_ = new GetAnchorElementRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3563,14 +3358,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * An optional anchor specifier, as defined in https://www.w3.org/TR/css-anchor-position-1/#anchor-specifier. If not provided, it will return the implicit anchor element for the given positioned element.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> anchorSpecifier() {
-            return raw("anchorSpecifier").map(value -> (String) value);
+            return optionalString("anchorSpecifier");
         }
         /**
          * Id of the positioned element from which to find the anchor.
@@ -3597,15 +3392,6 @@ public final class DOM {
      */
     public static final class ForceShowPopoverRequest extends CdpObject {
         public ForceShowPopoverRequest() {}
-        /**
-         * When enabling, this API force-opens the popover identified by nodeId and keeps it open until disabled.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param nodeId protocol value
-         * @param enable protocol value
-         */
-        public ForceShowPopoverRequest(DOM.NodeId nodeId, boolean enable) {
-            nodeId(nodeId).enable(enable);
-        }
         public static ForceShowPopoverRequest fromMap(Map<String, Object> values) {
             final ForceShowPopoverRequest instance_ = new ForceShowPopoverRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3616,14 +3402,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * If true, opens the popover and keeps it open. If false, closes the popover if it was previously force-opened.
          * @return the protocol field value
          */
         public boolean enable() {
-            return (Boolean) require("enable");
+            return requireBoolean("enable");
         }
         /**
          * Id of the popover HTMLElement
@@ -3658,21 +3444,21 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.BackendNodeId backendNodeId() {
-            return new DOM.BackendNodeId(((Number) require("backendNodeId")).longValue());
+            return require(BACKEND_NODE_ID);
         }
         /**
          * Frame this node belongs to.
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Id of the node at given coordinates, only when enabled and requested document.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
+            return optional(NODE_ID);
         }
         /**
          * Resulting node.
@@ -3717,14 +3503,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public String searchId() {
-            return (String) require("searchId");
+            return requireString("searchId");
         }
         /**
          * Number of search results.
          * @return the protocol field value
          */
         public long resultCount() {
-            return ((Number) require("resultCount")).longValue();
+            return requireLong("resultCount");
         }
         /**
          * Unique search session identifier.
@@ -3760,14 +3546,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.BackendNodeId backendNodeId() {
-            return new DOM.BackendNodeId(((Number) require("backendNodeId")).longValue());
+            return require(BACKEND_NODE_ID);
         }
         /**
          * Id of the node at given coordinates, only when enabled and requested document.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
+            return optional(NODE_ID);
         }
         /**
          * Resulting node.
@@ -3802,21 +3588,21 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Attribute name.
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Attribute value.
          * @return the protocol field value
          */
         public String value() {
-            return (String) require("value");
+            return requireString("value");
         }
         /**
          * Id of the node that has changed.
@@ -3861,7 +3647,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * New adoptedStyleSheets array.
@@ -3869,7 +3655,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public java.util.List<DOM.StyleSheetId> adoptedStyleSheets() {
-            return CdpObject.requireList(require("adoptedStyleSheets"), element0 -> new DOM.StyleSheetId((String) element0));
+            return require(ADOPTED_STYLE_SHEETS);
         }
         /**
          * Id of the node that has changed.
@@ -3905,14 +3691,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * A ttribute name.
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Id of the node that has changed.
@@ -3947,14 +3733,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * New text value.
          * @return the protocol field value
          */
         public String characterData() {
-            return (String) require("characterData");
+            return requireString("characterData");
         }
         /**
          * Id of the node that has changed.
@@ -3989,14 +3775,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * New node count.
          * @return the protocol field value
          */
         public long childNodeCount() {
-            return ((Number) require("childNodeCount")).longValue();
+            return requireLong("childNodeCount");
         }
         /**
          * Id of the node that has changed.
@@ -4031,21 +3817,21 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId parentNodeId() {
-            return new DOM.NodeId(((Number) require("parentNodeId")).longValue());
+            return require(PARENT_NODE_ID);
         }
         /**
          * Id of the previous sibling.
          * @return the protocol field value
          */
         public DOM.NodeId previousNodeId() {
-            return new DOM.NodeId(((Number) require("previousNodeId")).longValue());
+            return require(PREVIOUS_NODE_ID);
         }
         /**
          * Inserted node data.
          * @return the protocol field value
          */
         public DOM.Node node() {
-            return java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(require("node"))));
+            return require(NODE);
         }
         /**
          * Id of the node that has changed.
@@ -4089,14 +3875,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId parentNodeId() {
-            return new DOM.NodeId(((Number) require("parentNodeId")).longValue());
+            return require(PARENT_NODE_ID);
         }
         /**
          * Id of the node that has been removed.
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Parent id.
@@ -4132,14 +3918,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId insertionPointId() {
-            return new DOM.NodeId(((Number) require("insertionPointId")).longValue());
+            return require(INSERTION_POINT_ID);
         }
         /**
          * Distributed nodes for given insertion point.
          * @return the protocol field value
          */
         public java.util.List<DOM.BackendNode> distributedNodes() {
-            return CdpObject.requireList(require("distributedNodes"), element0 -> java.util.Objects.requireNonNull(DOM.BackendNode.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(DISTRIBUTED_NODES);
         }
         /**
          * Insertion point where distributed nodes were updated.
@@ -4185,7 +3971,7 @@ public final class DOM {
          * @return the protocol field value
          */
         public java.util.List<DOM.NodeId> nodeIds() {
-            return CdpObject.requireList(require("nodeIds"), element0 -> new DOM.NodeId(((Number) element0).longValue()));
+            return require(NODE_IDS);
         }
         /**
          * Ids of the nodes for which the inline styles have been invalidated.
@@ -4212,14 +3998,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId parentId() {
-            return new DOM.NodeId(((Number) require("parentId")).longValue());
+            return require(PARENT_ID);
         }
         /**
          * The added pseudo element.
          * @return the protocol field value
          */
         public DOM.Node pseudoElement() {
-            return java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(require("pseudoElement"))));
+            return require(PSEUDO_ELEMENT);
         }
         /**
          * Pseudo element&#x27;s parent element id.
@@ -4266,14 +4052,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * If the node is scrollable.
          * @return the protocol field value
          */
         public boolean isScrollable() {
-            return (Boolean) require("isScrollable");
+            return requireBoolean("isScrollable");
         }
         /**
          * The id of the node.
@@ -4309,14 +4095,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * The provenance of the ad related node, if it is ad related.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.AdProvenance> adProvenance() {
-            return raw("adProvenance").flatMap(CdpObject::objectMap).map(Network.AdProvenance::fromMap);
+            return optional(AD_PROVENANCE);
         }
         /**
          * The id of the node.
@@ -4352,14 +4138,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * If the node has starting styles.
          * @return the protocol field value
          */
         public boolean affectedByStartingStyles() {
-            return (Boolean) require("affectedByStartingStyles");
+            return requireBoolean("affectedByStartingStyles");
         }
         /**
          * The id of the node.
@@ -4395,14 +4181,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId parentId() {
-            return new DOM.NodeId(((Number) require("parentId")).longValue());
+            return require(PARENT_ID);
         }
         /**
          * The removed pseudo element id.
          * @return the protocol field value
          */
         public DOM.NodeId pseudoElementId() {
-            return new DOM.NodeId(((Number) require("pseudoElementId")).longValue());
+            return require(PSEUDO_ELEMENT_ID);
         }
         /**
          * Pseudo element&#x27;s parent element id.
@@ -4437,14 +4223,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId parentId() {
-            return new DOM.NodeId(((Number) require("parentId")).longValue());
+            return require(PARENT_ID);
         }
         /**
          * Child nodes array.
          * @return the protocol field value
          */
         public java.util.List<DOM.Node> nodes() {
-            return CdpObject.requireList(require("nodes"), element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(NODES);
         }
         /**
          * Parent node id to populate with children.
@@ -4480,14 +4266,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId hostId() {
-            return new DOM.NodeId(((Number) require("hostId")).longValue());
+            return require(HOST_ID);
         }
         /**
          * Shadow root id.
          * @return the protocol field value
          */
         public DOM.NodeId rootId() {
-            return new DOM.NodeId(((Number) require("rootId")).longValue());
+            return require(ROOT_ID);
         }
         /**
          * Host element id.
@@ -4523,14 +4309,14 @@ public final class DOM {
          * @return the protocol field value
          */
         public DOM.NodeId hostId() {
-            return new DOM.NodeId(((Number) require("hostId")).longValue());
+            return require(HOST_ID);
         }
         /**
          * Shadow root.
          * @return the protocol field value
          */
         public DOM.Node root() {
-            return java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(require("root"))));
+            return require(ROOT);
         }
         /**
          * Host element id.
@@ -4585,9 +4371,8 @@ public final class DOM {
             throw new IllegalArgumentException("Unknown GetElementByRelationRelationValues value: " + value);
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Collects class names for the node with given id and all of it&#x27;s child nodes.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
@@ -4595,9 +4380,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> collectClassNamesFromSubtree(DOM.NodeId nodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("DOM.collectClassNamesFromSubtree", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("classNames")), element0 -> (String) element0));
+            return call("DOM.collectClassNamesFromSubtree", params("nodeId", nodeId), CLASS_NAMES::require);
         }
         /**
          * Collects class names for the node with given id and all of it&#x27;s child nodes.
@@ -4606,7 +4389,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> collectClassNamesFromSubtree(CollectClassNamesFromSubtreeRequest request) {
-            return client.call("DOM.collectClassNamesFromSubtree", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("classNames")), element0 -> (String) element0));
+            return call("DOM.collectClassNamesFromSubtree", request, CLASS_NAMES::require);
         }
         /**
          * Creates a deep copy of the specified node and places it into the target container before the given anchor.
@@ -4617,11 +4400,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> copyTo(DOM.NodeId nodeId, DOM.NodeId targetNodeId, DOM.NodeId insertBeforeNodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("targetNodeId", CdpObject.json(targetNodeId));
-            params.put("insertBeforeNodeId", CdpObject.json(insertBeforeNodeId));
-            return client.call("DOM.copyTo", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.copyTo", params("nodeId", nodeId, "targetNodeId", targetNodeId, "insertBeforeNodeId", insertBeforeNodeId), NODE_ID::require);
         }
         /**
          * Creates a deep copy of the specified node and places it into the target container before the given anchor.
@@ -4631,10 +4410,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> copyTo(DOM.NodeId nodeId, DOM.NodeId targetNodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("targetNodeId", CdpObject.json(targetNodeId));
-            return client.call("DOM.copyTo", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.copyTo", params("nodeId", nodeId, "targetNodeId", targetNodeId), NODE_ID::require);
         }
         /**
          * Creates a deep copy of the specified node and places it into the target container before the given anchor.
@@ -4643,7 +4419,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> copyTo(CopyToRequest request) {
-            return client.call("DOM.copyTo", request == null ? null : request.toMap(), result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.copyTo", request, NODE_ID::require);
         }
         /**
          * Describes node given its id, does not require domain to be enabled. Does not start tracking any objects, can be used for automation.
@@ -4655,20 +4431,14 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.Node> describeNode(DOM.@Nullable NodeId nodeId, DOM.@Nullable BackendNodeId backendNodeId, Runtime.@Nullable RemoteObjectId objectId, @Nullable Long depth, @Nullable Boolean pierce) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (nodeId != null) params.put("nodeId", CdpObject.json(nodeId));
-            if (backendNodeId != null) params.put("backendNodeId", CdpObject.json(backendNodeId));
-            if (objectId != null) params.put("objectId", CdpObject.json(objectId));
-            if (depth != null) params.put("depth", CdpObject.json(depth));
-            if (pierce != null) params.put("pierce", CdpObject.json(pierce));
-            return client.call("DOM.describeNode", params, result_ -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("node"))))));
+            return call("DOM.describeNode", params("nodeId", nodeId, "backendNodeId", backendNodeId, "objectId", objectId, "depth", depth, "pierce", pierce), NODE::require);
         }
         /**
          * Describes node given its id, does not require domain to be enabled. Does not start tracking any objects, can be used for automation.
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.Node> describeNode() {
-            return client.call("DOM.describeNode", null, result_ -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("node"))))));
+            return call("DOM.describeNode", NODE::require);
         }
         /**
          * Describes node given its id, does not require domain to be enabled. Does not start tracking any objects, can be used for automation.
@@ -4676,7 +4446,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.Node> describeNode(DescribeNodeRequest request) {
-            return client.call("DOM.describeNode", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("node"))))));
+            return call("DOM.describeNode", request, NODE::require);
         }
         /**
          * Scrolls the specified rect of the given node into view if not already visible. Note: exactly one between nodeId, backendNodeId and objectId should be passed to identify the node.
@@ -4687,19 +4457,14 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> scrollIntoViewIfNeeded(DOM.@Nullable NodeId nodeId, DOM.@Nullable BackendNodeId backendNodeId, Runtime.@Nullable RemoteObjectId objectId, DOM.@Nullable Rect rect) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (nodeId != null) params.put("nodeId", CdpObject.json(nodeId));
-            if (backendNodeId != null) params.put("backendNodeId", CdpObject.json(backendNodeId));
-            if (objectId != null) params.put("objectId", CdpObject.json(objectId));
-            if (rect != null) params.put("rect", CdpObject.json(rect));
-            return client.call("DOM.scrollIntoViewIfNeeded", params);
+            return call("DOM.scrollIntoViewIfNeeded", params("nodeId", nodeId, "backendNodeId", backendNodeId, "objectId", objectId, "rect", rect));
         }
         /**
          * Scrolls the specified rect of the given node into view if not already visible. Note: exactly one between nodeId, backendNodeId and objectId should be passed to identify the node.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> scrollIntoViewIfNeeded() {
-            return client.call("DOM.scrollIntoViewIfNeeded", null);
+            return call("DOM.scrollIntoViewIfNeeded");
         }
         /**
          * Scrolls the specified rect of the given node into view if not already visible. Note: exactly one between nodeId, backendNodeId and objectId should be passed to identify the node.
@@ -4707,14 +4472,14 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> scrollIntoViewIfNeeded(ScrollIntoViewIfNeededRequest request) {
-            return client.call("DOM.scrollIntoViewIfNeeded", request == null ? null : request.toMap());
+            return call("DOM.scrollIntoViewIfNeeded", request);
         }
         /**
          * Disables DOM agent for the given page.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("DOM.disable", null);
+            return call("DOM.disable");
         }
         /**
          * Discards search results from the session with the given id. {@code getSearchResults} should no longer be called for that search.
@@ -4723,9 +4488,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> discardSearchResults(String searchId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("searchId", CdpObject.json(searchId));
-            return client.call("DOM.discardSearchResults", params);
+            return call("DOM.discardSearchResults", params("searchId", searchId));
         }
         /**
          * Discards search results from the session with the given id. {@code getSearchResults} should no longer be called for that search.
@@ -4734,7 +4497,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> discardSearchResults(DiscardSearchResultsRequest request) {
-            return client.call("DOM.discardSearchResults", request == null ? null : request.toMap());
+            return call("DOM.discardSearchResults", request);
         }
         /**
          * Enables DOM agent for the given page.
@@ -4742,16 +4505,14 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable(EnableIncludeWhitespaceValues includeWhitespace) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("includeWhitespace", CdpObject.json(includeWhitespace));
-            return client.call("DOM.enable", params);
+            return call("DOM.enable", params("includeWhitespace", includeWhitespace));
         }
         /**
          * Enables DOM agent for the given page.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("DOM.enable", null);
+            return call("DOM.enable");
         }
         /**
          * Enables DOM agent for the given page.
@@ -4759,7 +4520,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable(EnableRequest request) {
-            return client.call("DOM.enable", request == null ? null : request.toMap());
+            return call("DOM.enable", request);
         }
         /**
          * Focuses the given element.
@@ -4769,18 +4530,14 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> focus(DOM.@Nullable NodeId nodeId, DOM.@Nullable BackendNodeId backendNodeId, Runtime.@Nullable RemoteObjectId objectId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (nodeId != null) params.put("nodeId", CdpObject.json(nodeId));
-            if (backendNodeId != null) params.put("backendNodeId", CdpObject.json(backendNodeId));
-            if (objectId != null) params.put("objectId", CdpObject.json(objectId));
-            return client.call("DOM.focus", params);
+            return call("DOM.focus", params("nodeId", nodeId, "backendNodeId", backendNodeId, "objectId", objectId));
         }
         /**
          * Focuses the given element.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> focus() {
-            return client.call("DOM.focus", null);
+            return call("DOM.focus");
         }
         /**
          * Focuses the given element.
@@ -4788,7 +4545,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> focus(FocusRequest request) {
-            return client.call("DOM.focus", request == null ? null : request.toMap());
+            return call("DOM.focus", request);
         }
         /**
          * Returns attributes for the specified node.
@@ -4796,9 +4553,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> getAttributes(DOM.NodeId nodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("DOM.getAttributes", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("attributes")), element0 -> (String) element0));
+            return call("DOM.getAttributes", params("nodeId", nodeId), ATTRIBUTES::require);
         }
         /**
          * Returns attributes for the specified node.
@@ -4806,7 +4561,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> getAttributes(GetAttributesRequest request) {
-            return client.call("DOM.getAttributes", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("attributes")), element0 -> (String) element0));
+            return call("DOM.getAttributes", request, ATTRIBUTES::require);
         }
         /**
          * Returns boxes for the given node.
@@ -4816,18 +4571,14 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.BoxModel> getBoxModel(DOM.@Nullable NodeId nodeId, DOM.@Nullable BackendNodeId backendNodeId, Runtime.@Nullable RemoteObjectId objectId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (nodeId != null) params.put("nodeId", CdpObject.json(nodeId));
-            if (backendNodeId != null) params.put("backendNodeId", CdpObject.json(backendNodeId));
-            if (objectId != null) params.put("objectId", CdpObject.json(objectId));
-            return client.call("DOM.getBoxModel", params, result_ -> java.util.Objects.requireNonNull(DOM.BoxModel.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("model"))))));
+            return call("DOM.getBoxModel", params("nodeId", nodeId, "backendNodeId", backendNodeId, "objectId", objectId), MODEL::require);
         }
         /**
          * Returns boxes for the given node.
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.BoxModel> getBoxModel() {
-            return client.call("DOM.getBoxModel", null, result_ -> java.util.Objects.requireNonNull(DOM.BoxModel.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("model"))))));
+            return call("DOM.getBoxModel", MODEL::require);
         }
         /**
          * Returns boxes for the given node.
@@ -4835,7 +4586,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.BoxModel> getBoxModel(GetBoxModelRequest request) {
-            return client.call("DOM.getBoxModel", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(DOM.BoxModel.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("model"))))));
+            return call("DOM.getBoxModel", request, MODEL::require);
         }
         /**
          * Returns quads that describe node position on the page. This method might return multiple quads for inline nodes.
@@ -4846,11 +4597,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<java.util.List<Double>>> getContentQuads(DOM.@Nullable NodeId nodeId, DOM.@Nullable BackendNodeId backendNodeId, Runtime.@Nullable RemoteObjectId objectId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (nodeId != null) params.put("nodeId", CdpObject.json(nodeId));
-            if (backendNodeId != null) params.put("backendNodeId", CdpObject.json(backendNodeId));
-            if (objectId != null) params.put("objectId", CdpObject.json(objectId));
-            return client.call("DOM.getContentQuads", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("quads")), element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
+            return call("DOM.getContentQuads", params("nodeId", nodeId, "backendNodeId", backendNodeId, "objectId", objectId), QUADS::require);
         }
         /**
          * Returns quads that describe node position on the page. This method might return multiple quads for inline nodes.
@@ -4858,7 +4605,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<java.util.List<Double>>> getContentQuads() {
-            return client.call("DOM.getContentQuads", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("quads")), element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
+            return call("DOM.getContentQuads", QUADS::require);
         }
         /**
          * Returns quads that describe node position on the page. This method might return multiple quads for inline nodes.
@@ -4867,7 +4614,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<java.util.List<Double>>> getContentQuads(GetContentQuadsRequest request) {
-            return client.call("DOM.getContentQuads", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("quads")), element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
+            return call("DOM.getContentQuads", request, QUADS::require);
         }
         /**
          * Returns the root DOM node (and optionally the subtree) to the caller. Implicitly enables the DOM domain events for the current target.
@@ -4876,17 +4623,14 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.Node> getDocument(@Nullable Long depth, @Nullable Boolean pierce) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (depth != null) params.put("depth", CdpObject.json(depth));
-            if (pierce != null) params.put("pierce", CdpObject.json(pierce));
-            return client.call("DOM.getDocument", params, result_ -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("root"))))));
+            return call("DOM.getDocument", params("depth", depth, "pierce", pierce), ROOT::require);
         }
         /**
          * Returns the root DOM node (and optionally the subtree) to the caller. Implicitly enables the DOM domain events for the current target.
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.Node> getDocument() {
-            return client.call("DOM.getDocument", null, result_ -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("root"))))));
+            return call("DOM.getDocument", ROOT::require);
         }
         /**
          * Returns the root DOM node (and optionally the subtree) to the caller. Implicitly enables the DOM domain events for the current target.
@@ -4894,7 +4638,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.Node> getDocument(GetDocumentRequest request) {
-            return client.call("DOM.getDocument", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("root"))))));
+            return call("DOM.getDocument", request, ROOT::require);
         }
         /**
          * Returns the root DOM node (and optionally the subtree) to the caller. Deprecated, as it is not designed to work well with the rest of the DOM agent. Use DOMSnapshot.captureSnapshot instead.
@@ -4905,10 +4649,7 @@ public final class DOM {
          */
         @Deprecated
         public CompletionStage<java.util.List<DOM.Node>> getFlattenedDocument(@Nullable Long depth, @Nullable Boolean pierce) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (depth != null) params.put("depth", CdpObject.json(depth));
-            if (pierce != null) params.put("pierce", CdpObject.json(pierce));
-            return client.call("DOM.getFlattenedDocument", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("DOM.getFlattenedDocument", params("depth", depth, "pierce", pierce), NODES::require);
         }
         /**
          * Returns the root DOM node (and optionally the subtree) to the caller. Deprecated, as it is not designed to work well with the rest of the DOM agent. Use DOMSnapshot.captureSnapshot instead.
@@ -4917,7 +4658,7 @@ public final class DOM {
          */
         @Deprecated
         public CompletionStage<java.util.List<DOM.Node>> getFlattenedDocument() {
-            return client.call("DOM.getFlattenedDocument", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("DOM.getFlattenedDocument", NODES::require);
         }
         /**
          * Returns the root DOM node (and optionally the subtree) to the caller. Deprecated, as it is not designed to work well with the rest of the DOM agent. Use DOMSnapshot.captureSnapshot instead.
@@ -4927,7 +4668,7 @@ public final class DOM {
          */
         @Deprecated
         public CompletionStage<java.util.List<DOM.Node>> getFlattenedDocument(GetFlattenedDocumentRequest request) {
-            return client.call("DOM.getFlattenedDocument", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodes")), element0 -> java.util.Objects.requireNonNull(DOM.Node.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("DOM.getFlattenedDocument", request, NODES::require);
         }
         /**
          * Finds nodes with a given computed style in a subtree.
@@ -4938,11 +4679,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> getNodesForSubtreeByStyle(DOM.NodeId nodeId, java.util.List<DOM.CSSComputedStyleProperty> computedStyles, boolean pierce) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("computedStyles", CdpObject.json(computedStyles));
-            params.put("pierce", CdpObject.json(pierce));
-            return client.call("DOM.getNodesForSubtreeByStyle", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
+            return call("DOM.getNodesForSubtreeByStyle", params("nodeId", nodeId, "computedStyles", computedStyles, "pierce", pierce), NODE_IDS::require);
         }
         /**
          * Finds nodes with a given computed style in a subtree.
@@ -4952,10 +4689,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> getNodesForSubtreeByStyle(DOM.NodeId nodeId, java.util.List<DOM.CSSComputedStyleProperty> computedStyles) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("computedStyles", CdpObject.json(computedStyles));
-            return client.call("DOM.getNodesForSubtreeByStyle", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
+            return call("DOM.getNodesForSubtreeByStyle", params("nodeId", nodeId, "computedStyles", computedStyles), NODE_IDS::require);
         }
         /**
          * Finds nodes with a given computed style in a subtree.
@@ -4964,7 +4698,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> getNodesForSubtreeByStyle(GetNodesForSubtreeByStyleRequest request) {
-            return client.call("DOM.getNodesForSubtreeByStyle", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
+            return call("DOM.getNodesForSubtreeByStyle", request, NODE_IDS::require);
         }
         /**
          * Returns node id at given location. Depending on whether DOM domain is enabled, nodeId is either returned or not.
@@ -4975,12 +4709,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetNodeForLocationResult> getNodeForLocation(long x, long y, @Nullable Boolean includeUserAgentShadowDOM, @Nullable Boolean ignorePointerEventsNone) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("x", CdpObject.json(x));
-            params.put("y", CdpObject.json(y));
-            if (includeUserAgentShadowDOM != null) params.put("includeUserAgentShadowDOM", CdpObject.json(includeUserAgentShadowDOM));
-            if (ignorePointerEventsNone != null) params.put("ignorePointerEventsNone", CdpObject.json(ignorePointerEventsNone));
-            return client.call("DOM.getNodeForLocation", params, result_ -> new GetNodeForLocationResult(result_));
+            return call("DOM.getNodeForLocation", params("x", x, "y", y, "includeUserAgentShadowDOM", includeUserAgentShadowDOM, "ignorePointerEventsNone", ignorePointerEventsNone), GetNodeForLocationResult::fromMap);
         }
         /**
          * Returns node id at given location. Depending on whether DOM domain is enabled, nodeId is either returned or not.
@@ -4989,10 +4718,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetNodeForLocationResult> getNodeForLocation(long x, long y) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("x", CdpObject.json(x));
-            params.put("y", CdpObject.json(y));
-            return client.call("DOM.getNodeForLocation", params, result_ -> new GetNodeForLocationResult(result_));
+            return call("DOM.getNodeForLocation", params("x", x, "y", y), GetNodeForLocationResult::fromMap);
         }
         /**
          * Returns node id at given location. Depending on whether DOM domain is enabled, nodeId is either returned or not.
@@ -5000,7 +4726,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetNodeForLocationResult> getNodeForLocation(GetNodeForLocationRequest request) {
-            return client.call("DOM.getNodeForLocation", request == null ? null : request.toMap(), result_ -> new GetNodeForLocationResult(result_));
+            return call("DOM.getNodeForLocation", request, GetNodeForLocationResult::fromMap);
         }
         /**
          * Returns node&#x27;s HTML markup.
@@ -5011,19 +4737,14 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> getOuterHTML(DOM.@Nullable NodeId nodeId, DOM.@Nullable BackendNodeId backendNodeId, Runtime.@Nullable RemoteObjectId objectId, @Nullable Boolean includeShadowDOM) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (nodeId != null) params.put("nodeId", CdpObject.json(nodeId));
-            if (backendNodeId != null) params.put("backendNodeId", CdpObject.json(backendNodeId));
-            if (objectId != null) params.put("objectId", CdpObject.json(objectId));
-            if (includeShadowDOM != null) params.put("includeShadowDOM", CdpObject.json(includeShadowDOM));
-            return client.call("DOM.getOuterHTML", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("outerHTML")));
+            return call("DOM.getOuterHTML", params("nodeId", nodeId, "backendNodeId", backendNodeId, "objectId", objectId, "includeShadowDOM", includeShadowDOM), OUTER_HTML::require);
         }
         /**
          * Returns node&#x27;s HTML markup.
          * @return a stage completing with the command result
          */
         public CompletionStage<String> getOuterHTML() {
-            return client.call("DOM.getOuterHTML", null, result_ -> (String) java.util.Objects.requireNonNull(result_.get("outerHTML")));
+            return call("DOM.getOuterHTML", OUTER_HTML::require);
         }
         /**
          * Returns node&#x27;s HTML markup.
@@ -5031,7 +4752,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> getOuterHTML(GetOuterHTMLRequest request) {
-            return client.call("DOM.getOuterHTML", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("outerHTML")));
+            return call("DOM.getOuterHTML", request, OUTER_HTML::require);
         }
         /**
          * Returns the id of the nearest ancestor that is a relayout boundary.
@@ -5040,9 +4761,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> getRelayoutBoundary(DOM.NodeId nodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("DOM.getRelayoutBoundary", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.getRelayoutBoundary", params("nodeId", nodeId), NODE_ID::require);
         }
         /**
          * Returns the id of the nearest ancestor that is a relayout boundary.
@@ -5051,7 +4770,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> getRelayoutBoundary(GetRelayoutBoundaryRequest request) {
-            return client.call("DOM.getRelayoutBoundary", request == null ? null : request.toMap(), result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.getRelayoutBoundary", request, NODE_ID::require);
         }
         /**
          * Returns search results from given {@code fromIndex} to given {@code toIndex} from the search with the given identifier.
@@ -5062,11 +4781,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> getSearchResults(String searchId, long fromIndex, long toIndex) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("searchId", CdpObject.json(searchId));
-            params.put("fromIndex", CdpObject.json(fromIndex));
-            params.put("toIndex", CdpObject.json(toIndex));
-            return client.call("DOM.getSearchResults", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
+            return call("DOM.getSearchResults", params("searchId", searchId, "fromIndex", fromIndex, "toIndex", toIndex), NODE_IDS::require);
         }
         /**
          * Returns search results from given {@code fromIndex} to given {@code toIndex} from the search with the given identifier.
@@ -5075,28 +4790,28 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> getSearchResults(GetSearchResultsRequest request) {
-            return client.call("DOM.getSearchResults", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
+            return call("DOM.getSearchResults", request, NODE_IDS::require);
         }
         /**
          * Hides any highlight.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> hideHighlight() {
-            return client.call("DOM.hideHighlight", null);
+            return call("DOM.hideHighlight");
         }
         /**
          * Highlights DOM node.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> highlightNode() {
-            return client.call("DOM.highlightNode", null);
+            return call("DOM.highlightNode");
         }
         /**
          * Highlights given rectangle.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> highlightRect() {
-            return client.call("DOM.highlightRect", null);
+            return call("DOM.highlightRect");
         }
         /**
          * Marks last undoable state.
@@ -5104,7 +4819,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> markUndoableState() {
-            return client.call("DOM.markUndoableState", null);
+            return call("DOM.markUndoableState");
         }
         /**
          * Moves node into the new container, places it before the given anchor.
@@ -5114,11 +4829,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> moveTo(DOM.NodeId nodeId, DOM.NodeId targetNodeId, DOM.NodeId insertBeforeNodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("targetNodeId", CdpObject.json(targetNodeId));
-            params.put("insertBeforeNodeId", CdpObject.json(insertBeforeNodeId));
-            return client.call("DOM.moveTo", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.moveTo", params("nodeId", nodeId, "targetNodeId", targetNodeId, "insertBeforeNodeId", insertBeforeNodeId), NODE_ID::require);
         }
         /**
          * Moves node into the new container, places it before the given anchor.
@@ -5127,10 +4838,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> moveTo(DOM.NodeId nodeId, DOM.NodeId targetNodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("targetNodeId", CdpObject.json(targetNodeId));
-            return client.call("DOM.moveTo", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.moveTo", params("nodeId", nodeId, "targetNodeId", targetNodeId), NODE_ID::require);
         }
         /**
          * Moves node into the new container, places it before the given anchor.
@@ -5138,7 +4846,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> moveTo(MoveToRequest request) {
-            return client.call("DOM.moveTo", request == null ? null : request.toMap(), result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.moveTo", request, NODE_ID::require);
         }
         /**
          * Searches for a given string in the DOM tree. Use {@code getSearchResults} to access search results or {@code cancelSearch} to end this search session.
@@ -5148,10 +4856,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<PerformSearchResult> performSearch(String query, boolean includeUserAgentShadowDOM) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("query", CdpObject.json(query));
-            params.put("includeUserAgentShadowDOM", CdpObject.json(includeUserAgentShadowDOM));
-            return client.call("DOM.performSearch", params, result_ -> new PerformSearchResult(result_));
+            return call("DOM.performSearch", params("query", query, "includeUserAgentShadowDOM", includeUserAgentShadowDOM), PerformSearchResult::fromMap);
         }
         /**
          * Searches for a given string in the DOM tree. Use {@code getSearchResults} to access search results or {@code cancelSearch} to end this search session.
@@ -5160,9 +4865,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<PerformSearchResult> performSearch(String query) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("query", CdpObject.json(query));
-            return client.call("DOM.performSearch", params, result_ -> new PerformSearchResult(result_));
+            return call("DOM.performSearch", params("query", query), PerformSearchResult::fromMap);
         }
         /**
          * Searches for a given string in the DOM tree. Use {@code getSearchResults} to access search results or {@code cancelSearch} to end this search session.
@@ -5171,7 +4874,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<PerformSearchResult> performSearch(PerformSearchRequest request) {
-            return client.call("DOM.performSearch", request == null ? null : request.toMap(), result_ -> new PerformSearchResult(result_));
+            return call("DOM.performSearch", request, PerformSearchResult::fromMap);
         }
         /**
          * Requests that the node is sent to the caller given its path. // FIXME, use XPath
@@ -5180,9 +4883,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> pushNodeByPathToFrontend(String path) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("path", CdpObject.json(path));
-            return client.call("DOM.pushNodeByPathToFrontend", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.pushNodeByPathToFrontend", params("path", path), NODE_ID::require);
         }
         /**
          * Requests that the node is sent to the caller given its path. // FIXME, use XPath
@@ -5191,7 +4892,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> pushNodeByPathToFrontend(PushNodeByPathToFrontendRequest request) {
-            return client.call("DOM.pushNodeByPathToFrontend", request == null ? null : request.toMap(), result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.pushNodeByPathToFrontend", request, NODE_ID::require);
         }
         /**
          * Requests that a batch of nodes is sent to the caller given their backend node ids.
@@ -5200,9 +4901,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> pushNodesByBackendIdsToFrontend(java.util.List<DOM.BackendNodeId> backendNodeIds) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("backendNodeIds", CdpObject.json(backendNodeIds));
-            return client.call("DOM.pushNodesByBackendIdsToFrontend", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
+            return call("DOM.pushNodesByBackendIdsToFrontend", params("backendNodeIds", backendNodeIds), NODE_IDS::require);
         }
         /**
          * Requests that a batch of nodes is sent to the caller given their backend node ids.
@@ -5211,7 +4910,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> pushNodesByBackendIdsToFrontend(PushNodesByBackendIdsToFrontendRequest request) {
-            return client.call("DOM.pushNodesByBackendIdsToFrontend", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
+            return call("DOM.pushNodesByBackendIdsToFrontend", request, NODE_IDS::require);
         }
         /**
          * Executes {@code querySelector} on a given node.
@@ -5220,10 +4919,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> querySelector(DOM.NodeId nodeId, String selector) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("selector", CdpObject.json(selector));
-            return client.call("DOM.querySelector", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.querySelector", params("nodeId", nodeId, "selector", selector), NODE_ID::require);
         }
         /**
          * Executes {@code querySelector} on a given node.
@@ -5231,7 +4927,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> querySelector(QuerySelectorRequest request) {
-            return client.call("DOM.querySelector", request == null ? null : request.toMap(), result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.querySelector", request, NODE_ID::require);
         }
         /**
          * Executes {@code querySelectorAll} on a given node.
@@ -5240,10 +4936,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> querySelectorAll(DOM.NodeId nodeId, String selector) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("selector", CdpObject.json(selector));
-            return client.call("DOM.querySelectorAll", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
+            return call("DOM.querySelectorAll", params("nodeId", nodeId, "selector", selector), NODE_IDS::require);
         }
         /**
          * Executes {@code querySelectorAll} on a given node.
@@ -5251,7 +4944,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> querySelectorAll(QuerySelectorAllRequest request) {
-            return client.call("DOM.querySelectorAll", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
+            return call("DOM.querySelectorAll", request, NODE_IDS::require);
         }
         /**
          * Returns NodeIds of current top layer elements. Top layer is rendered closest to the user within a viewport, therefore its elements always appear on top of all other content.
@@ -5259,7 +4952,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> getTopLayerElements() {
-            return client.call("DOM.getTopLayerElements", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
+            return call("DOM.getTopLayerElements", NODE_IDS::require);
         }
         /**
          * Returns the NodeId of the matched element according to certain relations.
@@ -5269,10 +4962,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> getElementByRelation(DOM.NodeId nodeId, GetElementByRelationRelationValues relation) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("relation", CdpObject.json(relation));
-            return client.call("DOM.getElementByRelation", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.getElementByRelation", params("nodeId", nodeId, "relation", relation), NODE_ID::require);
         }
         /**
          * Returns the NodeId of the matched element according to certain relations.
@@ -5281,7 +4971,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> getElementByRelation(GetElementByRelationRequest request) {
-            return client.call("DOM.getElementByRelation", request == null ? null : request.toMap(), result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.getElementByRelation", request, NODE_ID::require);
         }
         /**
          * Re-does the last undone action.
@@ -5289,7 +4979,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> redo() {
-            return client.call("DOM.redo", null);
+            return call("DOM.redo");
         }
         /**
          * Removes attribute with given name from an element with given id.
@@ -5298,10 +4988,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeAttribute(DOM.NodeId nodeId, String name) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("name", CdpObject.json(name));
-            return client.call("DOM.removeAttribute", params);
+            return call("DOM.removeAttribute", params("nodeId", nodeId, "name", name));
         }
         /**
          * Removes attribute with given name from an element with given id.
@@ -5309,7 +4996,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeAttribute(RemoveAttributeRequest request) {
-            return client.call("DOM.removeAttribute", request == null ? null : request.toMap());
+            return call("DOM.removeAttribute", request);
         }
         /**
          * Removes node with given id.
@@ -5317,9 +5004,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeNode(DOM.NodeId nodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("DOM.removeNode", params);
+            return call("DOM.removeNode", params("nodeId", nodeId));
         }
         /**
          * Removes node with given id.
@@ -5327,7 +5012,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeNode(RemoveNodeRequest request) {
-            return client.call("DOM.removeNode", request == null ? null : request.toMap());
+            return call("DOM.removeNode", request);
         }
         /**
          * Requests that children of the node with given id are returned to the caller in form of {@code setChildNodes} events where not only immediate children are retrieved, but all children down to the specified depth.
@@ -5337,11 +5022,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> requestChildNodes(DOM.NodeId nodeId, @Nullable Long depth, @Nullable Boolean pierce) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            if (depth != null) params.put("depth", CdpObject.json(depth));
-            if (pierce != null) params.put("pierce", CdpObject.json(pierce));
-            return client.call("DOM.requestChildNodes", params);
+            return call("DOM.requestChildNodes", params("nodeId", nodeId, "depth", depth, "pierce", pierce));
         }
         /**
          * Requests that children of the node with given id are returned to the caller in form of {@code setChildNodes} events where not only immediate children are retrieved, but all children down to the specified depth.
@@ -5349,9 +5030,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> requestChildNodes(DOM.NodeId nodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("DOM.requestChildNodes", params);
+            return call("DOM.requestChildNodes", params("nodeId", nodeId));
         }
         /**
          * Requests that children of the node with given id are returned to the caller in form of {@code setChildNodes} events where not only immediate children are retrieved, but all children down to the specified depth.
@@ -5359,7 +5038,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> requestChildNodes(RequestChildNodesRequest request) {
-            return client.call("DOM.requestChildNodes", request == null ? null : request.toMap());
+            return call("DOM.requestChildNodes", request);
         }
         /**
          * Requests that the node is sent to the caller given the JavaScript node object reference. All nodes that form the path from the node to the root are also sent to the client as a series of {@code setChildNodes} notifications.
@@ -5367,9 +5046,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> requestNode(Runtime.RemoteObjectId objectId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("objectId", CdpObject.json(objectId));
-            return client.call("DOM.requestNode", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.requestNode", params("objectId", objectId), NODE_ID::require);
         }
         /**
          * Requests that the node is sent to the caller given the JavaScript node object reference. All nodes that form the path from the node to the root are also sent to the client as a series of {@code setChildNodes} notifications.
@@ -5377,7 +5054,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> requestNode(RequestNodeRequest request) {
-            return client.call("DOM.requestNode", request == null ? null : request.toMap(), result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.requestNode", request, NODE_ID::require);
         }
         /**
          * Resolves the JavaScript node object for a given NodeId or BackendNodeId.
@@ -5388,19 +5065,14 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<Runtime.RemoteObject> resolveNode(DOM.@Nullable NodeId nodeId, DOM.@Nullable BackendNodeId backendNodeId, @Nullable String objectGroup, Runtime.@Nullable ExecutionContextId executionContextId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (nodeId != null) params.put("nodeId", CdpObject.json(nodeId));
-            if (backendNodeId != null) params.put("backendNodeId", CdpObject.json(backendNodeId));
-            if (objectGroup != null) params.put("objectGroup", CdpObject.json(objectGroup));
-            if (executionContextId != null) params.put("executionContextId", CdpObject.json(executionContextId));
-            return client.call("DOM.resolveNode", params, result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("object"))))));
+            return call("DOM.resolveNode", params("nodeId", nodeId, "backendNodeId", backendNodeId, "objectGroup", objectGroup, "executionContextId", executionContextId), OBJECT::require);
         }
         /**
          * Resolves the JavaScript node object for a given NodeId or BackendNodeId.
          * @return a stage completing with the command result
          */
         public CompletionStage<Runtime.RemoteObject> resolveNode() {
-            return client.call("DOM.resolveNode", null, result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("object"))))));
+            return call("DOM.resolveNode", OBJECT::require);
         }
         /**
          * Resolves the JavaScript node object for a given NodeId or BackendNodeId.
@@ -5408,7 +5080,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<Runtime.RemoteObject> resolveNode(ResolveNodeRequest request) {
-            return client.call("DOM.resolveNode", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("object"))))));
+            return call("DOM.resolveNode", request, OBJECT::require);
         }
         /**
          * Sets attribute for an element with given id.
@@ -5418,11 +5090,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAttributeValue(DOM.NodeId nodeId, String name, String value) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("name", CdpObject.json(name));
-            params.put("value", CdpObject.json(value));
-            return client.call("DOM.setAttributeValue", params);
+            return call("DOM.setAttributeValue", params("nodeId", nodeId, "name", name, "value", value));
         }
         /**
          * Sets attribute for an element with given id.
@@ -5430,7 +5098,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAttributeValue(SetAttributeValueRequest request) {
-            return client.call("DOM.setAttributeValue", request == null ? null : request.toMap());
+            return call("DOM.setAttributeValue", request);
         }
         /**
          * Sets attributes on element with given id. This method is useful when user edits some existing attribute value and types in several attribute name/value pairs.
@@ -5440,11 +5108,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAttributesAsText(DOM.NodeId nodeId, String text, String name) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("text", CdpObject.json(text));
-            params.put("name", CdpObject.json(name));
-            return client.call("DOM.setAttributesAsText", params);
+            return call("DOM.setAttributesAsText", params("nodeId", nodeId, "text", text, "name", name));
         }
         /**
          * Sets attributes on element with given id. This method is useful when user edits some existing attribute value and types in several attribute name/value pairs.
@@ -5453,10 +5117,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAttributesAsText(DOM.NodeId nodeId, String text) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("text", CdpObject.json(text));
-            return client.call("DOM.setAttributesAsText", params);
+            return call("DOM.setAttributesAsText", params("nodeId", nodeId, "text", text));
         }
         /**
          * Sets attributes on element with given id. This method is useful when user edits some existing attribute value and types in several attribute name/value pairs.
@@ -5464,7 +5125,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAttributesAsText(SetAttributesAsTextRequest request) {
-            return client.call("DOM.setAttributesAsText", request == null ? null : request.toMap());
+            return call("DOM.setAttributesAsText", request);
         }
         /**
          * Sets files for the given file input element.
@@ -5475,12 +5136,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setFileInputFiles(java.util.List<String> files, DOM.@Nullable NodeId nodeId, DOM.@Nullable BackendNodeId backendNodeId, Runtime.@Nullable RemoteObjectId objectId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("files", CdpObject.json(files));
-            if (nodeId != null) params.put("nodeId", CdpObject.json(nodeId));
-            if (backendNodeId != null) params.put("backendNodeId", CdpObject.json(backendNodeId));
-            if (objectId != null) params.put("objectId", CdpObject.json(objectId));
-            return client.call("DOM.setFileInputFiles", params);
+            return call("DOM.setFileInputFiles", params("files", files, "nodeId", nodeId, "backendNodeId", backendNodeId, "objectId", objectId));
         }
         /**
          * Sets files for the given file input element.
@@ -5488,9 +5144,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setFileInputFiles(java.util.List<String> files) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("files", CdpObject.json(files));
-            return client.call("DOM.setFileInputFiles", params);
+            return call("DOM.setFileInputFiles", params("files", files));
         }
         /**
          * Sets files for the given file input element.
@@ -5498,7 +5152,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setFileInputFiles(SetFileInputFilesRequest request) {
-            return client.call("DOM.setFileInputFiles", request == null ? null : request.toMap());
+            return call("DOM.setFileInputFiles", request);
         }
         /**
          * Sets if stack traces should be captured for Nodes. See {@code Node.getNodeStackTraces}. Default is disabled.
@@ -5507,9 +5161,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setNodeStackTracesEnabled(boolean enable) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("enable", CdpObject.json(enable));
-            return client.call("DOM.setNodeStackTracesEnabled", params);
+            return call("DOM.setNodeStackTracesEnabled", params("enable", enable));
         }
         /**
          * Sets if stack traces should be captured for Nodes. See {@code Node.getNodeStackTraces}. Default is disabled.
@@ -5518,7 +5170,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setNodeStackTracesEnabled(SetNodeStackTracesEnabledRequest request) {
-            return client.call("DOM.setNodeStackTracesEnabled", request == null ? null : request.toMap());
+            return call("DOM.setNodeStackTracesEnabled", request);
         }
         /**
          * Gets stack traces associated with a Node. As of now, only provides stack trace for Node creation.
@@ -5527,9 +5179,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<Optional<Runtime.StackTrace>> getNodeStackTraces(DOM.NodeId nodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("DOM.getNodeStackTraces", params, result_ -> Optional.ofNullable(result_.get("creation")).flatMap(CdpObject::objectMap).map(Runtime.StackTrace::fromMap));
+            return call("DOM.getNodeStackTraces", params("nodeId", nodeId), CREATION::optional);
         }
         /**
          * Gets stack traces associated with a Node. As of now, only provides stack trace for Node creation.
@@ -5538,7 +5188,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<Optional<Runtime.StackTrace>> getNodeStackTraces(GetNodeStackTracesRequest request) {
-            return client.call("DOM.getNodeStackTraces", request == null ? null : request.toMap(), result_ -> Optional.ofNullable(result_.get("creation")).flatMap(CdpObject::objectMap).map(Runtime.StackTrace::fromMap));
+            return call("DOM.getNodeStackTraces", request, CREATION::optional);
         }
         /**
          * Returns file information for the given File wrapper.
@@ -5547,9 +5197,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> getFileInfo(Runtime.RemoteObjectId objectId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("objectId", CdpObject.json(objectId));
-            return client.call("DOM.getFileInfo", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("path")));
+            return call("DOM.getFileInfo", params("objectId", objectId), PATH::require);
         }
         /**
          * Returns file information for the given File wrapper.
@@ -5558,7 +5206,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> getFileInfo(GetFileInfoRequest request) {
-            return client.call("DOM.getFileInfo", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("path")));
+            return call("DOM.getFileInfo", request, PATH::require);
         }
         /**
          * Returns list of detached nodes
@@ -5566,7 +5214,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.DetachedElementInfo>> getDetachedDomNodes() {
-            return client.call("DOM.getDetachedDomNodes", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("detachedNodes")), element0 -> java.util.Objects.requireNonNull(DOM.DetachedElementInfo.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("DOM.getDetachedDomNodes", DETACHED_NODES::require);
         }
         /**
          * Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
@@ -5575,9 +5223,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setInspectedNode(DOM.NodeId nodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("DOM.setInspectedNode", params);
+            return call("DOM.setInspectedNode", params("nodeId", nodeId));
         }
         /**
          * Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
@@ -5586,7 +5232,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setInspectedNode(SetInspectedNodeRequest request) {
-            return client.call("DOM.setInspectedNode", request == null ? null : request.toMap());
+            return call("DOM.setInspectedNode", request);
         }
         /**
          * Sets node name for a node with given id.
@@ -5595,10 +5241,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> setNodeName(DOM.NodeId nodeId, String name) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("name", CdpObject.json(name));
-            return client.call("DOM.setNodeName", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.setNodeName", params("nodeId", nodeId, "name", name), NODE_ID::require);
         }
         /**
          * Sets node name for a node with given id.
@@ -5606,7 +5249,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> setNodeName(SetNodeNameRequest request) {
-            return client.call("DOM.setNodeName", request == null ? null : request.toMap(), result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.setNodeName", request, NODE_ID::require);
         }
         /**
          * Sets node value for a node with given id.
@@ -5615,10 +5258,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setNodeValue(DOM.NodeId nodeId, String value) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("value", CdpObject.json(value));
-            return client.call("DOM.setNodeValue", params);
+            return call("DOM.setNodeValue", params("nodeId", nodeId, "value", value));
         }
         /**
          * Sets node value for a node with given id.
@@ -5626,7 +5266,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setNodeValue(SetNodeValueRequest request) {
-            return client.call("DOM.setNodeValue", request == null ? null : request.toMap());
+            return call("DOM.setNodeValue", request);
         }
         /**
          * Sets node HTML markup, returns new node id.
@@ -5635,10 +5275,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setOuterHTML(DOM.NodeId nodeId, String outerHTML) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("outerHTML", CdpObject.json(outerHTML));
-            return client.call("DOM.setOuterHTML", params);
+            return call("DOM.setOuterHTML", params("nodeId", nodeId, "outerHTML", outerHTML));
         }
         /**
          * Sets node HTML markup, returns new node id.
@@ -5646,7 +5283,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setOuterHTML(SetOuterHTMLRequest request) {
-            return client.call("DOM.setOuterHTML", request == null ? null : request.toMap());
+            return call("DOM.setOuterHTML", request);
         }
         /**
          * Undoes the last performed action.
@@ -5654,7 +5291,7 @@ public final class DOM {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> undo() {
-            return client.call("DOM.undo", null);
+            return call("DOM.undo");
         }
         /**
          * Returns iframe node that owns iframe with the given domain.
@@ -5663,9 +5300,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetFrameOwnerResult> getFrameOwner(Page.FrameId frameId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("frameId", CdpObject.json(frameId));
-            return client.call("DOM.getFrameOwner", params, result_ -> new GetFrameOwnerResult(result_));
+            return call("DOM.getFrameOwner", params("frameId", frameId), GetFrameOwnerResult::fromMap);
         }
         /**
          * Returns iframe node that owns iframe with the given domain.
@@ -5674,7 +5309,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetFrameOwnerResult> getFrameOwner(GetFrameOwnerRequest request) {
-            return client.call("DOM.getFrameOwner", request == null ? null : request.toMap(), result_ -> new GetFrameOwnerResult(result_));
+            return call("DOM.getFrameOwner", request, GetFrameOwnerResult::fromMap);
         }
         /**
          * Returns the query container of the given node based on container query conditions: containerName, physical and logical axes, and whether it queries scroll-state or anchored elements. If no axes are provided and queriesScrollState is false, the style container is returned, which is the direct parent or the closest element with a matching container-name.
@@ -5688,14 +5323,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<Optional<DOM.NodeId>> getContainerForNode(DOM.NodeId nodeId, @Nullable String containerName, DOM.@Nullable PhysicalAxes physicalAxes, DOM.@Nullable LogicalAxes logicalAxes, @Nullable Boolean queriesScrollState, @Nullable Boolean queriesAnchored) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            if (containerName != null) params.put("containerName", CdpObject.json(containerName));
-            if (physicalAxes != null) params.put("physicalAxes", CdpObject.json(physicalAxes));
-            if (logicalAxes != null) params.put("logicalAxes", CdpObject.json(logicalAxes));
-            if (queriesScrollState != null) params.put("queriesScrollState", CdpObject.json(queriesScrollState));
-            if (queriesAnchored != null) params.put("queriesAnchored", CdpObject.json(queriesAnchored));
-            return client.call("DOM.getContainerForNode", params, result_ -> Optional.ofNullable(result_.get("nodeId")).map(value -> new DOM.NodeId(((Number) value).longValue())));
+            return call("DOM.getContainerForNode", params("nodeId", nodeId, "containerName", containerName, "physicalAxes", physicalAxes, "logicalAxes", logicalAxes, "queriesScrollState", queriesScrollState, "queriesAnchored", queriesAnchored), NODE_ID::optional);
         }
         /**
          * Returns the query container of the given node based on container query conditions: containerName, physical and logical axes, and whether it queries scroll-state or anchored elements. If no axes are provided and queriesScrollState is false, the style container is returned, which is the direct parent or the closest element with a matching container-name.
@@ -5704,9 +5332,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<Optional<DOM.NodeId>> getContainerForNode(DOM.NodeId nodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("DOM.getContainerForNode", params, result_ -> Optional.ofNullable(result_.get("nodeId")).map(value -> new DOM.NodeId(((Number) value).longValue())));
+            return call("DOM.getContainerForNode", params("nodeId", nodeId), NODE_ID::optional);
         }
         /**
          * Returns the query container of the given node based on container query conditions: containerName, physical and logical axes, and whether it queries scroll-state or anchored elements. If no axes are provided and queriesScrollState is false, the style container is returned, which is the direct parent or the closest element with a matching container-name.
@@ -5715,7 +5341,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<Optional<DOM.NodeId>> getContainerForNode(GetContainerForNodeRequest request) {
-            return client.call("DOM.getContainerForNode", request == null ? null : request.toMap(), result_ -> Optional.ofNullable(result_.get("nodeId")).map(value -> new DOM.NodeId(((Number) value).longValue())));
+            return call("DOM.getContainerForNode", request, NODE_ID::optional);
         }
         /**
          * Returns the descendants of a container query container that have container queries against this container.
@@ -5724,9 +5350,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> getQueryingDescendantsForContainer(DOM.NodeId nodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("DOM.getQueryingDescendantsForContainer", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
+            return call("DOM.getQueryingDescendantsForContainer", params("nodeId", nodeId), NODE_IDS::require);
         }
         /**
          * Returns the descendants of a container query container that have container queries against this container.
@@ -5735,7 +5359,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> getQueryingDescendantsForContainer(GetQueryingDescendantsForContainerRequest request) {
-            return client.call("DOM.getQueryingDescendantsForContainer", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
+            return call("DOM.getQueryingDescendantsForContainer", request, NODE_IDS::require);
         }
         /**
          * Returns the target anchor element of the given anchor query according to https://www.w3.org/TR/css-anchor-position-1/#target.
@@ -5745,10 +5369,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> getAnchorElement(DOM.NodeId nodeId, String anchorSpecifier) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("anchorSpecifier", CdpObject.json(anchorSpecifier));
-            return client.call("DOM.getAnchorElement", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.getAnchorElement", params("nodeId", nodeId, "anchorSpecifier", anchorSpecifier), NODE_ID::require);
         }
         /**
          * Returns the target anchor element of the given anchor query according to https://www.w3.org/TR/css-anchor-position-1/#target.
@@ -5757,9 +5378,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> getAnchorElement(DOM.NodeId nodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("DOM.getAnchorElement", params, result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.getAnchorElement", params("nodeId", nodeId), NODE_ID::require);
         }
         /**
          * Returns the target anchor element of the given anchor query according to https://www.w3.org/TR/css-anchor-position-1/#target.
@@ -5768,7 +5387,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.NodeId> getAnchorElement(GetAnchorElementRequest request) {
-            return client.call("DOM.getAnchorElement", request == null ? null : request.toMap(), result_ -> new DOM.NodeId(((Number) java.util.Objects.requireNonNull(result_.get("nodeId"))).longValue()));
+            return call("DOM.getAnchorElement", request, NODE_ID::require);
         }
         /**
          * When enabling, this API force-opens the popover identified by nodeId and keeps it open until disabled.
@@ -5778,10 +5397,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> forceShowPopover(DOM.NodeId nodeId, boolean enable) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("enable", CdpObject.json(enable));
-            return client.call("DOM.forceShowPopover", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
+            return call("DOM.forceShowPopover", params("nodeId", nodeId, "enable", enable), NODE_IDS::require);
         }
         /**
          * When enabling, this API force-opens the popover identified by nodeId and keeps it open until disabled.
@@ -5790,7 +5406,7 @@ public final class DOM {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> forceShowPopover(ForceShowPopoverRequest request) {
-            return client.call("DOM.forceShowPopover", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
+            return call("DOM.forceShowPopover", request, NODE_IDS::require);
         }
         /**
          * Fired when {@code Element}&#x27;s attribute is modified.
@@ -5798,7 +5414,7 @@ public final class DOM {
          * @return a removable subscription
          */
         public CdpSubscription onAttributeModified(Consumer<AttributeModifiedEvent> handler) {
-            return client.on("DOM.attributeModified", AttributeModifiedEvent::fromMap, handler);
+            return on("DOM.attributeModified", AttributeModifiedEvent::fromMap, handler);
         }
         /**
          * Fired when {@code Element}&#x27;s adoptedStyleSheets are modified.
@@ -5807,7 +5423,7 @@ public final class DOM {
          * @return a removable subscription
          */
         public CdpSubscription onAdoptedStyleSheetsModified(Consumer<AdoptedStyleSheetsModifiedEvent> handler) {
-            return client.on("DOM.adoptedStyleSheetsModified", AdoptedStyleSheetsModifiedEvent::fromMap, handler);
+            return on("DOM.adoptedStyleSheetsModified", AdoptedStyleSheetsModifiedEvent::fromMap, handler);
         }
         /**
          * Fired when {@code Element}&#x27;s attribute is removed.
@@ -5815,7 +5431,7 @@ public final class DOM {
          * @return a removable subscription
          */
         public CdpSubscription onAttributeRemoved(Consumer<AttributeRemovedEvent> handler) {
-            return client.on("DOM.attributeRemoved", AttributeRemovedEvent::fromMap, handler);
+            return on("DOM.attributeRemoved", AttributeRemovedEvent::fromMap, handler);
         }
         /**
          * Mirrors {@code DOMCharacterDataModified} event.
@@ -5823,7 +5439,7 @@ public final class DOM {
          * @return a removable subscription
          */
         public CdpSubscription onCharacterDataModified(Consumer<CharacterDataModifiedEvent> handler) {
-            return client.on("DOM.characterDataModified", CharacterDataModifiedEvent::fromMap, handler);
+            return on("DOM.characterDataModified", CharacterDataModifiedEvent::fromMap, handler);
         }
         /**
          * Fired when {@code Container}&#x27;s child node count has changed.
@@ -5831,7 +5447,7 @@ public final class DOM {
          * @return a removable subscription
          */
         public CdpSubscription onChildNodeCountUpdated(Consumer<ChildNodeCountUpdatedEvent> handler) {
-            return client.on("DOM.childNodeCountUpdated", ChildNodeCountUpdatedEvent::fromMap, handler);
+            return on("DOM.childNodeCountUpdated", ChildNodeCountUpdatedEvent::fromMap, handler);
         }
         /**
          * Mirrors {@code DOMNodeInserted} event.
@@ -5839,7 +5455,7 @@ public final class DOM {
          * @return a removable subscription
          */
         public CdpSubscription onChildNodeInserted(Consumer<ChildNodeInsertedEvent> handler) {
-            return client.on("DOM.childNodeInserted", ChildNodeInsertedEvent::fromMap, handler);
+            return on("DOM.childNodeInserted", ChildNodeInsertedEvent::fromMap, handler);
         }
         /**
          * Mirrors {@code DOMNodeRemoved} event.
@@ -5847,7 +5463,7 @@ public final class DOM {
          * @return a removable subscription
          */
         public CdpSubscription onChildNodeRemoved(Consumer<ChildNodeRemovedEvent> handler) {
-            return client.on("DOM.childNodeRemoved", ChildNodeRemovedEvent::fromMap, handler);
+            return on("DOM.childNodeRemoved", ChildNodeRemovedEvent::fromMap, handler);
         }
         /**
          * Called when distribution is changed.
@@ -5856,7 +5472,7 @@ public final class DOM {
          * @return a removable subscription
          */
         public CdpSubscription onDistributedNodesUpdated(Consumer<DistributedNodesUpdatedEvent> handler) {
-            return client.on("DOM.distributedNodesUpdated", DistributedNodesUpdatedEvent::fromMap, handler);
+            return on("DOM.distributedNodesUpdated", DistributedNodesUpdatedEvent::fromMap, handler);
         }
         /**
          * Fired when {@code Document} has been totally updated. Node ids are no longer valid.
@@ -5864,7 +5480,7 @@ public final class DOM {
          * @return a removable subscription
          */
         public CdpSubscription onDocumentUpdated(Consumer<DocumentUpdatedEvent> handler) {
-            return client.on("DOM.documentUpdated", DocumentUpdatedEvent::fromMap, handler);
+            return on("DOM.documentUpdated", DocumentUpdatedEvent::fromMap, handler);
         }
         /**
          * Fired when {@code Element}&#x27;s inline style is modified via a CSS property modification.
@@ -5873,7 +5489,7 @@ public final class DOM {
          * @return a removable subscription
          */
         public CdpSubscription onInlineStyleInvalidated(Consumer<InlineStyleInvalidatedEvent> handler) {
-            return client.on("DOM.inlineStyleInvalidated", InlineStyleInvalidatedEvent::fromMap, handler);
+            return on("DOM.inlineStyleInvalidated", InlineStyleInvalidatedEvent::fromMap, handler);
         }
         /**
          * Called when a pseudo element is added to an element.
@@ -5882,7 +5498,7 @@ public final class DOM {
          * @return a removable subscription
          */
         public CdpSubscription onPseudoElementAdded(Consumer<PseudoElementAddedEvent> handler) {
-            return client.on("DOM.pseudoElementAdded", PseudoElementAddedEvent::fromMap, handler);
+            return on("DOM.pseudoElementAdded", PseudoElementAddedEvent::fromMap, handler);
         }
         /**
          * Called when top layer elements are changed.
@@ -5891,7 +5507,7 @@ public final class DOM {
          * @return a removable subscription
          */
         public CdpSubscription onTopLayerElementsUpdated(Consumer<TopLayerElementsUpdatedEvent> handler) {
-            return client.on("DOM.topLayerElementsUpdated", TopLayerElementsUpdatedEvent::fromMap, handler);
+            return on("DOM.topLayerElementsUpdated", TopLayerElementsUpdatedEvent::fromMap, handler);
         }
         /**
          * Fired when a node&#x27;s scrollability state changes.
@@ -5900,7 +5516,7 @@ public final class DOM {
          * @return a removable subscription
          */
         public CdpSubscription onScrollableFlagUpdated(Consumer<ScrollableFlagUpdatedEvent> handler) {
-            return client.on("DOM.scrollableFlagUpdated", ScrollableFlagUpdatedEvent::fromMap, handler);
+            return on("DOM.scrollableFlagUpdated", ScrollableFlagUpdatedEvent::fromMap, handler);
         }
         /**
          * Fired when a node&#x27;s ad related state changes.
@@ -5909,7 +5525,7 @@ public final class DOM {
          * @return a removable subscription
          */
         public CdpSubscription onAdRelatedStateUpdated(Consumer<AdRelatedStateUpdatedEvent> handler) {
-            return client.on("DOM.adRelatedStateUpdated", AdRelatedStateUpdatedEvent::fromMap, handler);
+            return on("DOM.adRelatedStateUpdated", AdRelatedStateUpdatedEvent::fromMap, handler);
         }
         /**
          * Fired when a node&#x27;s starting styles changes.
@@ -5918,7 +5534,7 @@ public final class DOM {
          * @return a removable subscription
          */
         public CdpSubscription onAffectedByStartingStylesFlagUpdated(Consumer<AffectedByStartingStylesFlagUpdatedEvent> handler) {
-            return client.on("DOM.affectedByStartingStylesFlagUpdated", AffectedByStartingStylesFlagUpdatedEvent::fromMap, handler);
+            return on("DOM.affectedByStartingStylesFlagUpdated", AffectedByStartingStylesFlagUpdatedEvent::fromMap, handler);
         }
         /**
          * Called when a pseudo element is removed from an element.
@@ -5927,7 +5543,7 @@ public final class DOM {
          * @return a removable subscription
          */
         public CdpSubscription onPseudoElementRemoved(Consumer<PseudoElementRemovedEvent> handler) {
-            return client.on("DOM.pseudoElementRemoved", PseudoElementRemovedEvent::fromMap, handler);
+            return on("DOM.pseudoElementRemoved", PseudoElementRemovedEvent::fromMap, handler);
         }
         /**
          * Fired when backend wants to provide client with the missing DOM structure. This happens upon most of the calls requesting node ids.
@@ -5935,7 +5551,7 @@ public final class DOM {
          * @return a removable subscription
          */
         public CdpSubscription onSetChildNodes(Consumer<SetChildNodesEvent> handler) {
-            return client.on("DOM.setChildNodes", SetChildNodesEvent::fromMap, handler);
+            return on("DOM.setChildNodes", SetChildNodesEvent::fromMap, handler);
         }
         /**
          * Called when shadow root is popped from the element.
@@ -5944,7 +5560,7 @@ public final class DOM {
          * @return a removable subscription
          */
         public CdpSubscription onShadowRootPopped(Consumer<ShadowRootPoppedEvent> handler) {
-            return client.on("DOM.shadowRootPopped", ShadowRootPoppedEvent::fromMap, handler);
+            return on("DOM.shadowRootPopped", ShadowRootPoppedEvent::fromMap, handler);
         }
         /**
          * Called when shadow root is pushed into the element.
@@ -5953,7 +5569,7 @@ public final class DOM {
          * @return a removable subscription
          */
         public CdpSubscription onShadowRootPushed(Consumer<ShadowRootPushedEvent> handler) {
-            return client.on("DOM.shadowRootPushed", ShadowRootPushedEvent::fromMap, handler);
+            return on("DOM.shadowRootPushed", ShadowRootPushedEvent::fromMap, handler);
         }
     }
 }

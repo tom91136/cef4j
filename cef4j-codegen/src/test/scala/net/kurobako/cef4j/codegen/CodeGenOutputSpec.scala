@@ -258,6 +258,24 @@ class CodeGenOutputSpec extends TempDirectorySuite {
     assert(java.contains("static native boolean isValid0(long self)"), s"Missing native decl in:\n$java")
   }
 
+  test("Java NativePeer extends the shared NativeObject base instead of redeclaring its state") {
+    val decl: CefDecl.ObjectStruct = CefDecl.ObjectStruct(
+      "cef_browser_t",
+      List(FnPtr("is_valid", CType.Bool, Nil))
+    )
+    val java = JavaNativeCodeGen.renderInnerClass(decl)
+    assert(
+      java.contains("final class NativePeer extends net.kurobako.cef4j.peer.NativeObject implements CefBrowser"),
+      s"Missing base class in:\n$java"
+    )
+    assert(java.contains("""super("CefBrowser", ptr, NativePeer::release0)"""), s"Missing super call in:\n$java")
+    for (
+      member <- List("volatile", "cleanable", "peerClose", "peerIsClosed", "_log", "equals(", "hashCode(", "toString(")
+    )
+      assert(!java.contains(member), s"Unexpected $member in:\n$java")
+    assert(java.contains("private static native void release0(long ptr)"), s"Missing release0 in:\n$java")
+  }
+
   test("Java enum codegen produces final class with prefix stripping and expressions") {
     val decl: CefDecl.Enum = CefDecl.Enum(
       "cef_resource_type_t",
@@ -271,20 +289,41 @@ class CodeGenOutputSpec extends TempDirectorySuite {
       s"Missing class decl in:\n$javaCode"
     )
     assert(
-      javaCode.contains("""MAIN_FRAME(0, "0", "RT_MAIN_FRAME")"""),
+      javaCode.contains("""MAIN_FRAME(new EnumConstant(0, "0", "RT_MAIN_FRAME"))"""),
       s"Missing stripped constant in Kind enum:\n$javaCode"
     )
     assert(
-      javaCode.contains("""FLAG(1 << 3, "1 << 3", "RT_FLAG")"""),
+      javaCode.contains("""FLAG(new EnumConstant(1 << 3, "1 << 3", "RT_FLAG"))"""),
       s"Missing stripped shift expr in Kind enum:\n$javaCode"
     )
     assert(javaCode.contains("public enum Kind"), s"Missing Kind enum in:\n$javaCode")
+    assert(javaCode.contains("Kind(EnumConstant constant)"), s"Missing shared constant parameter in:\n$javaCode")
+    assert(!javaCode.contains("import net.kurobako.cef4j.EnumConstant;"), s"Stale EnumConstant import in:\n$javaCode")
+    assert(!javaCode.contains("Kind(long value"), s"Unexpected value clump in:\n$javaCode")
     assert(javaCode.contains("public static CefResourceType of(long v)"), s"Missing of(long) in:\n$javaCode")
     assert(javaCode.contains("public static CefResourceType of(Kind k)"), s"Missing of(Kind) in:\n$javaCode")
     assert(!javaCode.contains("fromLong"), s"Unexpected fromLong in:\n$javaCode")
     assert(javaCode.contains("public final long value"), s"Missing value field in:\n$javaCode")
     assert(javaCode.contains("Long.hashCode(value)"), s"Missing hashCode in:\n$javaCode")
     assert(javaCode.contains("Possible values:"), s"Missing possible values list in:\n$javaCode")
+  }
+
+  test("Java enum Kind exposes accessors over a single EnumConstant") {
+    val decl: CefDecl.Enum =
+      CefDecl.Enum("cef_resource_type_t", List(("RT_MAIN_FRAME", 0L, "0"), ("RT_SUB_FRAME", 1L, "1")))
+    val tmpDir = tempDirectory("cef4j-test")
+    JavaEnumCodeGen.emit(decl, tmpDir)
+    val javaCode = Files.readString(tmpDir.resolve("CefResourceType.java"))
+    assert(javaCode.contains("private final EnumConstant constant;"), s"Missing constant field in:\n$javaCode")
+    for (copy <- List("public final long value;", "public final String expr;", "public final String name;"))
+      assert(!javaCode.contains("        " + copy), s"Unexpected $copy in Kind:\n$javaCode")
+    for (accessor <- List("public long value()", "public String expr()", "public String cName()"))
+      assert(javaCode.contains(accessor), s"Missing $accessor in:\n$javaCode")
+    assert(
+      javaCode.contains("Kind::cName") && javaCode.contains("Kind::expr"),
+      s"Outer class bypasses accessors:\n$javaCode"
+    )
+    assert(javaCode.contains("k.value() == value"), s"Outer class reads the value field:\n$javaCode")
   }
 
   test("Java enum codegen canonicalises numeric expr text for cross-platform stability") {
@@ -296,7 +335,7 @@ class CodeGenOutputSpec extends TempDirectorySuite {
     JavaEnumCodeGen.emit(decl, tmpDir)
     val javaCode = Files.readString(tmpDir.resolve("CefDragOperationsMask.java"))
     assert(
-      javaCode.contains("""EVERY(0xffffffffL, "0xffffffff", "DRAG_OPERATION_EVERY")"""),
+      javaCode.contains("""EVERY(new EnumConstant(0xffffffffL, "0xffffffff", "DRAG_OPERATION_EVERY"))"""),
       s"Missing canonical numeric expr text in:\n$javaCode"
     )
   }

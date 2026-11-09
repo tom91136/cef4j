@@ -2,18 +2,16 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class EndTracingCallbackOnEndTracingCompleteEvent implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 1608024082;
 
     private final String tracingFile;
     private final byte[] tracingFileBytes;
@@ -28,32 +26,19 @@ public final class EndTracingCallbackOnEndTracingCompleteEvent implements CefMes
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 4 + tracingFileBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(tracingFileBytes.length);
-            __dst.put(tracingFileBytes);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            WireEncoder.bytes(__out, tracingFileBytes);
+        });
     }
 
-    public static final CefMessageDecoder<EndTracingCallbackOnEndTracingCompleteEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<EndTracingCallbackOnEndTracingCompleteEvent> DECODER = WireDecoder.message("EndTracingCallbackOnEndTracingCompleteEvent", __buf -> {
         final String tracingFile = WireDecoder.utf8(__buf, "tracingFile");
-        WireDecoder.requireFullyConsumed(__buf, "EndTracingCallbackOnEndTracingCompleteEvent");
         return new EndTracingCallbackOnEndTracingCompleteEvent(tracingFile);
-    };
+    });
 }

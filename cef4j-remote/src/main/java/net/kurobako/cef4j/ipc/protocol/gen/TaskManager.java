@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class TaskManager implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class TaskManager extends BrowserFacade {
 
     public TaskManager(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_task_manager_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_task_manager_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class TaskManager implements AutoCloseable {
      */
     public CompletableFuture<Long> getTasksCount() {
         return CefFutures.map(
-            session.request(new TaskManagerGetTasksCountRequest(handle), TaskManagerGetTasksCountResponse.DECODER),
-            TaskManagerGetTasksCountResponse::result);
+            session.request(MessageIds.TASK_MANAGER_GET_TASKS_COUNT_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class TaskManager implements AutoCloseable {
      */
     public CompletableFuture<Integer> killTask(long taskId) {
         return CefFutures.map(
-            session.request(new TaskManagerKillTaskRequest(handle, taskId), TaskManagerKillTaskResponse.DECODER),
-            TaskManagerKillTaskResponse::result);
+            session.request(MessageIds.TASK_MANAGER_KILL_TASK_REQUEST, new TaskManagerKillTaskRequest(handle, taskId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -82,7 +51,7 @@ public final class TaskManager implements AutoCloseable {
      */
     public CompletableFuture<Long> getTaskIdForBrowserId(int browserId) {
         return CefFutures.map(
-            session.request(new TaskManagerGetTaskIdForBrowserIdRequest(handle, browserId), TaskManagerGetTaskIdForBrowserIdResponse.DECODER),
-            TaskManagerGetTaskIdForBrowserIdResponse::result);
+            session.request(MessageIds.TASK_MANAGER_GET_TASK_ID_FOR_BROWSER_ID_REQUEST, new TaskManagerGetTaskIdForBrowserIdRequest(handle, browserId), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 }

@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,48 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class V8Value implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle frame;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class V8Value extends RendererFacade {
 
     public V8Value(CefSession session, RemoteHandle frame, RemoteHandle handle) {
-        this.session = session;
-        this.frame = frame;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-    /** The frame whose V8 context this handle lives in. Renderer-side dispatch enters this frame's
-      * V8 context before invoking methods on the receiver. */
-    public RemoteHandle frame() {
-        return frame;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new RendererReleaseHandleRequest(frame, handle, "cef_v8_value_t"),
-                    RendererReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, frame, handle, "cef_v8_value_t");
     }
 
     /**
@@ -66,8 +27,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> isValid() {
         return CefFutures.map(
-            session.request(new V8ValueIsValidRequest(frame, handle), V8ValueIsValidResponse.DECODER),
-            V8ValueIsValidResponse::result);
+            session.request(MessageIds.V8_VALUE_IS_VALID_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -78,8 +39,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> isUndefined() {
         return CefFutures.map(
-            session.request(new V8ValueIsUndefinedRequest(frame, handle), V8ValueIsUndefinedResponse.DECODER),
-            V8ValueIsUndefinedResponse::result);
+            session.request(MessageIds.V8_VALUE_IS_UNDEFINED_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -90,8 +51,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> isNull() {
         return CefFutures.map(
-            session.request(new V8ValueIsNullRequest(frame, handle), V8ValueIsNullResponse.DECODER),
-            V8ValueIsNullResponse::result);
+            session.request(MessageIds.V8_VALUE_IS_NULL_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -102,8 +63,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> isBool() {
         return CefFutures.map(
-            session.request(new V8ValueIsBoolRequest(frame, handle), V8ValueIsBoolResponse.DECODER),
-            V8ValueIsBoolResponse::result);
+            session.request(MessageIds.V8_VALUE_IS_BOOL_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -114,8 +75,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> isInt() {
         return CefFutures.map(
-            session.request(new V8ValueIsIntRequest(frame, handle), V8ValueIsIntResponse.DECODER),
-            V8ValueIsIntResponse::result);
+            session.request(MessageIds.V8_VALUE_IS_INT_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -126,8 +87,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> isUint() {
         return CefFutures.map(
-            session.request(new V8ValueIsUintRequest(frame, handle), V8ValueIsUintResponse.DECODER),
-            V8ValueIsUintResponse::result);
+            session.request(MessageIds.V8_VALUE_IS_UINT_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -138,8 +99,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> isDouble() {
         return CefFutures.map(
-            session.request(new V8ValueIsDoubleRequest(frame, handle), V8ValueIsDoubleResponse.DECODER),
-            V8ValueIsDoubleResponse::result);
+            session.request(MessageIds.V8_VALUE_IS_DOUBLE_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -150,8 +111,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> isDate() {
         return CefFutures.map(
-            session.request(new V8ValueIsDateRequest(frame, handle), V8ValueIsDateResponse.DECODER),
-            V8ValueIsDateResponse::result);
+            session.request(MessageIds.V8_VALUE_IS_DATE_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -162,8 +123,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> isString() {
         return CefFutures.map(
-            session.request(new V8ValueIsStringRequest(frame, handle), V8ValueIsStringResponse.DECODER),
-            V8ValueIsStringResponse::result);
+            session.request(MessageIds.V8_VALUE_IS_STRING_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -174,8 +135,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> isObject() {
         return CefFutures.map(
-            session.request(new V8ValueIsObjectRequest(frame, handle), V8ValueIsObjectResponse.DECODER),
-            V8ValueIsObjectResponse::result);
+            session.request(MessageIds.V8_VALUE_IS_OBJECT_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -186,8 +147,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> isArray() {
         return CefFutures.map(
-            session.request(new V8ValueIsArrayRequest(frame, handle), V8ValueIsArrayResponse.DECODER),
-            V8ValueIsArrayResponse::result);
+            session.request(MessageIds.V8_VALUE_IS_ARRAY_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -198,8 +159,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> isArrayBuffer() {
         return CefFutures.map(
-            session.request(new V8ValueIsArrayBufferRequest(frame, handle), V8ValueIsArrayBufferResponse.DECODER),
-            V8ValueIsArrayBufferResponse::result);
+            session.request(MessageIds.V8_VALUE_IS_ARRAY_BUFFER_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -210,8 +171,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> isFunction() {
         return CefFutures.map(
-            session.request(new V8ValueIsFunctionRequest(frame, handle), V8ValueIsFunctionResponse.DECODER),
-            V8ValueIsFunctionResponse::result);
+            session.request(MessageIds.V8_VALUE_IS_FUNCTION_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -222,8 +183,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> isPromise() {
         return CefFutures.map(
-            session.request(new V8ValueIsPromiseRequest(frame, handle), V8ValueIsPromiseResponse.DECODER),
-            V8ValueIsPromiseResponse::result);
+            session.request(MessageIds.V8_VALUE_IS_PROMISE_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -234,8 +195,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> isSame(RemoteHandle that) {
         return CefFutures.map(
-            session.request(new V8ValueIsSameRequest(frame, handle, that), V8ValueIsSameResponse.DECODER),
-            V8ValueIsSameResponse::result);
+            session.request(MessageIds.V8_VALUE_IS_SAME_REQUEST, new FrameHandleSelfHandleThatHandleMessage(frame, handle, that), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -246,8 +207,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> getBoolValue() {
         return CefFutures.map(
-            session.request(new V8ValueGetBoolValueRequest(frame, handle), V8ValueGetBoolValueResponse.DECODER),
-            V8ValueGetBoolValueResponse::result);
+            session.request(MessageIds.V8_VALUE_GET_BOOL_VALUE_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -258,8 +219,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> getIntValue() {
         return CefFutures.map(
-            session.request(new V8ValueGetIntValueRequest(frame, handle), V8ValueGetIntValueResponse.DECODER),
-            V8ValueGetIntValueResponse::result);
+            session.request(MessageIds.V8_VALUE_GET_INT_VALUE_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -270,8 +231,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> getUintValue() {
         return CefFutures.map(
-            session.request(new V8ValueGetUintValueRequest(frame, handle), V8ValueGetUintValueResponse.DECODER),
-            V8ValueGetUintValueResponse::result);
+            session.request(MessageIds.V8_VALUE_GET_UINT_VALUE_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -280,10 +241,10 @@ public final class V8Value implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:749</a>
      */
-    public CompletableFuture<BaseTime> getDateValue() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefBaseTime> getDateValue() {
         return CefFutures.map(
-            session.request(new V8ValueGetDateValueRequest(frame, handle), V8ValueGetDateValueResponse.DECODER),
-            V8ValueGetDateValueResponse::result);
+            session.request(MessageIds.V8_VALUE_GET_DATE_VALUE_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultCefBaseTimeMessage.DECODER),
+            ResultCefBaseTimeMessage::result);
     }
 
     /**
@@ -294,8 +255,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<String> getStringValue() {
         return CefFutures.map(
-            session.request(new V8ValueGetStringValueRequest(frame, handle), V8ValueGetStringValueResponse.DECODER),
-            V8ValueGetStringValueResponse::result);
+            session.request(MessageIds.V8_VALUE_GET_STRING_VALUE_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -306,8 +267,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> isUserCreated() {
         return CefFutures.map(
-            session.request(new V8ValueIsUserCreatedRequest(frame, handle), V8ValueIsUserCreatedResponse.DECODER),
-            V8ValueIsUserCreatedResponse::result);
+            session.request(MessageIds.V8_VALUE_IS_USER_CREATED_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -318,8 +279,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasException() {
         return CefFutures.map(
-            session.request(new V8ValueHasExceptionRequest(frame, handle), V8ValueHasExceptionResponse.DECODER),
-            V8ValueHasExceptionResponse::result);
+            session.request(MessageIds.V8_VALUE_HAS_EXCEPTION_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -330,7 +291,7 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<CefV8Exception> getException() {
         return CefFutures.map(
-            session.request(new V8ValueGetExceptionRequest(frame, handle), V8ValueGetExceptionResponse.DECODER),
+            session.request(MessageIds.V8_VALUE_GET_EXCEPTION_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultHandleMessage.DECODER),
             __r -> new CefV8Exception(session, frame, __r.result()));
     }
 
@@ -342,8 +303,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> clearException() {
         return CefFutures.map(
-            session.request(new V8ValueClearExceptionRequest(frame, handle), V8ValueClearExceptionResponse.DECODER),
-            V8ValueClearExceptionResponse::result);
+            session.request(MessageIds.V8_VALUE_CLEAR_EXCEPTION_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -354,8 +315,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> willRethrowExceptions() {
         return CefFutures.map(
-            session.request(new V8ValueWillRethrowExceptionsRequest(frame, handle), V8ValueWillRethrowExceptionsResponse.DECODER),
-            V8ValueWillRethrowExceptionsResponse::result);
+            session.request(MessageIds.V8_VALUE_WILL_RETHROW_EXCEPTIONS_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -366,8 +327,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> setRethrowExceptions(int rethrow) {
         return CefFutures.map(
-            session.request(new V8ValueSetRethrowExceptionsRequest(frame, handle, rethrow), V8ValueSetRethrowExceptionsResponse.DECODER),
-            V8ValueSetRethrowExceptionsResponse::result);
+            session.request(MessageIds.V8_VALUE_SET_RETHROW_EXCEPTIONS_REQUEST, new V8ValueSetRethrowExceptionsRequest(frame, handle, rethrow), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -380,8 +341,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasValueBykey(String key) {
         return CefFutures.map(
-            session.request(new V8ValueHasValueBykeyRequest(frame, handle, key), V8ValueHasValueBykeyResponse.DECODER),
-            V8ValueHasValueBykeyResponse::result);
+            session.request(MessageIds.V8_VALUE_HAS_VALUE_BYKEY_REQUEST, new FrameHandleSelfHandleKeyStringMessage(frame, handle, key), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -394,8 +355,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasValueByindex(int index) {
         return CefFutures.map(
-            session.request(new V8ValueHasValueByindexRequest(frame, handle, index), V8ValueHasValueByindexResponse.DECODER),
-            V8ValueHasValueByindexResponse::result);
+            session.request(MessageIds.V8_VALUE_HAS_VALUE_BYINDEX_REQUEST, new FrameHandleSelfHandleIndexIntMessage(frame, handle, index), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -408,8 +369,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> deleteValueBykey(String key) {
         return CefFutures.map(
-            session.request(new V8ValueDeleteValueBykeyRequest(frame, handle, key), V8ValueDeleteValueBykeyResponse.DECODER),
-            V8ValueDeleteValueBykeyResponse::result);
+            session.request(MessageIds.V8_VALUE_DELETE_VALUE_BYKEY_REQUEST, new FrameHandleSelfHandleKeyStringMessage(frame, handle, key), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -422,8 +383,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> deleteValueByindex(int index) {
         return CefFutures.map(
-            session.request(new V8ValueDeleteValueByindexRequest(frame, handle, index), V8ValueDeleteValueByindexResponse.DECODER),
-            V8ValueDeleteValueByindexResponse::result);
+            session.request(MessageIds.V8_VALUE_DELETE_VALUE_BYINDEX_REQUEST, new FrameHandleSelfHandleIndexIntMessage(frame, handle, index), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -436,7 +397,7 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<V8Value> getValueBykey(String key) {
         return CefFutures.map(
-            session.request(new V8ValueGetValueBykeyRequest(frame, handle, key), V8ValueGetValueBykeyResponse.DECODER),
+            session.request(MessageIds.V8_VALUE_GET_VALUE_BYKEY_REQUEST, new FrameHandleSelfHandleKeyStringMessage(frame, handle, key), ResultHandleMessage.DECODER),
             __r -> new V8Value(session, frame, __r.result()));
     }
 
@@ -450,7 +411,7 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<V8Value> getValueByindex(int index) {
         return CefFutures.map(
-            session.request(new V8ValueGetValueByindexRequest(frame, handle, index), V8ValueGetValueByindexResponse.DECODER),
+            session.request(MessageIds.V8_VALUE_GET_VALUE_BYINDEX_REQUEST, new FrameHandleSelfHandleIndexIntMessage(frame, handle, index), ResultHandleMessage.DECODER),
             __r -> new V8Value(session, frame, __r.result()));
     }
 
@@ -464,8 +425,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> setValueBykey(String key, RemoteHandle value, int attribute) {
         return CefFutures.map(
-            session.request(new V8ValueSetValueBykeyRequest(frame, handle, key, value, attribute), V8ValueSetValueBykeyResponse.DECODER),
-            V8ValueSetValueBykeyResponse::result);
+            session.request(MessageIds.V8_VALUE_SET_VALUE_BYKEY_REQUEST, new V8ValueSetValueBykeyRequest(frame, handle, key, value, attribute), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -478,8 +439,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> setValueByindex(int index, RemoteHandle value) {
         return CefFutures.map(
-            session.request(new V8ValueSetValueByindexRequest(frame, handle, index, value), V8ValueSetValueByindexResponse.DECODER),
-            V8ValueSetValueByindexResponse::result);
+            session.request(MessageIds.V8_VALUE_SET_VALUE_BYINDEX_REQUEST, new V8ValueSetValueByindexRequest(frame, handle, index, value), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -492,8 +453,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> setValueByaccessor(String key, int attribute) {
         return CefFutures.map(
-            session.request(new V8ValueSetValueByaccessorRequest(frame, handle, key, attribute), V8ValueSetValueByaccessorResponse.DECODER),
-            V8ValueSetValueByaccessorResponse::result);
+            session.request(MessageIds.V8_VALUE_SET_VALUE_BYACCESSOR_REQUEST, new V8ValueSetValueByaccessorRequest(frame, handle, key, attribute), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -504,8 +465,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> getKeys(String[] keys) {
         return CefFutures.map(
-            session.request(new V8ValueGetKeysRequest(frame, handle, keys), V8ValueGetKeysResponse.DECODER),
-            V8ValueGetKeysResponse::result);
+            session.request(MessageIds.V8_VALUE_GET_KEYS_REQUEST, new V8ValueGetKeysRequest(frame, handle, keys), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -518,8 +479,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> setUserData(RemoteHandle userData) {
         return CefFutures.map(
-            session.request(new V8ValueSetUserDataRequest(frame, handle, userData), V8ValueSetUserDataResponse.DECODER),
-            V8ValueSetUserDataResponse::result);
+            session.request(MessageIds.V8_VALUE_SET_USER_DATA_REQUEST, new V8ValueSetUserDataRequest(frame, handle, userData), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -530,8 +491,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<RemoteHandle> getUserData() {
         return CefFutures.map(
-            session.request(new V8ValueGetUserDataRequest(frame, handle), V8ValueGetUserDataResponse.DECODER),
-            V8ValueGetUserDataResponse::result);
+            session.request(MessageIds.V8_VALUE_GET_USER_DATA_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultHandleMessage.DECODER),
+            ResultHandleMessage::result);
     }
 
     /**
@@ -542,8 +503,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> getExternallyAllocatedMemory() {
         return CefFutures.map(
-            session.request(new V8ValueGetExternallyAllocatedMemoryRequest(frame, handle), V8ValueGetExternallyAllocatedMemoryResponse.DECODER),
-            V8ValueGetExternallyAllocatedMemoryResponse::result);
+            session.request(MessageIds.V8_VALUE_GET_EXTERNALLY_ALLOCATED_MEMORY_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -554,8 +515,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> adjustExternallyAllocatedMemory(int changeInBytes) {
         return CefFutures.map(
-            session.request(new V8ValueAdjustExternallyAllocatedMemoryRequest(frame, handle, changeInBytes), V8ValueAdjustExternallyAllocatedMemoryResponse.DECODER),
-            V8ValueAdjustExternallyAllocatedMemoryResponse::result);
+            session.request(MessageIds.V8_VALUE_ADJUST_EXTERNALLY_ALLOCATED_MEMORY_REQUEST, new V8ValueAdjustExternallyAllocatedMemoryRequest(frame, handle, changeInBytes), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -566,15 +527,15 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> getArrayLength() {
         return CefFutures.map(
-            session.request(new V8ValueGetArrayLengthRequest(frame, handle), V8ValueGetArrayLengthResponse.DECODER),
-            V8ValueGetArrayLengthResponse::result);
+            session.request(MessageIds.V8_VALUE_GET_ARRAY_LENGTH_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code get_array_buffer_release_callback} to the runtime server. */
     public CompletableFuture<RemoteHandle> getArrayBufferReleaseCallback() {
         return CefFutures.map(
-            session.request(new V8ValueGetArrayBufferReleaseCallbackRequest(frame, handle), V8ValueGetArrayBufferReleaseCallbackResponse.DECODER),
-            V8ValueGetArrayBufferReleaseCallbackResponse::result);
+            session.request(MessageIds.V8_VALUE_GET_ARRAY_BUFFER_RELEASE_CALLBACK_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultHandleMessage.DECODER),
+            ResultHandleMessage::result);
     }
 
     /**
@@ -585,8 +546,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> neuterArrayBuffer() {
         return CefFutures.map(
-            session.request(new V8ValueNeuterArrayBufferRequest(frame, handle), V8ValueNeuterArrayBufferResponse.DECODER),
-            V8ValueNeuterArrayBufferResponse::result);
+            session.request(MessageIds.V8_VALUE_NEUTER_ARRAY_BUFFER_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -597,8 +558,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Long> getArrayBufferByteLength() {
         return CefFutures.map(
-            session.request(new V8ValueGetArrayBufferByteLengthRequest(frame, handle), V8ValueGetArrayBufferByteLengthResponse.DECODER),
-            V8ValueGetArrayBufferByteLengthResponse::result);
+            session.request(MessageIds.V8_VALUE_GET_ARRAY_BUFFER_BYTE_LENGTH_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -609,8 +570,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<String> getFunctionName() {
         return CefFutures.map(
-            session.request(new V8ValueGetFunctionNameRequest(frame, handle), V8ValueGetFunctionNameResponse.DECODER),
-            V8ValueGetFunctionNameResponse::result);
+            session.request(MessageIds.V8_VALUE_GET_FUNCTION_NAME_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -621,8 +582,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<RemoteHandle> getFunctionHandler() {
         return CefFutures.map(
-            session.request(new V8ValueGetFunctionHandlerRequest(frame, handle), V8ValueGetFunctionHandlerResponse.DECODER),
-            V8ValueGetFunctionHandlerResponse::result);
+            session.request(MessageIds.V8_VALUE_GET_FUNCTION_HANDLER_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultHandleMessage.DECODER),
+            ResultHandleMessage::result);
     }
 
     /**
@@ -635,8 +596,8 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> resolvePromise(RemoteHandle arg) {
         return CefFutures.map(
-            session.request(new V8ValueResolvePromiseRequest(frame, handle, arg), V8ValueResolvePromiseResponse.DECODER),
-            V8ValueResolvePromiseResponse::result);
+            session.request(MessageIds.V8_VALUE_RESOLVE_PROMISE_REQUEST, new V8ValueResolvePromiseRequest(frame, handle, arg), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -647,7 +608,7 @@ public final class V8Value implements AutoCloseable {
      */
     public CompletableFuture<Integer> rejectPromise(String errorMsg) {
         return CefFutures.map(
-            session.request(new V8ValueRejectPromiseRequest(frame, handle, errorMsg), V8ValueRejectPromiseResponse.DECODER),
-            V8ValueRejectPromiseResponse::result);
+            session.request(MessageIds.V8_VALUE_REJECT_PROMISE_REQUEST, new V8ValueRejectPromiseRequest(frame, handle, errorMsg), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

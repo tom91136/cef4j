@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class CookieManager implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class CookieManager extends BrowserFacade {
 
     public CookieManager(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_cookie_manager_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_cookie_manager_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class CookieManager implements AutoCloseable {
      */
     public CompletableFuture<Integer> visitAllCookies(RemoteHandle visitor) {
         return CefFutures.map(
-            session.request(new CookieManagerVisitAllCookiesRequest(handle, visitor), CookieManagerVisitAllCookiesResponse.DECODER),
-            CookieManagerVisitAllCookiesResponse::result);
+            session.request(MessageIds.COOKIE_MANAGER_VISIT_ALL_COOKIES_REQUEST, new SelfHandleVisitorHandleMessage(handle, visitor), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class CookieManager implements AutoCloseable {
      */
     public CompletableFuture<Integer> visitUrlCookies(String url, int includeHttpOnly, RemoteHandle visitor) {
         return CefFutures.map(
-            session.request(new CookieManagerVisitUrlCookiesRequest(handle, url, includeHttpOnly, visitor), CookieManagerVisitUrlCookiesResponse.DECODER),
-            CookieManagerVisitUrlCookiesResponse::result);
+            session.request(MessageIds.COOKIE_MANAGER_VISIT_URL_COOKIES_REQUEST, new CookieManagerVisitUrlCookiesRequest(handle, url, includeHttpOnly, visitor), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -86,8 +55,8 @@ public final class CookieManager implements AutoCloseable {
      */
     public CompletableFuture<Integer> deleteCookies(String url, String cookieName, RemoteHandle callback) {
         return CefFutures.map(
-            session.request(new CookieManagerDeleteCookiesRequest(handle, url, cookieName, callback), CookieManagerDeleteCookiesResponse.DECODER),
-            CookieManagerDeleteCookiesResponse::result);
+            session.request(MessageIds.COOKIE_MANAGER_DELETE_COOKIES_REQUEST, new CookieManagerDeleteCookiesRequest(handle, url, cookieName, callback), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -100,7 +69,7 @@ public final class CookieManager implements AutoCloseable {
      */
     public CompletableFuture<Integer> flushStore(RemoteHandle callback) {
         return CefFutures.map(
-            session.request(new CookieManagerFlushStoreRequest(handle, callback), CookieManagerFlushStoreResponse.DECODER),
-            CookieManagerFlushStoreResponse::result);
+            session.request(MessageIds.COOKIE_MANAGER_FLUSH_STORE_REQUEST, new SelfHandleCallbackHandleMessage(handle, callback), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

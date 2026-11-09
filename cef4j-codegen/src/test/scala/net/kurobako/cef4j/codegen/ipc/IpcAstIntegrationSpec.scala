@@ -46,14 +46,52 @@ class IpcAstIntegrationSpec extends munit.FunSuite {
     assert(specs.size >= 100, s"expected many derived specs, got ${specs.size}")
   }
 
-  test("every derived spec emits valid Java + C++ source without throwing") {
-    val specs = SpecDeriver.derive(decls, "net.kurobako.cef4j.ipc.protocol.gen")
+  test("every derived spec emits valid C++ and every shared shape valid Java without throwing") {
+    val specs  = SpecDeriver.derive(decls, "net.kurobako.cef4j.ipc.protocol.gen")
+    val shared = SharedMessages.derive(specs)
     specs.foreach { s =>
-      val java = JavaEmitter.emit(s)
-      val cpp  = CppEmitter.emit(s)
-      assert(java.contains(s"class ${s.className}"), s"Java emit missing class for ${s.className}")
+      val cpp = CppEmitter.emit(s)
       assert(cpp.contains(s"struct ${s.className}"), s"C++ emit missing struct for ${s.className}")
     }
+    shared.messages.foreach { m =>
+      val java = JavaEmitter.emitShared(m)
+      assert(java.contains(s"class ${m.className}"), s"Java emit missing class for ${m.className}")
+    }
+  }
+
+  test("derived specs collapse into far fewer shared Java classes") {
+    val specs  = SpecDeriver.derive(decls, "net.kurobako.cef4j.ipc.protocol.gen")
+    val shared = SharedMessages.derive(specs)
+    assert(shared.messages.size * 3 < specs.size, s"${shared.messages.size} shapes for ${specs.size} specs")
+    assertEquals(specs.map(_.fields).distinct.size, shared.messages.size)
+    assertEquals(shared.ids.size, specs.map(_.className).distinct.size)
+  }
+
+  test("a shape keeps the name of its message unless two or more messages share it") {
+    val specs      = SpecDeriver.derive(decls, "net.kurobako.cef4j.ipc.protocol.gen")
+    val shared     = SharedMessages.derive(specs)
+    val usesByType = specs.groupBy(s => shared.refs.typeName(s.className)).view.mapValues(_.size).toMap
+    val specNames  = specs.map(_.className).toSet
+    val byName     = shared.messages.map(m => m.className -> usesByType.getOrElse(m.className, 0)).toMap
+    byName.foreach { case (name, uses) =>
+      if (uses == 1) assert(specNames(name), s"$name has one user and is not named after it")
+      else assert(name.endsWith("Message") && !specNames(name), s"$name has $uses users")
+    }
+    assert(byName.values.exists(_ == 1) && byName.values.exists(_ > 1))
+  }
+
+  test("ipc codegen Main emits shared messages and no per-RPC message class") {
+    val out = Files.createTempDirectory("cef4j-ipc-main-")
+    try {
+      Main.main(Array(s"--out-java=${out.resolve("java")}", s"--cef-include=$cefInclude", s"--compiler=$compilerId"))
+      val pkg = out.resolve("java/net/kurobako/cef4j/ipc/protocol/gen")
+      assert(Files.isRegularFile(pkg.resolve("MessageIds.java")))
+      assert(Files.isRegularFile(pkg.resolve("SelfHandleMessage.java")))
+      assert(Files.isRegularFile(pkg.resolve("OsrPaintEvent.java")), "hand-written messages keep their own class")
+      assert(Files.isRegularFile(pkg.resolve("BrowserHostFindRequest.java")), "a single-use shape keeps its RPC name")
+      assert(!Files.exists(pkg.resolve("BrowserGoBackRequest.java")), "a shared shape drops the RPC name")
+      assert(!Files.exists(pkg.resolve("LifeSpanHandlerOnAfterCreatedEvent.java")))
+    } finally FileSystem.deleteTree(out)
   }
 
   test("derived ids stay above the hand-written reserved range") {
@@ -87,7 +125,7 @@ class IpcAstIntegrationSpec extends munit.FunSuite {
     facades.foreach { f =>
       val java = JavaFacadeEmitter.emit(f)
       assert(java.contains(s"class ${f.className}"), s"Java facade emit missing class for ${f.className}")
-      assert(java.contains("implements AutoCloseable"), s"Java facade ${f.className} is not AutoCloseable")
+      assert(java.contains(" extends "), s"Java facade ${f.className} does not extend a facade base")
       assert(java.contains("CefSession"), s"Java facade ${f.className} missing CefSession reference")
       assert(
         java.contains("CefFutures.map") || java.contains("CefFutures.discard"),
@@ -95,12 +133,7 @@ class IpcAstIntegrationSpec extends munit.FunSuite {
       )
       assert(!java.contains(".thenApply"), s"Java facade ${f.className} bypasses cancellation propagation")
       assert(java.contains("RemoteHandle"), s"Java facade ${f.className} missing RemoteHandle reference")
-      assert(java.contains("private final Object closeLock = new Object();"))
-      assert(java.contains("public CompletableFuture<Void> closeAsync()"))
-      assert(java.contains("synchronized (closeLock)"))
-      assert(java.contains("public void close()"))
-      assert(!java.contains("closeAsync().join()"))
-      assert(java.contains("return closeAsync();"))
+      assert(!java.contains("closeLock"))
       f.methods.foreach { m =>
         assert(
           java.contains(s" ${m.methodName}("),

@@ -10,7 +10,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import net.kurobako.cef4j.codecs.jackson.JacksonNdjsonSessionTraceCodec;
 import net.kurobako.cef4j.ipc.frame.RemoteCefBrowserBackend;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
-import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessage;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -45,8 +46,8 @@ class ApiRecordingReplayIntegrationTest {
                         TracePayloadFilter.identity())) {
             AtomicReference<@Nullable RemoteHandle> browserHandle = new AtomicReference<>();
             CefSession.HandlerRegistration lifecycle = recording.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
-                    LifeSpanHandlerOnAfterCreatedEvent.DECODER,
+                    MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT,
+                    BrowserHandleMessage.DECODER,
                     event -> browserHandle.set(event.browser()));
             TestDeadline.after(Duration.ofSeconds(20))
                     .until(() -> browserHandle.get() != null, Duration.ofMillis(10), "live browser handle");
@@ -61,8 +62,8 @@ class ApiRecordingReplayIntegrationTest {
                 ReplayCefSession.fromFile(trace, JacksonNdjsonSessionTraceCodec.INSTANCE, ReplayMode.IMMEDIATE);
         AtomicReference<@Nullable RemoteHandle> replayedHandle = new AtomicReference<>();
         CefSession.HandlerRegistration lifecycle = replay.onLatest(
-                LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
-                LifeSpanHandlerOnAfterCreatedEvent.DECODER,
+                MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT,
+                BrowserHandleMessage.DECODER,
                 event -> replayedHandle.set(event.browser()));
         try {
             replay.start();

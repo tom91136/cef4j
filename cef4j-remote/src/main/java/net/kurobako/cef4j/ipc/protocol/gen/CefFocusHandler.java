@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -32,7 +33,7 @@ public interface CefFocusHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__focus__handler_8h.html">cef_focus_handler.h:64</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onSetFocus(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int source) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onSetFocus(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int source) { return Unhandled.bool(); }
 
     /**
      * Called when the browser component has received focus.
@@ -46,13 +47,13 @@ public interface CefFocusHandler {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefFocusHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(FocusHandlerOnTakeFocusEvent.MESSAGE_ID, FocusHandlerOnTakeFocusEvent.DECODER,
+                session.on(MessageIds.FOCUS_HANDLER_ON_TAKE_FOCUS_EVENT, FocusHandlerOnTakeFocusEvent.DECODER,
                         ev -> handler.onTakeFocus(ev.browser(), ev.next())),
-                session.intercept(FocusHandlerOnSetFocusEvent.MESSAGE_ID, FocusHandlerOnSetFocusEvent.DECODER, ev -> {
+                session.intercept(MessageIds.FOCUS_HANDLER_ON_SET_FOCUS_EVENT, FocusHandlerOnSetFocusEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onSetFocus(ev.browser(), ev.source());
-                    return java.util.Optional.of(new FocusHandlerOnSetFocusResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.FOCUS_HANDLER_ON_SET_FOCUS_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.on(FocusHandlerOnGotFocusEvent.MESSAGE_ID, FocusHandlerOnGotFocusEvent.DECODER,
+                session.on(MessageIds.FOCUS_HANDLER_ON_GOT_FOCUS_EVENT, BrowserHandleMessage.DECODER,
                         ev -> handler.onGotFocus(ev.browser())));
     }
 }

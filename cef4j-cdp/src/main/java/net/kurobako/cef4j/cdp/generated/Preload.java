@@ -7,6 +7,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -22,6 +24,24 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Preload {
     private Preload() {}
+    private static final CdpField<Preload.SpeculationAction> ACTION = CdpField.of("action", value -> Preload.SpeculationAction.of((String) value));
+    private static final CdpField<DOM.BackendNodeId> BACKEND_NODE_ID = CdpField.of("backendNodeId", value -> new DOM.BackendNodeId(((Number) value).longValue()));
+    private static final CdpField<Preload.RuleSetErrorType> ERROR_TYPE = CdpField.of("errorType", value -> Preload.RuleSetErrorType.of((String) value));
+    private static final CdpField<Preload.RuleSetId> ID = CdpField.of("id", value -> new Preload.RuleSetId((String) value));
+    private static final CdpField<Page.FrameId> INITIATING_FRAME_ID = CdpField.of("initiatingFrameId", value -> new Page.FrameId((String) value));
+    private static final CdpField<Preload.PreloadingAttemptKey> KEY = CdpField.of("key", value -> java.util.Objects.requireNonNull(Preload.PreloadingAttemptKey.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.LoaderId> LOADER_ID = CdpField.of("loaderId", value -> new Network.LoaderId((String) value));
+    private static final CdpField<java.util.List<Preload.PrerenderMismatchedHeaders>> MISMATCHED_HEADERS = CdpField.of("mismatchedHeaders", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Preload.PrerenderMismatchedHeaders.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<DOM.BackendNodeId>> NODE_IDS = CdpField.of("nodeIds", value -> CdpObject.requireList(value, element0 -> new DOM.BackendNodeId(((Number) element0).longValue())));
+    private static final CdpField<Preload.PreloadPipelineId> PIPELINE_ID = CdpField.of("pipelineId", value -> new Preload.PreloadPipelineId((String) value));
+    private static final CdpField<Preload.PrefetchStatus> PREFETCH_STATUS = CdpField.of("prefetchStatus", value -> Preload.PrefetchStatus.of((String) value));
+    private static final CdpField<java.util.List<Preload.PreloadingAttemptSource>> PRELOADING_ATTEMPT_SOURCES = CdpField.of("preloadingAttemptSources", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Preload.PreloadingAttemptSource.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Preload.PrerenderFinalStatus> PRERENDER_STATUS = CdpField.of("prerenderStatus", value -> Preload.PrerenderFinalStatus.of((String) value));
+    private static final CdpField<Network.RequestId> REQUEST_ID = CdpField.of("requestId", value -> new Network.RequestId((String) value));
+    private static final CdpField<Preload.RuleSet> RULE_SET = CdpField.of("ruleSet", value -> java.util.Objects.requireNonNull(Preload.RuleSet.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Preload.RuleSetId>> RULE_SET_IDS = CdpField.of("ruleSetIds", value -> CdpObject.requireList(value, element0 -> new Preload.RuleSetId((String) element0)));
+    private static final CdpField<Preload.PreloadingStatus> STATUS = CdpField.of("status", value -> Preload.PreloadingStatus.of((String) value));
+    private static final CdpField<Preload.SpeculationTargetHint> TARGET_HINT = CdpField.of("targetHint", value -> Preload.SpeculationTargetHint.of((String) value));
     /**
      * Unique id
      */
@@ -51,14 +71,14 @@ public final class Preload {
          * @return the protocol field value
          */
         public Preload.RuleSetId id() {
-            return new Preload.RuleSetId((String) require("id"));
+            return require(ID);
         }
         /**
          * Identifies a document which the rule set is associated with.
          * @return the protocol field value
          */
         public Network.LoaderId loaderId() {
-            return new Network.LoaderId((String) require("loaderId"));
+            return require(LOADER_ID);
         }
         /**
          * Source text of JSON representing the rule set. If it comes from {@code &lt;script&gt;} tag, it is the textContent of the node. Note that it is a JSON for valid case.
@@ -66,7 +86,7 @@ public final class Preload {
          * @return the protocol field value
          */
         public String sourceText() {
-            return (String) require("sourceText");
+            return requireString("sourceText");
         }
         /**
          * A speculation rule set is either added through an inline {@code &lt;script&gt;} tag or through an external resource via the &#x27;Speculation-Rules&#x27; HTTP header. For the first case, we include the BackendNodeId of the relevant {@code &lt;script&gt;} tag. For the second case, we include the external URL where the rule set was loaded from, and also RequestId if Network domain is enabled.
@@ -74,28 +94,28 @@ public final class Preload {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(BACKEND_NODE_ID);
         }
         /**
          * Returns the url field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return raw("url").map(value -> (String) value);
+            return optionalString("url");
         }
         /**
          * Returns the requestId field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.RequestId> requestId() {
-            return raw("requestId").map(value -> new Network.RequestId((String) value));
+            return optional(REQUEST_ID);
         }
         /**
          * Error information {@code errorMessage} is null iff {@code errorType} is null.
          * @return the protocol field value, empty when absent
          */
         public Optional<Preload.RuleSetErrorType> errorType() {
-            return raw("errorType").map(value -> Preload.RuleSetErrorType.of((String) value));
+            return optional(ERROR_TYPE);
         }
         /**
          * TODO(https://crbug.com/1425354): Replace this property with structured error.
@@ -104,14 +124,14 @@ public final class Preload {
          */
         @Deprecated
         public Optional<String> errorMessage() {
-            return raw("errorMessage").map(value -> (String) value);
+            return optionalString("errorMessage");
         }
         /**
          * For more details, see: https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md
          * @return the protocol field value, empty when absent
          */
         public Optional<String> tag() {
-            return raw("tag").map(value -> (String) value);
+            return optionalString("tag");
         }
         /**
          * Sets the id field.
@@ -264,35 +284,35 @@ public final class Preload {
          * @return the protocol field value
          */
         public Network.LoaderId loaderId() {
-            return new Network.LoaderId((String) require("loaderId"));
+            return require(LOADER_ID);
         }
         /**
          * Returns the action field.
          * @return the protocol field value
          */
         public Preload.SpeculationAction action() {
-            return Preload.SpeculationAction.of((String) require("action"));
+            return require(ACTION);
         }
         /**
          * Returns the url field.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Returns the formSubmission field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> formSubmission() {
-            return raw("formSubmission").map(value -> (Boolean) value);
+            return optionalBoolean("formSubmission");
         }
         /**
          * Returns the targetHint field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Preload.SpeculationTargetHint> targetHint() {
-            return raw("targetHint").map(value -> Preload.SpeculationTargetHint.of((String) value));
+            return optional(TARGET_HINT);
         }
         /**
          * Sets the loaderId field.
@@ -354,21 +374,21 @@ public final class Preload {
          * @return the protocol field value
          */
         public Preload.PreloadingAttemptKey key() {
-            return java.util.Objects.requireNonNull(Preload.PreloadingAttemptKey.fromMap(CdpObject.requireObjectMap(require("key"))));
+            return require(KEY);
         }
         /**
          * Returns the ruleSetIds field.
          * @return the protocol field value
          */
         public java.util.List<Preload.RuleSetId> ruleSetIds() {
-            return CdpObject.requireList(require("ruleSetIds"), element0 -> new Preload.RuleSetId((String) element0));
+            return require(RULE_SET_IDS);
         }
         /**
          * Returns the nodeIds field.
          * @return the protocol field value
          */
         public java.util.List<DOM.BackendNodeId> nodeIds() {
-            return CdpObject.requireList(require("nodeIds"), element0 -> new DOM.BackendNodeId(((Number) element0).longValue()));
+            return require(NODE_IDS);
         }
         /**
          * Sets the key field.
@@ -587,21 +607,21 @@ public final class Preload {
          * @return the protocol field value
          */
         public String headerName() {
-            return (String) require("headerName");
+            return requireString("headerName");
         }
         /**
          * Returns the initialValue field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> initialValue() {
-            return raw("initialValue").map(value -> (String) value);
+            return optionalString("initialValue");
         }
         /**
          * Returns the activationValue field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> activationValue() {
-            return raw("activationValue").map(value -> (String) value);
+            return optionalString("activationValue");
         }
         /**
          * Sets the headerName field.
@@ -645,7 +665,7 @@ public final class Preload {
          * @return the protocol field value
          */
         public Preload.RuleSet ruleSet() {
-            return java.util.Objects.requireNonNull(Preload.RuleSet.fromMap(CdpObject.requireObjectMap(require("ruleSet"))));
+            return require(RULE_SET);
         }
         /**
          * Sets the ruleSet field.
@@ -671,7 +691,7 @@ public final class Preload {
          * @return the protocol field value
          */
         public Preload.RuleSetId id() {
-            return new Preload.RuleSetId((String) require("id"));
+            return require(ID);
         }
         /**
          * Sets the id field.
@@ -697,35 +717,35 @@ public final class Preload {
          * @return the protocol field value
          */
         public boolean disabledByPreference() {
-            return (Boolean) require("disabledByPreference");
+            return requireBoolean("disabledByPreference");
         }
         /**
          * Returns the disabledByDataSaver field.
          * @return the protocol field value
          */
         public boolean disabledByDataSaver() {
-            return (Boolean) require("disabledByDataSaver");
+            return requireBoolean("disabledByDataSaver");
         }
         /**
          * Returns the disabledByBatterySaver field.
          * @return the protocol field value
          */
         public boolean disabledByBatterySaver() {
-            return (Boolean) require("disabledByBatterySaver");
+            return requireBoolean("disabledByBatterySaver");
         }
         /**
          * Returns the disabledByHoldbackPrefetchSpeculationRules field.
          * @return the protocol field value
          */
         public boolean disabledByHoldbackPrefetchSpeculationRules() {
-            return (Boolean) require("disabledByHoldbackPrefetchSpeculationRules");
+            return requireBoolean("disabledByHoldbackPrefetchSpeculationRules");
         }
         /**
          * Returns the disabledByHoldbackPrerenderSpeculationRules field.
          * @return the protocol field value
          */
         public boolean disabledByHoldbackPrerenderSpeculationRules() {
-            return (Boolean) require("disabledByHoldbackPrerenderSpeculationRules");
+            return requireBoolean("disabledByHoldbackPrerenderSpeculationRules");
         }
         /**
          * Sets the disabledByPreference field.
@@ -787,49 +807,49 @@ public final class Preload {
          * @return the protocol field value
          */
         public Preload.PreloadingAttemptKey key() {
-            return java.util.Objects.requireNonNull(Preload.PreloadingAttemptKey.fromMap(CdpObject.requireObjectMap(require("key"))));
+            return require(KEY);
         }
         /**
          * Returns the pipelineId field.
          * @return the protocol field value
          */
         public Preload.PreloadPipelineId pipelineId() {
-            return new Preload.PreloadPipelineId((String) require("pipelineId"));
+            return require(PIPELINE_ID);
         }
         /**
          * The frame id of the frame initiating prefetch.
          * @return the protocol field value
          */
         public Page.FrameId initiatingFrameId() {
-            return new Page.FrameId((String) require("initiatingFrameId"));
+            return require(INITIATING_FRAME_ID);
         }
         /**
          * Returns the prefetchUrl field.
          * @return the protocol field value
          */
         public String prefetchUrl() {
-            return (String) require("prefetchUrl");
+            return requireString("prefetchUrl");
         }
         /**
          * Returns the status field.
          * @return the protocol field value
          */
         public Preload.PreloadingStatus status() {
-            return Preload.PreloadingStatus.of((String) require("status"));
+            return require(STATUS);
         }
         /**
          * Returns the prefetchStatus field.
          * @return the protocol field value
          */
         public Preload.PrefetchStatus prefetchStatus() {
-            return Preload.PrefetchStatus.of((String) require("prefetchStatus"));
+            return require(PREFETCH_STATUS);
         }
         /**
          * Returns the requestId field.
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Sets the key field.
@@ -909,42 +929,42 @@ public final class Preload {
          * @return the protocol field value
          */
         public Preload.PreloadingAttemptKey key() {
-            return java.util.Objects.requireNonNull(Preload.PreloadingAttemptKey.fromMap(CdpObject.requireObjectMap(require("key"))));
+            return require(KEY);
         }
         /**
          * Returns the pipelineId field.
          * @return the protocol field value
          */
         public Preload.PreloadPipelineId pipelineId() {
-            return new Preload.PreloadPipelineId((String) require("pipelineId"));
+            return require(PIPELINE_ID);
         }
         /**
          * Returns the status field.
          * @return the protocol field value
          */
         public Preload.PreloadingStatus status() {
-            return Preload.PreloadingStatus.of((String) require("status"));
+            return require(STATUS);
         }
         /**
          * Returns the prerenderStatus field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Preload.PrerenderFinalStatus> prerenderStatus() {
-            return raw("prerenderStatus").map(value -> Preload.PrerenderFinalStatus.of((String) value));
+            return optional(PRERENDER_STATUS);
         }
         /**
          * This is used to give users more information about the name of Mojo interface that is incompatible with prerender and has caused the cancellation of the attempt.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> disallowedMojoInterface() {
-            return raw("disallowedMojoInterface").map(value -> (String) value);
+            return optionalString("disallowedMojoInterface");
         }
         /**
          * Returns the mismatchedHeaders field.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Preload.PrerenderMismatchedHeaders>> mismatchedHeaders() {
-            return raw("mismatchedHeaders").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Preload.PrerenderMismatchedHeaders.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(MISMATCHED_HEADERS);
         }
         /**
          * Sets the key field.
@@ -1015,14 +1035,14 @@ public final class Preload {
          * @return the protocol field value
          */
         public Network.LoaderId loaderId() {
-            return new Network.LoaderId((String) require("loaderId"));
+            return require(LOADER_ID);
         }
         /**
          * Returns the preloadingAttemptSources field.
          * @return the protocol field value
          */
         public java.util.List<Preload.PreloadingAttemptSource> preloadingAttemptSources() {
-            return CdpObject.requireList(require("preloadingAttemptSources"), element0 -> java.util.Objects.requireNonNull(Preload.PreloadingAttemptSource.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(PRELOADING_ATTEMPT_SOURCES);
         }
         /**
          * Sets the loaderId field.
@@ -1043,22 +1063,21 @@ public final class Preload {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Invokes Preload.enable.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Preload.enable", null);
+            return call("Preload.enable");
         }
         /**
          * Invokes Preload.disable.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Preload.disable", null);
+            return call("Preload.disable");
         }
         /**
          * Upsert. Currently, it is only emitted when a rule set added.
@@ -1066,7 +1085,7 @@ public final class Preload {
          * @return a removable subscription
          */
         public CdpSubscription onRuleSetUpdated(Consumer<RuleSetUpdatedEvent> handler) {
-            return client.on("Preload.ruleSetUpdated", RuleSetUpdatedEvent::fromMap, handler);
+            return on("Preload.ruleSetUpdated", RuleSetUpdatedEvent::fromMap, handler);
         }
         /**
          * Subscribes to Preload.ruleSetRemoved.
@@ -1074,7 +1093,7 @@ public final class Preload {
          * @return a removable subscription
          */
         public CdpSubscription onRuleSetRemoved(Consumer<RuleSetRemovedEvent> handler) {
-            return client.on("Preload.ruleSetRemoved", RuleSetRemovedEvent::fromMap, handler);
+            return on("Preload.ruleSetRemoved", RuleSetRemovedEvent::fromMap, handler);
         }
         /**
          * Fired when a preload enabled state is updated.
@@ -1082,7 +1101,7 @@ public final class Preload {
          * @return a removable subscription
          */
         public CdpSubscription onPreloadEnabledStateUpdated(Consumer<PreloadEnabledStateUpdatedEvent> handler) {
-            return client.on("Preload.preloadEnabledStateUpdated", PreloadEnabledStateUpdatedEvent::fromMap, handler);
+            return on("Preload.preloadEnabledStateUpdated", PreloadEnabledStateUpdatedEvent::fromMap, handler);
         }
         /**
          * Fired when a prefetch attempt is updated.
@@ -1090,7 +1109,7 @@ public final class Preload {
          * @return a removable subscription
          */
         public CdpSubscription onPrefetchStatusUpdated(Consumer<PrefetchStatusUpdatedEvent> handler) {
-            return client.on("Preload.prefetchStatusUpdated", PrefetchStatusUpdatedEvent::fromMap, handler);
+            return on("Preload.prefetchStatusUpdated", PrefetchStatusUpdatedEvent::fromMap, handler);
         }
         /**
          * Fired when a prerender attempt is updated.
@@ -1098,7 +1117,7 @@ public final class Preload {
          * @return a removable subscription
          */
         public CdpSubscription onPrerenderStatusUpdated(Consumer<PrerenderStatusUpdatedEvent> handler) {
-            return client.on("Preload.prerenderStatusUpdated", PrerenderStatusUpdatedEvent::fromMap, handler);
+            return on("Preload.prerenderStatusUpdated", PrerenderStatusUpdatedEvent::fromMap, handler);
         }
         /**
          * Send a list of sources for all preloading attempts in a document.
@@ -1106,7 +1125,7 @@ public final class Preload {
          * @return a removable subscription
          */
         public CdpSubscription onPreloadingAttemptSourcesUpdated(Consumer<PreloadingAttemptSourcesUpdatedEvent> handler) {
-            return client.on("Preload.preloadingAttemptSourcesUpdated", PreloadingAttemptSourcesUpdatedEvent::fromMap, handler);
+            return on("Preload.preloadingAttemptSourcesUpdated", PreloadingAttemptSourcesUpdatedEvent::fromMap, handler);
         }
     }
 }

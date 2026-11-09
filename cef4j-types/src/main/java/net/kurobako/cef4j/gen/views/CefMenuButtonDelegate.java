@@ -1,0 +1,70 @@
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-types
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+package net.kurobako.cef4j.gen.views;
+
+import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.gen.CefClientHandler;
+import net.kurobako.cef4j.gen.CefPoint;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
+
+/**
+ * Implement this interface to handle MenuButton events. The methods of this class will be called on the browser process
+ * UI thread unless otherwise indicated.
+ *
+ * <p>Definition generated from views/cef_menu_button_delegate_capi.h
+ *
+ * <pre>typedef struct _cef_menu_button_delegate_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_menu_button_delegate_t;</pre>
+ *
+ * @see <a
+ *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__button__delegate_8h.html">views/cef_menu_button_delegate.h:51</a>
+ */
+@Generated("./mvnw generate-sources -pl cef4j-types -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@NullableBoundary("generated external ABI")
+public interface CefMenuButtonDelegate extends CefClientHandler {
+
+    /**
+     * Called when {@code button} is pressed. Call
+     * {@link net.kurobako.cef4j.gen.views.CefMenuButton#showMenu(CefMenuModel, CefPoint, CefMenuAnchorPosition)} to
+     * show a popup menu at {@code screen_point}. When showing a custom popup such as a window keep a reference to
+     * {@code button_pressed_lock} until the popup is hidden to maintain the pressed button state.
+     *
+     * <p>Definition generated from views/cef_menu_button_delegate_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* on_menu_button_pressed)(struct _cef_menu_button_delegate_t* self, struct _cef_menu_button_t* menu_button, const cef_point_t* screen_point, struct _cef_menu_button_pressed_lock_t* button_pressed_lock);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__button__delegate_8h.html">views/cef_menu_button_delegate.h:59</a>
+     */
+    default void onMenuButtonPressed(
+            @Nullable CefMenuButton menuButton,
+            CefPoint screenPoint,
+            @Nullable CefMenuButtonPressedLock buttonPressedLock) {}
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
+     * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
+     */
+    class Delegating implements CefMenuButtonDelegate {
+        private final java.util.List<CefMenuButtonDelegate> delegates;
+
+        public Delegating(java.util.List<CefMenuButtonDelegate> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void onMenuButtonPressed(
+                @Nullable CefMenuButton menuButton,
+                CefPoint screenPoint,
+                @Nullable CefMenuButtonPressedLock buttonPressedLock) {
+            for (final CefMenuButtonDelegate d : delegates)
+                d.onMenuButtonPressed(menuButton, screenPoint, buttonPressedLock);
+        }
+    }
+}

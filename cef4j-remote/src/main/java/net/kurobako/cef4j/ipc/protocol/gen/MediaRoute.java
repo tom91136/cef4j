@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class MediaRoute implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class MediaRoute extends BrowserFacade {
 
     public MediaRoute(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_media_route_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_media_route_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class MediaRoute implements AutoCloseable {
      */
     public CompletableFuture<String> getId() {
         return CefFutures.map(
-            session.request(new MediaRouteGetIdRequest(handle), MediaRouteGetIdResponse.DECODER),
-            MediaRouteGetIdResponse::result);
+            session.request(MessageIds.MEDIA_ROUTE_GET_ID_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -70,7 +39,7 @@ public final class MediaRoute implements AutoCloseable {
      */
     public CompletableFuture<MediaSource> getSource() {
         return CefFutures.map(
-            session.request(new MediaRouteGetSourceRequest(handle), MediaRouteGetSourceResponse.DECODER),
+            session.request(MessageIds.MEDIA_ROUTE_GET_SOURCE_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new MediaSource(session, __r.result()));
     }
 
@@ -82,7 +51,7 @@ public final class MediaRoute implements AutoCloseable {
      */
     public CompletableFuture<MediaSink> getSink() {
         return CefFutures.map(
-            session.request(new MediaRouteGetSinkRequest(handle), MediaRouteGetSinkResponse.DECODER),
+            session.request(MessageIds.MEDIA_ROUTE_GET_SINK_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new MediaSink(session, __r.result()));
     }
 
@@ -96,7 +65,7 @@ public final class MediaRoute implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:186</a>
      */
     public CompletableFuture<Void> sendRouteMessage(byte[] message) {
-        return CefFutures.discard(session.request(new MediaRouteSendRouteMessageRequest(handle, message), MediaRouteSendRouteMessageResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.MEDIA_ROUTE_SEND_ROUTE_MESSAGE_REQUEST, new SelfHandleMessageBytesMessage(handle, message), EmptyMessage.DECODER));
     }
 
     /**
@@ -106,6 +75,6 @@ public final class MediaRoute implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:192</a>
      */
     public CompletableFuture<Void> terminate() {
-        return CefFutures.discard(session.request(new MediaRouteTerminateRequest(handle), MediaRouteTerminateResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.MEDIA_ROUTE_TERMINATE_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 }

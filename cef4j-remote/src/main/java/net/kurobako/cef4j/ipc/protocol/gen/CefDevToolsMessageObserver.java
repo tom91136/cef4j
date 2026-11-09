@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -28,7 +29,7 @@ public interface CefDevToolsMessageObserver {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__devtools__message__observer_8h.html">cef_devtools_message_observer.h:52</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onDevToolsMessage(net.kurobako.cef4j.ipc.session.RemoteHandle browser, byte[] message) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onDevToolsMessage(net.kurobako.cef4j.ipc.session.RemoteHandle browser, byte[] message) { return Unhandled.bool(); }
 
     /**
      * Method that will be called after attempted execution of a DevTools protocol method. {@code browser} is the originating browser instance. {@code message_id} is the "id" value that identifies the originating method call message. If the method succeeded {@code success} will be {@code true} and {@code result} will be the UTF8-encoded JSON "result" dictionary value (which may be empty). If the method failed {@code success} will be {@code false} and {@code result} will be the UTF8-encoded JSON "error" dictionary value. {@code result} is only valid for the scope of this callback and should be copied if necessary. See the OnDevToolsMessage documentation for additional details on {@code result} contents.
@@ -75,17 +76,17 @@ public interface CefDevToolsMessageObserver {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefDevToolsMessageObserver handler) {
         return CefSession.HandlerRegistration.combine(
-                session.intercept(DevToolsMessageObserverOnDevToolsMessageEvent.MESSAGE_ID, DevToolsMessageObserverOnDevToolsMessageEvent.DECODER, ev -> {
+                session.intercept(MessageIds.DEV_TOOLS_MESSAGE_OBSERVER_ON_DEV_TOOLS_MESSAGE_EVENT, BrowserHandleMessageBytesMessage.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onDevToolsMessage(ev.browser(), ev.message());
-                    return java.util.Optional.of(new DevToolsMessageObserverOnDevToolsMessageResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.DEV_TOOLS_MESSAGE_OBSERVER_ON_DEV_TOOLS_MESSAGE_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.on(DevToolsMessageObserverOnDevToolsMethodResultEvent.MESSAGE_ID, DevToolsMessageObserverOnDevToolsMethodResultEvent.DECODER,
+                session.on(MessageIds.DEV_TOOLS_MESSAGE_OBSERVER_ON_DEV_TOOLS_METHOD_RESULT_EVENT, DevToolsMessageObserverOnDevToolsMethodResultEvent.DECODER,
                         ev -> handler.onDevToolsMethodResult(ev.browser(), ev.messageId_(), ev.success(), ev.result())),
-                session.on(DevToolsMessageObserverOnDevToolsEventEvent.MESSAGE_ID, DevToolsMessageObserverOnDevToolsEventEvent.DECODER,
+                session.on(MessageIds.DEV_TOOLS_MESSAGE_OBSERVER_ON_DEV_TOOLS_EVENT_EVENT, DevToolsMessageObserverOnDevToolsEventEvent.DECODER,
                         ev -> handler.onDevToolsEvent(ev.browser(), ev.method(), ev.params())),
-                session.on(DevToolsMessageObserverOnDevToolsAgentAttachedEvent.MESSAGE_ID, DevToolsMessageObserverOnDevToolsAgentAttachedEvent.DECODER,
+                session.on(MessageIds.DEV_TOOLS_MESSAGE_OBSERVER_ON_DEV_TOOLS_AGENT_ATTACHED_EVENT, BrowserHandleMessage.DECODER,
                         ev -> handler.onDevToolsAgentAttached(ev.browser())),
-                session.on(DevToolsMessageObserverOnDevToolsAgentDetachedEvent.MESSAGE_ID, DevToolsMessageObserverOnDevToolsAgentDetachedEvent.DECODER,
+                session.on(MessageIds.DEV_TOOLS_MESSAGE_OBSERVER_ON_DEV_TOOLS_AGENT_DETACHED_EVENT, BrowserHandleMessage.DECODER,
                         ev -> handler.onDevToolsAgentDetached(ev.browser())));
     }
 }

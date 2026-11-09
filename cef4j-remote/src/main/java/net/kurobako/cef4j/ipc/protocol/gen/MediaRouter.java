@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class MediaRouter implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class MediaRouter extends BrowserFacade {
 
     public MediaRouter(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_media_router_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_media_router_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class MediaRouter implements AutoCloseable {
      */
     public CompletableFuture<RemoteHandle> addObserver(RemoteHandle observer) {
         return CefFutures.map(
-            session.request(new MediaRouterAddObserverRequest(handle, observer), MediaRouterAddObserverResponse.DECODER),
-            MediaRouterAddObserverResponse::result);
+            session.request(MessageIds.MEDIA_ROUTER_ADD_OBSERVER_REQUEST, new SelfHandleObserverHandleMessage(handle, observer), ResultHandleMessage.DECODER),
+            ResultHandleMessage::result);
     }
 
     /**
@@ -70,7 +39,7 @@ public final class MediaRouter implements AutoCloseable {
      */
     public CompletableFuture<MediaSource> getSource(String urn) {
         return CefFutures.map(
-            session.request(new MediaRouterGetSourceRequest(handle, urn), MediaRouterGetSourceResponse.DECODER),
+            session.request(MessageIds.MEDIA_ROUTER_GET_SOURCE_REQUEST, new MediaRouterGetSourceRequest(handle, urn), ResultHandleMessage.DECODER),
             __r -> new MediaSource(session, __r.result()));
     }
 
@@ -81,7 +50,7 @@ public final class MediaRouter implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:88</a>
      */
     public CompletableFuture<Void> notifyCurrentSinks() {
-        return CefFutures.discard(session.request(new MediaRouterNotifyCurrentSinksRequest(handle), MediaRouterNotifyCurrentSinksResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.MEDIA_ROUTER_NOTIFY_CURRENT_SINKS_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -91,7 +60,7 @@ public final class MediaRouter implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:95</a>
      */
     public CompletableFuture<Void> createRoute(RemoteHandle source, RemoteHandle sink, RemoteHandle callback) {
-        return CefFutures.discard(session.request(new MediaRouterCreateRouteRequest(handle, source, sink, callback), MediaRouterCreateRouteResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.MEDIA_ROUTER_CREATE_ROUTE_REQUEST, new MediaRouterCreateRouteRequest(handle, source, sink, callback), EmptyMessage.DECODER));
     }
 
     /**
@@ -101,6 +70,6 @@ public final class MediaRouter implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:108</a>
      */
     public CompletableFuture<Void> notifyCurrentRoutes() {
-        return CefFutures.discard(session.request(new MediaRouterNotifyCurrentRoutesRequest(handle), MediaRouterNotifyCurrentRoutesResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.MEDIA_ROUTER_NOTIFY_CURRENT_ROUTES_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 }

@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class CefThread implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class CefThread extends BrowserFacade {
 
     public CefThread(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_thread_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_thread_t");
     }
 
     /**
@@ -58,7 +27,7 @@ public final class CefThread implements AutoCloseable {
      */
     public CompletableFuture<TaskRunner> getTaskRunner() {
         return CefFutures.map(
-            session.request(new ThreadGetTaskRunnerRequest(handle), ThreadGetTaskRunnerResponse.DECODER),
+            session.request(MessageIds.THREAD_GET_TASK_RUNNER_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new TaskRunner(session, __r.result()));
     }
 
@@ -70,8 +39,8 @@ public final class CefThread implements AutoCloseable {
      */
     public CompletableFuture<Long> getPlatformThreadId() {
         return CefFutures.map(
-            session.request(new ThreadGetPlatformThreadIdRequest(handle), ThreadGetPlatformThreadIdResponse.DECODER),
-            ThreadGetPlatformThreadIdResponse::result);
+            session.request(MessageIds.THREAD_GET_PLATFORM_THREAD_ID_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -81,7 +50,7 @@ public final class CefThread implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__thread_8h.html">cef_thread.h:101</a>
      */
     public CompletableFuture<Void> stop() {
-        return CefFutures.discard(session.request(new ThreadStopRequest(handle), ThreadStopResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.THREAD_STOP_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -92,7 +61,7 @@ public final class CefThread implements AutoCloseable {
      */
     public CompletableFuture<Integer> isRunning() {
         return CefFutures.map(
-            session.request(new ThreadIsRunningRequest(handle), ThreadIsRunningResponse.DECODER),
-            ThreadIsRunningResponse::result);
+            session.request(MessageIds.THREAD_IS_RUNNING_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

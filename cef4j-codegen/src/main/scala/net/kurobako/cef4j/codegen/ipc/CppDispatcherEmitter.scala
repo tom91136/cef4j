@@ -357,12 +357,7 @@ object CppDispatcherEmitter {
         m.handleStructByField.get(name).exists(s => facadeStructs.contains(s) || visitorStructs.contains(s))
       case FieldType.DataStruct(cefName) => dataStructNames.contains(cefName)
     }
-    val paramsOk = m.explicitParams.forall(p => fieldOk(p.name, p.ty))
-    val resultOk = m.resultField match {
-      case None    => true
-      case Some(f) => fieldOk("result", f.ty)
-    }
-    paramsOk && resultOk
+    m.fieldsSatisfy(fieldOk)
   }
 
   private def tableFieldName(cefStruct: String)(using Naming.Context): String =

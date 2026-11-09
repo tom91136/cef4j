@@ -125,6 +125,7 @@
         <module>cef4j-codegen</module>
         <module>cef4j-code-policy</module>
         <module>cef4j-platform</module>
+        <module>cef4j-types</module>
         <module>cef4j-api</module>
         <module>cef4j-inprocess-swing</module>
         <module>cef4j-http</module>
@@ -308,6 +309,11 @@
                 <artifactId>selenium-java</artifactId>
                 <version>${selenium.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>net.kurobako.cef4j</groupId>
+                <artifactId>cef4j-types</artifactId>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>net.kurobako.cef4j</groupId>

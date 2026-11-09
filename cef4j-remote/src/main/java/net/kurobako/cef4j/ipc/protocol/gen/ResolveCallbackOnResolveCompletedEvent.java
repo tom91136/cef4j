@@ -2,18 +2,15 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class ResolveCallbackOnResolveCompletedEvent implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 388366023;
 
     private final int result;
     private final String[] resolvedIps;
@@ -32,38 +29,21 @@ public final class ResolveCallbackOnResolveCompletedEvent implements CefMessageV
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return 8 + java.util.Arrays.stream(resolvedIps).mapToInt(__s -> 4 + __s.getBytes(StandardCharsets.UTF_8).length).sum();
+        return 8 + WireEncoder.utf8ListSize(resolvedIps);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(result);
-            __dst.putInt(resolvedIps.length);
-            for (final String __s : resolvedIps) {
-                final byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
-                __dst.putInt(__b.length);
-                __dst.put(__b);
-            }
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(result);
+            WireEncoder.utf8List(__out, resolvedIps);
+        });
     }
 
-    public static final CefMessageDecoder<ResolveCallbackOnResolveCompletedEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<ResolveCallbackOnResolveCompletedEvent> DECODER = WireDecoder.message("ResolveCallbackOnResolveCompletedEvent", __buf -> {
         final int result = WireDecoder.int32(__buf, "result");
         final String[] resolvedIps = WireDecoder.utf8List(__buf, "resolvedIps");
-        WireDecoder.requireFullyConsumed(__buf, "ResolveCallbackOnResolveCompletedEvent");
         return new ResolveCallbackOnResolveCompletedEvent(result, resolvedIps);
-    };
+    });
 }

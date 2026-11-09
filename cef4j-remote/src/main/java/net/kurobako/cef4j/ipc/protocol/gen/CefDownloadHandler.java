@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -23,7 +24,7 @@ public interface CefDownloadHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:93</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> canDownload(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String url, String requestMethod) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> canDownload(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String url, String requestMethod) { return Unhandled.bool(); }
 
     /**
      * Called before a download begins. {@code suggested_name} is the suggested name for the download file. Return {@code true} and execute {@code callback} either asynchronously or in this method to continue or cancel the download. Return {@code false} to proceed with default handling (cancel with Alloy style, download shelf with Chrome style). Do not keep a reference to {@code download_item} outside of this method.
@@ -32,7 +33,7 @@ public interface CefDownloadHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:107</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onBeforeDownload(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle downloadItem, String suggestedName, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onBeforeDownload(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle downloadItem, String suggestedName, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return Unhandled.bool(); }
 
     /**
      * Called when a download's status or progress information has been updated. This may be called multiple times before and after OnBeforeDownload(). Execute {@code callback} either asynchronously or in this method to cancel the download if desired. Do not keep a reference to {@code download_item} outside of this method.
@@ -46,15 +47,15 @@ public interface CefDownloadHandler {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefDownloadHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.intercept(DownloadHandlerCanDownloadEvent.MESSAGE_ID, DownloadHandlerCanDownloadEvent.DECODER, ev -> {
+                session.intercept(MessageIds.DOWNLOAD_HANDLER_CAN_DOWNLOAD_EVENT, DownloadHandlerCanDownloadEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.canDownload(ev.browser(), ev.url(), ev.requestMethod());
-                    return java.util.Optional.of(new DownloadHandlerCanDownloadResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.DOWNLOAD_HANDLER_CAN_DOWNLOAD_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.intercept(DownloadHandlerOnBeforeDownloadEvent.MESSAGE_ID, DownloadHandlerOnBeforeDownloadEvent.DECODER, ev -> {
+                session.intercept(MessageIds.DOWNLOAD_HANDLER_ON_BEFORE_DOWNLOAD_EVENT, DownloadHandlerOnBeforeDownloadEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onBeforeDownload(ev.browser(), ev.downloadItem(), ev.suggestedName(), ev.callback());
-                    return java.util.Optional.of(new DownloadHandlerOnBeforeDownloadResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.DOWNLOAD_HANDLER_ON_BEFORE_DOWNLOAD_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.on(DownloadHandlerOnDownloadUpdatedEvent.MESSAGE_ID, DownloadHandlerOnDownloadUpdatedEvent.DECODER,
+                session.on(MessageIds.DOWNLOAD_HANDLER_ON_DOWNLOAD_UPDATED_EVENT, DownloadHandlerOnDownloadUpdatedEvent.DECODER,
                         ev -> handler.onDownloadUpdated(ev.browser(), ev.downloadItem(), ev.callback())));
     }
 }

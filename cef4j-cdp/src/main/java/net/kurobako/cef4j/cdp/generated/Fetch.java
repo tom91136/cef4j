@@ -1,7 +1,6 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalLong;
@@ -9,6 +8,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -24,6 +25,23 @@ import org.jspecify.annotations.Nullable;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Fetch {
     private Fetch() {}
+    private static final CdpField<Fetch.AuthChallenge> AUTH_CHALLENGE = CdpField.of("authChallenge", value -> java.util.Objects.requireNonNull(Fetch.AuthChallenge.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Fetch.AuthChallengeResponse> AUTH_CHALLENGE_RESPONSE = CdpField.of("authChallengeResponse", value -> java.util.Objects.requireNonNull(Fetch.AuthChallengeResponse.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.ErrorReason> ERROR_REASON = CdpField.of("errorReason", value -> Network.ErrorReason.of((String) value));
+    private static final CdpField<Page.FrameId> FRAME_ID = CdpField.of("frameId", value -> new Page.FrameId((String) value));
+    private static final CdpField<java.util.List<Fetch.HeaderEntry>> HEADERS = CdpField.of("headers", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Fetch.HeaderEntry.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Network.RequestId> NETWORK_ID = CdpField.of("networkId", value -> new Network.RequestId((String) value));
+    private static final CdpField<java.util.List<Fetch.RequestPattern>> PATTERNS = CdpField.of("patterns", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Fetch.RequestPattern.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Fetch.RequestId> REDIRECTED_REQUEST_ID = CdpField.of("redirectedRequestId", value -> new Fetch.RequestId((String) value));
+    private static final CdpField<Network.Request> REQUEST = CdpField.of("request", value -> java.util.Objects.requireNonNull(Network.Request.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Fetch.RequestId> REQUEST_ID = CdpField.of("requestId", value -> new Fetch.RequestId((String) value));
+    private static final CdpField<Fetch.RequestStage> REQUEST_STAGE = CdpField.of("requestStage", value -> Fetch.RequestStage.of((String) value));
+    private static final CdpField<Network.ResourceType> RESOURCE_TYPE = CdpField.of("resourceType", value -> Network.ResourceType.of((String) value));
+    private static final CdpField<AuthChallengeResponse.ResponseValues> RESPONSE = CdpField.of("response", value -> AuthChallengeResponse.ResponseValues.of((String) value));
+    private static final CdpField<Network.ErrorReason> RESPONSE_ERROR_REASON = CdpField.of("responseErrorReason", value -> Network.ErrorReason.of((String) value));
+    private static final CdpField<java.util.List<Fetch.HeaderEntry>> RESPONSE_HEADERS = CdpField.of("responseHeaders", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Fetch.HeaderEntry.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<AuthChallenge.SourceValues> SOURCE = CdpField.of("source", value -> AuthChallenge.SourceValues.of((String) value));
+    private static final CdpField<IO.StreamHandle> STREAM = CdpField.of("stream", value -> new IO.StreamHandle((String) value));
     /**
      * Unique request identifier. Note that this does not identify individual HTTP requests that are part of a network request.
      */
@@ -68,21 +86,21 @@ public final class Fetch {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> urlPattern() {
-            return raw("urlPattern").map(value -> (String) value);
+            return optionalString("urlPattern");
         }
         /**
          * If set, only requests for matching resource types will be intercepted.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ResourceType> resourceType() {
-            return raw("resourceType").map(value -> Network.ResourceType.of((String) value));
+            return optional(RESOURCE_TYPE);
         }
         /**
          * Stage at which to begin intercepting requests. Default is Request.
          * @return the protocol field value, empty when absent
          */
         public Optional<Fetch.RequestStage> requestStage() {
-            return raw("requestStage").map(value -> Fetch.RequestStage.of((String) value));
+            return optional(REQUEST_STAGE);
         }
         /**
          * Wildcards ({@code &#x27;*&#x27;} -&gt; zero or more, {@code &#x27;?&#x27;} -&gt; exactly one) are allowed. Escape character is backslash. Omitting is equivalent to {@code &quot;*&quot;}.
@@ -126,14 +144,14 @@ public final class Fetch {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Returns the value field.
          * @return the protocol field value
          */
         public String value() {
-            return (String) require("value");
+            return requireString("value");
         }
         /**
          * Sets the name field.
@@ -184,28 +202,28 @@ public final class Fetch {
          * @return the protocol field value, empty when absent
          */
         public Optional<AuthChallenge.SourceValues> source() {
-            return raw("source").map(value -> AuthChallenge.SourceValues.of((String) value));
+            return optional(SOURCE);
         }
         /**
          * Origin of the challenger.
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * The authentication scheme used, such as basic or digest
          * @return the protocol field value
          */
         public String scheme() {
-            return (String) require("scheme");
+            return requireString("scheme");
         }
         /**
          * The realm of the challenge. May be empty.
          * @return the protocol field value
          */
         public String realm() {
-            return (String) require("realm");
+            return requireString("realm");
         }
         /**
          * Source of the authentication challenge.
@@ -275,21 +293,21 @@ public final class Fetch {
          * @return the protocol field value
          */
         public AuthChallengeResponse.ResponseValues response() {
-            return AuthChallengeResponse.ResponseValues.of((String) require("response"));
+            return require(RESPONSE);
         }
         /**
          * The username to provide, possibly empty. Should only be set if response is ProvideCredentials.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> username() {
-            return raw("username").map(value -> (String) value);
+            return optionalString("username");
         }
         /**
          * The password to provide, possibly empty. Should only be set if response is ProvideCredentials.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> password() {
-            return raw("password").map(value -> (String) value);
+            return optionalString("password");
         }
         /**
          * The decision on what to do in response to the authorization challenge. Default means deferring to the default behavior of the net stack, which will likely either the Cancel authentication or display a popup dialog box.
@@ -334,14 +352,14 @@ public final class Fetch {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Fetch.RequestPattern>> patterns() {
-            return raw("patterns").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Fetch.RequestPattern.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(PATTERNS);
         }
         /**
          * If true, authRequired events will be issued and requests will be paused expecting a call to continueWithAuth.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> handleAuthRequests() {
-            return raw("handleAuthRequests").map(value -> (Boolean) value);
+            return optionalBoolean("handleAuthRequests");
         }
         /**
          * If specified, only requests matching any of these patterns will produce fetchRequested event and will be paused until clients response. If not set, all requests will be affected.
@@ -367,14 +385,6 @@ public final class Fetch {
      */
     public static final class FailRequestRequest extends CdpObject {
         public FailRequestRequest() {}
-        /**
-         * Causes the request to fail with specified reason.
-         * @param requestId protocol value
-         * @param errorReason protocol value
-         */
-        public FailRequestRequest(Fetch.RequestId requestId, Network.ErrorReason errorReason) {
-            requestId(requestId).errorReason(errorReason);
-        }
         public static FailRequestRequest fromMap(Map<String, Object> values) {
             final FailRequestRequest instance_ = new FailRequestRequest();
             if (values != null) instance_.values.putAll(values);
@@ -385,14 +395,14 @@ public final class Fetch {
          * @return the protocol field value
          */
         public Fetch.RequestId requestId() {
-            return new Fetch.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Causes the request to fail with the given reason.
          * @return the protocol field value
          */
         public Network.ErrorReason errorReason() {
-            return Network.ErrorReason.of((String) require("errorReason"));
+            return require(ERROR_REASON);
         }
         /**
          * An id the client received in requestPaused event.
@@ -418,14 +428,6 @@ public final class Fetch {
      */
     public static final class FulfillRequestRequest extends CdpObject {
         public FulfillRequestRequest() {}
-        /**
-         * Provides response to the request.
-         * @param requestId protocol value
-         * @param responseCode protocol value
-         */
-        public FulfillRequestRequest(Fetch.RequestId requestId, long responseCode) {
-            requestId(requestId).responseCode(responseCode);
-        }
         public static FulfillRequestRequest fromMap(Map<String, Object> values) {
             final FulfillRequestRequest instance_ = new FulfillRequestRequest();
             if (values != null) instance_.values.putAll(values);
@@ -436,42 +438,42 @@ public final class Fetch {
          * @return the protocol field value
          */
         public Fetch.RequestId requestId() {
-            return new Fetch.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * An HTTP response code.
          * @return the protocol field value
          */
         public long responseCode() {
-            return ((Number) require("responseCode")).longValue();
+            return requireLong("responseCode");
         }
         /**
          * Response headers.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Fetch.HeaderEntry>> responseHeaders() {
-            return raw("responseHeaders").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Fetch.HeaderEntry.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(RESPONSE_HEADERS);
         }
         /**
          * Alternative way of specifying response headers as a \0-separated series of name: value pairs. Prefer the above method unless you need to represent some non-UTF8 values that can&#x27;t be transmitted over the protocol as text. (Encoded as a base64 string when passed over JSON)
          * @return the protocol field value, empty when absent
          */
         public Optional<String> binaryResponseHeaders() {
-            return raw("binaryResponseHeaders").map(value -> (String) value);
+            return optionalString("binaryResponseHeaders");
         }
         /**
          * A response body. If absent, original response body will be used if the request is intercepted at the response stage and empty body will be used if the request is intercepted at the request stage. (Encoded as a base64 string when passed over JSON)
          * @return the protocol field value, empty when absent
          */
         public Optional<String> body() {
-            return raw("body").map(value -> (String) value);
+            return optionalString("body");
         }
         /**
          * A textual representation of responseCode. If absent, a standard phrase matching responseCode is used.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> responsePhrase() {
-            return raw("responsePhrase").map(value -> (String) value);
+            return optionalString("responsePhrase");
         }
         /**
          * An id the client received in requestPaused event.
@@ -533,13 +535,6 @@ public final class Fetch {
      */
     public static final class ContinueRequestRequest extends CdpObject {
         public ContinueRequestRequest() {}
-        /**
-         * Continues the request, optionally modifying some of its parameters.
-         * @param requestId protocol value
-         */
-        public ContinueRequestRequest(Fetch.RequestId requestId) {
-            requestId(requestId);
-        }
         public static ContinueRequestRequest fromMap(Map<String, Object> values) {
             final ContinueRequestRequest instance_ = new ContinueRequestRequest();
             if (values != null) instance_.values.putAll(values);
@@ -550,35 +545,35 @@ public final class Fetch {
          * @return the protocol field value
          */
         public Fetch.RequestId requestId() {
-            return new Fetch.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * If set, the request url will be modified in a way that&#x27;s not observable by page.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return raw("url").map(value -> (String) value);
+            return optionalString("url");
         }
         /**
          * If set, the request method is overridden.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> method() {
-            return raw("method").map(value -> (String) value);
+            return optionalString("method");
         }
         /**
          * If set, overrides the post data in the request. (Encoded as a base64 string when passed over JSON)
          * @return the protocol field value, empty when absent
          */
         public Optional<String> postData() {
-            return raw("postData").map(value -> (String) value);
+            return optionalString("postData");
         }
         /**
          * If set, overrides the request headers. Note that the overrides do not extend to subsequent redirect hops, if a redirect happens. Another override may be applied to a different request produced by a redirect.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Fetch.HeaderEntry>> headers() {
-            return raw("headers").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Fetch.HeaderEntry.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(HEADERS);
         }
         /**
          * If set, overrides response interception behavior for this request.
@@ -586,7 +581,7 @@ public final class Fetch {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> interceptResponse() {
-            return raw("interceptResponse").map(value -> (Boolean) value);
+            return optionalBoolean("interceptResponse");
         }
         /**
          * An id the client received in requestPaused event.
@@ -649,14 +644,6 @@ public final class Fetch {
      */
     public static final class ContinueWithAuthRequest extends CdpObject {
         public ContinueWithAuthRequest() {}
-        /**
-         * Continues a request supplying authChallengeResponse following authRequired event.
-         * @param requestId protocol value
-         * @param authChallengeResponse protocol value
-         */
-        public ContinueWithAuthRequest(Fetch.RequestId requestId, Fetch.AuthChallengeResponse authChallengeResponse) {
-            requestId(requestId).authChallengeResponse(authChallengeResponse);
-        }
         public static ContinueWithAuthRequest fromMap(Map<String, Object> values) {
             final ContinueWithAuthRequest instance_ = new ContinueWithAuthRequest();
             if (values != null) instance_.values.putAll(values);
@@ -667,14 +654,14 @@ public final class Fetch {
          * @return the protocol field value
          */
         public Fetch.RequestId requestId() {
-            return new Fetch.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Response to with an authChallenge.
          * @return the protocol field value
          */
         public Fetch.AuthChallengeResponse authChallengeResponse() {
-            return java.util.Objects.requireNonNull(Fetch.AuthChallengeResponse.fromMap(CdpObject.requireObjectMap(require("authChallengeResponse"))));
+            return require(AUTH_CHALLENGE_RESPONSE);
         }
         /**
          * An id the client received in authRequired event.
@@ -701,14 +688,6 @@ public final class Fetch {
      */
     public static final class ContinueResponseRequest extends CdpObject {
         public ContinueResponseRequest() {}
-        /**
-         * Continues loading of the paused response, optionally modifying the response headers. If either responseCode or headers are modified, all of them must be present.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param requestId protocol value
-         */
-        public ContinueResponseRequest(Fetch.RequestId requestId) {
-            requestId(requestId);
-        }
         public static ContinueResponseRequest fromMap(Map<String, Object> values) {
             final ContinueResponseRequest instance_ = new ContinueResponseRequest();
             if (values != null) instance_.values.putAll(values);
@@ -719,35 +698,35 @@ public final class Fetch {
          * @return the protocol field value
          */
         public Fetch.RequestId requestId() {
-            return new Fetch.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * An HTTP response code. If absent, original response code will be used.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong responseCode() {
-            return raw("responseCode").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("responseCode");
         }
         /**
          * A textual representation of responseCode. If absent, a standard phrase matching responseCode is used.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> responsePhrase() {
-            return raw("responsePhrase").map(value -> (String) value);
+            return optionalString("responsePhrase");
         }
         /**
          * Response headers. If absent, original response headers will be used.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Fetch.HeaderEntry>> responseHeaders() {
-            return raw("responseHeaders").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Fetch.HeaderEntry.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(RESPONSE_HEADERS);
         }
         /**
          * Alternative way of specifying response headers as a \0-separated series of name: value pairs. Prefer the above method unless you need to represent some non-UTF8 values that can&#x27;t be transmitted over the protocol as text. (Encoded as a base64 string when passed over JSON)
          * @return the protocol field value, empty when absent
          */
         public Optional<String> binaryResponseHeaders() {
-            return raw("binaryResponseHeaders").map(value -> (String) value);
+            return optionalString("binaryResponseHeaders");
         }
         /**
          * An id the client received in requestPaused event.
@@ -800,13 +779,6 @@ public final class Fetch {
      */
     public static final class GetResponseBodyRequest extends CdpObject {
         public GetResponseBodyRequest() {}
-        /**
-         * Causes the body of the response to be received from the server and returned as a single string. May only be issued for a request that is paused in the Response stage and is mutually exclusive with takeResponseBodyForInterceptionAsStream. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior. Note that the response body is not available for redirects. Requests paused in the _redirect received_ state may be differentiated by {@code responseCode} and presence of {@code location} response header, see comments to {@code requestPaused} for details.
-         * @param requestId protocol value
-         */
-        public GetResponseBodyRequest(Fetch.RequestId requestId) {
-            requestId(requestId);
-        }
         public static GetResponseBodyRequest fromMap(Map<String, Object> values) {
             final GetResponseBodyRequest instance_ = new GetResponseBodyRequest();
             if (values != null) instance_.values.putAll(values);
@@ -817,7 +789,7 @@ public final class Fetch {
          * @return the protocol field value
          */
         public Fetch.RequestId requestId() {
-            return new Fetch.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Identifier for the intercepted request to get body for.
@@ -834,13 +806,6 @@ public final class Fetch {
      */
     public static final class TakeResponseBodyAsStreamRequest extends CdpObject {
         public TakeResponseBodyAsStreamRequest() {}
-        /**
-         * Returns a handle to the stream representing the response body. The request must be paused in the HeadersReceived stage. Note that after this command the request can&#x27;t be continued as is -- client either needs to cancel it or to provide the response body. The stream only supports sequential read, IO.read will fail if the position is specified. This method is mutually exclusive with getResponseBody. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior.
-         * @param requestId protocol value
-         */
-        public TakeResponseBodyAsStreamRequest(Fetch.RequestId requestId) {
-            requestId(requestId);
-        }
         public static TakeResponseBodyAsStreamRequest fromMap(Map<String, Object> values) {
             final TakeResponseBodyAsStreamRequest instance_ = new TakeResponseBodyAsStreamRequest();
             if (values != null) instance_.values.putAll(values);
@@ -851,7 +816,7 @@ public final class Fetch {
          * @return the protocol field value
          */
         public Fetch.RequestId requestId() {
-            return new Fetch.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * Sets the requestId field.
@@ -877,14 +842,14 @@ public final class Fetch {
          * @return the protocol field value
          */
         public String body() {
-            return (String) require("body");
+            return requireString("body");
         }
         /**
          * True, if content was sent as base64.
          * @return the protocol field value
          */
         public boolean base64Encoded() {
-            return (Boolean) require("base64Encoded");
+            return requireBoolean("base64Encoded");
         }
         /**
          * Response body.
@@ -919,63 +884,63 @@ public final class Fetch {
          * @return the protocol field value
          */
         public Fetch.RequestId requestId() {
-            return new Fetch.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * The details of the request.
          * @return the protocol field value
          */
         public Network.Request request() {
-            return java.util.Objects.requireNonNull(Network.Request.fromMap(CdpObject.requireObjectMap(require("request"))));
+            return require(REQUEST);
         }
         /**
          * The id of the frame that initiated the request.
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * How the requested resource will be used.
          * @return the protocol field value
          */
         public Network.ResourceType resourceType() {
-            return Network.ResourceType.of((String) require("resourceType"));
+            return require(RESOURCE_TYPE);
         }
         /**
          * Response error if intercepted at response stage.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ErrorReason> responseErrorReason() {
-            return raw("responseErrorReason").map(value -> Network.ErrorReason.of((String) value));
+            return optional(RESPONSE_ERROR_REASON);
         }
         /**
          * Response code if intercepted at response stage.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong responseStatusCode() {
-            return raw("responseStatusCode").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("responseStatusCode");
         }
         /**
          * Response status text if intercepted at response stage.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> responseStatusText() {
-            return raw("responseStatusText").map(value -> (String) value);
+            return optionalString("responseStatusText");
         }
         /**
          * Response headers if intercepted at the response stage.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Fetch.HeaderEntry>> responseHeaders() {
-            return raw("responseHeaders").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Fetch.HeaderEntry.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(RESPONSE_HEADERS);
         }
         /**
          * If the intercepted request had a corresponding Network.requestWillBeSent event fired for it, then this networkId will be the same as the requestId present in the requestWillBeSent event.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.RequestId> networkId() {
-            return raw("networkId").map(value -> new Network.RequestId((String) value));
+            return optional(NETWORK_ID);
         }
         /**
          * If the request is due to a redirect response from the server, the id of the request that has caused the redirect.
@@ -983,7 +948,7 @@ public final class Fetch {
          * @return the protocol field value, empty when absent
          */
         public Optional<Fetch.RequestId> redirectedRequestId() {
-            return raw("redirectedRequestId").map(value -> new Fetch.RequestId((String) value));
+            return optional(REDIRECTED_REQUEST_ID);
         }
         /**
          * Each request the page makes will have a unique id.
@@ -1091,35 +1056,35 @@ public final class Fetch {
          * @return the protocol field value
          */
         public Fetch.RequestId requestId() {
-            return new Fetch.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * The details of the request.
          * @return the protocol field value
          */
         public Network.Request request() {
-            return java.util.Objects.requireNonNull(Network.Request.fromMap(CdpObject.requireObjectMap(require("request"))));
+            return require(REQUEST);
         }
         /**
          * The id of the frame that initiated the request.
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * How the requested resource will be used.
          * @return the protocol field value
          */
         public Network.ResourceType resourceType() {
-            return Network.ResourceType.of((String) require("resourceType"));
+            return require(RESOURCE_TYPE);
         }
         /**
          * Details of the Authorization Challenge encountered. If this is set, client should respond with continueRequest that contains AuthChallengeResponse.
          * @return the protocol field value
          */
         public Fetch.AuthChallenge authChallenge() {
-            return java.util.Objects.requireNonNull(Fetch.AuthChallenge.fromMap(CdpObject.requireObjectMap(require("authChallenge"))));
+            return require(AUTH_CHALLENGE);
         }
         /**
          * Each request the page makes will have a unique id.
@@ -1167,15 +1132,14 @@ public final class Fetch {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Disables the fetch domain.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Fetch.disable", null);
+            return call("Fetch.disable");
         }
         /**
          * Enables issuing of requestPaused events. A request will be paused until client calls one of failRequest, fulfillRequest or continueRequest/continueWithAuth.
@@ -1184,17 +1148,14 @@ public final class Fetch {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable(java.util.@Nullable List<Fetch.RequestPattern> patterns, @Nullable Boolean handleAuthRequests) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (patterns != null) params.put("patterns", CdpObject.json(patterns));
-            if (handleAuthRequests != null) params.put("handleAuthRequests", CdpObject.json(handleAuthRequests));
-            return client.call("Fetch.enable", params);
+            return call("Fetch.enable", params("patterns", patterns, "handleAuthRequests", handleAuthRequests));
         }
         /**
          * Enables issuing of requestPaused events. A request will be paused until client calls one of failRequest, fulfillRequest or continueRequest/continueWithAuth.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Fetch.enable", null);
+            return call("Fetch.enable");
         }
         /**
          * Enables issuing of requestPaused events. A request will be paused until client calls one of failRequest, fulfillRequest or continueRequest/continueWithAuth.
@@ -1202,7 +1163,7 @@ public final class Fetch {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable(EnableRequest request) {
-            return client.call("Fetch.enable", request == null ? null : request.toMap());
+            return call("Fetch.enable", request);
         }
         /**
          * Causes the request to fail with specified reason.
@@ -1211,10 +1172,7 @@ public final class Fetch {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> failRequest(Fetch.RequestId requestId, Network.ErrorReason errorReason) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("requestId", CdpObject.json(requestId));
-            params.put("errorReason", CdpObject.json(errorReason));
-            return client.call("Fetch.failRequest", params);
+            return call("Fetch.failRequest", params("requestId", requestId, "errorReason", errorReason));
         }
         /**
          * Causes the request to fail with specified reason.
@@ -1222,7 +1180,7 @@ public final class Fetch {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> failRequest(FailRequestRequest request) {
-            return client.call("Fetch.failRequest", request == null ? null : request.toMap());
+            return call("Fetch.failRequest", request);
         }
         /**
          * Provides response to the request.
@@ -1235,14 +1193,7 @@ public final class Fetch {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> fulfillRequest(Fetch.RequestId requestId, long responseCode, java.util.@Nullable List<Fetch.HeaderEntry> responseHeaders, @Nullable String binaryResponseHeaders, @Nullable String body, @Nullable String responsePhrase) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("requestId", CdpObject.json(requestId));
-            params.put("responseCode", CdpObject.json(responseCode));
-            if (responseHeaders != null) params.put("responseHeaders", CdpObject.json(responseHeaders));
-            if (binaryResponseHeaders != null) params.put("binaryResponseHeaders", CdpObject.json(binaryResponseHeaders));
-            if (body != null) params.put("body", CdpObject.json(body));
-            if (responsePhrase != null) params.put("responsePhrase", CdpObject.json(responsePhrase));
-            return client.call("Fetch.fulfillRequest", params);
+            return call("Fetch.fulfillRequest", params("requestId", requestId, "responseCode", responseCode, "responseHeaders", responseHeaders, "binaryResponseHeaders", binaryResponseHeaders, "body", body, "responsePhrase", responsePhrase));
         }
         /**
          * Provides response to the request.
@@ -1251,10 +1202,7 @@ public final class Fetch {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> fulfillRequest(Fetch.RequestId requestId, long responseCode) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("requestId", CdpObject.json(requestId));
-            params.put("responseCode", CdpObject.json(responseCode));
-            return client.call("Fetch.fulfillRequest", params);
+            return call("Fetch.fulfillRequest", params("requestId", requestId, "responseCode", responseCode));
         }
         /**
          * Provides response to the request.
@@ -1262,7 +1210,7 @@ public final class Fetch {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> fulfillRequest(FulfillRequestRequest request) {
-            return client.call("Fetch.fulfillRequest", request == null ? null : request.toMap());
+            return call("Fetch.fulfillRequest", request);
         }
         /**
          * Continues the request, optionally modifying some of its parameters.
@@ -1275,14 +1223,7 @@ public final class Fetch {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> continueRequest(Fetch.RequestId requestId, @Nullable String url, @Nullable String method, @Nullable String postData, java.util.@Nullable List<Fetch.HeaderEntry> headers, @Nullable Boolean interceptResponse) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("requestId", CdpObject.json(requestId));
-            if (url != null) params.put("url", CdpObject.json(url));
-            if (method != null) params.put("method", CdpObject.json(method));
-            if (postData != null) params.put("postData", CdpObject.json(postData));
-            if (headers != null) params.put("headers", CdpObject.json(headers));
-            if (interceptResponse != null) params.put("interceptResponse", CdpObject.json(interceptResponse));
-            return client.call("Fetch.continueRequest", params);
+            return call("Fetch.continueRequest", params("requestId", requestId, "url", url, "method", method, "postData", postData, "headers", headers, "interceptResponse", interceptResponse));
         }
         /**
          * Continues the request, optionally modifying some of its parameters.
@@ -1290,9 +1231,7 @@ public final class Fetch {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> continueRequest(Fetch.RequestId requestId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("requestId", CdpObject.json(requestId));
-            return client.call("Fetch.continueRequest", params);
+            return call("Fetch.continueRequest", params("requestId", requestId));
         }
         /**
          * Continues the request, optionally modifying some of its parameters.
@@ -1300,7 +1239,7 @@ public final class Fetch {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> continueRequest(ContinueRequestRequest request) {
-            return client.call("Fetch.continueRequest", request == null ? null : request.toMap());
+            return call("Fetch.continueRequest", request);
         }
         /**
          * Continues a request supplying authChallengeResponse following authRequired event.
@@ -1309,10 +1248,7 @@ public final class Fetch {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> continueWithAuth(Fetch.RequestId requestId, Fetch.AuthChallengeResponse authChallengeResponse) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("requestId", CdpObject.json(requestId));
-            params.put("authChallengeResponse", CdpObject.json(authChallengeResponse));
-            return client.call("Fetch.continueWithAuth", params);
+            return call("Fetch.continueWithAuth", params("requestId", requestId, "authChallengeResponse", authChallengeResponse));
         }
         /**
          * Continues a request supplying authChallengeResponse following authRequired event.
@@ -1320,7 +1256,7 @@ public final class Fetch {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> continueWithAuth(ContinueWithAuthRequest request) {
-            return client.call("Fetch.continueWithAuth", request == null ? null : request.toMap());
+            return call("Fetch.continueWithAuth", request);
         }
         /**
          * Continues loading of the paused response, optionally modifying the response headers. If either responseCode or headers are modified, all of them must be present.
@@ -1333,13 +1269,7 @@ public final class Fetch {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> continueResponse(Fetch.RequestId requestId, @Nullable Long responseCode, @Nullable String responsePhrase, java.util.@Nullable List<Fetch.HeaderEntry> responseHeaders, @Nullable String binaryResponseHeaders) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("requestId", CdpObject.json(requestId));
-            if (responseCode != null) params.put("responseCode", CdpObject.json(responseCode));
-            if (responsePhrase != null) params.put("responsePhrase", CdpObject.json(responsePhrase));
-            if (responseHeaders != null) params.put("responseHeaders", CdpObject.json(responseHeaders));
-            if (binaryResponseHeaders != null) params.put("binaryResponseHeaders", CdpObject.json(binaryResponseHeaders));
-            return client.call("Fetch.continueResponse", params);
+            return call("Fetch.continueResponse", params("requestId", requestId, "responseCode", responseCode, "responsePhrase", responsePhrase, "responseHeaders", responseHeaders, "binaryResponseHeaders", binaryResponseHeaders));
         }
         /**
          * Continues loading of the paused response, optionally modifying the response headers. If either responseCode or headers are modified, all of them must be present.
@@ -1348,9 +1278,7 @@ public final class Fetch {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> continueResponse(Fetch.RequestId requestId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("requestId", CdpObject.json(requestId));
-            return client.call("Fetch.continueResponse", params);
+            return call("Fetch.continueResponse", params("requestId", requestId));
         }
         /**
          * Continues loading of the paused response, optionally modifying the response headers. If either responseCode or headers are modified, all of them must be present.
@@ -1359,7 +1287,7 @@ public final class Fetch {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> continueResponse(ContinueResponseRequest request) {
-            return client.call("Fetch.continueResponse", request == null ? null : request.toMap());
+            return call("Fetch.continueResponse", request);
         }
         /**
          * Causes the body of the response to be received from the server and returned as a single string. May only be issued for a request that is paused in the Response stage and is mutually exclusive with takeResponseBodyForInterceptionAsStream. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior. Note that the response body is not available for redirects. Requests paused in the _redirect received_ state may be differentiated by {@code responseCode} and presence of {@code location} response header, see comments to {@code requestPaused} for details.
@@ -1367,9 +1295,7 @@ public final class Fetch {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetResponseBodyResult> getResponseBody(Fetch.RequestId requestId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("requestId", CdpObject.json(requestId));
-            return client.call("Fetch.getResponseBody", params, result_ -> new GetResponseBodyResult(result_));
+            return call("Fetch.getResponseBody", params("requestId", requestId), GetResponseBodyResult::fromMap);
         }
         /**
          * Causes the body of the response to be received from the server and returned as a single string. May only be issued for a request that is paused in the Response stage and is mutually exclusive with takeResponseBodyForInterceptionAsStream. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior. Note that the response body is not available for redirects. Requests paused in the _redirect received_ state may be differentiated by {@code responseCode} and presence of {@code location} response header, see comments to {@code requestPaused} for details.
@@ -1377,7 +1303,7 @@ public final class Fetch {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetResponseBodyResult> getResponseBody(GetResponseBodyRequest request) {
-            return client.call("Fetch.getResponseBody", request == null ? null : request.toMap(), result_ -> new GetResponseBodyResult(result_));
+            return call("Fetch.getResponseBody", request, GetResponseBodyResult::fromMap);
         }
         /**
          * Returns a handle to the stream representing the response body. The request must be paused in the HeadersReceived stage. Note that after this command the request can&#x27;t be continued as is -- client either needs to cancel it or to provide the response body. The stream only supports sequential read, IO.read will fail if the position is specified. This method is mutually exclusive with getResponseBody. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior.
@@ -1385,9 +1311,7 @@ public final class Fetch {
          * @return a stage completing with the command result
          */
         public CompletionStage<IO.StreamHandle> takeResponseBodyAsStream(Fetch.RequestId requestId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("requestId", CdpObject.json(requestId));
-            return client.call("Fetch.takeResponseBodyAsStream", params, result_ -> new IO.StreamHandle((String) java.util.Objects.requireNonNull(result_.get("stream"))));
+            return call("Fetch.takeResponseBodyAsStream", params("requestId", requestId), STREAM::require);
         }
         /**
          * Returns a handle to the stream representing the response body. The request must be paused in the HeadersReceived stage. Note that after this command the request can&#x27;t be continued as is -- client either needs to cancel it or to provide the response body. The stream only supports sequential read, IO.read will fail if the position is specified. This method is mutually exclusive with getResponseBody. Calling other methods that affect the request or disabling fetch domain before body is received results in an undefined behavior.
@@ -1395,7 +1319,7 @@ public final class Fetch {
          * @return a stage completing with the command result
          */
         public CompletionStage<IO.StreamHandle> takeResponseBodyAsStream(TakeResponseBodyAsStreamRequest request) {
-            return client.call("Fetch.takeResponseBodyAsStream", request == null ? null : request.toMap(), result_ -> new IO.StreamHandle((String) java.util.Objects.requireNonNull(result_.get("stream"))));
+            return call("Fetch.takeResponseBodyAsStream", request, STREAM::require);
         }
         /**
          * Issued when the domain is enabled and the request URL matches the specified filter. The request is paused until the client responds with one of continueRequest, failRequest or fulfillRequest. The stage of the request can be determined by presence of responseErrorReason and responseStatusCode -- the request is at the response stage if either of these fields is present and in the request stage otherwise. Redirect responses and subsequent requests are reported similarly to regular responses and requests. Redirect responses may be distinguished by the value of {@code responseStatusCode} (which is one of 301, 302, 303, 307, 308) along with presence of the {@code location} header. Requests resulting from a redirect will have {@code redirectedRequestId} field set.
@@ -1403,7 +1327,7 @@ public final class Fetch {
          * @return a removable subscription
          */
         public CdpSubscription onRequestPaused(Consumer<RequestPausedEvent> handler) {
-            return client.on("Fetch.requestPaused", RequestPausedEvent::fromMap, handler);
+            return on("Fetch.requestPaused", RequestPausedEvent::fromMap, handler);
         }
         /**
          * Issued when the domain is enabled with handleAuthRequests set to true. The request is paused until client responds with continueWithAuth.
@@ -1411,7 +1335,7 @@ public final class Fetch {
          * @return a removable subscription
          */
         public CdpSubscription onAuthRequired(Consumer<AuthRequiredEvent> handler) {
-            return client.on("Fetch.authRequired", AuthRequiredEvent::fromMap, handler);
+            return on("Fetch.authRequired", AuthRequiredEvent::fromMap, handler);
         }
     }
 }

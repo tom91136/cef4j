@@ -2,18 +2,16 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class WindowSendMouseMoveRequest implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 11125529;
 
     private final RemoteHandle self;
     private final int screenX;
@@ -38,35 +36,23 @@ public final class WindowSendMouseMoveRequest implements CefMessageView, CefMess
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 12;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putInt(screenX);
-            __dst.putInt(screenY);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            __out.putInt(screenX);
+            __out.putInt(screenY);
+        });
     }
 
-    public static final CefMessageDecoder<WindowSendMouseMoveRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<WindowSendMouseMoveRequest> DECODER = WireDecoder.message("WindowSendMouseMoveRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final int screenX = WireDecoder.int32(__buf, "screenX");
         final int screenY = WireDecoder.int32(__buf, "screenY");
-        WireDecoder.requireFullyConsumed(__buf, "WindowSendMouseMoveRequest");
         return new WindowSendMouseMoveRequest(self, screenX, screenY);
-    };
+    });
 }

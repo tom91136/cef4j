@@ -5,7 +5,7 @@ import net.kurobako.cef4j.codegen.Naming
 
 object JavaJvmVisitorEmitter {
 
-  def emit(spec: JvmVisitorSpec)(using Naming.Context, Banners): String = {
+  def emit(spec: JvmVisitorSpec, refs: MessageRefs = MessageRefs.Named)(using Naming.Context, Banners): String = {
     val pkg        = spec.packageName
     val cls        = spec.className
     val event      = spec.eventClassName
@@ -36,11 +36,11 @@ object JavaJvmVisitorEmitter {
        |    void $methodName($params);
        |
        |    /**
-       |     * Wires inbound {@link $event} frames into the supplied {@code table} so each visitor invocation
+       |     * Wires inbound {@code $event} frames into the supplied {@code table} so each visitor invocation
        |     * dispatches to the {@code $cls} registered under that callbackId. Call once per session.
        |     */
        |    static CefSession.HandlerRegistration route(CefSession session, JvmCallbackTable<$cls> table) {
-       |        return session.on($event.MESSAGE_ID, $event.DECODER, ev ->
+       |        return session.on(${refs.idExpr(event)}, ${refs.decoderExpr(event)}, ev ->
        |                table.lookup(ev.callbackId()).ifPresent(v -> v.$methodName($callArgs)));
        |    }
        |}

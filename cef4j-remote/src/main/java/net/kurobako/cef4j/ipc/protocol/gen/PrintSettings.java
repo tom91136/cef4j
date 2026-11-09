@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class PrintSettings implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class PrintSettings extends BrowserFacade {
 
     public PrintSettings(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_print_settings_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_print_settings_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class PrintSettings implements AutoCloseable {
      */
     public CompletableFuture<Integer> isValid() {
         return CefFutures.map(
-            session.request(new PrintSettingsIsValidRequest(handle), PrintSettingsIsValidResponse.DECODER),
-            PrintSettingsIsValidResponse::result);
+            session.request(MessageIds.PRINT_SETTINGS_IS_VALID_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class PrintSettings implements AutoCloseable {
      */
     public CompletableFuture<Integer> isReadOnly() {
         return CefFutures.map(
-            session.request(new PrintSettingsIsReadOnlyRequest(handle), PrintSettingsIsReadOnlyResponse.DECODER),
-            PrintSettingsIsReadOnlyResponse::result);
+            session.request(MessageIds.PRINT_SETTINGS_IS_READ_ONLY_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -81,7 +50,7 @@ public final class PrintSettings implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:75</a>
      */
     public CompletableFuture<Void> setOrientation(int landscape) {
-        return CefFutures.discard(session.request(new PrintSettingsSetOrientationRequest(handle, landscape), PrintSettingsSetOrientationResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.PRINT_SETTINGS_SET_ORIENTATION_REQUEST, new PrintSettingsSetOrientationRequest(handle, landscape), EmptyMessage.DECODER));
     }
 
     /**
@@ -92,8 +61,8 @@ public final class PrintSettings implements AutoCloseable {
      */
     public CompletableFuture<Integer> isLandscape() {
         return CefFutures.map(
-            session.request(new PrintSettingsIsLandscapeRequest(handle), PrintSettingsIsLandscapeResponse.DECODER),
-            PrintSettingsIsLandscapeResponse::result);
+            session.request(MessageIds.PRINT_SETTINGS_IS_LANDSCAPE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -102,8 +71,8 @@ public final class PrintSettings implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:87</a>
      */
-    public CompletableFuture<Void> setPrinterPrintableArea(Size physicalSizeDeviceUnits, Rect printableAreaDeviceUnits, int landscapeNeedsFlip) {
-        return CefFutures.discard(session.request(new PrintSettingsSetPrinterPrintableAreaRequest(handle, physicalSizeDeviceUnits, printableAreaDeviceUnits, landscapeNeedsFlip), PrintSettingsSetPrinterPrintableAreaResponse.DECODER));
+    public CompletableFuture<Void> setPrinterPrintableArea(net.kurobako.cef4j.gen.CefSize physicalSizeDeviceUnits, net.kurobako.cef4j.gen.CefRect printableAreaDeviceUnits, int landscapeNeedsFlip) {
+        return CefFutures.discard(session.request(MessageIds.PRINT_SETTINGS_SET_PRINTER_PRINTABLE_AREA_REQUEST, new PrintSettingsSetPrinterPrintableAreaRequest(handle, physicalSizeDeviceUnits, printableAreaDeviceUnits, landscapeNeedsFlip), EmptyMessage.DECODER));
     }
 
     /**
@@ -115,7 +84,7 @@ public final class PrintSettings implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:98</a>
      */
     public CompletableFuture<Void> setDeviceName(String name) {
-        return CefFutures.discard(session.request(new PrintSettingsSetDeviceNameRequest(handle, name), PrintSettingsSetDeviceNameResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.PRINT_SETTINGS_SET_DEVICE_NAME_REQUEST, new SelfHandleNameStringMessage(handle, name), EmptyMessage.DECODER));
     }
 
     /**
@@ -126,8 +95,8 @@ public final class PrintSettings implements AutoCloseable {
      */
     public CompletableFuture<String> getDeviceName() {
         return CefFutures.map(
-            session.request(new PrintSettingsGetDeviceNameRequest(handle), PrintSettingsGetDeviceNameResponse.DECODER),
-            PrintSettingsGetDeviceNameResponse::result);
+            session.request(MessageIds.PRINT_SETTINGS_GET_DEVICE_NAME_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -137,7 +106,7 @@ public final class PrintSettings implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:110</a>
      */
     public CompletableFuture<Void> setDpi(int dpi) {
-        return CefFutures.discard(session.request(new PrintSettingsSetDpiRequest(handle, dpi), PrintSettingsSetDpiResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.PRINT_SETTINGS_SET_DPI_REQUEST, new PrintSettingsSetDpiRequest(handle, dpi), EmptyMessage.DECODER));
     }
 
     /**
@@ -148,8 +117,8 @@ public final class PrintSettings implements AutoCloseable {
      */
     public CompletableFuture<Integer> getDpi() {
         return CefFutures.map(
-            session.request(new PrintSettingsGetDpiRequest(handle), PrintSettingsGetDpiResponse.DECODER),
-            PrintSettingsGetDpiResponse::result);
+            session.request(MessageIds.PRINT_SETTINGS_GET_DPI_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -160,8 +129,8 @@ public final class PrintSettings implements AutoCloseable {
      */
     public CompletableFuture<Long> getPageRangesCount() {
         return CefFutures.map(
-            session.request(new PrintSettingsGetPageRangesCountRequest(handle), PrintSettingsGetPageRangesCountResponse.DECODER),
-            PrintSettingsGetPageRangesCountResponse::result);
+            session.request(MessageIds.PRINT_SETTINGS_GET_PAGE_RANGES_COUNT_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -171,7 +140,7 @@ public final class PrintSettings implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:140</a>
      */
     public CompletableFuture<Void> setSelectionOnly(int selectionOnly) {
-        return CefFutures.discard(session.request(new PrintSettingsSetSelectionOnlyRequest(handle, selectionOnly), PrintSettingsSetSelectionOnlyResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.PRINT_SETTINGS_SET_SELECTION_ONLY_REQUEST, new PrintSettingsSetSelectionOnlyRequest(handle, selectionOnly), EmptyMessage.DECODER));
     }
 
     /**
@@ -182,8 +151,8 @@ public final class PrintSettings implements AutoCloseable {
      */
     public CompletableFuture<Integer> isSelectionOnly() {
         return CefFutures.map(
-            session.request(new PrintSettingsIsSelectionOnlyRequest(handle), PrintSettingsIsSelectionOnlyResponse.DECODER),
-            PrintSettingsIsSelectionOnlyResponse::result);
+            session.request(MessageIds.PRINT_SETTINGS_IS_SELECTION_ONLY_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -193,7 +162,7 @@ public final class PrintSettings implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:152</a>
      */
     public CompletableFuture<Void> setCollate(int collate) {
-        return CefFutures.discard(session.request(new PrintSettingsSetCollateRequest(handle, collate), PrintSettingsSetCollateResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.PRINT_SETTINGS_SET_COLLATE_REQUEST, new PrintSettingsSetCollateRequest(handle, collate), EmptyMessage.DECODER));
     }
 
     /**
@@ -204,8 +173,8 @@ public final class PrintSettings implements AutoCloseable {
      */
     public CompletableFuture<Integer> willCollate() {
         return CefFutures.map(
-            session.request(new PrintSettingsWillCollateRequest(handle), PrintSettingsWillCollateResponse.DECODER),
-            PrintSettingsWillCollateResponse::result);
+            session.request(MessageIds.PRINT_SETTINGS_WILL_COLLATE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -215,7 +184,7 @@ public final class PrintSettings implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:164</a>
      */
     public CompletableFuture<Void> setColorModel(int model) {
-        return CefFutures.discard(session.request(new PrintSettingsSetColorModelRequest(handle, model), PrintSettingsSetColorModelResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.PRINT_SETTINGS_SET_COLOR_MODEL_REQUEST, new PrintSettingsSetColorModelRequest(handle, model), EmptyMessage.DECODER));
     }
 
     /**
@@ -226,8 +195,8 @@ public final class PrintSettings implements AutoCloseable {
      */
     public CompletableFuture<Integer> getColorModel() {
         return CefFutures.map(
-            session.request(new PrintSettingsGetColorModelRequest(handle), PrintSettingsGetColorModelResponse.DECODER),
-            PrintSettingsGetColorModelResponse::result);
+            session.request(MessageIds.PRINT_SETTINGS_GET_COLOR_MODEL_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -237,7 +206,7 @@ public final class PrintSettings implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:176</a>
      */
     public CompletableFuture<Void> setCopies(int copies) {
-        return CefFutures.discard(session.request(new PrintSettingsSetCopiesRequest(handle, copies), PrintSettingsSetCopiesResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.PRINT_SETTINGS_SET_COPIES_REQUEST, new PrintSettingsSetCopiesRequest(handle, copies), EmptyMessage.DECODER));
     }
 
     /**
@@ -248,8 +217,8 @@ public final class PrintSettings implements AutoCloseable {
      */
     public CompletableFuture<Integer> getCopies() {
         return CefFutures.map(
-            session.request(new PrintSettingsGetCopiesRequest(handle), PrintSettingsGetCopiesResponse.DECODER),
-            PrintSettingsGetCopiesResponse::result);
+            session.request(MessageIds.PRINT_SETTINGS_GET_COPIES_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -259,7 +228,7 @@ public final class PrintSettings implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__settings_8h.html">cef_print_settings.h:188</a>
      */
     public CompletableFuture<Void> setDuplexMode(int mode) {
-        return CefFutures.discard(session.request(new PrintSettingsSetDuplexModeRequest(handle, mode), PrintSettingsSetDuplexModeResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.PRINT_SETTINGS_SET_DUPLEX_MODE_REQUEST, new PrintSettingsSetDuplexModeRequest(handle, mode), EmptyMessage.DECODER));
     }
 
     /**
@@ -270,7 +239,7 @@ public final class PrintSettings implements AutoCloseable {
      */
     public CompletableFuture<Integer> getDuplexMode() {
         return CefFutures.map(
-            session.request(new PrintSettingsGetDuplexModeRequest(handle), PrintSettingsGetDuplexModeResponse.DECODER),
-            PrintSettingsGetDuplexModeResponse::result);
+            session.request(MessageIds.PRINT_SETTINGS_GET_DUPLEX_MODE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

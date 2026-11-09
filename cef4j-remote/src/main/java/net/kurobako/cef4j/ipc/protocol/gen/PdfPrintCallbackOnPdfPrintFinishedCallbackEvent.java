@@ -2,18 +2,16 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class PdfPrintCallbackOnPdfPrintFinishedCallbackEvent implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 253815785;
 
     private final int callbackId;
     private final String path;
@@ -40,36 +38,23 @@ public final class PdfPrintCallbackOnPdfPrintFinishedCallbackEvent implements Ce
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 12 + pathBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(callbackId);
-            __dst.putInt(pathBytes.length);
-            __dst.put(pathBytes);
-            __dst.putInt(ok);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(callbackId);
+            WireEncoder.bytes(__out, pathBytes);
+            __out.putInt(ok);
+        });
     }
 
-    public static final CefMessageDecoder<PdfPrintCallbackOnPdfPrintFinishedCallbackEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<PdfPrintCallbackOnPdfPrintFinishedCallbackEvent> DECODER = WireDecoder.message("PdfPrintCallbackOnPdfPrintFinishedCallbackEvent", __buf -> {
         final int callbackId = WireDecoder.int32(__buf, "callbackId");
         final String path = WireDecoder.utf8(__buf, "path");
         final int ok = WireDecoder.int32(__buf, "ok");
-        WireDecoder.requireFullyConsumed(__buf, "PdfPrintCallbackOnPdfPrintFinishedCallbackEvent");
         return new PdfPrintCallbackOnPdfPrintFinishedCallbackEvent(callbackId, path, ok);
-    };
+    });
 }

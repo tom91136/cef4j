@@ -1,13 +1,14 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -23,6 +24,9 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class DOMStorage {
     private DOMStorage() {}
+    private static final CdpField<java.util.List<java.util.List<String>>> ENTRIES = CdpField.of("entries", value -> CdpObject.requireList(value, element0 -> CdpObject.requireList(element0, element1 -> (String) element1)));
+    private static final CdpField<DOMStorage.StorageId> STORAGE_ID = CdpField.of("storageId", value -> java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<DOMStorage.SerializedStorageKey> STORAGE_KEY = CdpField.of("storageKey", value -> new DOMStorage.SerializedStorageKey((String) value));
     /**
      * Tagged String wire value for SerializedStorageKey.
      */
@@ -52,21 +56,21 @@ public final class DOMStorage {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> securityOrigin() {
-            return raw("securityOrigin").map(value -> (String) value);
+            return optionalString("securityOrigin");
         }
         /**
          * Represents a key by which DOM Storage keys its CachedStorageAreas
          * @return the protocol field value, empty when absent
          */
         public Optional<DOMStorage.SerializedStorageKey> storageKey() {
-            return raw("storageKey").map(value -> new DOMStorage.SerializedStorageKey((String) value));
+            return optional(STORAGE_KEY);
         }
         /**
          * Whether the storage is local storage (not session storage).
          * @return the protocol field value
          */
         public boolean isLocalStorage() {
-            return (Boolean) require("isLocalStorage");
+            return requireBoolean("isLocalStorage");
         }
         /**
          * Security origin for the storage.
@@ -101,13 +105,6 @@ public final class DOMStorage {
      */
     public static final class ClearRequest extends CdpObject {
         public ClearRequest() {}
-        /**
-         * Creates a new ClearRequest with all required parameters.
-         * @param storageId protocol value
-         */
-        public ClearRequest(DOMStorage.StorageId storageId) {
-            storageId(storageId);
-        }
         public static ClearRequest fromMap(Map<String, Object> values) {
             final ClearRequest instance_ = new ClearRequest();
             if (values != null) instance_.values.putAll(values);
@@ -118,7 +115,7 @@ public final class DOMStorage {
          * @return the protocol field value
          */
         public DOMStorage.StorageId storageId() {
-            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(CdpObject.requireObjectMap(require("storageId"))));
+            return require(STORAGE_ID);
         }
         /**
          * Sets the storageId field.
@@ -135,13 +132,6 @@ public final class DOMStorage {
      */
     public static final class GetDOMStorageItemsRequest extends CdpObject {
         public GetDOMStorageItemsRequest() {}
-        /**
-         * Creates a new GetDOMStorageItemsRequest with all required parameters.
-         * @param storageId protocol value
-         */
-        public GetDOMStorageItemsRequest(DOMStorage.StorageId storageId) {
-            storageId(storageId);
-        }
         public static GetDOMStorageItemsRequest fromMap(Map<String, Object> values) {
             final GetDOMStorageItemsRequest instance_ = new GetDOMStorageItemsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -152,7 +142,7 @@ public final class DOMStorage {
          * @return the protocol field value
          */
         public DOMStorage.StorageId storageId() {
-            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(CdpObject.requireObjectMap(require("storageId"))));
+            return require(STORAGE_ID);
         }
         /**
          * Sets the storageId field.
@@ -169,14 +159,6 @@ public final class DOMStorage {
      */
     public static final class RemoveDOMStorageItemRequest extends CdpObject {
         public RemoveDOMStorageItemRequest() {}
-        /**
-         * Creates a new RemoveDOMStorageItemRequest with all required parameters.
-         * @param storageId protocol value
-         * @param key protocol value
-         */
-        public RemoveDOMStorageItemRequest(DOMStorage.StorageId storageId, String key) {
-            storageId(storageId).key(key);
-        }
         public static RemoveDOMStorageItemRequest fromMap(Map<String, Object> values) {
             final RemoveDOMStorageItemRequest instance_ = new RemoveDOMStorageItemRequest();
             if (values != null) instance_.values.putAll(values);
@@ -187,14 +169,14 @@ public final class DOMStorage {
          * @return the protocol field value
          */
         public DOMStorage.StorageId storageId() {
-            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(CdpObject.requireObjectMap(require("storageId"))));
+            return require(STORAGE_ID);
         }
         /**
          * Returns the key field.
          * @return the protocol field value
          */
         public String key() {
-            return (String) require("key");
+            return requireString("key");
         }
         /**
          * Sets the storageId field.
@@ -220,15 +202,6 @@ public final class DOMStorage {
      */
     public static final class SetDOMStorageItemRequest extends CdpObject {
         public SetDOMStorageItemRequest() {}
-        /**
-         * Creates a new SetDOMStorageItemRequest with all required parameters.
-         * @param storageId protocol value
-         * @param key protocol value
-         * @param value protocol value
-         */
-        public SetDOMStorageItemRequest(DOMStorage.StorageId storageId, String key, String value) {
-            storageId(storageId).key(key).value(value);
-        }
         public static SetDOMStorageItemRequest fromMap(Map<String, Object> values) {
             final SetDOMStorageItemRequest instance_ = new SetDOMStorageItemRequest();
             if (values != null) instance_.values.putAll(values);
@@ -239,21 +212,21 @@ public final class DOMStorage {
          * @return the protocol field value
          */
         public DOMStorage.StorageId storageId() {
-            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(CdpObject.requireObjectMap(require("storageId"))));
+            return require(STORAGE_ID);
         }
         /**
          * Returns the key field.
          * @return the protocol field value
          */
         public String key() {
-            return (String) require("key");
+            return requireString("key");
         }
         /**
          * Returns the value field.
          * @return the protocol field value
          */
         public String value() {
-            return (String) require("value");
+            return requireString("value");
         }
         /**
          * Sets the storageId field.
@@ -297,21 +270,21 @@ public final class DOMStorage {
          * @return the protocol field value
          */
         public DOMStorage.StorageId storageId() {
-            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(CdpObject.requireObjectMap(require("storageId"))));
+            return require(STORAGE_ID);
         }
         /**
          * Returns the key field.
          * @return the protocol field value
          */
         public String key() {
-            return (String) require("key");
+            return requireString("key");
         }
         /**
          * Returns the newValue field.
          * @return the protocol field value
          */
         public String newValue() {
-            return (String) require("newValue");
+            return requireString("newValue");
         }
         /**
          * Sets the storageId field.
@@ -355,14 +328,14 @@ public final class DOMStorage {
          * @return the protocol field value
          */
         public DOMStorage.StorageId storageId() {
-            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(CdpObject.requireObjectMap(require("storageId"))));
+            return require(STORAGE_ID);
         }
         /**
          * Returns the key field.
          * @return the protocol field value
          */
         public String key() {
-            return (String) require("key");
+            return requireString("key");
         }
         /**
          * Sets the storageId field.
@@ -397,28 +370,28 @@ public final class DOMStorage {
          * @return the protocol field value
          */
         public DOMStorage.StorageId storageId() {
-            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(CdpObject.requireObjectMap(require("storageId"))));
+            return require(STORAGE_ID);
         }
         /**
          * Returns the key field.
          * @return the protocol field value
          */
         public String key() {
-            return (String) require("key");
+            return requireString("key");
         }
         /**
          * Returns the oldValue field.
          * @return the protocol field value
          */
         public String oldValue() {
-            return (String) require("oldValue");
+            return requireString("oldValue");
         }
         /**
          * Returns the newValue field.
          * @return the protocol field value
          */
         public String newValue() {
-            return (String) require("newValue");
+            return requireString("newValue");
         }
         /**
          * Sets the storageId field.
@@ -471,7 +444,7 @@ public final class DOMStorage {
          * @return the protocol field value
          */
         public DOMStorage.StorageId storageId() {
-            return java.util.Objects.requireNonNull(DOMStorage.StorageId.fromMap(CdpObject.requireObjectMap(require("storageId"))));
+            return require(STORAGE_ID);
         }
         /**
          * Sets the storageId field.
@@ -483,18 +456,15 @@ public final class DOMStorage {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Invokes DOMStorage.clear.
          * @param storageId protocol value
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clear(DOMStorage.StorageId storageId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("storageId", CdpObject.json(storageId));
-            return client.call("DOMStorage.clear", params);
+            return call("DOMStorage.clear", params("storageId", storageId));
         }
         /**
          * Invokes DOMStorage.clear with a request object.
@@ -502,21 +472,21 @@ public final class DOMStorage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clear(ClearRequest request) {
-            return client.call("DOMStorage.clear", request == null ? null : request.toMap());
+            return call("DOMStorage.clear", request);
         }
         /**
          * Disables storage tracking, prevents storage events from being sent to the client.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("DOMStorage.disable", null);
+            return call("DOMStorage.disable");
         }
         /**
          * Enables storage tracking, storage events will now be delivered to the client.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("DOMStorage.enable", null);
+            return call("DOMStorage.enable");
         }
         /**
          * Invokes DOMStorage.getDOMStorageItems.
@@ -524,9 +494,7 @@ public final class DOMStorage {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<java.util.List<String>>> getDOMStorageItems(DOMStorage.StorageId storageId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("storageId", CdpObject.json(storageId));
-            return client.call("DOMStorage.getDOMStorageItems", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("entries")), element0 -> CdpObject.requireList(element0, element1 -> (String) element1)));
+            return call("DOMStorage.getDOMStorageItems", params("storageId", storageId), ENTRIES::require);
         }
         /**
          * Invokes DOMStorage.getDOMStorageItems with a request object.
@@ -534,7 +502,7 @@ public final class DOMStorage {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<java.util.List<String>>> getDOMStorageItems(GetDOMStorageItemsRequest request) {
-            return client.call("DOMStorage.getDOMStorageItems", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("entries")), element0 -> CdpObject.requireList(element0, element1 -> (String) element1)));
+            return call("DOMStorage.getDOMStorageItems", request, ENTRIES::require);
         }
         /**
          * Invokes DOMStorage.removeDOMStorageItem.
@@ -543,10 +511,7 @@ public final class DOMStorage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeDOMStorageItem(DOMStorage.StorageId storageId, String key) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("storageId", CdpObject.json(storageId));
-            params.put("key", CdpObject.json(key));
-            return client.call("DOMStorage.removeDOMStorageItem", params);
+            return call("DOMStorage.removeDOMStorageItem", params("storageId", storageId, "key", key));
         }
         /**
          * Invokes DOMStorage.removeDOMStorageItem with a request object.
@@ -554,7 +519,7 @@ public final class DOMStorage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeDOMStorageItem(RemoveDOMStorageItemRequest request) {
-            return client.call("DOMStorage.removeDOMStorageItem", request == null ? null : request.toMap());
+            return call("DOMStorage.removeDOMStorageItem", request);
         }
         /**
          * Invokes DOMStorage.setDOMStorageItem.
@@ -564,11 +529,7 @@ public final class DOMStorage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDOMStorageItem(DOMStorage.StorageId storageId, String key, String value) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("storageId", CdpObject.json(storageId));
-            params.put("key", CdpObject.json(key));
-            params.put("value", CdpObject.json(value));
-            return client.call("DOMStorage.setDOMStorageItem", params);
+            return call("DOMStorage.setDOMStorageItem", params("storageId", storageId, "key", key, "value", value));
         }
         /**
          * Invokes DOMStorage.setDOMStorageItem with a request object.
@@ -576,7 +537,7 @@ public final class DOMStorage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDOMStorageItem(SetDOMStorageItemRequest request) {
-            return client.call("DOMStorage.setDOMStorageItem", request == null ? null : request.toMap());
+            return call("DOMStorage.setDOMStorageItem", request);
         }
         /**
          * Subscribes to DOMStorage.domStorageItemAdded.
@@ -584,7 +545,7 @@ public final class DOMStorage {
          * @return a removable subscription
          */
         public CdpSubscription onDomStorageItemAdded(Consumer<DomStorageItemAddedEvent> handler) {
-            return client.on("DOMStorage.domStorageItemAdded", DomStorageItemAddedEvent::fromMap, handler);
+            return on("DOMStorage.domStorageItemAdded", DomStorageItemAddedEvent::fromMap, handler);
         }
         /**
          * Subscribes to DOMStorage.domStorageItemRemoved.
@@ -592,7 +553,7 @@ public final class DOMStorage {
          * @return a removable subscription
          */
         public CdpSubscription onDomStorageItemRemoved(Consumer<DomStorageItemRemovedEvent> handler) {
-            return client.on("DOMStorage.domStorageItemRemoved", DomStorageItemRemovedEvent::fromMap, handler);
+            return on("DOMStorage.domStorageItemRemoved", DomStorageItemRemovedEvent::fromMap, handler);
         }
         /**
          * Subscribes to DOMStorage.domStorageItemUpdated.
@@ -600,7 +561,7 @@ public final class DOMStorage {
          * @return a removable subscription
          */
         public CdpSubscription onDomStorageItemUpdated(Consumer<DomStorageItemUpdatedEvent> handler) {
-            return client.on("DOMStorage.domStorageItemUpdated", DomStorageItemUpdatedEvent::fromMap, handler);
+            return on("DOMStorage.domStorageItemUpdated", DomStorageItemUpdatedEvent::fromMap, handler);
         }
         /**
          * Subscribes to DOMStorage.domStorageItemsCleared.
@@ -608,7 +569,7 @@ public final class DOMStorage {
          * @return a removable subscription
          */
         public CdpSubscription onDomStorageItemsCleared(Consumer<DomStorageItemsClearedEvent> handler) {
-            return client.on("DOMStorage.domStorageItemsCleared", DomStorageItemsClearedEvent::fromMap, handler);
+            return on("DOMStorage.domStorageItemsCleared", DomStorageItemsClearedEvent::fromMap, handler);
         }
     }
 }

@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -91,28 +92,28 @@ public interface CefRenderProcessHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:136</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onProcessMessageReceived(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, int sourceProcess, net.kurobako.cef4j.ipc.session.RemoteHandle message) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onProcessMessageReceived(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, int sourceProcess, net.kurobako.cef4j.ipc.session.RemoteHandle message) { return Unhandled.bool(); }
 
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefRenderProcessHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(RenderProcessHandlerOnWebKitInitializedEvent.MESSAGE_ID, RenderProcessHandlerOnWebKitInitializedEvent.DECODER,
+                session.on(MessageIds.RENDER_PROCESS_HANDLER_ON_WEB_KIT_INITIALIZED_EVENT, EmptyMessage.DECODER,
                         ev -> handler.onWebKitInitialized()),
-                session.on(RenderProcessHandlerOnBrowserCreatedEvent.MESSAGE_ID, RenderProcessHandlerOnBrowserCreatedEvent.DECODER,
+                session.on(MessageIds.RENDER_PROCESS_HANDLER_ON_BROWSER_CREATED_EVENT, RenderProcessHandlerOnBrowserCreatedEvent.DECODER,
                         ev -> handler.onBrowserCreated(ev.browser(), ev.extraInfo())),
-                session.on(RenderProcessHandlerOnBrowserDestroyedEvent.MESSAGE_ID, RenderProcessHandlerOnBrowserDestroyedEvent.DECODER,
+                session.on(MessageIds.RENDER_PROCESS_HANDLER_ON_BROWSER_DESTROYED_EVENT, BrowserHandleMessage.DECODER,
                         ev -> handler.onBrowserDestroyed(ev.browser())),
-                session.on(RenderProcessHandlerOnContextCreatedEvent.MESSAGE_ID, RenderProcessHandlerOnContextCreatedEvent.DECODER,
+                session.on(MessageIds.RENDER_PROCESS_HANDLER_ON_CONTEXT_CREATED_EVENT, BrowserHandleFrameHandleContextHandleMessage.DECODER,
                         ev -> handler.onContextCreated(ev.browser(), ev.frame(), ev.context())),
-                session.on(RenderProcessHandlerOnContextReleasedEvent.MESSAGE_ID, RenderProcessHandlerOnContextReleasedEvent.DECODER,
+                session.on(MessageIds.RENDER_PROCESS_HANDLER_ON_CONTEXT_RELEASED_EVENT, BrowserHandleFrameHandleContextHandleMessage.DECODER,
                         ev -> handler.onContextReleased(ev.browser(), ev.frame(), ev.context())),
-                session.on(RenderProcessHandlerOnUncaughtExceptionEvent.MESSAGE_ID, RenderProcessHandlerOnUncaughtExceptionEvent.DECODER,
+                session.on(MessageIds.RENDER_PROCESS_HANDLER_ON_UNCAUGHT_EXCEPTION_EVENT, RenderProcessHandlerOnUncaughtExceptionEvent.DECODER,
                         ev -> handler.onUncaughtException(ev.browser(), ev.frame(), ev.context(), ev.exception(), ev.stackTrace())),
-                session.on(RenderProcessHandlerOnFocusedNodeChangedEvent.MESSAGE_ID, RenderProcessHandlerOnFocusedNodeChangedEvent.DECODER,
+                session.on(MessageIds.RENDER_PROCESS_HANDLER_ON_FOCUSED_NODE_CHANGED_EVENT, RenderProcessHandlerOnFocusedNodeChangedEvent.DECODER,
                         ev -> handler.onFocusedNodeChanged(ev.browser(), ev.frame(), ev.node())),
-                session.intercept(RenderProcessHandlerOnProcessMessageReceivedEvent.MESSAGE_ID, RenderProcessHandlerOnProcessMessageReceivedEvent.DECODER, ev -> {
+                session.intercept(MessageIds.RENDER_PROCESS_HANDLER_ON_PROCESS_MESSAGE_RECEIVED_EVENT, BrowserHandleFrameHandleSourceProcessIntMessageHandleMessage.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onProcessMessageReceived(ev.browser(), ev.frame(), ev.sourceProcess(), ev.message());
-                    return java.util.Optional.of(new RenderProcessHandlerOnProcessMessageReceivedResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.RENDER_PROCESS_HANDLER_ON_PROCESS_MESSAGE_RECEIVED_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }));
     }
 }

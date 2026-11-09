@@ -2,27 +2,25 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class ContextMenuHandlerRunQuickMenuEvent implements CefMessageView, CefMessageEncoder {
 
-    public static final int MESSAGE_ID = 2062326684;
-
     private final RemoteHandle browser;
     private final RemoteHandle frame;
-    private final Point location;
-    private final Size size;
+    private final net.kurobako.cef4j.gen.CefPoint location;
+    private final net.kurobako.cef4j.gen.CefSize size;
     private final int editStateFlags;
     private final RemoteHandle callback;
 
-    public ContextMenuHandlerRunQuickMenuEvent(RemoteHandle browser, RemoteHandle frame, Point location, Size size, int editStateFlags, RemoteHandle callback) {
+    public ContextMenuHandlerRunQuickMenuEvent(RemoteHandle browser, RemoteHandle frame, net.kurobako.cef4j.gen.CefPoint location, net.kurobako.cef4j.gen.CefSize size, int editStateFlags, RemoteHandle callback) {
         this.browser = browser;
         this.frame = frame;
         this.location = location;
@@ -39,11 +37,11 @@ public final class ContextMenuHandlerRunQuickMenuEvent implements CefMessageView
         return frame;
     }
 
-    public Point location() {
+    public net.kurobako.cef4j.gen.CefPoint location() {
         return location;
     }
 
-    public Size size() {
+    public net.kurobako.cef4j.gen.CefSize size() {
         return size;
     }
 
@@ -56,41 +54,29 @@ public final class ContextMenuHandlerRunQuickMenuEvent implements CefMessageView
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return 16 + location.encodedSize() + size.encodedSize();
+        return 16 + PointCodec.encodedSize(location) + SizeCodec.encodedSize(size);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(browser.id());
-            __dst.putInt(frame.id());
-            location.encodeInto(__dst);
-            size.encodeInto(__dst);
-            __dst.putInt(editStateFlags);
-            __dst.putInt(callback.id());
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(browser.id());
+            __out.putInt(frame.id());
+            PointCodec.encode(__out, location);
+            SizeCodec.encode(__out, size);
+            __out.putInt(editStateFlags);
+            __out.putInt(callback.id());
+        });
     }
 
-    public static final CefMessageDecoder<ContextMenuHandlerRunQuickMenuEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<ContextMenuHandlerRunQuickMenuEvent> DECODER = WireDecoder.message("ContextMenuHandlerRunQuickMenuEvent", __buf -> {
         final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
         final RemoteHandle frame = WireDecoder.handle(__buf, "frame");
-        final Point location = Point.decode(__buf);
-        final Size size = Size.decode(__buf);
+        final net.kurobako.cef4j.gen.CefPoint location = PointCodec.decode(__buf);
+        final net.kurobako.cef4j.gen.CefSize size = SizeCodec.decode(__buf);
         final int editStateFlags = WireDecoder.int32(__buf, "editStateFlags");
         final RemoteHandle callback = WireDecoder.handle(__buf, "callback");
-        WireDecoder.requireFullyConsumed(__buf, "ContextMenuHandlerRunQuickMenuEvent");
         return new ContextMenuHandlerRunQuickMenuEvent(browser, frame, location, size, editStateFlags, callback);
-    };
+    });
 }

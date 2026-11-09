@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class PostDataElement implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class PostDataElement extends BrowserFacade {
 
     public PostDataElement(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_post_data_element_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_post_data_element_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class PostDataElement implements AutoCloseable {
      */
     public CompletableFuture<Integer> isReadOnly() {
         return CefFutures.map(
-            session.request(new PostDataElementIsReadOnlyRequest(handle), PostDataElementIsReadOnlyResponse.DECODER),
-            PostDataElementIsReadOnlyResponse::result);
+            session.request(MessageIds.POST_DATA_ELEMENT_IS_READ_ONLY_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -69,7 +38,7 @@ public final class PostDataElement implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:310</a>
      */
     public CompletableFuture<Void> setToEmpty() {
-        return CefFutures.discard(session.request(new PostDataElementSetToEmptyRequest(handle), PostDataElementSetToEmptyResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.POST_DATA_ELEMENT_SET_TO_EMPTY_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -79,7 +48,7 @@ public final class PostDataElement implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:316</a>
      */
     public CompletableFuture<Void> setToFile(String fileName) {
-        return CefFutures.discard(session.request(new PostDataElementSetToFileRequest(handle, fileName), PostDataElementSetToFileResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.POST_DATA_ELEMENT_SET_TO_FILE_REQUEST, new PostDataElementSetToFileRequest(handle, fileName), EmptyMessage.DECODER));
     }
 
     /**
@@ -92,7 +61,7 @@ public final class PostDataElement implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:322</a>
      */
     public CompletableFuture<Void> setToBytes(byte[] bytes) {
-        return CefFutures.discard(session.request(new PostDataElementSetToBytesRequest(handle, bytes), PostDataElementSetToBytesResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.POST_DATA_ELEMENT_SET_TO_BYTES_REQUEST, new SelfHandleBytesBytesMessage(handle, bytes), EmptyMessage.DECODER));
     }
 
     /**
@@ -103,8 +72,8 @@ public final class PostDataElement implements AutoCloseable {
      */
     public CompletableFuture<Integer> getType() {
         return CefFutures.map(
-            session.request(new PostDataElementGetTypeRequest(handle), PostDataElementGetTypeResponse.DECODER),
-            PostDataElementGetTypeResponse::result);
+            session.request(MessageIds.POST_DATA_ELEMENT_GET_TYPE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -115,8 +84,8 @@ public final class PostDataElement implements AutoCloseable {
      */
     public CompletableFuture<String> getFile() {
         return CefFutures.map(
-            session.request(new PostDataElementGetFileRequest(handle), PostDataElementGetFileResponse.DECODER),
-            PostDataElementGetFileResponse::result);
+            session.request(MessageIds.POST_DATA_ELEMENT_GET_FILE_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -127,7 +96,7 @@ public final class PostDataElement implements AutoCloseable {
      */
     public CompletableFuture<Long> getBytesCount() {
         return CefFutures.map(
-            session.request(new PostDataElementGetBytesCountRequest(handle), PostDataElementGetBytesCountResponse.DECODER),
-            PostDataElementGetBytesCountResponse::result);
+            session.request(MessageIds.POST_DATA_ELEMENT_GET_BYTES_COUNT_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 }

@@ -2,25 +2,23 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class PrintSettingsSetPrinterPrintableAreaRequest implements CefMessageView, CefMessageEncoder {
 
-    public static final int MESSAGE_ID = 193617720;
-
     private final RemoteHandle self;
-    private final Size physicalSizeDeviceUnits;
-    private final Rect printableAreaDeviceUnits;
+    private final net.kurobako.cef4j.gen.CefSize physicalSizeDeviceUnits;
+    private final net.kurobako.cef4j.gen.CefRect printableAreaDeviceUnits;
     private final int landscapeNeedsFlip;
 
-    public PrintSettingsSetPrinterPrintableAreaRequest(RemoteHandle self, Size physicalSizeDeviceUnits, Rect printableAreaDeviceUnits, int landscapeNeedsFlip) {
+    public PrintSettingsSetPrinterPrintableAreaRequest(RemoteHandle self, net.kurobako.cef4j.gen.CefSize physicalSizeDeviceUnits, net.kurobako.cef4j.gen.CefRect printableAreaDeviceUnits, int landscapeNeedsFlip) {
         this.self = self;
         this.physicalSizeDeviceUnits = physicalSizeDeviceUnits;
         this.printableAreaDeviceUnits = printableAreaDeviceUnits;
@@ -31,11 +29,11 @@ public final class PrintSettingsSetPrinterPrintableAreaRequest implements CefMes
         return self;
     }
 
-    public Size physicalSizeDeviceUnits() {
+    public net.kurobako.cef4j.gen.CefSize physicalSizeDeviceUnits() {
         return physicalSizeDeviceUnits;
     }
 
-    public Rect printableAreaDeviceUnits() {
+    public net.kurobako.cef4j.gen.CefRect printableAreaDeviceUnits() {
         return printableAreaDeviceUnits;
     }
 
@@ -44,37 +42,25 @@ public final class PrintSettingsSetPrinterPrintableAreaRequest implements CefMes
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return 8 + physicalSizeDeviceUnits.encodedSize() + printableAreaDeviceUnits.encodedSize();
+        return 8 + SizeCodec.encodedSize(physicalSizeDeviceUnits) + RectCodec.encodedSize(printableAreaDeviceUnits);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            physicalSizeDeviceUnits.encodeInto(__dst);
-            printableAreaDeviceUnits.encodeInto(__dst);
-            __dst.putInt(landscapeNeedsFlip);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            SizeCodec.encode(__out, physicalSizeDeviceUnits);
+            RectCodec.encode(__out, printableAreaDeviceUnits);
+            __out.putInt(landscapeNeedsFlip);
+        });
     }
 
-    public static final CefMessageDecoder<PrintSettingsSetPrinterPrintableAreaRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<PrintSettingsSetPrinterPrintableAreaRequest> DECODER = WireDecoder.message("PrintSettingsSetPrinterPrintableAreaRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
-        final Size physicalSizeDeviceUnits = Size.decode(__buf);
-        final Rect printableAreaDeviceUnits = Rect.decode(__buf);
+        final net.kurobako.cef4j.gen.CefSize physicalSizeDeviceUnits = SizeCodec.decode(__buf);
+        final net.kurobako.cef4j.gen.CefRect printableAreaDeviceUnits = RectCodec.decode(__buf);
         final int landscapeNeedsFlip = WireDecoder.int32(__buf, "landscapeNeedsFlip");
-        WireDecoder.requireFullyConsumed(__buf, "PrintSettingsSetPrinterPrintableAreaRequest");
         return new PrintSettingsSetPrinterPrintableAreaRequest(self, physicalSizeDeviceUnits, printableAreaDeviceUnits, landscapeNeedsFlip);
-    };
+    });
 }

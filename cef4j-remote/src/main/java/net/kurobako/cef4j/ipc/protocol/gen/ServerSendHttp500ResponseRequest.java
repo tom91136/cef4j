@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,11 +9,10 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class ServerSendHttp500ResponseRequest implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 1411982646;
 
     private final RemoteHandle self;
     private final int connectionId;
@@ -41,36 +39,23 @@ public final class ServerSendHttp500ResponseRequest implements CefMessageView, C
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 12 + errorMessageBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putInt(connectionId);
-            __dst.putInt(errorMessageBytes.length);
-            __dst.put(errorMessageBytes);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            __out.putInt(connectionId);
+            WireEncoder.bytes(__out, errorMessageBytes);
+        });
     }
 
-    public static final CefMessageDecoder<ServerSendHttp500ResponseRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<ServerSendHttp500ResponseRequest> DECODER = WireDecoder.message("ServerSendHttp500ResponseRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final int connectionId = WireDecoder.int32(__buf, "connectionId");
         final String errorMessage = WireDecoder.utf8(__buf, "errorMessage");
-        WireDecoder.requireFullyConsumed(__buf, "ServerSendHttp500ResponseRequest");
         return new ServerSendHttp500ResponseRequest(self, connectionId, errorMessage);
-    };
+    });
 }

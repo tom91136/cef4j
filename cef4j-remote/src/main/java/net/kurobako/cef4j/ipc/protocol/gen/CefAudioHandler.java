@@ -23,7 +23,7 @@ public interface CefAudioHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__audio__handler_8h.html">cef_audio_handler.h:64</a>
      */
     @SuppressWarnings("EmptyMethod")
-    default void onAudioStreamStarted(net.kurobako.cef4j.ipc.session.RemoteHandle browser, AudioParameters params, int channels) {}
+    default void onAudioStreamStarted(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.gen.CefAudioParameters params, int channels) {}
 
     /**
      * Called on the UI thread when the stream has stopped. OnAudioSteamStopped will always be called after OnAudioStreamStarted; both methods may be called multiple times for the same stream.
@@ -46,11 +46,11 @@ public interface CefAudioHandler {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefAudioHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(AudioHandlerOnAudioStreamStartedEvent.MESSAGE_ID, AudioHandlerOnAudioStreamStartedEvent.DECODER,
+                session.on(MessageIds.AUDIO_HANDLER_ON_AUDIO_STREAM_STARTED_EVENT, AudioHandlerOnAudioStreamStartedEvent.DECODER,
                         ev -> handler.onAudioStreamStarted(ev.browser(), ev.params(), ev.channels())),
-                session.on(AudioHandlerOnAudioStreamStoppedEvent.MESSAGE_ID, AudioHandlerOnAudioStreamStoppedEvent.DECODER,
+                session.on(MessageIds.AUDIO_HANDLER_ON_AUDIO_STREAM_STOPPED_EVENT, BrowserHandleMessage.DECODER,
                         ev -> handler.onAudioStreamStopped(ev.browser())),
-                session.on(AudioHandlerOnAudioStreamErrorEvent.MESSAGE_ID, AudioHandlerOnAudioStreamErrorEvent.DECODER,
+                session.on(MessageIds.AUDIO_HANDLER_ON_AUDIO_STREAM_ERROR_EVENT, AudioHandlerOnAudioStreamErrorEvent.DECODER,
                         ev -> handler.onAudioStreamError(ev.browser(), ev.message())));
     }
 }

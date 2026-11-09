@@ -2,24 +2,22 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class CreateBrowserRequest implements CefMessageView, CefMessageEncoder {
 
-    public static final int MESSAGE_ID = 7;
-
     private final String url;
     private final byte[] urlBytes;
-    private final BrowserSettings settings;
+    private final net.kurobako.cef4j.gen.CefBrowserSettings settings;
 
-    public CreateBrowserRequest(String url, BrowserSettings settings) {
+    public CreateBrowserRequest(String url, net.kurobako.cef4j.gen.CefBrowserSettings settings) {
         this.url = url;
         this.urlBytes = url.getBytes(StandardCharsets.UTF_8);
         this.settings = settings;
@@ -29,39 +27,26 @@ public final class CreateBrowserRequest implements CefMessageView, CefMessageEnc
         return url;
     }
 
-    public BrowserSettings settings() {
+    public net.kurobako.cef4j.gen.CefBrowserSettings settings() {
         return settings;
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return 4 + urlBytes.length + settings.encodedSize();
+        return 4 + urlBytes.length + BrowserSettingsCodec.encodedSize(settings);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(urlBytes.length);
-            __dst.put(urlBytes);
-            settings.encodeInto(__dst);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            WireEncoder.bytes(__out, urlBytes);
+            BrowserSettingsCodec.encode(__out, settings);
+        });
     }
 
-    public static final CefMessageDecoder<CreateBrowserRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<CreateBrowserRequest> DECODER = WireDecoder.message("CreateBrowserRequest", __buf -> {
         final String url = WireDecoder.utf8(__buf, "url");
-        final BrowserSettings settings = BrowserSettings.decode(__buf);
-        WireDecoder.requireFullyConsumed(__buf, "CreateBrowserRequest");
+        final net.kurobako.cef4j.gen.CefBrowserSettings settings = BrowserSettingsCodec.decode(__buf);
         return new CreateBrowserRequest(url, settings);
-    };
+    });
 }

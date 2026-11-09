@@ -163,7 +163,13 @@ object EmitTree {
         }
       case d: CefDecl.DataStruct =>
         val isPlatformSpecific = PlatformSpecificity.isPlatformSpecificDecl(d, parseState.platformSpecificTypes)
-        if (cfg.emitJava && (!cfg.emitJavaPlatformOnly || isPlatformSpecific)) {
+        val emitsRecord        = PlatformSpecificity.emitsRecord(
+          d,
+          parseState.platformSpecificTypes,
+          sharedPlatformInterfaceStructs,
+          cfg.emitJavaPlatformOnly
+        )
+        if (cfg.emitJava && emitsRecord) {
           val emitAsPlatformInterface =
             !cfg.emitJavaPlatformOnly && isPlatformSpecific && sharedPlatformInterfaceStructs.contains(d.name)
           JavaRecordCodeGen.emit(

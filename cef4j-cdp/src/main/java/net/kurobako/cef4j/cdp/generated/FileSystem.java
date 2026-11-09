@@ -1,12 +1,13 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
@@ -20,6 +21,13 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class FileSystem {
     private FileSystem() {}
+    private static final CdpField<FileSystem.BucketFileSystemLocator> BUCKET_FILE_SYSTEM_LOCATOR = CdpField.of("bucketFileSystemLocator", value -> java.util.Objects.requireNonNull(FileSystem.BucketFileSystemLocator.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<FileSystem.Directory> DIRECTORY = CdpField.of("directory", value -> java.util.Objects.requireNonNull(FileSystem.Directory.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.TimeSinceEpoch> LAST_MODIFIED = CdpField.of("lastModified", value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+    private static final CdpField<java.util.List<String>> NESTED_DIRECTORIES = CdpField.of("nestedDirectories", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<java.util.List<FileSystem.File>> NESTED_FILES = CdpField.of("nestedFiles", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(FileSystem.File.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<String>> PATH_COMPONENTS = CdpField.of("pathComponents", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Storage.SerializedStorageKey> STORAGE_KEY = CdpField.of("storageKey", value -> new Storage.SerializedStorageKey((String) value));
     /**
      */
     public static final class File extends CdpObject {
@@ -33,28 +41,28 @@ public final class FileSystem {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Timestamp
          * @return the protocol field value
          */
         public Network.TimeSinceEpoch lastModified() {
-            return new Network.TimeSinceEpoch(((Number) require("lastModified")).doubleValue());
+            return require(LAST_MODIFIED);
         }
         /**
          * Size in bytes
          * @return the protocol field value
          */
         public double size() {
-            return ((Number) require("size")).doubleValue();
+            return requireDouble("size");
         }
         /**
          * Returns the type field.
          * @return the protocol field value
          */
         public String type() {
-            return (String) require("type");
+            return requireString("type");
         }
         /**
          * Sets the name field.
@@ -106,21 +114,21 @@ public final class FileSystem {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Returns the nestedDirectories field.
          * @return the protocol field value
          */
         public java.util.List<String> nestedDirectories() {
-            return CdpObject.requireList(require("nestedDirectories"), element0 -> (String) element0);
+            return require(NESTED_DIRECTORIES);
         }
         /**
          * Files that are directly nested under this directory.
          * @return the protocol field value
          */
         public java.util.List<FileSystem.File> nestedFiles() {
-            return CdpObject.requireList(require("nestedFiles"), element0 -> java.util.Objects.requireNonNull(FileSystem.File.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(NESTED_FILES);
         }
         /**
          * Sets the name field.
@@ -163,21 +171,21 @@ public final class FileSystem {
          * @return the protocol field value
          */
         public Storage.SerializedStorageKey storageKey() {
-            return new Storage.SerializedStorageKey((String) require("storageKey"));
+            return require(STORAGE_KEY);
         }
         /**
          * Bucket name. Not passing a {@code bucketName} will retrieve the default Bucket. (https://developer.mozilla.org/en-US/docs/Web/API/Storage_API#storage_buckets)
          * @return the protocol field value, empty when absent
          */
         public Optional<String> bucketName() {
-            return raw("bucketName").map(value -> (String) value);
+            return optionalString("bucketName");
         }
         /**
          * Path to the directory using each path component as an array item.
          * @return the protocol field value
          */
         public java.util.List<String> pathComponents() {
-            return CdpObject.requireList(require("pathComponents"), element0 -> (String) element0);
+            return require(PATH_COMPONENTS);
         }
         /**
          * Storage key
@@ -212,13 +220,6 @@ public final class FileSystem {
      */
     public static final class GetDirectoryRequest extends CdpObject {
         public GetDirectoryRequest() {}
-        /**
-         * Creates a new GetDirectoryRequest with all required parameters.
-         * @param bucketFileSystemLocator protocol value
-         */
-        public GetDirectoryRequest(FileSystem.BucketFileSystemLocator bucketFileSystemLocator) {
-            bucketFileSystemLocator(bucketFileSystemLocator);
-        }
         public static GetDirectoryRequest fromMap(Map<String, Object> values) {
             final GetDirectoryRequest instance_ = new GetDirectoryRequest();
             if (values != null) instance_.values.putAll(values);
@@ -229,7 +230,7 @@ public final class FileSystem {
          * @return the protocol field value
          */
         public FileSystem.BucketFileSystemLocator bucketFileSystemLocator() {
-            return java.util.Objects.requireNonNull(FileSystem.BucketFileSystemLocator.fromMap(CdpObject.requireObjectMap(require("bucketFileSystemLocator"))));
+            return require(BUCKET_FILE_SYSTEM_LOCATOR);
         }
         /**
          * Sets the bucketFileSystemLocator field.
@@ -241,18 +242,15 @@ public final class FileSystem {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Invokes FileSystem.getDirectory.
          * @param bucketFileSystemLocator protocol value
          * @return a stage completing with the command result
          */
         public CompletionStage<FileSystem.Directory> getDirectory(FileSystem.BucketFileSystemLocator bucketFileSystemLocator) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("bucketFileSystemLocator", CdpObject.json(bucketFileSystemLocator));
-            return client.call("FileSystem.getDirectory", params, result_ -> java.util.Objects.requireNonNull(FileSystem.Directory.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("directory"))))));
+            return call("FileSystem.getDirectory", params("bucketFileSystemLocator", bucketFileSystemLocator), DIRECTORY::require);
         }
         /**
          * Invokes FileSystem.getDirectory with a request object.
@@ -260,7 +258,7 @@ public final class FileSystem {
          * @return a stage completing with the command result
          */
         public CompletionStage<FileSystem.Directory> getDirectory(GetDirectoryRequest request) {
-            return client.call("FileSystem.getDirectory", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(FileSystem.Directory.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("directory"))))));
+            return call("FileSystem.getDirectory", request, DIRECTORY::require);
         }
     }
 }

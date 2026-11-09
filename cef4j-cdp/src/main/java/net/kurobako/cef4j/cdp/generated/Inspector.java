@@ -6,6 +6,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.policy.NullableBoundary;
@@ -34,7 +35,7 @@ public final class Inspector {
          * @return the protocol field value
          */
         public String reason() {
-            return (String) require("reason");
+            return requireString("reason");
         }
         /**
          * The reason why connection has been terminated.
@@ -77,22 +78,21 @@ public final class Inspector {
             return new WorkerScriptLoadedEvent(values);
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Disables inspector domain notifications.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Inspector.disable", null);
+            return call("Inspector.disable");
         }
         /**
          * Enables inspector domain notifications.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Inspector.enable", null);
+            return call("Inspector.enable");
         }
         /**
          * Fired when remote debugging connection is about to be terminated. Contains detach reason.
@@ -100,7 +100,7 @@ public final class Inspector {
          * @return a removable subscription
          */
         public CdpSubscription onDetached(Consumer<DetachedEvent> handler) {
-            return client.on("Inspector.detached", DetachedEvent::fromMap, handler);
+            return on("Inspector.detached", DetachedEvent::fromMap, handler);
         }
         /**
          * Fired when debugging target has crashed
@@ -108,7 +108,7 @@ public final class Inspector {
          * @return a removable subscription
          */
         public CdpSubscription onTargetCrashed(Consumer<TargetCrashedEvent> handler) {
-            return client.on("Inspector.targetCrashed", TargetCrashedEvent::fromMap, handler);
+            return on("Inspector.targetCrashed", TargetCrashedEvent::fromMap, handler);
         }
         /**
          * Fired when debugging target has reloaded after crash
@@ -116,7 +116,7 @@ public final class Inspector {
          * @return a removable subscription
          */
         public CdpSubscription onTargetReloadedAfterCrash(Consumer<TargetReloadedAfterCrashEvent> handler) {
-            return client.on("Inspector.targetReloadedAfterCrash", TargetReloadedAfterCrashEvent::fromMap, handler);
+            return on("Inspector.targetReloadedAfterCrash", TargetReloadedAfterCrashEvent::fromMap, handler);
         }
         /**
          * Fired on worker targets when main worker script and any imported scripts have been evaluated.
@@ -125,7 +125,7 @@ public final class Inspector {
          * @return a removable subscription
          */
         public CdpSubscription onWorkerScriptLoaded(Consumer<WorkerScriptLoadedEvent> handler) {
-            return client.on("Inspector.workerScriptLoaded", WorkerScriptLoadedEvent::fromMap, handler);
+            return on("Inspector.workerScriptLoaded", WorkerScriptLoadedEvent::fromMap, handler);
         }
     }
 }

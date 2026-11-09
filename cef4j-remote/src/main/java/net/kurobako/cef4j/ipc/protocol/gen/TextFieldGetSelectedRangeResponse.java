@@ -2,54 +2,40 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class TextFieldGetSelectedRangeResponse implements CefMessageView, CefMessageEncoder {
 
-    public static final int MESSAGE_ID = 1528987138;
+    private final net.kurobako.cef4j.gen.CefRange result;
 
-    private final Range result;
-
-    public TextFieldGetSelectedRangeResponse(Range result) {
+    public TextFieldGetSelectedRangeResponse(net.kurobako.cef4j.gen.CefRange result) {
         this.result = result;
     }
 
-    public Range result() {
+    public net.kurobako.cef4j.gen.CefRange result() {
         return result;
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return result.encodedSize();
+        return RangeCodec.encodedSize(result);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            result.encodeInto(__dst);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            RangeCodec.encode(__out, result);
+        });
     }
 
-    public static final CefMessageDecoder<TextFieldGetSelectedRangeResponse> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
-        final Range result = Range.decode(__buf);
-        WireDecoder.requireFullyConsumed(__buf, "TextFieldGetSelectedRangeResponse");
+    public static final CefMessageDecoder<TextFieldGetSelectedRangeResponse> DECODER = WireDecoder.message("TextFieldGetSelectedRangeResponse", __buf -> {
+        final net.kurobako.cef4j.gen.CefRange result = RangeCodec.decode(__buf);
         return new TextFieldGetSelectedRangeResponse(result);
-    };
+    });
 }

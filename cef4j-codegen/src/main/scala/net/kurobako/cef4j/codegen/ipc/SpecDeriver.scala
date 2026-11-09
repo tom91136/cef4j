@@ -5,9 +5,11 @@ import scala.util.hashing.MurmurHash3
 import cats.syntax.all.*
 import net.kurobako.cef4j.codegen.CType
 import net.kurobako.cef4j.codegen.CefDecl
+import net.kurobako.cef4j.codegen.Field
 import net.kurobako.cef4j.codegen.FnPtr
 import net.kurobako.cef4j.codegen.Naming
 import net.kurobako.cef4j.codegen.Param
+import net.kurobako.cef4j.codegen.PlatformSpecificity
 
 object SpecDeriver {
   private val CefStructNameRe = """cef_\w+_t""".r
@@ -48,20 +50,40 @@ object SpecDeriver {
         ))
     }.flatten.distinctBy(_.cefStructName)
 
-  def deriveDataStructs(decls: List[CefDecl], packageName: String)(using Naming.Context): List[DataStructSpec] =
+  def deriveDataStructs(decls: List[CefDecl], packageName: String, platformTypes: Set[String] = Set.empty)(using
+      Naming.Context
+  ): List[DataStructSpec] =
     // Version-gated headers can redeclare the same struct.
     decls.collect { case d: CefDecl.DataStruct => d }.flatMap { d =>
       d.fields.traverse(f => toDataFieldType(f.typ).map(t => FieldSpec(safeFieldName(snakeToCamel(f.name)), t)))
         .filter(_.nonEmpty)
-        .map(fields =>
+        .map { fields =>
+          val shared = Option.when(!PlatformSpecificity.isPlatformSpecificDecl(d, platformTypes)) {
+            SharedLayout(
+              Naming.sharedTypeName(d.name),
+              d.fields.map(f => SharedMember(Naming.toCamelCase(f.name), memberKind(f)))
+            )
+          }
           DataStructSpec(
             className = safeFacadeClassName(toCamelCase(stripCefPrefix(d.name))),
             packageName = packageName,
             cefStructName = d.name,
-            fields = fields
+            fields = fields,
+            shared = shared
           )
-        )
+        }
     }.distinctBy(_.cefStructName)
+
+  private def memberKind(f: Field)(using Naming.Context): MemberKind = f.typ match {
+    case CType.SizeT if f.name == "size" => MemberKind.WireSize
+    case CType.Int | CType.UInt          => MemberKind.I32
+    case CType.Enum(name)                => MemberKind.EnumOf(Naming.sharedTypeName(name))
+    case CType.Long | CType.SizeT        => MemberKind.I64
+    case CType.Bool                      => MemberKind.Bool
+    case CType.JString                   => MemberKind.Str
+    case CType.Char                      => MemberKind.Char
+    case other                           => throw IllegalArgumentException(s"$other is not a shared member type")
+  }
 
   private def toDataFieldType(t: CType): Option[FieldType] = t match {
     case CType.Int | CType.UInt | CType.Enum(_) => Some(FieldType.I32)
@@ -221,6 +243,9 @@ object SpecDeriver {
 
   def cefStructToClassName(cefStructName: String)(using Naming.Context): String =
     safeFacadeClassName(toCamelCase(stripCefPrefix(cefStructName)))
+
+  def codecName(cefStructName: String)(using Naming.Context): String =
+    cefStructToClassName(cefStructName) + "Codec"
 
   def camelToSnake(s: String): String =
     s.zipWithIndex.flatMap { case (c, index) =>

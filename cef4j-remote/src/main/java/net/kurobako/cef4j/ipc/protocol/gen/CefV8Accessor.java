@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -23,14 +24,14 @@ public interface CefV8Accessor {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:270</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> set(String name, net.kurobako.cef4j.ipc.session.RemoteHandle object, net.kurobako.cef4j.ipc.session.RemoteHandle value, String exception) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> set(String name, net.kurobako.cef4j.ipc.session.RemoteHandle object, net.kurobako.cef4j.ipc.session.RemoteHandle value, String exception) { return Unhandled.bool(); }
 
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefV8Accessor handler) {
         return CefSession.HandlerRegistration.combine(
-                session.intercept(V8AccessorSetEvent.MESSAGE_ID, V8AccessorSetEvent.DECODER, ev -> {
+                session.intercept(MessageIds.V8_ACCESSOR_SET_EVENT, NameStringObjectHandleValueHandleExceptionStringMessage.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.set(ev.name(), ev.object(), ev.value(), ev.exception());
-                    return java.util.Optional.of(new V8AccessorSetResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.V8_ACCESSOR_SET_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }));
     }
 }

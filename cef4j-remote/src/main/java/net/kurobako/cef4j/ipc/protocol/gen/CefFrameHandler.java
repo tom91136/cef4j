@@ -67,15 +67,15 @@ public interface CefFrameHandler {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefFrameHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(FrameHandlerOnFrameCreatedEvent.MESSAGE_ID, FrameHandlerOnFrameCreatedEvent.DECODER,
+                session.on(MessageIds.FRAME_HANDLER_ON_FRAME_CREATED_EVENT, BrowserHandleFrameHandleMessage.DECODER,
                         ev -> handler.onFrameCreated(ev.browser(), ev.frame())),
-                session.on(FrameHandlerOnFrameDestroyedEvent.MESSAGE_ID, FrameHandlerOnFrameDestroyedEvent.DECODER,
+                session.on(MessageIds.FRAME_HANDLER_ON_FRAME_DESTROYED_EVENT, BrowserHandleFrameHandleMessage.DECODER,
                         ev -> handler.onFrameDestroyed(ev.browser(), ev.frame())),
-                session.on(FrameHandlerOnFrameAttachedEvent.MESSAGE_ID, FrameHandlerOnFrameAttachedEvent.DECODER,
+                session.on(MessageIds.FRAME_HANDLER_ON_FRAME_ATTACHED_EVENT, FrameHandlerOnFrameAttachedEvent.DECODER,
                         ev -> handler.onFrameAttached(ev.browser(), ev.frame(), ev.reattached())),
-                session.on(FrameHandlerOnFrameDetachedEvent.MESSAGE_ID, FrameHandlerOnFrameDetachedEvent.DECODER,
+                session.on(MessageIds.FRAME_HANDLER_ON_FRAME_DETACHED_EVENT, BrowserHandleFrameHandleMessage.DECODER,
                         ev -> handler.onFrameDetached(ev.browser(), ev.frame())),
-                session.on(FrameHandlerOnMainFrameChangedEvent.MESSAGE_ID, FrameHandlerOnMainFrameChangedEvent.DECODER,
+                session.on(MessageIds.FRAME_HANDLER_ON_MAIN_FRAME_CHANGED_EVENT, FrameHandlerOnMainFrameChangedEvent.DECODER,
                         ev -> handler.onMainFrameChanged(ev.browser(), ev.oldFrame(), ev.newFrame())));
     }
 }

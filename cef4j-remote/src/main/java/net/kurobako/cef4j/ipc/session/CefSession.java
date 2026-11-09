@@ -20,12 +20,13 @@ import java.util.function.Consumer;
 public interface CefSession extends Closeable {
 
     /**
-     * Send a request and resolve the future when the matching {@code RESPONSE} arrives. The future fails with a
-     * {@link java.util.concurrent.TimeoutException} cause if no response arrives within the session's configured
-     * default timeout, and with a {@link net.kurobako.cef4j.ipc.transport.CefTransportException} cause if the transport
-     * disconnects or the session is closed.
+     * Send a request under {@code messageId} and resolve the future when the matching {@code RESPONSE} arrives. The
+     * future fails with a {@link java.util.concurrent.TimeoutException} cause if no response arrives within the
+     * session's configured default timeout, and with a {@link net.kurobako.cef4j.ipc.transport.CefTransportException}
+     * cause if the transport disconnects or the session is closed.
      */
-    <R extends CefMessageView> CompletableFuture<R> request(CefMessageEncoder request, CefMessageDecoder<R> decoder);
+    <R extends CefMessageView> CompletableFuture<R> request(
+            int messageId, CefMessageEncoder request, CefMessageDecoder<R> decoder);
 
     /**
      * Subscribe to events of a specific {@code messageId}. Multiple subscribers per id are allowed; all are invoked in
@@ -88,9 +89,28 @@ public interface CefSession extends Closeable {
         }
     }
 
+    /** An intercept answer: the payload and the message id it travels under. */
+    final class Reply {
+        private final int messageId;
+        private final CefMessageEncoder payload;
+
+        public Reply(int messageId, CefMessageEncoder payload) {
+            this.messageId = messageId;
+            this.payload = Objects.requireNonNull(payload, "payload");
+        }
+
+        public int messageId() {
+            return messageId;
+        }
+
+        public CefMessageEncoder payload() {
+            return payload;
+        }
+    }
+
     /** Synchronous-return intercept handler; return empty to signal "default action" (empty response). */
     @FunctionalInterface
     interface InterceptHandler<E extends CefMessageView> {
-        Optional<? extends CefMessageEncoder> onIntercept(E event);
+        Optional<Reply> onIntercept(E event);
     }
 }

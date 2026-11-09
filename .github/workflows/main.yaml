@@ -341,7 +341,7 @@ jobs:
         shell: bash
         run: |
           generated_status=$(git status --porcelain -- \
-            cef4j-api/src/main/java/net/kurobako/cef4j/gen \
+            cef4j-types/src/main/java/net/kurobako/cef4j/gen \
             cef4j-cdp/src/main/java/net/kurobako/cef4j/cdp/generated \
             cef4j-cdp/src/main/resources/META-INF/cef4j/cdp \
             cef4j-platform/native/gen \
@@ -351,7 +351,7 @@ jobs:
             echo "Generated sources differ from the checked-in tree:" >&2
             printf '%s\n' "${generated_status}" >&2
             git diff -- \
-              cef4j-api/src/main/java/net/kurobako/cef4j/gen \
+              cef4j-types/src/main/java/net/kurobako/cef4j/gen \
               cef4j-cdp/src/main/java/net/kurobako/cef4j/cdp/generated \
               cef4j-cdp/src/main/resources/META-INF/cef4j/cdp \
               cef4j-platform/native/gen \

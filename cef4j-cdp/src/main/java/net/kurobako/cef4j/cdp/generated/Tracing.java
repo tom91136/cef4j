@@ -1,7 +1,6 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -9,6 +8,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -24,6 +25,21 @@ import org.jspecify.annotations.Nullable;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Tracing {
     private Tracing() {}
+    private static final CdpField<java.util.List<String>> CATEGORIES = CdpField.of("categories", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<String> DESCRIPTOR = CdpField.of("descriptor", value -> (String) value);
+    private static final CdpField<java.util.List<String>> EXCLUDED_CATEGORIES = CdpField.of("excludedCategories", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<java.util.List<String>> INCLUDED_CATEGORIES = CdpField.of("includedCategories", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Tracing.MemoryDumpLevelOfDetail> LEVEL_OF_DETAIL = CdpField.of("levelOfDetail", value -> Tracing.MemoryDumpLevelOfDetail.of((String) value));
+    private static final CdpField<TraceConfig.RecordModeValues> RECORD_MODE = CdpField.of("recordMode", value -> TraceConfig.RecordModeValues.of((String) value));
+    private static final CdpField<IO.StreamHandle> STREAM = CdpField.of("stream", value -> new IO.StreamHandle((String) value));
+    private static final CdpField<Tracing.StreamCompression> STREAM_COMPRESSION = CdpField.of("streamCompression", value -> Tracing.StreamCompression.of((String) value));
+    private static final CdpField<Tracing.StreamFormat> STREAM_FORMAT = CdpField.of("streamFormat", value -> Tracing.StreamFormat.of((String) value));
+    private static final CdpField<java.util.List<String>> SYNTHETIC_DELAYS = CdpField.of("syntheticDelays", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Tracing.TraceConfig> TRACE_CONFIG = CdpField.of("traceConfig", value -> java.util.Objects.requireNonNull(Tracing.TraceConfig.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Tracing.StreamFormat> TRACE_FORMAT = CdpField.of("traceFormat", value -> Tracing.StreamFormat.of((String) value));
+    private static final CdpField<Tracing.TracingBackend> TRACING_BACKEND = CdpField.of("tracingBackend", value -> Tracing.TracingBackend.of((String) value));
+    private static final CdpField<StartTransferModeValues> TRANSFER_MODE = CdpField.of("transferMode", value -> StartTransferModeValues.of((String) value));
+    private static final CdpField<java.util.List<java.util.Map<String, Object>>> VALUE = CdpField.of("value", value -> CdpObject.requireList(value, element0 -> CdpObject.requireObjectMap(element0)));
     /**
      */
     public static final class TraceConfig extends CdpObject {
@@ -57,7 +73,7 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<TraceConfig.RecordModeValues> recordMode() {
-            return raw("recordMode").map(value -> TraceConfig.RecordModeValues.of((String) value));
+            return optional(RECORD_MODE);
         }
         /**
          * Size of the trace buffer in kilobytes. If not specified or zero is passed, a default value of 200 MB would be used.
@@ -65,7 +81,7 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble traceBufferSizeInKb() {
-            return raw("traceBufferSizeInKb").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("traceBufferSizeInKb");
         }
         /**
          * Turns on JavaScript stack sampling.
@@ -73,7 +89,7 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> enableSampling() {
-            return raw("enableSampling").map(value -> (Boolean) value);
+            return optionalBoolean("enableSampling");
         }
         /**
          * Turns on system tracing.
@@ -81,7 +97,7 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> enableSystrace() {
-            return raw("enableSystrace").map(value -> (Boolean) value);
+            return optionalBoolean("enableSystrace");
         }
         /**
          * Turns on argument filter.
@@ -89,21 +105,21 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> enableArgumentFilter() {
-            return raw("enableArgumentFilter").map(value -> (Boolean) value);
+            return optionalBoolean("enableArgumentFilter");
         }
         /**
          * Included category filters.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> includedCategories() {
-            return raw("includedCategories").flatMap(value -> list(value, element0 -> (String) element0));
+            return optional(INCLUDED_CATEGORIES);
         }
         /**
          * Excluded category filters.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> excludedCategories() {
-            return raw("excludedCategories").flatMap(value -> list(value, element0 -> (String) element0));
+            return optional(EXCLUDED_CATEGORIES);
         }
         /**
          * Configuration to synthesize the delays in tracing.
@@ -111,7 +127,7 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> syntheticDelays() {
-            return raw("syntheticDelays").flatMap(value -> list(value, element0 -> (String) element0));
+            return optional(SYNTHETIC_DELAYS);
         }
         /**
          * Configuration for memory dump triggers. Used only when &quot;memory-infra&quot; category is enabled.
@@ -119,7 +135,7 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> memoryDumpConfig() {
-            return raw("memoryDumpConfig").flatMap(CdpObject::objectMap);
+            return optionalObject("memoryDumpConfig");
         }
         /**
          * Controls how the trace buffer stores data. The default is {@code recordUntilFull}.
@@ -286,14 +302,6 @@ public final class Tracing {
      */
     public static final class RecordClockSyncMarkerRequest extends CdpObject {
         public RecordClockSyncMarkerRequest() {}
-        /**
-         * Record a clock sync marker in the trace.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param syncId protocol value
-         */
-        public RecordClockSyncMarkerRequest(String syncId) {
-            syncId(syncId);
-        }
         public static RecordClockSyncMarkerRequest fromMap(Map<String, Object> values) {
             final RecordClockSyncMarkerRequest instance_ = new RecordClockSyncMarkerRequest();
             if (values != null) instance_.values.putAll(values);
@@ -304,7 +312,7 @@ public final class Tracing {
          * @return the protocol field value
          */
         public String syncId() {
-            return (String) require("syncId");
+            return requireString("syncId");
         }
         /**
          * The ID of this clock sync marker
@@ -332,14 +340,14 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> deterministic() {
-            return raw("deterministic").map(value -> (Boolean) value);
+            return optionalBoolean("deterministic");
         }
         /**
          * Specifies level of details in memory dump. Defaults to &quot;detailed&quot;.
          * @return the protocol field value, empty when absent
          */
         public Optional<Tracing.MemoryDumpLevelOfDetail> levelOfDetail() {
-            return raw("levelOfDetail").map(value -> Tracing.MemoryDumpLevelOfDetail.of((String) value));
+            return optional(LEVEL_OF_DETAIL);
         }
         /**
          * Enables more deterministic results by forcing garbage collection
@@ -378,7 +386,7 @@ public final class Tracing {
          */
         @Deprecated
         public Optional<String> categories() {
-            return raw("categories").map(value -> (String) value);
+            return optionalString("categories");
         }
         /**
          * Tracing options
@@ -388,7 +396,7 @@ public final class Tracing {
          */
         @Deprecated
         public Optional<String> options() {
-            return raw("options").map(value -> (String) value);
+            return optionalString("options");
         }
         /**
          * If set, the agent will issue bufferUsage events at this interval, specified in milliseconds
@@ -396,21 +404,21 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble bufferUsageReportingInterval() {
-            return raw("bufferUsageReportingInterval").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("bufferUsageReportingInterval");
         }
         /**
          * Whether to report trace events as series of dataCollected events or to save trace to a stream (defaults to {@code ReportEvents}).
          * @return the protocol field value, empty when absent
          */
         public Optional<StartTransferModeValues> transferMode() {
-            return raw("transferMode").map(value -> StartTransferModeValues.of((String) value));
+            return optional(TRANSFER_MODE);
         }
         /**
          * Trace data format to use. This only applies when using {@code ReturnAsStream} transfer mode (defaults to {@code json}).
          * @return the protocol field value, empty when absent
          */
         public Optional<Tracing.StreamFormat> streamFormat() {
-            return raw("streamFormat").map(value -> Tracing.StreamFormat.of((String) value));
+            return optional(STREAM_FORMAT);
         }
         /**
          * Compression format to use. This only applies when using {@code ReturnAsStream} transfer mode (defaults to {@code none})
@@ -418,14 +426,14 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<Tracing.StreamCompression> streamCompression() {
-            return raw("streamCompression").map(value -> Tracing.StreamCompression.of((String) value));
+            return optional(STREAM_COMPRESSION);
         }
         /**
          * Returns the traceConfig field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Tracing.TraceConfig> traceConfig() {
-            return raw("traceConfig").flatMap(CdpObject::objectMap).map(Tracing.TraceConfig::fromMap);
+            return optional(TRACE_CONFIG);
         }
         /**
          * Base64-encoded serialized perfetto.protos.TraceConfig protobuf message When specified, the parameters {@code categories}, {@code options}, {@code traceConfig} are ignored. (Encoded as a base64 string when passed over JSON)
@@ -433,7 +441,7 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> perfettoConfig() {
-            return raw("perfettoConfig").map(value -> (String) value);
+            return optionalString("perfettoConfig");
         }
         /**
          * Backend type (defaults to {@code auto})
@@ -441,7 +449,7 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public Optional<Tracing.TracingBackend> tracingBackend() {
-            return raw("tracingBackend").map(value -> Tracing.TracingBackend.of((String) value));
+            return optional(TRACING_BACKEND);
         }
         /**
          * Category/tag filter
@@ -550,14 +558,14 @@ public final class Tracing {
          * @return the protocol field value
          */
         public String dumpGuid() {
-            return (String) require("dumpGuid");
+            return requireString("dumpGuid");
         }
         /**
          * True iff the global memory dump succeeded.
          * @return the protocol field value
          */
         public boolean success() {
-            return (Boolean) require("success");
+            return requireBoolean("success");
         }
         /**
          * GUID of the resulting global memory dump.
@@ -593,21 +601,21 @@ public final class Tracing {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble percentFull() {
-            return raw("percentFull").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("percentFull");
         }
         /**
          * An approximate number of events in the trace log.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble eventCount() {
-            return raw("eventCount").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("eventCount");
         }
         /**
          * A number in range [0..1] that indicates the used size of event buffer as a fraction of its total size.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble value() {
-            return raw("value").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("value");
         }
         /**
          * A number in range [0..1] that indicates the used size of event buffer as a fraction of its total size.
@@ -652,7 +660,7 @@ public final class Tracing {
          * @return the protocol field value
          */
         public java.util.List<java.util.Map<String, Object>> value() {
-            return CdpObject.requireList(require("value"), element0 -> CdpObject.requireObjectMap(element0));
+            return require(VALUE);
         }
         /**
          * Sets the value field.
@@ -678,28 +686,28 @@ public final class Tracing {
          * @return the protocol field value
          */
         public boolean dataLossOccurred() {
-            return (Boolean) require("dataLossOccurred");
+            return requireBoolean("dataLossOccurred");
         }
         /**
          * A handle of the stream that holds resulting trace data.
          * @return the protocol field value, empty when absent
          */
         public Optional<IO.StreamHandle> stream() {
-            return raw("stream").map(value -> new IO.StreamHandle((String) value));
+            return optional(STREAM);
         }
         /**
          * Trace data format of returned stream.
          * @return the protocol field value, empty when absent
          */
         public Optional<Tracing.StreamFormat> traceFormat() {
-            return raw("traceFormat").map(value -> Tracing.StreamFormat.of((String) value));
+            return optional(TRACE_FORMAT);
         }
         /**
          * Compression format of returned stream.
          * @return the protocol field value, empty when absent
          */
         public Optional<Tracing.StreamCompression> streamCompression() {
-            return raw("streamCompression").map(value -> Tracing.StreamCompression.of((String) value));
+            return optional(STREAM_COMPRESSION);
         }
         /**
          * Indicates whether some trace data is known to have been lost, e.g. because the trace ring buffer wrapped around.
@@ -754,15 +762,14 @@ public final class Tracing {
             throw new IllegalArgumentException("Unknown StartTransferModeValues value: " + value);
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Stop trace events collection.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> end() {
-            return client.call("Tracing.end", null);
+            return call("Tracing.end");
         }
         /**
          * Gets supported tracing categories.
@@ -770,7 +777,7 @@ public final class Tracing {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> getCategories() {
-            return client.call("Tracing.getCategories", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("categories")), element0 -> (String) element0));
+            return call("Tracing.getCategories", CATEGORIES::require);
         }
         /**
          * Return a descriptor for all available tracing categories.
@@ -778,7 +785,7 @@ public final class Tracing {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> getTrackEventDescriptor() {
-            return client.call("Tracing.getTrackEventDescriptor", null, result_ -> (String) java.util.Objects.requireNonNull(result_.get("descriptor")));
+            return call("Tracing.getTrackEventDescriptor", DESCRIPTOR::require);
         }
         /**
          * Record a clock sync marker in the trace.
@@ -787,9 +794,7 @@ public final class Tracing {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> recordClockSyncMarker(String syncId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("syncId", CdpObject.json(syncId));
-            return client.call("Tracing.recordClockSyncMarker", params);
+            return call("Tracing.recordClockSyncMarker", params("syncId", syncId));
         }
         /**
          * Record a clock sync marker in the trace.
@@ -798,7 +803,7 @@ public final class Tracing {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> recordClockSyncMarker(RecordClockSyncMarkerRequest request) {
-            return client.call("Tracing.recordClockSyncMarker", request == null ? null : request.toMap());
+            return call("Tracing.recordClockSyncMarker", request);
         }
         /**
          * Request a global memory dump.
@@ -808,10 +813,7 @@ public final class Tracing {
          * @return a stage completing with the command result
          */
         public CompletionStage<RequestMemoryDumpResult> requestMemoryDump(@Nullable Boolean deterministic, Tracing.@Nullable MemoryDumpLevelOfDetail levelOfDetail) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (deterministic != null) params.put("deterministic", CdpObject.json(deterministic));
-            if (levelOfDetail != null) params.put("levelOfDetail", CdpObject.json(levelOfDetail));
-            return client.call("Tracing.requestMemoryDump", params, result_ -> new RequestMemoryDumpResult(result_));
+            return call("Tracing.requestMemoryDump", params("deterministic", deterministic, "levelOfDetail", levelOfDetail), RequestMemoryDumpResult::fromMap);
         }
         /**
          * Request a global memory dump.
@@ -819,7 +821,7 @@ public final class Tracing {
          * @return a stage completing with the command result
          */
         public CompletionStage<RequestMemoryDumpResult> requestMemoryDump() {
-            return client.call("Tracing.requestMemoryDump", null, result_ -> new RequestMemoryDumpResult(result_));
+            return call("Tracing.requestMemoryDump", RequestMemoryDumpResult::fromMap);
         }
         /**
          * Request a global memory dump.
@@ -828,7 +830,7 @@ public final class Tracing {
          * @return a stage completing with the command result
          */
         public CompletionStage<RequestMemoryDumpResult> requestMemoryDump(RequestMemoryDumpRequest request) {
-            return client.call("Tracing.requestMemoryDump", request == null ? null : request.toMap(), result_ -> new RequestMemoryDumpResult(result_));
+            return call("Tracing.requestMemoryDump", request, RequestMemoryDumpResult::fromMap);
         }
         /**
          * Start trace events collection.
@@ -844,24 +846,14 @@ public final class Tracing {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> start(@Nullable String categories, @Nullable String options, @Nullable Double bufferUsageReportingInterval, @Nullable StartTransferModeValues transferMode, Tracing.@Nullable StreamFormat streamFormat, Tracing.@Nullable StreamCompression streamCompression, Tracing.@Nullable TraceConfig traceConfig, @Nullable String perfettoConfig, Tracing.@Nullable TracingBackend tracingBackend) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (categories != null) params.put("categories", CdpObject.json(categories));
-            if (options != null) params.put("options", CdpObject.json(options));
-            if (bufferUsageReportingInterval != null) params.put("bufferUsageReportingInterval", CdpObject.json(bufferUsageReportingInterval));
-            if (transferMode != null) params.put("transferMode", CdpObject.json(transferMode));
-            if (streamFormat != null) params.put("streamFormat", CdpObject.json(streamFormat));
-            if (streamCompression != null) params.put("streamCompression", CdpObject.json(streamCompression));
-            if (traceConfig != null) params.put("traceConfig", CdpObject.json(traceConfig));
-            if (perfettoConfig != null) params.put("perfettoConfig", CdpObject.json(perfettoConfig));
-            if (tracingBackend != null) params.put("tracingBackend", CdpObject.json(tracingBackend));
-            return client.call("Tracing.start", params);
+            return call("Tracing.start", params("categories", categories, "options", options, "bufferUsageReportingInterval", bufferUsageReportingInterval, "transferMode", transferMode, "streamFormat", streamFormat, "streamCompression", streamCompression, "traceConfig", traceConfig, "perfettoConfig", perfettoConfig, "tracingBackend", tracingBackend));
         }
         /**
          * Start trace events collection.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> start() {
-            return client.call("Tracing.start", null);
+            return call("Tracing.start");
         }
         /**
          * Start trace events collection.
@@ -869,7 +861,7 @@ public final class Tracing {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> start(StartRequest request) {
-            return client.call("Tracing.start", request == null ? null : request.toMap());
+            return call("Tracing.start", request);
         }
         /**
          * Subscribes to Tracing.bufferUsage.
@@ -878,7 +870,7 @@ public final class Tracing {
          * @return a removable subscription
          */
         public CdpSubscription onBufferUsage(Consumer<BufferUsageEvent> handler) {
-            return client.on("Tracing.bufferUsage", BufferUsageEvent::fromMap, handler);
+            return on("Tracing.bufferUsage", BufferUsageEvent::fromMap, handler);
         }
         /**
          * Contains a bucket of collected trace events. When tracing is stopped collected events will be sent as a sequence of dataCollected events followed by tracingComplete event.
@@ -887,7 +879,7 @@ public final class Tracing {
          * @return a removable subscription
          */
         public CdpSubscription onDataCollected(Consumer<DataCollectedEvent> handler) {
-            return client.on("Tracing.dataCollected", DataCollectedEvent::fromMap, handler);
+            return on("Tracing.dataCollected", DataCollectedEvent::fromMap, handler);
         }
         /**
          * Signals that tracing is stopped and there is no trace buffers pending flush, all data were delivered via dataCollected events.
@@ -895,7 +887,7 @@ public final class Tracing {
          * @return a removable subscription
          */
         public CdpSubscription onTracingComplete(Consumer<TracingCompleteEvent> handler) {
-            return client.on("Tracing.tracingComplete", TracingCompleteEvent::fromMap, handler);
+            return on("Tracing.tracingComplete", TracingCompleteEvent::fromMap, handler);
         }
     }
 }

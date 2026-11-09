@@ -2,25 +2,23 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class BrowserHostSetAutoResizeEnabledRequest implements CefMessageView, CefMessageEncoder {
 
-    public static final int MESSAGE_ID = 138690575;
-
     private final RemoteHandle self;
     private final int enabled;
-    private final Size minSize;
-    private final Size maxSize;
+    private final net.kurobako.cef4j.gen.CefSize minSize;
+    private final net.kurobako.cef4j.gen.CefSize maxSize;
 
-    public BrowserHostSetAutoResizeEnabledRequest(RemoteHandle self, int enabled, Size minSize, Size maxSize) {
+    public BrowserHostSetAutoResizeEnabledRequest(RemoteHandle self, int enabled, net.kurobako.cef4j.gen.CefSize minSize, net.kurobako.cef4j.gen.CefSize maxSize) {
         this.self = self;
         this.enabled = enabled;
         this.minSize = minSize;
@@ -35,46 +33,34 @@ public final class BrowserHostSetAutoResizeEnabledRequest implements CefMessageV
         return enabled;
     }
 
-    public Size minSize() {
+    public net.kurobako.cef4j.gen.CefSize minSize() {
         return minSize;
     }
 
-    public Size maxSize() {
+    public net.kurobako.cef4j.gen.CefSize maxSize() {
         return maxSize;
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return 8 + minSize.encodedSize() + maxSize.encodedSize();
+        return 8 + SizeCodec.encodedSize(minSize) + SizeCodec.encodedSize(maxSize);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putInt(enabled);
-            minSize.encodeInto(__dst);
-            maxSize.encodeInto(__dst);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            __out.putInt(enabled);
+            SizeCodec.encode(__out, minSize);
+            SizeCodec.encode(__out, maxSize);
+        });
     }
 
-    public static final CefMessageDecoder<BrowserHostSetAutoResizeEnabledRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<BrowserHostSetAutoResizeEnabledRequest> DECODER = WireDecoder.message("BrowserHostSetAutoResizeEnabledRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final int enabled = WireDecoder.int32(__buf, "enabled");
-        final Size minSize = Size.decode(__buf);
-        final Size maxSize = Size.decode(__buf);
-        WireDecoder.requireFullyConsumed(__buf, "BrowserHostSetAutoResizeEnabledRequest");
+        final net.kurobako.cef4j.gen.CefSize minSize = SizeCodec.decode(__buf);
+        final net.kurobako.cef4j.gen.CefSize maxSize = SizeCodec.decode(__buf);
         return new BrowserHostSetAutoResizeEnabledRequest(self, enabled, minSize, maxSize);
-    };
+    });
 }

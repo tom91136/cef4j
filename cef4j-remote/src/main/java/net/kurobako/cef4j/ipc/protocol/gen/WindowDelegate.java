@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,147 +13,117 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class WindowDelegate implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class WindowDelegate extends BrowserFacade {
 
     public WindowDelegate(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_window_delegate_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_window_delegate_t");
     }
 
     /** Dispatches {@code on_window_created} to the runtime server. */
     public CompletableFuture<Void> onWindowCreated(RemoteHandle window) {
-        return CefFutures.discard(session.request(new WindowDelegateOnWindowCreatedRequest(handle, window), WindowDelegateOnWindowCreatedResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.WINDOW_DELEGATE_ON_WINDOW_CREATED_REQUEST, new SelfHandleWindowHandleMessage(handle, window), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code on_window_closing} to the runtime server. */
     public CompletableFuture<Void> onWindowClosing(RemoteHandle window) {
-        return CefFutures.discard(session.request(new WindowDelegateOnWindowClosingRequest(handle, window), WindowDelegateOnWindowClosingResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.WINDOW_DELEGATE_ON_WINDOW_CLOSING_REQUEST, new SelfHandleWindowHandleMessage(handle, window), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code on_window_destroyed} to the runtime server. */
     public CompletableFuture<Void> onWindowDestroyed(RemoteHandle window) {
-        return CefFutures.discard(session.request(new WindowDelegateOnWindowDestroyedRequest(handle, window), WindowDelegateOnWindowDestroyedResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.WINDOW_DELEGATE_ON_WINDOW_DESTROYED_REQUEST, new SelfHandleWindowHandleMessage(handle, window), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code on_window_activation_changed} to the runtime server. */
     public CompletableFuture<Void> onWindowActivationChanged(RemoteHandle window, int active) {
-        return CefFutures.discard(session.request(new WindowDelegateOnWindowActivationChangedRequest(handle, window, active), WindowDelegateOnWindowActivationChangedResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.WINDOW_DELEGATE_ON_WINDOW_ACTIVATION_CHANGED_REQUEST, new WindowDelegateOnWindowActivationChangedRequest(handle, window, active), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code on_window_bounds_changed} to the runtime server. */
-    public CompletableFuture<Void> onWindowBoundsChanged(RemoteHandle window, Rect newBounds) {
-        return CefFutures.discard(session.request(new WindowDelegateOnWindowBoundsChangedRequest(handle, window, newBounds), WindowDelegateOnWindowBoundsChangedResponse.DECODER));
+    public CompletableFuture<Void> onWindowBoundsChanged(RemoteHandle window, net.kurobako.cef4j.gen.CefRect newBounds) {
+        return CefFutures.discard(session.request(MessageIds.WINDOW_DELEGATE_ON_WINDOW_BOUNDS_CHANGED_REQUEST, new WindowDelegateOnWindowBoundsChangedRequest(handle, window, newBounds), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code on_window_fullscreen_transition} to the runtime server. */
     public CompletableFuture<Void> onWindowFullscreenTransition(RemoteHandle window, int isCompleted) {
-        return CefFutures.discard(session.request(new WindowDelegateOnWindowFullscreenTransitionRequest(handle, window, isCompleted), WindowDelegateOnWindowFullscreenTransitionResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.WINDOW_DELEGATE_ON_WINDOW_FULLSCREEN_TRANSITION_REQUEST, new WindowDelegateOnWindowFullscreenTransitionRequest(handle, window, isCompleted), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code is_window_modal_dialog} to the runtime server. */
     public CompletableFuture<Integer> isWindowModalDialog(RemoteHandle window) {
         return CefFutures.map(
-            session.request(new WindowDelegateIsWindowModalDialogRequest(handle, window), WindowDelegateIsWindowModalDialogResponse.DECODER),
-            WindowDelegateIsWindowModalDialogResponse::result);
+            session.request(MessageIds.WINDOW_DELEGATE_IS_WINDOW_MODAL_DIALOG_REQUEST, new SelfHandleWindowHandleMessage(handle, window), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code get_initial_bounds} to the runtime server. */
-    public CompletableFuture<Rect> getInitialBounds(RemoteHandle window) {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefRect> getInitialBounds(RemoteHandle window) {
         return CefFutures.map(
-            session.request(new WindowDelegateGetInitialBoundsRequest(handle, window), WindowDelegateGetInitialBoundsResponse.DECODER),
-            WindowDelegateGetInitialBoundsResponse::result);
+            session.request(MessageIds.WINDOW_DELEGATE_GET_INITIAL_BOUNDS_REQUEST, new SelfHandleWindowHandleMessage(handle, window), ResultCefRectMessage.DECODER),
+            ResultCefRectMessage::result);
     }
 
     /** Dispatches {@code get_initial_show_state} to the runtime server. */
     public CompletableFuture<Integer> getInitialShowState(RemoteHandle window) {
         return CefFutures.map(
-            session.request(new WindowDelegateGetInitialShowStateRequest(handle, window), WindowDelegateGetInitialShowStateResponse.DECODER),
-            WindowDelegateGetInitialShowStateResponse::result);
+            session.request(MessageIds.WINDOW_DELEGATE_GET_INITIAL_SHOW_STATE_REQUEST, new SelfHandleWindowHandleMessage(handle, window), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code is_frameless} to the runtime server. */
     public CompletableFuture<Integer> isFrameless(RemoteHandle window) {
         return CefFutures.map(
-            session.request(new WindowDelegateIsFramelessRequest(handle, window), WindowDelegateIsFramelessResponse.DECODER),
-            WindowDelegateIsFramelessResponse::result);
+            session.request(MessageIds.WINDOW_DELEGATE_IS_FRAMELESS_REQUEST, new SelfHandleWindowHandleMessage(handle, window), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code with_standard_window_buttons} to the runtime server. */
     public CompletableFuture<Integer> withStandardWindowButtons(RemoteHandle window) {
         return CefFutures.map(
-            session.request(new WindowDelegateWithStandardWindowButtonsRequest(handle, window), WindowDelegateWithStandardWindowButtonsResponse.DECODER),
-            WindowDelegateWithStandardWindowButtonsResponse::result);
+            session.request(MessageIds.WINDOW_DELEGATE_WITH_STANDARD_WINDOW_BUTTONS_REQUEST, new SelfHandleWindowHandleMessage(handle, window), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code accepts_first_mouse} to the runtime server. */
     public CompletableFuture<Integer> acceptsFirstMouse(RemoteHandle window) {
         return CefFutures.map(
-            session.request(new WindowDelegateAcceptsFirstMouseRequest(handle, window), WindowDelegateAcceptsFirstMouseResponse.DECODER),
-            WindowDelegateAcceptsFirstMouseResponse::result);
+            session.request(MessageIds.WINDOW_DELEGATE_ACCEPTS_FIRST_MOUSE_REQUEST, new SelfHandleWindowHandleMessage(handle, window), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code can_resize} to the runtime server. */
     public CompletableFuture<Integer> canResize(RemoteHandle window) {
         return CefFutures.map(
-            session.request(new WindowDelegateCanResizeRequest(handle, window), WindowDelegateCanResizeResponse.DECODER),
-            WindowDelegateCanResizeResponse::result);
+            session.request(MessageIds.WINDOW_DELEGATE_CAN_RESIZE_REQUEST, new SelfHandleWindowHandleMessage(handle, window), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code can_maximize} to the runtime server. */
     public CompletableFuture<Integer> canMaximize(RemoteHandle window) {
         return CefFutures.map(
-            session.request(new WindowDelegateCanMaximizeRequest(handle, window), WindowDelegateCanMaximizeResponse.DECODER),
-            WindowDelegateCanMaximizeResponse::result);
+            session.request(MessageIds.WINDOW_DELEGATE_CAN_MAXIMIZE_REQUEST, new SelfHandleWindowHandleMessage(handle, window), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code can_minimize} to the runtime server. */
     public CompletableFuture<Integer> canMinimize(RemoteHandle window) {
         return CefFutures.map(
-            session.request(new WindowDelegateCanMinimizeRequest(handle, window), WindowDelegateCanMinimizeResponse.DECODER),
-            WindowDelegateCanMinimizeResponse::result);
+            session.request(MessageIds.WINDOW_DELEGATE_CAN_MINIMIZE_REQUEST, new SelfHandleWindowHandleMessage(handle, window), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code can_close} to the runtime server. */
     public CompletableFuture<Integer> canClose(RemoteHandle window) {
         return CefFutures.map(
-            session.request(new WindowDelegateCanCloseRequest(handle, window), WindowDelegateCanCloseResponse.DECODER),
-            WindowDelegateCanCloseResponse::result);
+            session.request(MessageIds.WINDOW_DELEGATE_CAN_CLOSE_REQUEST, new SelfHandleWindowHandleMessage(handle, window), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code on_accelerator} to the runtime server. */
     public CompletableFuture<Integer> onAccelerator(RemoteHandle window, int commandId) {
         return CefFutures.map(
-            session.request(new WindowDelegateOnAcceleratorRequest(handle, window, commandId), WindowDelegateOnAcceleratorResponse.DECODER),
-            WindowDelegateOnAcceleratorResponse::result);
+            session.request(MessageIds.WINDOW_DELEGATE_ON_ACCELERATOR_REQUEST, new WindowDelegateOnAcceleratorRequest(handle, window, commandId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -163,21 +132,21 @@ public final class WindowDelegate implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__keyboard__handler_8h.html">cef_keyboard_handler.h:66</a>
      */
-    public CompletableFuture<Integer> onKeyEvent(RemoteHandle window, KeyEvent event) {
+    public CompletableFuture<Integer> onKeyEvent(RemoteHandle window, net.kurobako.cef4j.gen.CefKeyEvent event) {
         return CefFutures.map(
-            session.request(new WindowDelegateOnKeyEventRequest(handle, window, event), WindowDelegateOnKeyEventResponse.DECODER),
-            WindowDelegateOnKeyEventResponse::result);
+            session.request(MessageIds.WINDOW_DELEGATE_ON_KEY_EVENT_REQUEST, new WindowDelegateOnKeyEventRequest(handle, window, event), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code on_theme_colors_changed} to the runtime server. */
     public CompletableFuture<Void> onThemeColorsChanged(RemoteHandle window, int chromeTheme) {
-        return CefFutures.discard(session.request(new WindowDelegateOnThemeColorsChangedRequest(handle, window, chromeTheme), WindowDelegateOnThemeColorsChangedResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.WINDOW_DELEGATE_ON_THEME_COLORS_CHANGED_REQUEST, new WindowDelegateOnThemeColorsChangedRequest(handle, window, chromeTheme), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code get_window_runtime_style} to the runtime server. */
     public CompletableFuture<Integer> getWindowRuntimeStyle() {
         return CefFutures.map(
-            session.request(new WindowDelegateGetWindowRuntimeStyleRequest(handle), WindowDelegateGetWindowRuntimeStyleResponse.DECODER),
-            WindowDelegateGetWindowRuntimeStyleResponse::result);
+            session.request(MessageIds.WINDOW_DELEGATE_GET_WINDOW_RUNTIME_STYLE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

@@ -39,9 +39,9 @@ public interface CefApp {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefApp handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(AppOnBeforeCommandLineProcessingEvent.MESSAGE_ID, AppOnBeforeCommandLineProcessingEvent.DECODER,
+                session.on(MessageIds.APP_ON_BEFORE_COMMAND_LINE_PROCESSING_EVENT, AppOnBeforeCommandLineProcessingEvent.DECODER,
                         ev -> handler.onBeforeCommandLineProcessing(ev.processType(), ev.commandLine())),
-                session.on(AppOnRegisterCustomSchemesEvent.MESSAGE_ID, AppOnRegisterCustomSchemesEvent.DECODER,
+                session.on(MessageIds.APP_ON_REGISTER_CUSTOM_SCHEMES_EVENT, AppOnRegisterCustomSchemesEvent.DECODER,
                         ev -> handler.onRegisterCustomSchemes(ev.registrar())));
     }
 }

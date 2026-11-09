@@ -2,27 +2,25 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class FindHandlerOnFindResultEvent implements CefMessageView, CefMessageEncoder {
 
-    public static final int MESSAGE_ID = 121797999;
-
     private final RemoteHandle browser;
     private final int identifier;
     private final int count;
-    private final Rect selectionRect;
+    private final net.kurobako.cef4j.gen.CefRect selectionRect;
     private final int activeMatchOrdinal;
     private final int finalUpdate;
 
-    public FindHandlerOnFindResultEvent(RemoteHandle browser, int identifier, int count, Rect selectionRect, int activeMatchOrdinal, int finalUpdate) {
+    public FindHandlerOnFindResultEvent(RemoteHandle browser, int identifier, int count, net.kurobako.cef4j.gen.CefRect selectionRect, int activeMatchOrdinal, int finalUpdate) {
         this.browser = browser;
         this.identifier = identifier;
         this.count = count;
@@ -43,7 +41,7 @@ public final class FindHandlerOnFindResultEvent implements CefMessageView, CefMe
         return count;
     }
 
-    public Rect selectionRect() {
+    public net.kurobako.cef4j.gen.CefRect selectionRect() {
         return selectionRect;
     }
 
@@ -56,41 +54,29 @@ public final class FindHandlerOnFindResultEvent implements CefMessageView, CefMe
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return 20 + selectionRect.encodedSize();
+        return 20 + RectCodec.encodedSize(selectionRect);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(browser.id());
-            __dst.putInt(identifier);
-            __dst.putInt(count);
-            selectionRect.encodeInto(__dst);
-            __dst.putInt(activeMatchOrdinal);
-            __dst.putInt(finalUpdate);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(browser.id());
+            __out.putInt(identifier);
+            __out.putInt(count);
+            RectCodec.encode(__out, selectionRect);
+            __out.putInt(activeMatchOrdinal);
+            __out.putInt(finalUpdate);
+        });
     }
 
-    public static final CefMessageDecoder<FindHandlerOnFindResultEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<FindHandlerOnFindResultEvent> DECODER = WireDecoder.message("FindHandlerOnFindResultEvent", __buf -> {
         final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
         final int identifier = WireDecoder.int32(__buf, "identifier");
         final int count = WireDecoder.int32(__buf, "count");
-        final Rect selectionRect = Rect.decode(__buf);
+        final net.kurobako.cef4j.gen.CefRect selectionRect = RectCodec.decode(__buf);
         final int activeMatchOrdinal = WireDecoder.int32(__buf, "activeMatchOrdinal");
         final int finalUpdate = WireDecoder.int32(__buf, "finalUpdate");
-        WireDecoder.requireFullyConsumed(__buf, "FindHandlerOnFindResultEvent");
         return new FindHandlerOnFindResultEvent(browser, identifier, count, selectionRect, activeMatchOrdinal, finalUpdate);
-    };
+    });
 }

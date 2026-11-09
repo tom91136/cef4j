@@ -1,7 +1,6 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -10,6 +9,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -25,6 +26,20 @@ import org.jspecify.annotations.Nullable;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Input {
     private Input() {}
+    private static final CdpField<Input.MouseButton> BUTTON = CdpField.of("button", value -> Input.MouseButton.of((String) value));
+    private static final CdpField<java.util.List<String>> COMMANDS = CdpField.of("commands", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Input.DragData> DATA = CdpField.of("data", value -> java.util.Objects.requireNonNull(Input.DragData.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<String>> FILES = CdpField.of("files", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Input.GestureSourceType> GESTURE_SOURCE_TYPE = CdpField.of("gestureSourceType", value -> Input.GestureSourceType.of((String) value));
+    private static final CdpField<java.util.List<Input.DragDataItem>> ITEMS = CdpField.of("items", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Input.DragDataItem.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<DispatchMouseEventPointerTypeValues> POINTER_TYPE = CdpField.of("pointerType", value -> DispatchMouseEventPointerTypeValues.of((String) value));
+    private static final CdpField<Input.TimeSinceEpoch> TIMESTAMP = CdpField.of("timestamp", value -> new Input.TimeSinceEpoch(((Number) value).doubleValue()));
+    private static final CdpField<java.util.List<Input.TouchPoint>> TOUCH_POINTS = CdpField.of("touchPoints", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Input.TouchPoint.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<DispatchDragEventTypeValues> TYPE = CdpField.of("type", value -> DispatchDragEventTypeValues.of((String) value));
+    private static final CdpField<DispatchKeyEventTypeValues> TYPE_2 = CdpField.of("type", value -> DispatchKeyEventTypeValues.of((String) value));
+    private static final CdpField<DispatchMouseEventTypeValues> TYPE_3 = CdpField.of("type", value -> DispatchMouseEventTypeValues.of((String) value));
+    private static final CdpField<DispatchTouchEventTypeValues> TYPE_4 = CdpField.of("type", value -> DispatchTouchEventTypeValues.of((String) value));
+    private static final CdpField<EmulateTouchFromMouseEventTypeValues> TYPE_5 = CdpField.of("type", value -> EmulateTouchFromMouseEventTypeValues.of((String) value));
     /**
      */
     public static final class TouchPoint extends CdpObject {
@@ -38,42 +53,42 @@ public final class Input {
          * @return the protocol field value
          */
         public double x() {
-            return ((Number) require("x")).doubleValue();
+            return requireDouble("x");
         }
         /**
          * Y coordinate of the event relative to the main frame&#x27;s viewport in CSS pixels. 0 refers to the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
          * @return the protocol field value
          */
         public double y() {
-            return ((Number) require("y")).doubleValue();
+            return requireDouble("y");
         }
         /**
          * X radius of the touch area (default: 1.0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble radiusX() {
-            return raw("radiusX").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("radiusX");
         }
         /**
          * Y radius of the touch area (default: 1.0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble radiusY() {
-            return raw("radiusY").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("radiusY");
         }
         /**
          * Rotation angle (default: 0.0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble rotationAngle() {
-            return raw("rotationAngle").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("rotationAngle");
         }
         /**
          * Force (default: 1.0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble force() {
-            return raw("force").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("force");
         }
         /**
          * The normalized tangential pressure, which has a range of [-1,1] (default: 0).
@@ -81,21 +96,21 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble tangentialPressure() {
-            return raw("tangentialPressure").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("tangentialPressure");
         }
         /**
          * The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range [-90,90], a positive tiltX is to the right (default: 0)
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble tiltX() {
-            return raw("tiltX").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("tiltX");
         }
         /**
          * The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range [-90,90], a positive tiltY is towards the user (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble tiltY() {
-            return raw("tiltY").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("tiltY");
         }
         /**
          * The clockwise rotation of a pen stylus around its own major axis, in degrees in the range [0,359] (default: 0).
@@ -103,14 +118,14 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong twist() {
-            return raw("twist").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("twist");
         }
         /**
          * Identifier used to track touch sources between events, must be unique within an event.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble id() {
-            return raw("id").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("id");
         }
         /**
          * X coordinate of the event relative to the main frame&#x27;s viewport in CSS pixels.
@@ -281,28 +296,28 @@ public final class Input {
          * @return the protocol field value
          */
         public String mimeType() {
-            return (String) require("mimeType");
+            return requireString("mimeType");
         }
         /**
          * Depending of the value of {@code mimeType}, it contains the dragged link, text, HTML markup or any other data.
          * @return the protocol field value
          */
         public String data() {
-            return (String) require("data");
+            return requireString("data");
         }
         /**
          * Title associated with a link. Only valid when {@code mimeType} == &quot;text/uri-list&quot;.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> title() {
-            return raw("title").map(value -> (String) value);
+            return optionalString("title");
         }
         /**
          * Stores the base URL for the contained markup. Only valid when {@code mimeType} == &quot;text/html&quot;.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> baseURL() {
-            return raw("baseURL").map(value -> (String) value);
+            return optionalString("baseURL");
         }
         /**
          * Mime type of the dragged data.
@@ -355,21 +370,21 @@ public final class Input {
          * @return the protocol field value
          */
         public java.util.List<Input.DragDataItem> items() {
-            return CdpObject.requireList(require("items"), element0 -> java.util.Objects.requireNonNull(Input.DragDataItem.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(ITEMS);
         }
         /**
          * List of filenames that should be included when dropping
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> files() {
-            return raw("files").flatMap(value -> list(value, element0 -> (String) element0));
+            return optional(FILES);
         }
         /**
          * Bit field representing allowed drag operations. Copy = 1, Link = 2, Move = 16
          * @return the protocol field value
          */
         public long dragOperationsMask() {
-            return ((Number) require("dragOperationsMask")).longValue();
+            return requireLong("dragOperationsMask");
         }
         /**
          * Sets the items field.
@@ -405,17 +420,6 @@ public final class Input {
      */
     public static final class DispatchDragEventRequest extends CdpObject {
         public DispatchDragEventRequest() {}
-        /**
-         * Dispatches a drag event into the page.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param type protocol value
-         * @param x protocol value
-         * @param y protocol value
-         * @param data protocol value
-         */
-        public DispatchDragEventRequest(DispatchDragEventTypeValues type, double x, double y, Input.DragData data) {
-            type(type).x(x).y(y).data(data);
-        }
         public static DispatchDragEventRequest fromMap(Map<String, Object> values) {
             final DispatchDragEventRequest instance_ = new DispatchDragEventRequest();
             if (values != null) instance_.values.putAll(values);
@@ -426,35 +430,35 @@ public final class Input {
          * @return the protocol field value
          */
         public DispatchDragEventTypeValues type() {
-            return DispatchDragEventTypeValues.of((String) require("type"));
+            return require(TYPE);
         }
         /**
          * X coordinate of the event relative to the main frame&#x27;s viewport in CSS pixels.
          * @return the protocol field value
          */
         public double x() {
-            return ((Number) require("x")).doubleValue();
+            return requireDouble("x");
         }
         /**
          * Y coordinate of the event relative to the main frame&#x27;s viewport in CSS pixels. 0 refers to the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
          * @return the protocol field value
          */
         public double y() {
-            return ((Number) require("y")).doubleValue();
+            return requireDouble("y");
         }
         /**
          * Returns the data field.
          * @return the protocol field value
          */
         public Input.DragData data() {
-            return java.util.Objects.requireNonNull(Input.DragData.fromMap(CdpObject.requireObjectMap(require("data"))));
+            return require(DATA);
         }
         /**
          * Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong modifiers() {
-            return raw("modifiers").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("modifiers");
         }
         /**
          * Type of the drag event.
@@ -507,13 +511,6 @@ public final class Input {
      */
     public static final class DispatchKeyEventRequest extends CdpObject {
         public DispatchKeyEventRequest() {}
-        /**
-         * Dispatches a key event to the page.
-         * @param type protocol value
-         */
-        public DispatchKeyEventRequest(DispatchKeyEventTypeValues type) {
-            type(type);
-        }
         public static DispatchKeyEventRequest fromMap(Map<String, Object> values) {
             final DispatchKeyEventRequest instance_ = new DispatchKeyEventRequest();
             if (values != null) instance_.values.putAll(values);
@@ -524,98 +521,98 @@ public final class Input {
          * @return the protocol field value
          */
         public DispatchKeyEventTypeValues type() {
-            return DispatchKeyEventTypeValues.of((String) require("type"));
+            return require(TYPE_2);
         }
         /**
          * Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong modifiers() {
-            return raw("modifiers").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("modifiers");
         }
         /**
          * Time at which the event occurred.
          * @return the protocol field value, empty when absent
          */
         public Optional<Input.TimeSinceEpoch> timestamp() {
-            return raw("timestamp").map(value -> new Input.TimeSinceEpoch(((Number) value).doubleValue()));
+            return optional(TIMESTAMP);
         }
         /**
          * Text as generated by processing a virtual key code with a keyboard layout. Not needed for for {@code keyUp} and {@code rawKeyDown} events (default: &quot;&quot;)
          * @return the protocol field value, empty when absent
          */
         public Optional<String> text() {
-            return raw("text").map(value -> (String) value);
+            return optionalString("text");
         }
         /**
          * Text that would have been generated by the keyboard if no modifiers were pressed (except for shift). Useful for shortcut (accelerator) key handling (default: &quot;&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> unmodifiedText() {
-            return raw("unmodifiedText").map(value -> (String) value);
+            return optionalString("unmodifiedText");
         }
         /**
          * Unique key identifier (e.g., &#x27;U+0041&#x27;) (default: &quot;&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> keyIdentifier() {
-            return raw("keyIdentifier").map(value -> (String) value);
+            return optionalString("keyIdentifier");
         }
         /**
          * Unique DOM defined string value for each physical key (e.g., &#x27;KeyA&#x27;) (default: &quot;&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> code() {
-            return raw("code").map(value -> (String) value);
+            return optionalString("code");
         }
         /**
          * Unique DOM defined string value describing the meaning of the key in the context of active modifiers, keyboard layout, etc (e.g., &#x27;AltGr&#x27;) (default: &quot;&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> key() {
-            return raw("key").map(value -> (String) value);
+            return optionalString("key");
         }
         /**
          * Windows virtual key code (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong windowsVirtualKeyCode() {
-            return raw("windowsVirtualKeyCode").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("windowsVirtualKeyCode");
         }
         /**
          * Native virtual key code (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong nativeVirtualKeyCode() {
-            return raw("nativeVirtualKeyCode").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("nativeVirtualKeyCode");
         }
         /**
          * Whether the event was generated from auto repeat (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> autoRepeat() {
-            return raw("autoRepeat").map(value -> (Boolean) value);
+            return optionalBoolean("autoRepeat");
         }
         /**
          * Whether the event was generated from the keypad (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isKeypad() {
-            return raw("isKeypad").map(value -> (Boolean) value);
+            return optionalBoolean("isKeypad");
         }
         /**
          * Whether the event was a system key event (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isSystemKey() {
-            return raw("isSystemKey").map(value -> (Boolean) value);
+            return optionalBoolean("isSystemKey");
         }
         /**
          * Whether the event was from the left or right side of the keyboard. 1=Left, 2=Right (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong location() {
-            return raw("location").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("location");
         }
         /**
          * Editing commands to send with the key event (e.g., &#x27;selectAll&#x27;) (default: []). These are related to but not equal the command names used in {@code document.execCommand} and NSStandardKeyBindingResponding. See https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/editing/commands/editor_command_names.h for valid command names.
@@ -623,7 +620,7 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> commands() {
-            return raw("commands").flatMap(value -> list(value, element0 -> (String) element0));
+            return optional(COMMANDS);
         }
         /**
          * Type of the key event.
@@ -768,14 +765,6 @@ public final class Input {
      */
     public static final class InsertTextRequest extends CdpObject {
         public InsertTextRequest() {}
-        /**
-         * This method emulates inserting text that doesn&#x27;t come from a key press, for example an emoji keyboard or an IME.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param text protocol value
-         */
-        public InsertTextRequest(String text) {
-            text(text);
-        }
         public static InsertTextRequest fromMap(Map<String, Object> values) {
             final InsertTextRequest instance_ = new InsertTextRequest();
             if (values != null) instance_.values.putAll(values);
@@ -786,7 +775,7 @@ public final class Input {
          * @return the protocol field value
          */
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * The text to insert.
@@ -804,16 +793,6 @@ public final class Input {
      */
     public static final class ImeSetCompositionRequest extends CdpObject {
         public ImeSetCompositionRequest() {}
-        /**
-         * This method sets the current candidate text for IME. Use imeCommitComposition to commit the final text. Use imeSetComposition with empty string as text to cancel composition.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param text protocol value
-         * @param selectionStart protocol value
-         * @param selectionEnd protocol value
-         */
-        public ImeSetCompositionRequest(String text, long selectionStart, long selectionEnd) {
-            text(text).selectionStart(selectionStart).selectionEnd(selectionEnd);
-        }
         public static ImeSetCompositionRequest fromMap(Map<String, Object> values) {
             final ImeSetCompositionRequest instance_ = new ImeSetCompositionRequest();
             if (values != null) instance_.values.putAll(values);
@@ -824,35 +803,35 @@ public final class Input {
          * @return the protocol field value
          */
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * selection start
          * @return the protocol field value
          */
         public long selectionStart() {
-            return ((Number) require("selectionStart")).longValue();
+            return requireLong("selectionStart");
         }
         /**
          * selection end
          * @return the protocol field value
          */
         public long selectionEnd() {
-            return ((Number) require("selectionEnd")).longValue();
+            return requireLong("selectionEnd");
         }
         /**
          * replacement start
          * @return the protocol field value, empty when absent
          */
         public OptionalLong replacementStart() {
-            return raw("replacementStart").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("replacementStart");
         }
         /**
          * replacement end
          * @return the protocol field value, empty when absent
          */
         public OptionalLong replacementEnd() {
-            return raw("replacementEnd").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("replacementEnd");
         }
         /**
          * The text to insert
@@ -905,15 +884,6 @@ public final class Input {
      */
     public static final class DispatchMouseEventRequest extends CdpObject {
         public DispatchMouseEventRequest() {}
-        /**
-         * Dispatches a mouse event to the page.
-         * @param type protocol value
-         * @param x protocol value
-         * @param y protocol value
-         */
-        public DispatchMouseEventRequest(DispatchMouseEventTypeValues type, double x, double y) {
-            type(type).x(x).y(y);
-        }
         public static DispatchMouseEventRequest fromMap(Map<String, Object> values) {
             final DispatchMouseEventRequest instance_ = new DispatchMouseEventRequest();
             if (values != null) instance_.values.putAll(values);
@@ -924,56 +894,56 @@ public final class Input {
          * @return the protocol field value
          */
         public DispatchMouseEventTypeValues type() {
-            return DispatchMouseEventTypeValues.of((String) require("type"));
+            return require(TYPE_3);
         }
         /**
          * X coordinate of the event relative to the main frame&#x27;s viewport in CSS pixels.
          * @return the protocol field value
          */
         public double x() {
-            return ((Number) require("x")).doubleValue();
+            return requireDouble("x");
         }
         /**
          * Y coordinate of the event relative to the main frame&#x27;s viewport in CSS pixels. 0 refers to the top of the viewport and Y increases as it proceeds towards the bottom of the viewport.
          * @return the protocol field value
          */
         public double y() {
-            return ((Number) require("y")).doubleValue();
+            return requireDouble("y");
         }
         /**
          * Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong modifiers() {
-            return raw("modifiers").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("modifiers");
         }
         /**
          * Time at which the event occurred.
          * @return the protocol field value, empty when absent
          */
         public Optional<Input.TimeSinceEpoch> timestamp() {
-            return raw("timestamp").map(value -> new Input.TimeSinceEpoch(((Number) value).doubleValue()));
+            return optional(TIMESTAMP);
         }
         /**
          * Mouse button (default: &quot;none&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<Input.MouseButton> button() {
-            return raw("button").map(value -> Input.MouseButton.of((String) value));
+            return optional(BUTTON);
         }
         /**
          * A number indicating which buttons are pressed on the mouse when a mouse event is triggered. Left=1, Right=2, Middle=4, Back=8, Forward=16, None=0.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong buttons() {
-            return raw("buttons").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("buttons");
         }
         /**
          * Number of times the mouse button was clicked (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong clickCount() {
-            return raw("clickCount").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("clickCount");
         }
         /**
          * The normalized pressure, which has a range of [0,1] (default: 0).
@@ -981,7 +951,7 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble force() {
-            return raw("force").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("force");
         }
         /**
          * The normalized tangential pressure, which has a range of [-1,1] (default: 0).
@@ -989,21 +959,21 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble tangentialPressure() {
-            return raw("tangentialPressure").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("tangentialPressure");
         }
         /**
          * The plane angle between the Y-Z plane and the plane containing both the stylus axis and the Y axis, in degrees of the range [-90,90], a positive tiltX is to the right (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble tiltX() {
-            return raw("tiltX").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("tiltX");
         }
         /**
          * The plane angle between the X-Z plane and the plane containing both the stylus axis and the X axis, in degrees of the range [-90,90], a positive tiltY is towards the user (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble tiltY() {
-            return raw("tiltY").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("tiltY");
         }
         /**
          * The clockwise rotation of a pen stylus around its own major axis, in degrees in the range [0,359] (default: 0).
@@ -1011,28 +981,28 @@ public final class Input {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong twist() {
-            return raw("twist").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("twist");
         }
         /**
          * X delta in CSS pixels for mouse wheel event (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble deltaX() {
-            return raw("deltaX").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("deltaX");
         }
         /**
          * Y delta in CSS pixels for mouse wheel event (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble deltaY() {
-            return raw("deltaY").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("deltaY");
         }
         /**
          * Pointer type (default: &quot;mouse&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<DispatchMouseEventPointerTypeValues> pointerType() {
-            return raw("pointerType").map(value -> DispatchMouseEventPointerTypeValues.of((String) value));
+            return optional(POINTER_TYPE);
         }
         /**
          * Type of the mouse event.
@@ -1187,14 +1157,6 @@ public final class Input {
      */
     public static final class DispatchTouchEventRequest extends CdpObject {
         public DispatchTouchEventRequest() {}
-        /**
-         * Dispatches a touch event to the page.
-         * @param type protocol value
-         * @param touchPoints protocol value
-         */
-        public DispatchTouchEventRequest(DispatchTouchEventTypeValues type, java.util.List<Input.TouchPoint> touchPoints) {
-            type(type).touchPoints(touchPoints);
-        }
         public static DispatchTouchEventRequest fromMap(Map<String, Object> values) {
             final DispatchTouchEventRequest instance_ = new DispatchTouchEventRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1205,28 +1167,28 @@ public final class Input {
          * @return the protocol field value
          */
         public DispatchTouchEventTypeValues type() {
-            return DispatchTouchEventTypeValues.of((String) require("type"));
+            return require(TYPE_4);
         }
         /**
          * Active touch points on the touch device. One event per any changed point (compared to previous touch event in a sequence) is generated, emulating pressing/moving/releasing points one by one.
          * @return the protocol field value
          */
         public java.util.List<Input.TouchPoint> touchPoints() {
-            return CdpObject.requireList(require("touchPoints"), element0 -> java.util.Objects.requireNonNull(Input.TouchPoint.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(TOUCH_POINTS);
         }
         /**
          * Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong modifiers() {
-            return raw("modifiers").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("modifiers");
         }
         /**
          * Time at which the event occurred.
          * @return the protocol field value, empty when absent
          */
         public Optional<Input.TimeSinceEpoch> timestamp() {
-            return raw("timestamp").map(value -> new Input.TimeSinceEpoch(((Number) value).doubleValue()));
+            return optional(TIMESTAMP);
         }
         /**
          * Type of the touch event. TouchEnd and TouchCancel must not contain any touch points, while TouchStart and TouchMove must contains at least one.
@@ -1271,17 +1233,6 @@ public final class Input {
      */
     public static final class EmulateTouchFromMouseEventRequest extends CdpObject {
         public EmulateTouchFromMouseEventRequest() {}
-        /**
-         * Emulates touch event from the mouse event parameters.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param type protocol value
-         * @param x protocol value
-         * @param y protocol value
-         * @param button protocol value
-         */
-        public EmulateTouchFromMouseEventRequest(EmulateTouchFromMouseEventTypeValues type, long x, long y, Input.MouseButton button) {
-            type(type).x(x).y(y).button(button);
-        }
         public static EmulateTouchFromMouseEventRequest fromMap(Map<String, Object> values) {
             final EmulateTouchFromMouseEventRequest instance_ = new EmulateTouchFromMouseEventRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1292,63 +1243,63 @@ public final class Input {
          * @return the protocol field value
          */
         public EmulateTouchFromMouseEventTypeValues type() {
-            return EmulateTouchFromMouseEventTypeValues.of((String) require("type"));
+            return require(TYPE_5);
         }
         /**
          * X coordinate of the mouse pointer in DIP.
          * @return the protocol field value
          */
         public long x() {
-            return ((Number) require("x")).longValue();
+            return requireLong("x");
         }
         /**
          * Y coordinate of the mouse pointer in DIP.
          * @return the protocol field value
          */
         public long y() {
-            return ((Number) require("y")).longValue();
+            return requireLong("y");
         }
         /**
          * Mouse button. Only &quot;none&quot;, &quot;left&quot;, &quot;right&quot; are supported.
          * @return the protocol field value
          */
         public Input.MouseButton button() {
-            return Input.MouseButton.of((String) require("button"));
+            return require(BUTTON);
         }
         /**
          * Time at which the event occurred (default: current time).
          * @return the protocol field value, empty when absent
          */
         public Optional<Input.TimeSinceEpoch> timestamp() {
-            return raw("timestamp").map(value -> new Input.TimeSinceEpoch(((Number) value).doubleValue()));
+            return optional(TIMESTAMP);
         }
         /**
          * X delta in DIP for mouse wheel event (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble deltaX() {
-            return raw("deltaX").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("deltaX");
         }
         /**
          * Y delta in DIP for mouse wheel event (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble deltaY() {
-            return raw("deltaY").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("deltaY");
         }
         /**
          * Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong modifiers() {
-            return raw("modifiers").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("modifiers");
         }
         /**
          * Number of times the mouse button was clicked (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong clickCount() {
-            return raw("clickCount").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("clickCount");
         }
         /**
          * Type of the mouse event.
@@ -1437,13 +1388,6 @@ public final class Input {
      */
     public static final class SetIgnoreInputEventsRequest extends CdpObject {
         public SetIgnoreInputEventsRequest() {}
-        /**
-         * Ignores input events (useful while auditing page).
-         * @param ignore protocol value
-         */
-        public SetIgnoreInputEventsRequest(boolean ignore) {
-            ignore(ignore);
-        }
         public static SetIgnoreInputEventsRequest fromMap(Map<String, Object> values) {
             final SetIgnoreInputEventsRequest instance_ = new SetIgnoreInputEventsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1454,7 +1398,7 @@ public final class Input {
          * @return the protocol field value
          */
         public boolean ignore() {
-            return (Boolean) require("ignore");
+            return requireBoolean("ignore");
         }
         /**
          * Ignores input events processing when set to true.
@@ -1472,14 +1416,6 @@ public final class Input {
      */
     public static final class SetInterceptDragsRequest extends CdpObject {
         public SetInterceptDragsRequest() {}
-        /**
-         * Prevents default drag and drop behavior and instead emits {@code Input.dragIntercepted} events. Drag and drop behavior can be directly controlled via {@code Input.dispatchDragEvent}.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param enabled protocol value
-         */
-        public SetInterceptDragsRequest(boolean enabled) {
-            enabled(enabled);
-        }
         public static SetInterceptDragsRequest fromMap(Map<String, Object> values) {
             final SetInterceptDragsRequest instance_ = new SetInterceptDragsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1490,7 +1426,7 @@ public final class Input {
          * @return the protocol field value
          */
         public boolean enabled() {
-            return (Boolean) require("enabled");
+            return requireBoolean("enabled");
         }
         /**
          * Sets the enabled field.
@@ -1508,16 +1444,6 @@ public final class Input {
      */
     public static final class SynthesizePinchGestureRequest extends CdpObject {
         public SynthesizePinchGestureRequest() {}
-        /**
-         * Synthesizes a pinch gesture over a time period by issuing appropriate touch events.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param x protocol value
-         * @param y protocol value
-         * @param scaleFactor protocol value
-         */
-        public SynthesizePinchGestureRequest(double x, double y, double scaleFactor) {
-            x(x).y(y).scaleFactor(scaleFactor);
-        }
         public static SynthesizePinchGestureRequest fromMap(Map<String, Object> values) {
             final SynthesizePinchGestureRequest instance_ = new SynthesizePinchGestureRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1528,35 +1454,35 @@ public final class Input {
          * @return the protocol field value
          */
         public double x() {
-            return ((Number) require("x")).doubleValue();
+            return requireDouble("x");
         }
         /**
          * Y coordinate of the start of the gesture in CSS pixels.
          * @return the protocol field value
          */
         public double y() {
-            return ((Number) require("y")).doubleValue();
+            return requireDouble("y");
         }
         /**
          * Relative scale factor after zooming (&gt;1.0 zooms in, &lt;1.0 zooms out).
          * @return the protocol field value
          */
         public double scaleFactor() {
-            return ((Number) require("scaleFactor")).doubleValue();
+            return requireDouble("scaleFactor");
         }
         /**
          * Relative pointer speed in pixels per second (default: 800).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong relativeSpeed() {
-            return raw("relativeSpeed").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("relativeSpeed");
         }
         /**
          * Which type of input events to be generated (default: &#x27;default&#x27;, which queries the platform for the preferred input type).
          * @return the protocol field value, empty when absent
          */
         public Optional<Input.GestureSourceType> gestureSourceType() {
-            return raw("gestureSourceType").map(value -> Input.GestureSourceType.of((String) value));
+            return optional(GESTURE_SOURCE_TYPE);
         }
         /**
          * X coordinate of the start of the gesture in CSS pixels.
@@ -1610,15 +1536,6 @@ public final class Input {
      */
     public static final class SynthesizeScrollGestureRequest extends CdpObject {
         public SynthesizeScrollGestureRequest() {}
-        /**
-         * Synthesizes a scroll gesture over a time period by issuing appropriate touch events.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param x protocol value
-         * @param y protocol value
-         */
-        public SynthesizeScrollGestureRequest(double x, double y) {
-            x(x).y(y);
-        }
         public static SynthesizeScrollGestureRequest fromMap(Map<String, Object> values) {
             final SynthesizeScrollGestureRequest instance_ = new SynthesizeScrollGestureRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1629,84 +1546,84 @@ public final class Input {
          * @return the protocol field value
          */
         public double x() {
-            return ((Number) require("x")).doubleValue();
+            return requireDouble("x");
         }
         /**
          * Y coordinate of the start of the gesture in CSS pixels.
          * @return the protocol field value
          */
         public double y() {
-            return ((Number) require("y")).doubleValue();
+            return requireDouble("y");
         }
         /**
          * The distance to scroll along the X axis (positive to scroll left).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble xDistance() {
-            return raw("xDistance").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("xDistance");
         }
         /**
          * The distance to scroll along the Y axis (positive to scroll up).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble yDistance() {
-            return raw("yDistance").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("yDistance");
         }
         /**
          * The number of additional pixels to scroll back along the X axis, in addition to the given distance.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble xOverscroll() {
-            return raw("xOverscroll").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("xOverscroll");
         }
         /**
          * The number of additional pixels to scroll back along the Y axis, in addition to the given distance.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble yOverscroll() {
-            return raw("yOverscroll").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("yOverscroll");
         }
         /**
          * Prevent fling (default: true).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> preventFling() {
-            return raw("preventFling").map(value -> (Boolean) value);
+            return optionalBoolean("preventFling");
         }
         /**
          * Swipe speed in pixels per second (default: 800).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong speed() {
-            return raw("speed").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("speed");
         }
         /**
          * Which type of input events to be generated (default: &#x27;default&#x27;, which queries the platform for the preferred input type).
          * @return the protocol field value, empty when absent
          */
         public Optional<Input.GestureSourceType> gestureSourceType() {
-            return raw("gestureSourceType").map(value -> Input.GestureSourceType.of((String) value));
+            return optional(GESTURE_SOURCE_TYPE);
         }
         /**
          * The number of times to repeat the gesture (default: 0).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong repeatCount() {
-            return raw("repeatCount").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("repeatCount");
         }
         /**
          * The number of milliseconds delay between each repeat. (default: 250).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong repeatDelayMs() {
-            return raw("repeatDelayMs").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("repeatDelayMs");
         }
         /**
          * The name of the interaction markers to generate, if not empty (default: &quot;&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> interactionMarkerName() {
-            return raw("interactionMarkerName").map(value -> (String) value);
+            return optionalString("interactionMarkerName");
         }
         /**
          * X coordinate of the start of the gesture in CSS pixels.
@@ -1823,15 +1740,6 @@ public final class Input {
      */
     public static final class SynthesizeTapGestureRequest extends CdpObject {
         public SynthesizeTapGestureRequest() {}
-        /**
-         * Synthesizes a tap gesture over a time period by issuing appropriate touch events.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param x protocol value
-         * @param y protocol value
-         */
-        public SynthesizeTapGestureRequest(double x, double y) {
-            x(x).y(y);
-        }
         public static SynthesizeTapGestureRequest fromMap(Map<String, Object> values) {
             final SynthesizeTapGestureRequest instance_ = new SynthesizeTapGestureRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1842,35 +1750,35 @@ public final class Input {
          * @return the protocol field value
          */
         public double x() {
-            return ((Number) require("x")).doubleValue();
+            return requireDouble("x");
         }
         /**
          * Y coordinate of the start of the gesture in CSS pixels.
          * @return the protocol field value
          */
         public double y() {
-            return ((Number) require("y")).doubleValue();
+            return requireDouble("y");
         }
         /**
          * Duration between touchdown and touchup events in ms (default: 50).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong duration() {
-            return raw("duration").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("duration");
         }
         /**
          * Number of times to perform the tap (e.g. 2 for double tap, default: 1).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong tapCount() {
-            return raw("tapCount").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("tapCount");
         }
         /**
          * Which type of input events to be generated (default: &#x27;default&#x27;, which queries the platform for the preferred input type).
          * @return the protocol field value, empty when absent
          */
         public Optional<Input.GestureSourceType> gestureSourceType() {
-            return raw("gestureSourceType").map(value -> Input.GestureSourceType.of((String) value));
+            return optional(GESTURE_SOURCE_TYPE);
         }
         /**
          * X coordinate of the start of the gesture in CSS pixels.
@@ -1933,7 +1841,7 @@ public final class Input {
          * @return the protocol field value
          */
         public Input.DragData data() {
-            return java.util.Objects.requireNonNull(Input.DragData.fromMap(CdpObject.requireObjectMap(require("data"))));
+            return require(DATA);
         }
         /**
          * Sets the data field.
@@ -2051,9 +1959,8 @@ public final class Input {
             throw new IllegalArgumentException("Unknown EmulateTouchFromMouseEventTypeValues value: " + value);
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Dispatches a drag event into the page.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
@@ -2065,13 +1972,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchDragEvent(DispatchDragEventTypeValues type, double x, double y, Input.DragData data, long modifiers) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("type", CdpObject.json(type));
-            params.put("x", CdpObject.json(x));
-            params.put("y", CdpObject.json(y));
-            params.put("data", CdpObject.json(data));
-            params.put("modifiers", CdpObject.json(modifiers));
-            return client.call("Input.dispatchDragEvent", params);
+            return call("Input.dispatchDragEvent", params("type", type, "x", x, "y", y, "data", data, "modifiers", modifiers));
         }
         /**
          * Dispatches a drag event into the page.
@@ -2083,12 +1984,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchDragEvent(DispatchDragEventTypeValues type, double x, double y, Input.DragData data) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("type", CdpObject.json(type));
-            params.put("x", CdpObject.json(x));
-            params.put("y", CdpObject.json(y));
-            params.put("data", CdpObject.json(data));
-            return client.call("Input.dispatchDragEvent", params);
+            return call("Input.dispatchDragEvent", params("type", type, "x", x, "y", y, "data", data));
         }
         /**
          * Dispatches a drag event into the page.
@@ -2097,7 +1993,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchDragEvent(DispatchDragEventRequest request) {
-            return client.call("Input.dispatchDragEvent", request == null ? null : request.toMap());
+            return call("Input.dispatchDragEvent", request);
         }
         /**
          * Dispatches a key event to the page.
@@ -2119,23 +2015,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchKeyEvent(DispatchKeyEventTypeValues type, @Nullable Long modifiers, Input.@Nullable TimeSinceEpoch timestamp, @Nullable String text, @Nullable String unmodifiedText, @Nullable String keyIdentifier, @Nullable String code, @Nullable String key, @Nullable Long windowsVirtualKeyCode, @Nullable Long nativeVirtualKeyCode, @Nullable Boolean autoRepeat, @Nullable Boolean isKeypad, @Nullable Boolean isSystemKey, @Nullable Long location, java.util.@Nullable List<String> commands) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("type", CdpObject.json(type));
-            if (modifiers != null) params.put("modifiers", CdpObject.json(modifiers));
-            if (timestamp != null) params.put("timestamp", CdpObject.json(timestamp));
-            if (text != null) params.put("text", CdpObject.json(text));
-            if (unmodifiedText != null) params.put("unmodifiedText", CdpObject.json(unmodifiedText));
-            if (keyIdentifier != null) params.put("keyIdentifier", CdpObject.json(keyIdentifier));
-            if (code != null) params.put("code", CdpObject.json(code));
-            if (key != null) params.put("key", CdpObject.json(key));
-            if (windowsVirtualKeyCode != null) params.put("windowsVirtualKeyCode", CdpObject.json(windowsVirtualKeyCode));
-            if (nativeVirtualKeyCode != null) params.put("nativeVirtualKeyCode", CdpObject.json(nativeVirtualKeyCode));
-            if (autoRepeat != null) params.put("autoRepeat", CdpObject.json(autoRepeat));
-            if (isKeypad != null) params.put("isKeypad", CdpObject.json(isKeypad));
-            if (isSystemKey != null) params.put("isSystemKey", CdpObject.json(isSystemKey));
-            if (location != null) params.put("location", CdpObject.json(location));
-            if (commands != null) params.put("commands", CdpObject.json(commands));
-            return client.call("Input.dispatchKeyEvent", params);
+            return call("Input.dispatchKeyEvent", params("type", type, "modifiers", modifiers, "timestamp", timestamp, "text", text, "unmodifiedText", unmodifiedText, "keyIdentifier", keyIdentifier, "code", code, "key", key, "windowsVirtualKeyCode", windowsVirtualKeyCode, "nativeVirtualKeyCode", nativeVirtualKeyCode, "autoRepeat", autoRepeat, "isKeypad", isKeypad, "isSystemKey", isSystemKey, "location", location, "commands", commands));
         }
         /**
          * Dispatches a key event to the page.
@@ -2143,9 +2023,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchKeyEvent(DispatchKeyEventTypeValues type) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("type", CdpObject.json(type));
-            return client.call("Input.dispatchKeyEvent", params);
+            return call("Input.dispatchKeyEvent", params("type", type));
         }
         /**
          * Dispatches a key event to the page.
@@ -2153,7 +2031,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchKeyEvent(DispatchKeyEventRequest request) {
-            return client.call("Input.dispatchKeyEvent", request == null ? null : request.toMap());
+            return call("Input.dispatchKeyEvent", request);
         }
         /**
          * This method emulates inserting text that doesn&#x27;t come from a key press, for example an emoji keyboard or an IME.
@@ -2162,9 +2040,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> insertText(String text) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("text", CdpObject.json(text));
-            return client.call("Input.insertText", params);
+            return call("Input.insertText", params("text", text));
         }
         /**
          * This method emulates inserting text that doesn&#x27;t come from a key press, for example an emoji keyboard or an IME.
@@ -2173,7 +2049,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> insertText(InsertTextRequest request) {
-            return client.call("Input.insertText", request == null ? null : request.toMap());
+            return call("Input.insertText", request);
         }
         /**
          * This method sets the current candidate text for IME. Use imeCommitComposition to commit the final text. Use imeSetComposition with empty string as text to cancel composition.
@@ -2186,13 +2062,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> imeSetComposition(String text, long selectionStart, long selectionEnd, @Nullable Long replacementStart, @Nullable Long replacementEnd) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("text", CdpObject.json(text));
-            params.put("selectionStart", CdpObject.json(selectionStart));
-            params.put("selectionEnd", CdpObject.json(selectionEnd));
-            if (replacementStart != null) params.put("replacementStart", CdpObject.json(replacementStart));
-            if (replacementEnd != null) params.put("replacementEnd", CdpObject.json(replacementEnd));
-            return client.call("Input.imeSetComposition", params);
+            return call("Input.imeSetComposition", params("text", text, "selectionStart", selectionStart, "selectionEnd", selectionEnd, "replacementStart", replacementStart, "replacementEnd", replacementEnd));
         }
         /**
          * This method sets the current candidate text for IME. Use imeCommitComposition to commit the final text. Use imeSetComposition with empty string as text to cancel composition.
@@ -2203,11 +2073,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> imeSetComposition(String text, long selectionStart, long selectionEnd) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("text", CdpObject.json(text));
-            params.put("selectionStart", CdpObject.json(selectionStart));
-            params.put("selectionEnd", CdpObject.json(selectionEnd));
-            return client.call("Input.imeSetComposition", params);
+            return call("Input.imeSetComposition", params("text", text, "selectionStart", selectionStart, "selectionEnd", selectionEnd));
         }
         /**
          * This method sets the current candidate text for IME. Use imeCommitComposition to commit the final text. Use imeSetComposition with empty string as text to cancel composition.
@@ -2216,7 +2082,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> imeSetComposition(ImeSetCompositionRequest request) {
-            return client.call("Input.imeSetComposition", request == null ? null : request.toMap());
+            return call("Input.imeSetComposition", request);
         }
         /**
          * Dispatches a mouse event to the page.
@@ -2239,24 +2105,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchMouseEvent(DispatchMouseEventTypeValues type, double x, double y, @Nullable Long modifiers, Input.@Nullable TimeSinceEpoch timestamp, Input.@Nullable MouseButton button, @Nullable Long buttons, @Nullable Long clickCount, @Nullable Double force, @Nullable Double tangentialPressure, @Nullable Double tiltX, @Nullable Double tiltY, @Nullable Long twist, @Nullable Double deltaX, @Nullable Double deltaY, @Nullable DispatchMouseEventPointerTypeValues pointerType) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("type", CdpObject.json(type));
-            params.put("x", CdpObject.json(x));
-            params.put("y", CdpObject.json(y));
-            if (modifiers != null) params.put("modifiers", CdpObject.json(modifiers));
-            if (timestamp != null) params.put("timestamp", CdpObject.json(timestamp));
-            if (button != null) params.put("button", CdpObject.json(button));
-            if (buttons != null) params.put("buttons", CdpObject.json(buttons));
-            if (clickCount != null) params.put("clickCount", CdpObject.json(clickCount));
-            if (force != null) params.put("force", CdpObject.json(force));
-            if (tangentialPressure != null) params.put("tangentialPressure", CdpObject.json(tangentialPressure));
-            if (tiltX != null) params.put("tiltX", CdpObject.json(tiltX));
-            if (tiltY != null) params.put("tiltY", CdpObject.json(tiltY));
-            if (twist != null) params.put("twist", CdpObject.json(twist));
-            if (deltaX != null) params.put("deltaX", CdpObject.json(deltaX));
-            if (deltaY != null) params.put("deltaY", CdpObject.json(deltaY));
-            if (pointerType != null) params.put("pointerType", CdpObject.json(pointerType));
-            return client.call("Input.dispatchMouseEvent", params);
+            return call("Input.dispatchMouseEvent", params("type", type, "x", x, "y", y, "modifiers", modifiers, "timestamp", timestamp, "button", button, "buttons", buttons, "clickCount", clickCount, "force", force, "tangentialPressure", tangentialPressure, "tiltX", tiltX, "tiltY", tiltY, "twist", twist, "deltaX", deltaX, "deltaY", deltaY, "pointerType", pointerType));
         }
         /**
          * Dispatches a mouse event to the page.
@@ -2266,11 +2115,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchMouseEvent(DispatchMouseEventTypeValues type, double x, double y) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("type", CdpObject.json(type));
-            params.put("x", CdpObject.json(x));
-            params.put("y", CdpObject.json(y));
-            return client.call("Input.dispatchMouseEvent", params);
+            return call("Input.dispatchMouseEvent", params("type", type, "x", x, "y", y));
         }
         /**
          * Dispatches a mouse event to the page.
@@ -2278,7 +2123,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchMouseEvent(DispatchMouseEventRequest request) {
-            return client.call("Input.dispatchMouseEvent", request == null ? null : request.toMap());
+            return call("Input.dispatchMouseEvent", request);
         }
         /**
          * Dispatches a touch event to the page.
@@ -2289,12 +2134,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchTouchEvent(DispatchTouchEventTypeValues type, java.util.List<Input.TouchPoint> touchPoints, @Nullable Long modifiers, Input.@Nullable TimeSinceEpoch timestamp) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("type", CdpObject.json(type));
-            params.put("touchPoints", CdpObject.json(touchPoints));
-            if (modifiers != null) params.put("modifiers", CdpObject.json(modifiers));
-            if (timestamp != null) params.put("timestamp", CdpObject.json(timestamp));
-            return client.call("Input.dispatchTouchEvent", params);
+            return call("Input.dispatchTouchEvent", params("type", type, "touchPoints", touchPoints, "modifiers", modifiers, "timestamp", timestamp));
         }
         /**
          * Dispatches a touch event to the page.
@@ -2303,10 +2143,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchTouchEvent(DispatchTouchEventTypeValues type, java.util.List<Input.TouchPoint> touchPoints) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("type", CdpObject.json(type));
-            params.put("touchPoints", CdpObject.json(touchPoints));
-            return client.call("Input.dispatchTouchEvent", params);
+            return call("Input.dispatchTouchEvent", params("type", type, "touchPoints", touchPoints));
         }
         /**
          * Dispatches a touch event to the page.
@@ -2314,14 +2151,14 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchTouchEvent(DispatchTouchEventRequest request) {
-            return client.call("Input.dispatchTouchEvent", request == null ? null : request.toMap());
+            return call("Input.dispatchTouchEvent", request);
         }
         /**
          * Cancels any active dragging in the page.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> cancelDragging() {
-            return client.call("Input.cancelDragging", null);
+            return call("Input.cancelDragging");
         }
         /**
          * Emulates touch event from the mouse event parameters.
@@ -2338,17 +2175,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> emulateTouchFromMouseEvent(EmulateTouchFromMouseEventTypeValues type, long x, long y, Input.MouseButton button, Input.@Nullable TimeSinceEpoch timestamp, @Nullable Double deltaX, @Nullable Double deltaY, @Nullable Long modifiers, @Nullable Long clickCount) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("type", CdpObject.json(type));
-            params.put("x", CdpObject.json(x));
-            params.put("y", CdpObject.json(y));
-            params.put("button", CdpObject.json(button));
-            if (timestamp != null) params.put("timestamp", CdpObject.json(timestamp));
-            if (deltaX != null) params.put("deltaX", CdpObject.json(deltaX));
-            if (deltaY != null) params.put("deltaY", CdpObject.json(deltaY));
-            if (modifiers != null) params.put("modifiers", CdpObject.json(modifiers));
-            if (clickCount != null) params.put("clickCount", CdpObject.json(clickCount));
-            return client.call("Input.emulateTouchFromMouseEvent", params);
+            return call("Input.emulateTouchFromMouseEvent", params("type", type, "x", x, "y", y, "button", button, "timestamp", timestamp, "deltaX", deltaX, "deltaY", deltaY, "modifiers", modifiers, "clickCount", clickCount));
         }
         /**
          * Emulates touch event from the mouse event parameters.
@@ -2360,12 +2187,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> emulateTouchFromMouseEvent(EmulateTouchFromMouseEventTypeValues type, long x, long y, Input.MouseButton button) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("type", CdpObject.json(type));
-            params.put("x", CdpObject.json(x));
-            params.put("y", CdpObject.json(y));
-            params.put("button", CdpObject.json(button));
-            return client.call("Input.emulateTouchFromMouseEvent", params);
+            return call("Input.emulateTouchFromMouseEvent", params("type", type, "x", x, "y", y, "button", button));
         }
         /**
          * Emulates touch event from the mouse event parameters.
@@ -2374,7 +2196,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> emulateTouchFromMouseEvent(EmulateTouchFromMouseEventRequest request) {
-            return client.call("Input.emulateTouchFromMouseEvent", request == null ? null : request.toMap());
+            return call("Input.emulateTouchFromMouseEvent", request);
         }
         /**
          * Ignores input events (useful while auditing page).
@@ -2382,9 +2204,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setIgnoreInputEvents(boolean ignore) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("ignore", CdpObject.json(ignore));
-            return client.call("Input.setIgnoreInputEvents", params);
+            return call("Input.setIgnoreInputEvents", params("ignore", ignore));
         }
         /**
          * Ignores input events (useful while auditing page).
@@ -2392,7 +2212,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setIgnoreInputEvents(SetIgnoreInputEventsRequest request) {
-            return client.call("Input.setIgnoreInputEvents", request == null ? null : request.toMap());
+            return call("Input.setIgnoreInputEvents", request);
         }
         /**
          * Prevents default drag and drop behavior and instead emits {@code Input.dragIntercepted} events. Drag and drop behavior can be directly controlled via {@code Input.dispatchDragEvent}.
@@ -2401,9 +2221,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setInterceptDrags(boolean enabled) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("enabled", CdpObject.json(enabled));
-            return client.call("Input.setInterceptDrags", params);
+            return call("Input.setInterceptDrags", params("enabled", enabled));
         }
         /**
          * Prevents default drag and drop behavior and instead emits {@code Input.dragIntercepted} events. Drag and drop behavior can be directly controlled via {@code Input.dispatchDragEvent}.
@@ -2412,7 +2230,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setInterceptDrags(SetInterceptDragsRequest request) {
-            return client.call("Input.setInterceptDrags", request == null ? null : request.toMap());
+            return call("Input.setInterceptDrags", request);
         }
         /**
          * Synthesizes a pinch gesture over a time period by issuing appropriate touch events.
@@ -2425,13 +2243,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> synthesizePinchGesture(double x, double y, double scaleFactor, @Nullable Long relativeSpeed, Input.@Nullable GestureSourceType gestureSourceType) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("x", CdpObject.json(x));
-            params.put("y", CdpObject.json(y));
-            params.put("scaleFactor", CdpObject.json(scaleFactor));
-            if (relativeSpeed != null) params.put("relativeSpeed", CdpObject.json(relativeSpeed));
-            if (gestureSourceType != null) params.put("gestureSourceType", CdpObject.json(gestureSourceType));
-            return client.call("Input.synthesizePinchGesture", params);
+            return call("Input.synthesizePinchGesture", params("x", x, "y", y, "scaleFactor", scaleFactor, "relativeSpeed", relativeSpeed, "gestureSourceType", gestureSourceType));
         }
         /**
          * Synthesizes a pinch gesture over a time period by issuing appropriate touch events.
@@ -2442,11 +2254,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> synthesizePinchGesture(double x, double y, double scaleFactor) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("x", CdpObject.json(x));
-            params.put("y", CdpObject.json(y));
-            params.put("scaleFactor", CdpObject.json(scaleFactor));
-            return client.call("Input.synthesizePinchGesture", params);
+            return call("Input.synthesizePinchGesture", params("x", x, "y", y, "scaleFactor", scaleFactor));
         }
         /**
          * Synthesizes a pinch gesture over a time period by issuing appropriate touch events.
@@ -2455,7 +2263,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> synthesizePinchGesture(SynthesizePinchGestureRequest request) {
-            return client.call("Input.synthesizePinchGesture", request == null ? null : request.toMap());
+            return call("Input.synthesizePinchGesture", request);
         }
         /**
          * Synthesizes a scroll gesture over a time period by issuing appropriate touch events.
@@ -2475,20 +2283,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> synthesizeScrollGesture(double x, double y, @Nullable Double xDistance, @Nullable Double yDistance, @Nullable Double xOverscroll, @Nullable Double yOverscroll, @Nullable Boolean preventFling, @Nullable Long speed, Input.@Nullable GestureSourceType gestureSourceType, @Nullable Long repeatCount, @Nullable Long repeatDelayMs, @Nullable String interactionMarkerName) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("x", CdpObject.json(x));
-            params.put("y", CdpObject.json(y));
-            if (xDistance != null) params.put("xDistance", CdpObject.json(xDistance));
-            if (yDistance != null) params.put("yDistance", CdpObject.json(yDistance));
-            if (xOverscroll != null) params.put("xOverscroll", CdpObject.json(xOverscroll));
-            if (yOverscroll != null) params.put("yOverscroll", CdpObject.json(yOverscroll));
-            if (preventFling != null) params.put("preventFling", CdpObject.json(preventFling));
-            if (speed != null) params.put("speed", CdpObject.json(speed));
-            if (gestureSourceType != null) params.put("gestureSourceType", CdpObject.json(gestureSourceType));
-            if (repeatCount != null) params.put("repeatCount", CdpObject.json(repeatCount));
-            if (repeatDelayMs != null) params.put("repeatDelayMs", CdpObject.json(repeatDelayMs));
-            if (interactionMarkerName != null) params.put("interactionMarkerName", CdpObject.json(interactionMarkerName));
-            return client.call("Input.synthesizeScrollGesture", params);
+            return call("Input.synthesizeScrollGesture", params("x", x, "y", y, "xDistance", xDistance, "yDistance", yDistance, "xOverscroll", xOverscroll, "yOverscroll", yOverscroll, "preventFling", preventFling, "speed", speed, "gestureSourceType", gestureSourceType, "repeatCount", repeatCount, "repeatDelayMs", repeatDelayMs, "interactionMarkerName", interactionMarkerName));
         }
         /**
          * Synthesizes a scroll gesture over a time period by issuing appropriate touch events.
@@ -2498,10 +2293,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> synthesizeScrollGesture(double x, double y) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("x", CdpObject.json(x));
-            params.put("y", CdpObject.json(y));
-            return client.call("Input.synthesizeScrollGesture", params);
+            return call("Input.synthesizeScrollGesture", params("x", x, "y", y));
         }
         /**
          * Synthesizes a scroll gesture over a time period by issuing appropriate touch events.
@@ -2510,7 +2302,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> synthesizeScrollGesture(SynthesizeScrollGestureRequest request) {
-            return client.call("Input.synthesizeScrollGesture", request == null ? null : request.toMap());
+            return call("Input.synthesizeScrollGesture", request);
         }
         /**
          * Synthesizes a tap gesture over a time period by issuing appropriate touch events.
@@ -2523,13 +2315,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> synthesizeTapGesture(double x, double y, @Nullable Long duration, @Nullable Long tapCount, Input.@Nullable GestureSourceType gestureSourceType) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("x", CdpObject.json(x));
-            params.put("y", CdpObject.json(y));
-            if (duration != null) params.put("duration", CdpObject.json(duration));
-            if (tapCount != null) params.put("tapCount", CdpObject.json(tapCount));
-            if (gestureSourceType != null) params.put("gestureSourceType", CdpObject.json(gestureSourceType));
-            return client.call("Input.synthesizeTapGesture", params);
+            return call("Input.synthesizeTapGesture", params("x", x, "y", y, "duration", duration, "tapCount", tapCount, "gestureSourceType", gestureSourceType));
         }
         /**
          * Synthesizes a tap gesture over a time period by issuing appropriate touch events.
@@ -2539,10 +2325,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> synthesizeTapGesture(double x, double y) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("x", CdpObject.json(x));
-            params.put("y", CdpObject.json(y));
-            return client.call("Input.synthesizeTapGesture", params);
+            return call("Input.synthesizeTapGesture", params("x", x, "y", y));
         }
         /**
          * Synthesizes a tap gesture over a time period by issuing appropriate touch events.
@@ -2551,7 +2334,7 @@ public final class Input {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> synthesizeTapGesture(SynthesizeTapGestureRequest request) {
-            return client.call("Input.synthesizeTapGesture", request == null ? null : request.toMap());
+            return call("Input.synthesizeTapGesture", request);
         }
         /**
          * Emitted only when {@code Input.setInterceptDrags} is enabled. Use this data with {@code Input.dispatchDragEvent} to restore normal drag and drop behavior.
@@ -2560,7 +2343,7 @@ public final class Input {
          * @return a removable subscription
          */
         public CdpSubscription onDragIntercepted(Consumer<DragInterceptedEvent> handler) {
-            return client.on("Input.dragIntercepted", DragInterceptedEvent::fromMap, handler);
+            return on("Input.dragIntercepted", DragInterceptedEvent::fromMap, handler);
         }
     }
 }

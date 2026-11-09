@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class BeforeDownloadCallback implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class BeforeDownloadCallback extends BrowserFacade {
 
     public BeforeDownloadCallback(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_before_download_callback_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_before_download_callback_t");
     }
 
     /**
@@ -59,6 +28,6 @@ public final class BeforeDownloadCallback implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:51</a>
      */
     public CompletableFuture<Void> cont(String downloadPath, int showDialog) {
-        return CefFutures.discard(session.request(new BeforeDownloadCallbackContRequest(handle, downloadPath, showDialog), BeforeDownloadCallbackContResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BEFORE_DOWNLOAD_CALLBACK_CONT_REQUEST, new BeforeDownloadCallbackContRequest(handle, downloadPath, showDialog), EmptyMessage.DECODER));
     }
 }

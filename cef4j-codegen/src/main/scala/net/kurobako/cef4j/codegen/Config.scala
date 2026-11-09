@@ -26,7 +26,6 @@ case class Config(
     javaPackage: String,
     compilerId: String,
     cefApiVersionRaw: Option[String] = None,
-    outResourceDir: Option[Path] = None,
     extraCppDirs: List[String] = Nil,
     extraCapiDirs: List[String] = Nil,
     targetPlatform: Platform = Platform.detectCurrent,

@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class ListValue implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class ListValue extends BrowserFacade {
 
     public ListValue(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_list_value_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_list_value_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> isValid() {
         return CefFutures.map(
-            session.request(new ListValueIsValidRequest(handle), ListValueIsValidResponse.DECODER),
-            ListValueIsValidResponse::result);
+            session.request(MessageIds.LIST_VALUE_IS_VALID_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> isOwned() {
         return CefFutures.map(
-            session.request(new ListValueIsOwnedRequest(handle), ListValueIsOwnedResponse.DECODER),
-            ListValueIsOwnedResponse::result);
+            session.request(MessageIds.LIST_VALUE_IS_OWNED_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -82,8 +51,8 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> isReadOnly() {
         return CefFutures.map(
-            session.request(new ListValueIsReadOnlyRequest(handle), ListValueIsReadOnlyResponse.DECODER),
-            ListValueIsReadOnlyResponse::result);
+            session.request(MessageIds.LIST_VALUE_IS_READ_ONLY_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -94,8 +63,8 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> isSame(RemoteHandle that) {
         return CefFutures.map(
-            session.request(new ListValueIsSameRequest(handle, that), ListValueIsSameResponse.DECODER),
-            ListValueIsSameResponse::result);
+            session.request(MessageIds.LIST_VALUE_IS_SAME_REQUEST, new SelfHandleThatHandleMessage(handle, that), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -106,8 +75,8 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> isEqual(RemoteHandle that) {
         return CefFutures.map(
-            session.request(new ListValueIsEqualRequest(handle, that), ListValueIsEqualResponse.DECODER),
-            ListValueIsEqualResponse::result);
+            session.request(MessageIds.LIST_VALUE_IS_EQUAL_REQUEST, new SelfHandleThatHandleMessage(handle, that), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -118,7 +87,7 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<ListValue> copy() {
         return CefFutures.map(
-            session.request(new ListValueCopyRequest(handle), ListValueCopyResponse.DECODER),
+            session.request(MessageIds.LIST_VALUE_COPY_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new ListValue(session, __r.result()));
     }
 
@@ -130,8 +99,8 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> setSize(long size) {
         return CefFutures.map(
-            session.request(new ListValueSetSizeRequest(handle, size), ListValueSetSizeResponse.DECODER),
-            ListValueSetSizeResponse::result);
+            session.request(MessageIds.LIST_VALUE_SET_SIZE_REQUEST, new ListValueSetSizeRequest(handle, size), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -142,8 +111,8 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Long> getSize() {
         return CefFutures.map(
-            session.request(new ListValueGetSizeRequest(handle), ListValueGetSizeResponse.DECODER),
-            ListValueGetSizeResponse::result);
+            session.request(MessageIds.LIST_VALUE_GET_SIZE_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -154,8 +123,8 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> clear() {
         return CefFutures.map(
-            session.request(new ListValueClearRequest(handle), ListValueClearResponse.DECODER),
-            ListValueClearResponse::result);
+            session.request(MessageIds.LIST_VALUE_CLEAR_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -166,8 +135,8 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> remove(long index) {
         return CefFutures.map(
-            session.request(new ListValueRemoveRequest(handle, index), ListValueRemoveResponse.DECODER),
-            ListValueRemoveResponse::result);
+            session.request(MessageIds.LIST_VALUE_REMOVE_REQUEST, new SelfHandleIndexLongMessage(handle, index), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -178,8 +147,8 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> getType(long index) {
         return CefFutures.map(
-            session.request(new ListValueGetTypeRequest(handle, index), ListValueGetTypeResponse.DECODER),
-            ListValueGetTypeResponse::result);
+            session.request(MessageIds.LIST_VALUE_GET_TYPE_REQUEST, new SelfHandleIndexLongMessage(handle, index), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -190,7 +159,7 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Value> getValue(long index) {
         return CefFutures.map(
-            session.request(new ListValueGetValueRequest(handle, index), ListValueGetValueResponse.DECODER),
+            session.request(MessageIds.LIST_VALUE_GET_VALUE_REQUEST, new SelfHandleIndexLongMessage(handle, index), ResultHandleMessage.DECODER),
             __r -> new Value(session, __r.result()));
     }
 
@@ -202,8 +171,8 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> getBool(long index) {
         return CefFutures.map(
-            session.request(new ListValueGetBoolRequest(handle, index), ListValueGetBoolResponse.DECODER),
-            ListValueGetBoolResponse::result);
+            session.request(MessageIds.LIST_VALUE_GET_BOOL_REQUEST, new SelfHandleIndexLongMessage(handle, index), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -214,8 +183,8 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> getInt(long index) {
         return CefFutures.map(
-            session.request(new ListValueGetIntRequest(handle, index), ListValueGetIntResponse.DECODER),
-            ListValueGetIntResponse::result);
+            session.request(MessageIds.LIST_VALUE_GET_INT_REQUEST, new SelfHandleIndexLongMessage(handle, index), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -226,7 +195,7 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<BinaryValue> getBinary(long index) {
         return CefFutures.map(
-            session.request(new ListValueGetBinaryRequest(handle, index), ListValueGetBinaryResponse.DECODER),
+            session.request(MessageIds.LIST_VALUE_GET_BINARY_REQUEST, new SelfHandleIndexLongMessage(handle, index), ResultHandleMessage.DECODER),
             __r -> new BinaryValue(session, __r.result()));
     }
 
@@ -238,7 +207,7 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<DictionaryValue> getDictionary(long index) {
         return CefFutures.map(
-            session.request(new ListValueGetDictionaryRequest(handle, index), ListValueGetDictionaryResponse.DECODER),
+            session.request(MessageIds.LIST_VALUE_GET_DICTIONARY_REQUEST, new SelfHandleIndexLongMessage(handle, index), ResultHandleMessage.DECODER),
             __r -> new DictionaryValue(session, __r.result()));
     }
 
@@ -250,7 +219,7 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<ListValue> getList(long index) {
         return CefFutures.map(
-            session.request(new ListValueGetListRequest(handle, index), ListValueGetListResponse.DECODER),
+            session.request(MessageIds.LIST_VALUE_GET_LIST_REQUEST, new SelfHandleIndexLongMessage(handle, index), ResultHandleMessage.DECODER),
             __r -> new ListValue(session, __r.result()));
     }
 
@@ -262,8 +231,8 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> setValue(long index, RemoteHandle value) {
         return CefFutures.map(
-            session.request(new ListValueSetValueRequest(handle, index, value), ListValueSetValueResponse.DECODER),
-            ListValueSetValueResponse::result);
+            session.request(MessageIds.LIST_VALUE_SET_VALUE_REQUEST, new SelfHandleIndexLongValueHandleMessage(handle, index, value), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -274,8 +243,8 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> setNull(long index) {
         return CefFutures.map(
-            session.request(new ListValueSetNullRequest(handle, index), ListValueSetNullResponse.DECODER),
-            ListValueSetNullResponse::result);
+            session.request(MessageIds.LIST_VALUE_SET_NULL_REQUEST, new SelfHandleIndexLongMessage(handle, index), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -286,8 +255,8 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> setBool(long index, int value) {
         return CefFutures.map(
-            session.request(new ListValueSetBoolRequest(handle, index, value), ListValueSetBoolResponse.DECODER),
-            ListValueSetBoolResponse::result);
+            session.request(MessageIds.LIST_VALUE_SET_BOOL_REQUEST, new SelfHandleIndexLongValueIntMessage(handle, index, value), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -298,8 +267,8 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> setInt(long index, int value) {
         return CefFutures.map(
-            session.request(new ListValueSetIntRequest(handle, index, value), ListValueSetIntResponse.DECODER),
-            ListValueSetIntResponse::result);
+            session.request(MessageIds.LIST_VALUE_SET_INT_REQUEST, new SelfHandleIndexLongValueIntMessage(handle, index, value), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -312,8 +281,8 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> setString(long index, String value) {
         return CefFutures.map(
-            session.request(new ListValueSetStringRequest(handle, index, value), ListValueSetStringResponse.DECODER),
-            ListValueSetStringResponse::result);
+            session.request(MessageIds.LIST_VALUE_SET_STRING_REQUEST, new ListValueSetStringRequest(handle, index, value), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -324,8 +293,8 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> setBinary(long index, RemoteHandle value) {
         return CefFutures.map(
-            session.request(new ListValueSetBinaryRequest(handle, index, value), ListValueSetBinaryResponse.DECODER),
-            ListValueSetBinaryResponse::result);
+            session.request(MessageIds.LIST_VALUE_SET_BINARY_REQUEST, new SelfHandleIndexLongValueHandleMessage(handle, index, value), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -336,8 +305,8 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> setDictionary(long index, RemoteHandle value) {
         return CefFutures.map(
-            session.request(new ListValueSetDictionaryRequest(handle, index, value), ListValueSetDictionaryResponse.DECODER),
-            ListValueSetDictionaryResponse::result);
+            session.request(MessageIds.LIST_VALUE_SET_DICTIONARY_REQUEST, new SelfHandleIndexLongValueHandleMessage(handle, index, value), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -348,7 +317,7 @@ public final class ListValue implements AutoCloseable {
      */
     public CompletableFuture<Integer> setList(long index, RemoteHandle value) {
         return CefFutures.map(
-            session.request(new ListValueSetListRequest(handle, index, value), ListValueSetListResponse.DECODER),
-            ListValueSetListResponse::result);
+            session.request(MessageIds.LIST_VALUE_SET_LIST_REQUEST, new SelfHandleIndexLongValueHandleMessage(handle, index, value), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

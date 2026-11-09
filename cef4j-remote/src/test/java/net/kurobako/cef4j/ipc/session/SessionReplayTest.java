@@ -77,7 +77,8 @@ class SessionReplayTest {
         try (ReplayTransport replay = ReplayTransport.fromFile(log);
                 CefSessionImpl session = new CefSessionImpl(replay)) {
             java.util.concurrent.CompletableFuture<TestMessages.BytesView> fut = session.request(
-                    new TestMessages.BytesEncoder(MSG_NAVIGATE, "https://example.com".getBytes(StandardCharsets.UTF_8)),
+                    MSG_NAVIGATE,
+                    new TestMessages.BytesEncoder("https://example.com".getBytes(StandardCharsets.UTF_8)),
                     TestMessages.bytesDecoder(MSG_NAVIGATE));
 
             replay.start();

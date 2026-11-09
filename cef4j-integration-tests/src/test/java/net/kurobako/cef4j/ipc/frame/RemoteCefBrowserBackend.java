@@ -15,12 +15,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
+import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessage;
+import net.kurobako.cef4j.ipc.protocol.gen.EmptyMessage;
 import net.kurobako.cef4j.ipc.protocol.gen.EvaluateJavascriptRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.EvaluateJavascriptResponse;
-import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
 import net.kurobako.cef4j.ipc.protocol.gen.LoadHandlerOnLoadEndEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeResponse;
+import net.kurobako.cef4j.ipc.protocol.gen.ValueKindIntBoolValueBoolIntValueIntDoubleValueLongStringValueStringErrorMessageStringEtc6a348bMessage;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -94,11 +95,11 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
                 CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
                 CompletableFuture<LoadHandlerOnLoadEndEvent> bootstrapLoadFuture = new CompletableFuture<>();
                 CefSession.HandlerRegistration browserRegistration = nextSession.onLatest(
-                        LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
-                        LifeSpanHandlerOnAfterCreatedEvent.DECODER,
+                        MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT,
+                        BrowserHandleMessage.DECODER,
                         event -> handleFuture.complete(event.browser()));
                 CefSession.HandlerRegistration loadRegistration = nextSession.onLatest(
-                        LoadHandlerOnLoadEndEvent.MESSAGE_ID,
+                        MessageIds.LOAD_HANDLER_ON_LOAD_END_EVENT,
                         LoadHandlerOnLoadEndEvent.DECODER,
                         bootstrapLoadFuture::complete);
                 try {
@@ -117,8 +118,9 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
                 nextNavigation = new RemoteNavigationProbe(nextSession, () -> expectedBrowser);
                 nextSession
                         .request(
+                                MessageIds.SET_VIEWPORT_SIZE_REQUEST,
                                 new SetViewportSizeRequest(nextBrowserHandle, config.width(), config.height()),
-                                SetViewportSizeResponse.DECODER)
+                                EmptyMessage.DECODER)
                         .get(config.startupTimeout().toMillis(), TimeUnit.MILLISECONDS);
             } catch (Exception failure) {
                 closeAfterFailure(nextNavigation, failure);
@@ -160,8 +162,10 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
         public CompletableFuture<String> evaluateJavascript(String script) {
             return browser.getMainFrame()
                     .thenCompose(frame -> session.request(
+                                    MessageIds.EVALUATE_JAVASCRIPT_REQUEST,
                                     new EvaluateJavascriptRequest(frame.handle(), script, false),
-                                    EvaluateJavascriptResponse.DECODER)
+                                    ValueKindIntBoolValueBoolIntValueIntDoubleValueLongStringValueStringErrorMessageStringEtc6a348bMessage
+                                            .DECODER)
                             .thenApply(resp -> net.kurobako.cef4j.ipc.session.JsResult.fromWire(
                                             resp.valueKind(),
                                             resp.boolValue(),
@@ -182,7 +186,9 @@ public final class RemoteCefBrowserBackend implements BrowserBackend {
         @Override
         public CompletableFuture<Void> resizeViewport(int width, int height) {
             return session.request(
-                            new SetViewportSizeRequest(browserHandle, width, height), SetViewportSizeResponse.DECODER)
+                            MessageIds.SET_VIEWPORT_SIZE_REQUEST,
+                            new SetViewportSizeRequest(browserHandle, width, height),
+                            EmptyMessage.DECODER)
                     .thenApply(ignored -> null);
         }
 

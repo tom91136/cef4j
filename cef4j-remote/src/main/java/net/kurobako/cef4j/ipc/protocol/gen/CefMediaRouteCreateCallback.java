@@ -31,7 +31,7 @@ public interface CefMediaRouteCreateCallback {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefMediaRouteCreateCallback handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(MediaRouteCreateCallbackOnMediaRouteCreateFinishedEvent.MESSAGE_ID, MediaRouteCreateCallbackOnMediaRouteCreateFinishedEvent.DECODER,
+                session.on(MessageIds.MEDIA_ROUTE_CREATE_CALLBACK_ON_MEDIA_ROUTE_CREATE_FINISHED_EVENT, MediaRouteCreateCallbackOnMediaRouteCreateFinishedEvent.DECODER,
                         ev -> handler.onMediaRouteCreateFinished(ev.result(), ev.error(), ev.route())));
     }
 }

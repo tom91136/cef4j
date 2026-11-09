@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -23,14 +24,14 @@ public interface CefKeyboardHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__keyboard__handler_8h.html">cef_keyboard_handler.h:66</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onKeyEvent(net.kurobako.cef4j.ipc.session.RemoteHandle browser, KeyEvent event, long osEvent) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onKeyEvent(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.gen.CefKeyEvent event, long osEvent) { return Unhandled.bool(); }
 
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefKeyboardHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.intercept(KeyboardHandlerOnKeyEventEvent.MESSAGE_ID, KeyboardHandlerOnKeyEventEvent.DECODER, ev -> {
+                session.intercept(MessageIds.KEYBOARD_HANDLER_ON_KEY_EVENT_EVENT, KeyboardHandlerOnKeyEventEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onKeyEvent(ev.browser(), ev.event(), ev.osEvent());
-                    return java.util.Optional.of(new KeyboardHandlerOnKeyEventResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.KEYBOARD_HANDLER_ON_KEY_EVENT_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }));
     }
 }

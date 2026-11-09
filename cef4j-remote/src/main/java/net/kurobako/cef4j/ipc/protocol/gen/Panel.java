@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,104 +13,74 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class Panel implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class Panel extends BrowserFacade {
 
     public Panel(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_panel_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_panel_t");
     }
 
     /** Dispatches {@code as_window} to the runtime server. */
     public CompletableFuture<Window> asWindow() {
         return CefFutures.map(
-            session.request(new PanelAsWindowRequest(handle), PanelAsWindowResponse.DECODER),
+            session.request(MessageIds.PANEL_AS_WINDOW_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new Window(session, __r.result()));
     }
 
     /** Dispatches {@code set_to_fill_layout} to the runtime server. */
     public CompletableFuture<RemoteHandle> setToFillLayout() {
         return CefFutures.map(
-            session.request(new PanelSetToFillLayoutRequest(handle), PanelSetToFillLayoutResponse.DECODER),
-            PanelSetToFillLayoutResponse::result);
+            session.request(MessageIds.PANEL_SET_TO_FILL_LAYOUT_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
+            ResultHandleMessage::result);
     }
 
     /** Dispatches {@code get_layout} to the runtime server. */
     public CompletableFuture<Layout> getLayout() {
         return CefFutures.map(
-            session.request(new PanelGetLayoutRequest(handle), PanelGetLayoutResponse.DECODER),
+            session.request(MessageIds.PANEL_GET_LAYOUT_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new Layout(session, __r.result()));
     }
 
     /** Dispatches {@code layout} to the runtime server. */
     public CompletableFuture<Void> layout() {
-        return CefFutures.discard(session.request(new PanelLayoutRequest(handle), PanelLayoutResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.PANEL_LAYOUT_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code add_child_view} to the runtime server. */
     public CompletableFuture<Void> addChildView(RemoteHandle view) {
-        return CefFutures.discard(session.request(new PanelAddChildViewRequest(handle, view), PanelAddChildViewResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.PANEL_ADD_CHILD_VIEW_REQUEST, new SelfHandleViewHandleMessage(handle, view), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code add_child_view_at} to the runtime server. */
     public CompletableFuture<Void> addChildViewAt(RemoteHandle view, int index) {
-        return CefFutures.discard(session.request(new PanelAddChildViewAtRequest(handle, view, index), PanelAddChildViewAtResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.PANEL_ADD_CHILD_VIEW_AT_REQUEST, new SelfHandleViewHandleIndexIntMessage(handle, view, index), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code reorder_child_view} to the runtime server. */
     public CompletableFuture<Void> reorderChildView(RemoteHandle view, int index) {
-        return CefFutures.discard(session.request(new PanelReorderChildViewRequest(handle, view, index), PanelReorderChildViewResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.PANEL_REORDER_CHILD_VIEW_REQUEST, new SelfHandleViewHandleIndexIntMessage(handle, view, index), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code remove_child_view} to the runtime server. */
     public CompletableFuture<Void> removeChildView(RemoteHandle view) {
-        return CefFutures.discard(session.request(new PanelRemoveChildViewRequest(handle, view), PanelRemoveChildViewResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.PANEL_REMOVE_CHILD_VIEW_REQUEST, new SelfHandleViewHandleMessage(handle, view), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code remove_all_child_views} to the runtime server. */
     public CompletableFuture<Void> removeAllChildViews() {
-        return CefFutures.discard(session.request(new PanelRemoveAllChildViewsRequest(handle), PanelRemoveAllChildViewsResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.PANEL_REMOVE_ALL_CHILD_VIEWS_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code get_child_view_count} to the runtime server. */
     public CompletableFuture<Long> getChildViewCount() {
         return CefFutures.map(
-            session.request(new PanelGetChildViewCountRequest(handle), PanelGetChildViewCountResponse.DECODER),
-            PanelGetChildViewCountResponse::result);
+            session.request(MessageIds.PANEL_GET_CHILD_VIEW_COUNT_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /** Dispatches {@code get_child_view_at} to the runtime server. */
     public CompletableFuture<View> getChildViewAt(int index) {
         return CefFutures.map(
-            session.request(new PanelGetChildViewAtRequest(handle, index), PanelGetChildViewAtResponse.DECODER),
+            session.request(MessageIds.PANEL_GET_CHILD_VIEW_AT_REQUEST, new SelfHandleIndexIntMessage(handle, index), ResultHandleMessage.DECODER),
             __r -> new View(session, __r.result()));
     }
 }

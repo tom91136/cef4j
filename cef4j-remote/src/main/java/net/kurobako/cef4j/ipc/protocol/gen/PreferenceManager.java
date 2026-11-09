@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class PreferenceManager implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class PreferenceManager extends BrowserFacade {
 
     public PreferenceManager(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_preference_manager_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_preference_manager_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class PreferenceManager implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasPreference(String name) {
         return CefFutures.map(
-            session.request(new PreferenceManagerHasPreferenceRequest(handle, name), PreferenceManagerHasPreferenceResponse.DECODER),
-            PreferenceManagerHasPreferenceResponse::result);
+            session.request(MessageIds.PREFERENCE_MANAGER_HAS_PREFERENCE_REQUEST, new SelfHandleNameStringMessage(handle, name), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,7 +39,7 @@ public final class PreferenceManager implements AutoCloseable {
      */
     public CompletableFuture<Value> getPreference(String name) {
         return CefFutures.map(
-            session.request(new PreferenceManagerGetPreferenceRequest(handle, name), PreferenceManagerGetPreferenceResponse.DECODER),
+            session.request(MessageIds.PREFERENCE_MANAGER_GET_PREFERENCE_REQUEST, new SelfHandleNameStringMessage(handle, name), ResultHandleMessage.DECODER),
             __r -> new Value(session, __r.result()));
     }
 
@@ -82,7 +51,7 @@ public final class PreferenceManager implements AutoCloseable {
      */
     public CompletableFuture<DictionaryValue> getAllPreferences(int includeDefaults) {
         return CefFutures.map(
-            session.request(new PreferenceManagerGetAllPreferencesRequest(handle, includeDefaults), PreferenceManagerGetAllPreferencesResponse.DECODER),
+            session.request(MessageIds.PREFERENCE_MANAGER_GET_ALL_PREFERENCES_REQUEST, new PreferenceManagerGetAllPreferencesRequest(handle, includeDefaults), ResultHandleMessage.DECODER),
             __r -> new DictionaryValue(session, __r.result()));
     }
 
@@ -94,8 +63,8 @@ public final class PreferenceManager implements AutoCloseable {
      */
     public CompletableFuture<Integer> canSetPreference(String name) {
         return CefFutures.map(
-            session.request(new PreferenceManagerCanSetPreferenceRequest(handle, name), PreferenceManagerCanSetPreferenceResponse.DECODER),
-            PreferenceManagerCanSetPreferenceResponse::result);
+            session.request(MessageIds.PREFERENCE_MANAGER_CAN_SET_PREFERENCE_REQUEST, new SelfHandleNameStringMessage(handle, name), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -108,8 +77,8 @@ public final class PreferenceManager implements AutoCloseable {
      */
     public CompletableFuture<Integer> setPreference(String name, RemoteHandle value, String error) {
         return CefFutures.map(
-            session.request(new PreferenceManagerSetPreferenceRequest(handle, name, value, error), PreferenceManagerSetPreferenceResponse.DECODER),
-            PreferenceManagerSetPreferenceResponse::result);
+            session.request(MessageIds.PREFERENCE_MANAGER_SET_PREFERENCE_REQUEST, new PreferenceManagerSetPreferenceRequest(handle, name, value, error), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -123,7 +92,7 @@ public final class PreferenceManager implements AutoCloseable {
      */
     public CompletableFuture<RemoteHandle> addPreferenceObserver(String name, RemoteHandle observer) {
         return CefFutures.map(
-            session.request(new PreferenceManagerAddPreferenceObserverRequest(handle, name, observer), PreferenceManagerAddPreferenceObserverResponse.DECODER),
-            PreferenceManagerAddPreferenceObserverResponse::result);
+            session.request(MessageIds.PREFERENCE_MANAGER_ADD_PREFERENCE_OBSERVER_REQUEST, new PreferenceManagerAddPreferenceObserverRequest(handle, name, observer), ResultHandleMessage.DECODER),
+            ResultHandleMessage::result);
     }
 }

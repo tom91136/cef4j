@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,11 +9,10 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class BrowserHostFindRequest implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 861131453;
 
     private final RemoteHandle self;
     private final String searchText;
@@ -53,40 +51,27 @@ public final class BrowserHostFindRequest implements CefMessageView, CefMessageE
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 20 + searchTextBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putInt(searchTextBytes.length);
-            __dst.put(searchTextBytes);
-            __dst.putInt(forward);
-            __dst.putInt(matchCase);
-            __dst.putInt(findNext);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            WireEncoder.bytes(__out, searchTextBytes);
+            __out.putInt(forward);
+            __out.putInt(matchCase);
+            __out.putInt(findNext);
+        });
     }
 
-    public static final CefMessageDecoder<BrowserHostFindRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<BrowserHostFindRequest> DECODER = WireDecoder.message("BrowserHostFindRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final String searchText = WireDecoder.utf8(__buf, "searchText");
         final int forward = WireDecoder.int32(__buf, "forward");
         final int matchCase = WireDecoder.int32(__buf, "matchCase");
         final int findNext = WireDecoder.int32(__buf, "findNext");
-        WireDecoder.requireFullyConsumed(__buf, "BrowserHostFindRequest");
         return new BrowserHostFindRequest(self, searchText, forward, matchCase, findNext);
-    };
+    });
 }

@@ -18,6 +18,16 @@ object PlatformSpecificity {
         isPlatformSpecificFreeFunction(ff, platformTypes)
     }
 
+  def emitsRecord(
+      decl: CefDecl.DataStruct,
+      platformTypes: Set[String],
+      sharedInterfaces: Set[String],
+      platformOnly: Boolean
+  ): Boolean = {
+    val platformSpecific = isPlatformSpecificDecl(decl, platformTypes)
+    if (platformOnly) platformSpecific else !platformSpecific || sharedInterfaces.contains(decl.name)
+  }
+
   def isPlatformSpecificFreeFunction(ff: CefDecl.FreeFunction, platformTypes: Set[String]): Boolean =
     typeUsesPlatformType(ff.ret, platformTypes) || ff.params.exists(p => typeUsesPlatformType(p.typ, platformTypes))
 

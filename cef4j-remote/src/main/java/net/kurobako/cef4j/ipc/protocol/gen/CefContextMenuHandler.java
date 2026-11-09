@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -32,7 +33,7 @@ public interface CefContextMenuHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:111</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> runContextMenu(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle params, net.kurobako.cef4j.ipc.session.RemoteHandle model, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> runContextMenu(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle params, net.kurobako.cef4j.ipc.session.RemoteHandle model, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return Unhandled.bool(); }
 
     /**
      * Called to execute a command selected from the context menu. Return {@code true} if the command was handled or {@code false} for the default implementation. See cef_menu_id_t for the command ids that have default implementations. All user-defined command ids should be between MENU_ID_USER_FIRST and MENU_ID_USER_LAST. {@code params} will have the same values as what was passed to OnBeforeContextMenu(). Do not keep a reference to {@code params} outside of this callback.
@@ -41,7 +42,7 @@ public interface CefContextMenuHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:128</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onContextMenuCommand(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle params, int commandId, int eventFlags) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onContextMenuCommand(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.ipc.session.RemoteHandle params, int commandId, int eventFlags) { return Unhandled.bool(); }
 
     /**
      * Called when the context menu is dismissed irregardless of whether the menu was canceled or a command was selected.
@@ -59,7 +60,7 @@ public interface CefContextMenuHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:154</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> runQuickMenu(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, Point location, Size size, int editStateFlags, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> runQuickMenu(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, net.kurobako.cef4j.gen.CefPoint location, net.kurobako.cef4j.gen.CefSize size, int editStateFlags, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return Unhandled.bool(); }
 
     /**
      * Called to execute a command selected from the quick menu for a windowless browser. Return {@code true} if the command was handled or {@code false} for the default implementation. See cef_menu_id_t for command IDs that have default implementations.
@@ -68,7 +69,7 @@ public interface CefContextMenuHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__context__menu__handler_8h.html">cef_context_menu_handler.h:172</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onQuickMenuCommand(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, int commandId, int eventFlags) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onQuickMenuCommand(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, int commandId, int eventFlags) { return Unhandled.bool(); }
 
     /**
      * Called when the quick menu for a windowless browser is dismissed irregardless of whether the menu was canceled or a command was selected.
@@ -82,27 +83,27 @@ public interface CefContextMenuHandler {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefContextMenuHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(ContextMenuHandlerOnBeforeContextMenuEvent.MESSAGE_ID, ContextMenuHandlerOnBeforeContextMenuEvent.DECODER,
+                session.on(MessageIds.CONTEXT_MENU_HANDLER_ON_BEFORE_CONTEXT_MENU_EVENT, ContextMenuHandlerOnBeforeContextMenuEvent.DECODER,
                         ev -> handler.onBeforeContextMenu(ev.browser(), ev.frame(), ev.params(), ev.model())),
-                session.intercept(ContextMenuHandlerRunContextMenuEvent.MESSAGE_ID, ContextMenuHandlerRunContextMenuEvent.DECODER, ev -> {
+                session.intercept(MessageIds.CONTEXT_MENU_HANDLER_RUN_CONTEXT_MENU_EVENT, ContextMenuHandlerRunContextMenuEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.runContextMenu(ev.browser(), ev.frame(), ev.params(), ev.model(), ev.callback());
-                    return java.util.Optional.of(new ContextMenuHandlerRunContextMenuResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.CONTEXT_MENU_HANDLER_RUN_CONTEXT_MENU_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.intercept(ContextMenuHandlerOnContextMenuCommandEvent.MESSAGE_ID, ContextMenuHandlerOnContextMenuCommandEvent.DECODER, ev -> {
+                session.intercept(MessageIds.CONTEXT_MENU_HANDLER_ON_CONTEXT_MENU_COMMAND_EVENT, ContextMenuHandlerOnContextMenuCommandEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onContextMenuCommand(ev.browser(), ev.frame(), ev.params(), ev.commandId(), ev.eventFlags());
-                    return java.util.Optional.of(new ContextMenuHandlerOnContextMenuCommandResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.CONTEXT_MENU_HANDLER_ON_CONTEXT_MENU_COMMAND_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.on(ContextMenuHandlerOnContextMenuDismissedEvent.MESSAGE_ID, ContextMenuHandlerOnContextMenuDismissedEvent.DECODER,
+                session.on(MessageIds.CONTEXT_MENU_HANDLER_ON_CONTEXT_MENU_DISMISSED_EVENT, BrowserHandleFrameHandleMessage.DECODER,
                         ev -> handler.onContextMenuDismissed(ev.browser(), ev.frame())),
-                session.intercept(ContextMenuHandlerRunQuickMenuEvent.MESSAGE_ID, ContextMenuHandlerRunQuickMenuEvent.DECODER, ev -> {
+                session.intercept(MessageIds.CONTEXT_MENU_HANDLER_RUN_QUICK_MENU_EVENT, ContextMenuHandlerRunQuickMenuEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.runQuickMenu(ev.browser(), ev.frame(), ev.location(), ev.size(), ev.editStateFlags(), ev.callback());
-                    return java.util.Optional.of(new ContextMenuHandlerRunQuickMenuResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.CONTEXT_MENU_HANDLER_RUN_QUICK_MENU_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.intercept(ContextMenuHandlerOnQuickMenuCommandEvent.MESSAGE_ID, ContextMenuHandlerOnQuickMenuCommandEvent.DECODER, ev -> {
+                session.intercept(MessageIds.CONTEXT_MENU_HANDLER_ON_QUICK_MENU_COMMAND_EVENT, ContextMenuHandlerOnQuickMenuCommandEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onQuickMenuCommand(ev.browser(), ev.frame(), ev.commandId(), ev.eventFlags());
-                    return java.util.Optional.of(new ContextMenuHandlerOnQuickMenuCommandResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.CONTEXT_MENU_HANDLER_ON_QUICK_MENU_COMMAND_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.on(ContextMenuHandlerOnQuickMenuDismissedEvent.MESSAGE_ID, ContextMenuHandlerOnQuickMenuDismissedEvent.DECODER,
+                session.on(MessageIds.CONTEXT_MENU_HANDLER_ON_QUICK_MENU_DISMISSED_EVENT, BrowserHandleFrameHandleMessage.DECODER,
                         ev -> handler.onQuickMenuDismissed(ev.browser(), ev.frame())));
     }
 }

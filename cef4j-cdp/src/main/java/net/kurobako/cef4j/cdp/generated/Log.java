@@ -1,7 +1,6 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalLong;
@@ -9,6 +8,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -23,6 +24,16 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Log {
     private Log() {}
+    private static final CdpField<java.util.List<Runtime.RemoteObject>> ARGS = CdpField.of("args", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<LogEntry.CategoryValues> CATEGORY = CdpField.of("category", value -> LogEntry.CategoryValues.of((String) value));
+    private static final CdpField<java.util.List<Log.ViolationSetting>> CONFIG = CdpField.of("config", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Log.ViolationSetting.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Log.LogEntry> ENTRY = CdpField.of("entry", value -> java.util.Objects.requireNonNull(Log.LogEntry.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<LogEntry.LevelValues> LEVEL = CdpField.of("level", value -> LogEntry.LevelValues.of((String) value));
+    private static final CdpField<ViolationSetting.NameValues> NAME = CdpField.of("name", value -> ViolationSetting.NameValues.of((String) value));
+    private static final CdpField<Network.RequestId> NETWORK_REQUEST_ID = CdpField.of("networkRequestId", value -> new Network.RequestId((String) value));
+    private static final CdpField<LogEntry.SourceValues> SOURCE = CdpField.of("source", value -> LogEntry.SourceValues.of((String) value));
+    private static final CdpField<Runtime.StackTrace> STACK_TRACE = CdpField.of("stackTrace", value -> java.util.Objects.requireNonNull(Runtime.StackTrace.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Runtime.Timestamp> TIMESTAMP = CdpField.of("timestamp", value -> new Runtime.Timestamp(((Number) value).doubleValue()));
     /**
      * Log entry.
      */
@@ -97,77 +108,77 @@ public final class Log {
          * @return the protocol field value
          */
         public LogEntry.SourceValues source() {
-            return LogEntry.SourceValues.of((String) require("source"));
+            return require(SOURCE);
         }
         /**
          * Log entry severity.
          * @return the protocol field value
          */
         public LogEntry.LevelValues level() {
-            return LogEntry.LevelValues.of((String) require("level"));
+            return require(LEVEL);
         }
         /**
          * Logged text.
          * @return the protocol field value
          */
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * Returns the category field.
          * @return the protocol field value, empty when absent
          */
         public Optional<LogEntry.CategoryValues> category() {
-            return raw("category").map(value -> LogEntry.CategoryValues.of((String) value));
+            return optional(CATEGORY);
         }
         /**
          * Timestamp when this entry was added.
          * @return the protocol field value
          */
         public Runtime.Timestamp timestamp() {
-            return new Runtime.Timestamp(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP);
         }
         /**
          * URL of the resource if known.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return raw("url").map(value -> (String) value);
+            return optionalString("url");
         }
         /**
          * Line number in the resource.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong lineNumber() {
-            return raw("lineNumber").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("lineNumber");
         }
         /**
          * JavaScript stack trace.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.StackTrace> stackTrace() {
-            return raw("stackTrace").flatMap(CdpObject::objectMap).map(Runtime.StackTrace::fromMap);
+            return optional(STACK_TRACE);
         }
         /**
          * Identifier of the network request associated with this entry.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.RequestId> networkRequestId() {
-            return raw("networkRequestId").map(value -> new Network.RequestId((String) value));
+            return optional(NETWORK_REQUEST_ID);
         }
         /**
          * Identifier of the worker associated with this entry.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> workerId() {
-            return raw("workerId").map(value -> (String) value);
+            return optionalString("workerId");
         }
         /**
          * Call arguments.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Runtime.RemoteObject>> args() {
-            return raw("args").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(ARGS);
         }
         /**
          * Log entry source.
@@ -304,14 +315,14 @@ public final class Log {
          * @return the protocol field value
          */
         public ViolationSetting.NameValues name() {
-            return ViolationSetting.NameValues.of((String) require("name"));
+            return require(NAME);
         }
         /**
          * Time threshold to trigger upon.
          * @return the protocol field value
          */
         public double threshold() {
-            return ((Number) require("threshold")).doubleValue();
+            return requireDouble("threshold");
         }
         /**
          * Violation type.
@@ -337,13 +348,6 @@ public final class Log {
      */
     public static final class StartViolationsReportRequest extends CdpObject {
         public StartViolationsReportRequest() {}
-        /**
-         * start violation reporting.
-         * @param config protocol value
-         */
-        public StartViolationsReportRequest(java.util.List<Log.ViolationSetting> config) {
-            config(config);
-        }
         public static StartViolationsReportRequest fromMap(Map<String, Object> values) {
             final StartViolationsReportRequest instance_ = new StartViolationsReportRequest();
             if (values != null) instance_.values.putAll(values);
@@ -354,7 +358,7 @@ public final class Log {
          * @return the protocol field value
          */
         public java.util.List<Log.ViolationSetting> config() {
-            return CdpObject.requireList(require("config"), element0 -> java.util.Objects.requireNonNull(Log.ViolationSetting.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(CONFIG);
         }
         /**
          * Configuration for violations.
@@ -380,7 +384,7 @@ public final class Log {
          * @return the protocol field value
          */
         public Log.LogEntry entry() {
-            return java.util.Objects.requireNonNull(Log.LogEntry.fromMap(CdpObject.requireObjectMap(require("entry"))));
+            return require(ENTRY);
         }
         /**
          * The entry.
@@ -392,29 +396,28 @@ public final class Log {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Clears the log.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clear() {
-            return client.call("Log.clear", null);
+            return call("Log.clear");
         }
         /**
          * Disables log domain, prevents further log entries from being reported to the client.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Log.disable", null);
+            return call("Log.disable");
         }
         /**
          * Enables log domain, sends the entries collected so far to the client by means of the {@code entryAdded} notification.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Log.enable", null);
+            return call("Log.enable");
         }
         /**
          * start violation reporting.
@@ -422,9 +425,7 @@ public final class Log {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startViolationsReport(java.util.List<Log.ViolationSetting> config) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("config", CdpObject.json(config));
-            return client.call("Log.startViolationsReport", params);
+            return call("Log.startViolationsReport", params("config", config));
         }
         /**
          * start violation reporting.
@@ -432,14 +433,14 @@ public final class Log {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startViolationsReport(StartViolationsReportRequest request) {
-            return client.call("Log.startViolationsReport", request == null ? null : request.toMap());
+            return call("Log.startViolationsReport", request);
         }
         /**
          * Stop violation reporting.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopViolationsReport() {
-            return client.call("Log.stopViolationsReport", null);
+            return call("Log.stopViolationsReport");
         }
         /**
          * Issued when new message was logged.
@@ -447,7 +448,7 @@ public final class Log {
          * @return a removable subscription
          */
         public CdpSubscription onEntryAdded(Consumer<EntryAddedEvent> handler) {
-            return client.on("Log.entryAdded", EntryAddedEvent::fromMap, handler);
+            return on("Log.entryAdded", EntryAddedEvent::fromMap, handler);
         }
     }
 }

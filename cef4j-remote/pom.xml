@@ -44,6 +44,10 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>net.kurobako.cef4j</groupId>
+            <artifactId>cef4j-types</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.jspecify</groupId>
             <artifactId>jspecify</artifactId>
         </dependency>
@@ -126,6 +130,7 @@
                             <arguments>
                                 <argument>--out-java=${ipc.gen.dir}</argument>
                                 <argument>--java-package=${ipc.gen.package}</argument>
+                                <argument>--types-package=${cef4j.generated.java.package}</argument>
                                 <argument>--cef-include=${cef.dist.dir}/include</argument>
                                 <argument>--compiler=${native.compiler.id}</argument>
                                 <argument>--cef-api-version=${cef.version}</argument>

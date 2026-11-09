@@ -1,13 +1,14 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -22,6 +23,22 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Security {
     private Security() {}
+    private static final CdpField<Security.CertificateErrorAction> ACTION = CdpField.of("action", value -> Security.CertificateErrorAction.of((String) value));
+    private static final CdpField<java.util.List<String>> CERTIFICATE = CdpField.of("certificate", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Security.CertificateSecurityState> CERTIFICATE_SECURITY_STATE = CdpField.of("certificateSecurityState", value -> java.util.Objects.requireNonNull(Security.CertificateSecurityState.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Security.SecurityState> DISPLAYED_INSECURE_CONTENT_STYLE = CdpField.of("displayedInsecureContentStyle", value -> Security.SecurityState.of((String) value));
+    private static final CdpField<java.util.List<Security.SecurityStateExplanation>> EXPLANATIONS = CdpField.of("explanations", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Security.SecurityStateExplanation.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Security.InsecureContentStatus> INSECURE_CONTENT_STATUS = CdpField.of("insecureContentStatus", value -> java.util.Objects.requireNonNull(Security.InsecureContentStatus.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Security.MixedContentType> MIXED_CONTENT_TYPE = CdpField.of("mixedContentType", value -> Security.MixedContentType.of((String) value));
+    private static final CdpField<Security.SecurityState> RAN_INSECURE_CONTENT_STYLE = CdpField.of("ranInsecureContentStyle", value -> Security.SecurityState.of((String) value));
+    private static final CdpField<java.util.List<String>> RECOMMENDATIONS = CdpField.of("recommendations", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Security.SafetyTipInfo> SAFETY_TIP_INFO = CdpField.of("safetyTipInfo", value -> java.util.Objects.requireNonNull(Security.SafetyTipInfo.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Security.SafetyTipStatus> SAFETY_TIP_STATUS = CdpField.of("safetyTipStatus", value -> Security.SafetyTipStatus.of((String) value));
+    private static final CdpField<Security.SecurityState> SECURITY_STATE = CdpField.of("securityState", value -> Security.SecurityState.of((String) value));
+    private static final CdpField<java.util.List<String>> SECURITY_STATE_ISSUE_IDS = CdpField.of("securityStateIssueIds", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Network.TimeSinceEpoch> VALID_FROM = CdpField.of("validFrom", value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+    private static final CdpField<Network.TimeSinceEpoch> VALID_TO = CdpField.of("validTo", value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+    private static final CdpField<Security.VisibleSecurityState> VISIBLE_SECURITY_STATE = CdpField.of("visibleSecurityState", value -> java.util.Objects.requireNonNull(Security.VisibleSecurityState.fromMap(CdpObject.requireObjectMap(value))));
     /**
      * An internal certificate ID value.
      */
@@ -89,126 +106,126 @@ public final class Security {
          * @return the protocol field value
          */
         public String protocol() {
-            return (String) require("protocol");
+            return requireString("protocol");
         }
         /**
          * Key Exchange used by the connection, or the empty string if not applicable.
          * @return the protocol field value
          */
         public String keyExchange() {
-            return (String) require("keyExchange");
+            return requireString("keyExchange");
         }
         /**
          * (EC)DH group used by the connection, if applicable.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> keyExchangeGroup() {
-            return raw("keyExchangeGroup").map(value -> (String) value);
+            return optionalString("keyExchangeGroup");
         }
         /**
          * Cipher name.
          * @return the protocol field value
          */
         public String cipher() {
-            return (String) require("cipher");
+            return requireString("cipher");
         }
         /**
          * TLS MAC. Note that AEAD ciphers do not have separate MACs.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> mac() {
-            return raw("mac").map(value -> (String) value);
+            return optionalString("mac");
         }
         /**
          * Page certificate.
          * @return the protocol field value
          */
         public java.util.List<String> certificate() {
-            return CdpObject.requireList(require("certificate"), element0 -> (String) element0);
+            return require(CERTIFICATE);
         }
         /**
          * Certificate subject name.
          * @return the protocol field value
          */
         public String subjectName() {
-            return (String) require("subjectName");
+            return requireString("subjectName");
         }
         /**
          * Name of the issuing CA.
          * @return the protocol field value
          */
         public String issuer() {
-            return (String) require("issuer");
+            return requireString("issuer");
         }
         /**
          * Certificate valid from date.
          * @return the protocol field value
          */
         public Network.TimeSinceEpoch validFrom() {
-            return new Network.TimeSinceEpoch(((Number) require("validFrom")).doubleValue());
+            return require(VALID_FROM);
         }
         /**
          * Certificate valid to (expiration) date
          * @return the protocol field value
          */
         public Network.TimeSinceEpoch validTo() {
-            return new Network.TimeSinceEpoch(((Number) require("validTo")).doubleValue());
+            return require(VALID_TO);
         }
         /**
          * The highest priority network error code, if the certificate has an error.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> certificateNetworkError() {
-            return raw("certificateNetworkError").map(value -> (String) value);
+            return optionalString("certificateNetworkError");
         }
         /**
          * True if the certificate uses a weak signature algorithm.
          * @return the protocol field value
          */
         public boolean certificateHasWeakSignature() {
-            return (Boolean) require("certificateHasWeakSignature");
+            return requireBoolean("certificateHasWeakSignature");
         }
         /**
          * True if the certificate has a SHA1 signature in the chain.
          * @return the protocol field value
          */
         public boolean certificateHasSha1Signature() {
-            return (Boolean) require("certificateHasSha1Signature");
+            return requireBoolean("certificateHasSha1Signature");
         }
         /**
          * True if modern SSL
          * @return the protocol field value
          */
         public boolean modernSSL() {
-            return (Boolean) require("modernSSL");
+            return requireBoolean("modernSSL");
         }
         /**
          * True if the connection is using an obsolete SSL protocol.
          * @return the protocol field value
          */
         public boolean obsoleteSslProtocol() {
-            return (Boolean) require("obsoleteSslProtocol");
+            return requireBoolean("obsoleteSslProtocol");
         }
         /**
          * True if the connection is using an obsolete SSL key exchange.
          * @return the protocol field value
          */
         public boolean obsoleteSslKeyExchange() {
-            return (Boolean) require("obsoleteSslKeyExchange");
+            return requireBoolean("obsoleteSslKeyExchange");
         }
         /**
          * True if the connection is using an obsolete SSL cipher.
          * @return the protocol field value
          */
         public boolean obsoleteSslCipher() {
-            return (Boolean) require("obsoleteSslCipher");
+            return requireBoolean("obsoleteSslCipher");
         }
         /**
          * True if the connection is using an obsolete SSL signature.
          * @return the protocol field value
          */
         public boolean obsoleteSslSignature() {
-            return (Boolean) require("obsoleteSslSignature");
+            return requireBoolean("obsoleteSslSignature");
         }
         /**
          * Protocol name (e.g. &quot;TLS 1.2&quot; or &quot;QUIC&quot;).
@@ -404,14 +421,14 @@ public final class Security {
          * @return the protocol field value
          */
         public Security.SafetyTipStatus safetyTipStatus() {
-            return Security.SafetyTipStatus.of((String) require("safetyTipStatus"));
+            return require(SAFETY_TIP_STATUS);
         }
         /**
          * The URL the safety tip suggested (&quot;Did you mean?&quot;). Only filled in for lookalike matches.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> safeUrl() {
-            return raw("safeUrl").map(value -> (String) value);
+            return optionalString("safeUrl");
         }
         /**
          * Describes whether the page triggers any safety tips or reputation warnings. Default is unknown.
@@ -447,28 +464,28 @@ public final class Security {
          * @return the protocol field value
          */
         public Security.SecurityState securityState() {
-            return Security.SecurityState.of((String) require("securityState"));
+            return require(SECURITY_STATE);
         }
         /**
          * Security state details about the page certificate.
          * @return the protocol field value, empty when absent
          */
         public Optional<Security.CertificateSecurityState> certificateSecurityState() {
-            return raw("certificateSecurityState").flatMap(CdpObject::objectMap).map(Security.CertificateSecurityState::fromMap);
+            return optional(CERTIFICATE_SECURITY_STATE);
         }
         /**
          * The type of Safety Tip triggered on the page. Note that this field will be set even if the Safety Tip UI was not actually shown.
          * @return the protocol field value, empty when absent
          */
         public Optional<Security.SafetyTipInfo> safetyTipInfo() {
-            return raw("safetyTipInfo").flatMap(CdpObject::objectMap).map(Security.SafetyTipInfo::fromMap);
+            return optional(SAFETY_TIP_INFO);
         }
         /**
          * Array of security state issues ids.
          * @return the protocol field value
          */
         public java.util.List<String> securityStateIssueIds() {
-            return CdpObject.requireList(require("securityStateIssueIds"), element0 -> (String) element0);
+            return require(SECURITY_STATE_ISSUE_IDS);
         }
         /**
          * The security level of the page.
@@ -521,49 +538,49 @@ public final class Security {
          * @return the protocol field value
          */
         public Security.SecurityState securityState() {
-            return Security.SecurityState.of((String) require("securityState"));
+            return require(SECURITY_STATE);
         }
         /**
          * Title describing the type of factor.
          * @return the protocol field value
          */
         public String title() {
-            return (String) require("title");
+            return requireString("title");
         }
         /**
          * Short phrase describing the type of factor.
          * @return the protocol field value
          */
         public String summary() {
-            return (String) require("summary");
+            return requireString("summary");
         }
         /**
          * Full text explanation of the factor.
          * @return the protocol field value
          */
         public String description() {
-            return (String) require("description");
+            return requireString("description");
         }
         /**
          * The type of mixed content described by the explanation.
          * @return the protocol field value
          */
         public Security.MixedContentType mixedContentType() {
-            return Security.MixedContentType.of((String) require("mixedContentType"));
+            return require(MIXED_CONTENT_TYPE);
         }
         /**
          * Page certificate.
          * @return the protocol field value
          */
         public java.util.List<String> certificate() {
-            return CdpObject.requireList(require("certificate"), element0 -> (String) element0);
+            return require(CERTIFICATE);
         }
         /**
          * Recommendations to fix any issues.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> recommendations() {
-            return raw("recommendations").flatMap(value -> list(value, element0 -> (String) element0));
+            return optional(RECOMMENDATIONS);
         }
         /**
          * Security state representing the severity of the factor being explained.
@@ -645,49 +662,49 @@ public final class Security {
          * @return the protocol field value
          */
         public boolean ranMixedContent() {
-            return (Boolean) require("ranMixedContent");
+            return requireBoolean("ranMixedContent");
         }
         /**
          * Always false.
          * @return the protocol field value
          */
         public boolean displayedMixedContent() {
-            return (Boolean) require("displayedMixedContent");
+            return requireBoolean("displayedMixedContent");
         }
         /**
          * Always false.
          * @return the protocol field value
          */
         public boolean containedMixedForm() {
-            return (Boolean) require("containedMixedForm");
+            return requireBoolean("containedMixedForm");
         }
         /**
          * Always false.
          * @return the protocol field value
          */
         public boolean ranContentWithCertErrors() {
-            return (Boolean) require("ranContentWithCertErrors");
+            return requireBoolean("ranContentWithCertErrors");
         }
         /**
          * Always false.
          * @return the protocol field value
          */
         public boolean displayedContentWithCertErrors() {
-            return (Boolean) require("displayedContentWithCertErrors");
+            return requireBoolean("displayedContentWithCertErrors");
         }
         /**
          * Always set to unknown.
          * @return the protocol field value
          */
         public Security.SecurityState ranInsecureContentStyle() {
-            return Security.SecurityState.of((String) require("ranInsecureContentStyle"));
+            return require(RAN_INSECURE_CONTENT_STYLE);
         }
         /**
          * Always set to unknown.
          * @return the protocol field value
          */
         public Security.SecurityState displayedInsecureContentStyle() {
-            return Security.SecurityState.of((String) require("displayedInsecureContentStyle"));
+            return require(DISPLAYED_INSECURE_CONTENT_STYLE);
         }
         /**
          * Always false.
@@ -774,13 +791,6 @@ public final class Security {
      */
     public static final class SetIgnoreCertificateErrorsRequest extends CdpObject {
         public SetIgnoreCertificateErrorsRequest() {}
-        /**
-         * Enable/disable whether all certificate errors should be ignored.
-         * @param ignore protocol value
-         */
-        public SetIgnoreCertificateErrorsRequest(boolean ignore) {
-            ignore(ignore);
-        }
         public static SetIgnoreCertificateErrorsRequest fromMap(Map<String, Object> values) {
             final SetIgnoreCertificateErrorsRequest instance_ = new SetIgnoreCertificateErrorsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -791,7 +801,7 @@ public final class Security {
          * @return the protocol field value
          */
         public boolean ignore() {
-            return (Boolean) require("ignore");
+            return requireBoolean("ignore");
         }
         /**
          * If true, all certificate errors will be ignored.
@@ -810,16 +820,6 @@ public final class Security {
     @Deprecated
     public static final class HandleCertificateErrorRequest extends CdpObject {
         public HandleCertificateErrorRequest() {}
-        /**
-         * Handles a certificate error that fired a certificateError event.
-         * @param eventId protocol value
-         * @param action protocol value
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public HandleCertificateErrorRequest(long eventId, Security.CertificateErrorAction action) {
-            eventId(eventId).action(action);
-        }
         public static HandleCertificateErrorRequest fromMap(Map<String, Object> values) {
             final HandleCertificateErrorRequest instance_ = new HandleCertificateErrorRequest();
             if (values != null) instance_.values.putAll(values);
@@ -830,14 +830,14 @@ public final class Security {
          * @return the protocol field value
          */
         public long eventId() {
-            return ((Number) require("eventId")).longValue();
+            return requireLong("eventId");
         }
         /**
          * The action to take on the certificate error.
          * @return the protocol field value
          */
         public Security.CertificateErrorAction action() {
-            return Security.CertificateErrorAction.of((String) require("action"));
+            return require(ACTION);
         }
         /**
          * The ID of the event.
@@ -865,15 +865,6 @@ public final class Security {
     @Deprecated
     public static final class SetOverrideCertificateErrorsRequest extends CdpObject {
         public SetOverrideCertificateErrorsRequest() {}
-        /**
-         * Enable/disable overriding certificate errors. If enabled, all certificate error events need to be handled by the DevTools client and should be answered with {@code handleCertificateError} commands.
-         * @param override protocol value
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public SetOverrideCertificateErrorsRequest(boolean override) {
-            override(override);
-        }
         public static SetOverrideCertificateErrorsRequest fromMap(Map<String, Object> values) {
             final SetOverrideCertificateErrorsRequest instance_ = new SetOverrideCertificateErrorsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -884,7 +875,7 @@ public final class Security {
          * @return the protocol field value
          */
         public boolean override() {
-            return (Boolean) require("override");
+            return requireBoolean("override");
         }
         /**
          * If true, certificate errors will be overridden.
@@ -912,21 +903,21 @@ public final class Security {
          * @return the protocol field value
          */
         public long eventId() {
-            return ((Number) require("eventId")).longValue();
+            return requireLong("eventId");
         }
         /**
          * The type of the error.
          * @return the protocol field value
          */
         public String errorType() {
-            return (String) require("errorType");
+            return requireString("errorType");
         }
         /**
          * The url that was requested.
          * @return the protocol field value
          */
         public String requestURL() {
-            return (String) require("requestURL");
+            return requireString("requestURL");
         }
         /**
          * The ID of the event.
@@ -971,7 +962,7 @@ public final class Security {
          * @return the protocol field value
          */
         public Security.VisibleSecurityState visibleSecurityState() {
-            return java.util.Objects.requireNonNull(Security.VisibleSecurityState.fromMap(CdpObject.requireObjectMap(require("visibleSecurityState"))));
+            return require(VISIBLE_SECURITY_STATE);
         }
         /**
          * Security state information about the page.
@@ -999,7 +990,7 @@ public final class Security {
          * @return the protocol field value
          */
         public Security.SecurityState securityState() {
-            return Security.SecurityState.of((String) require("securityState"));
+            return require(SECURITY_STATE);
         }
         /**
          * True if the page was loaded over cryptographic transport such as HTTPS.
@@ -1008,7 +999,7 @@ public final class Security {
          */
         @Deprecated
         public boolean schemeIsCryptographic() {
-            return (Boolean) require("schemeIsCryptographic");
+            return requireBoolean("schemeIsCryptographic");
         }
         /**
          * Previously a list of explanations for the security state. Now always empty.
@@ -1017,7 +1008,7 @@ public final class Security {
          */
         @Deprecated
         public java.util.List<Security.SecurityStateExplanation> explanations() {
-            return CdpObject.requireList(require("explanations"), element0 -> java.util.Objects.requireNonNull(Security.SecurityStateExplanation.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(EXPLANATIONS);
         }
         /**
          * Information about insecure content on the page.
@@ -1026,7 +1017,7 @@ public final class Security {
          */
         @Deprecated
         public Security.InsecureContentStatus insecureContentStatus() {
-            return java.util.Objects.requireNonNull(Security.InsecureContentStatus.fromMap(CdpObject.requireObjectMap(require("insecureContentStatus"))));
+            return require(INSECURE_CONTENT_STATUS);
         }
         /**
          * Overrides user-visible description of the state. Always omitted.
@@ -1035,7 +1026,7 @@ public final class Security {
          */
         @Deprecated
         public Optional<String> summary() {
-            return raw("summary").map(value -> (String) value);
+            return optionalString("summary");
         }
         /**
          * Security state.
@@ -1091,22 +1082,21 @@ public final class Security {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Disables tracking security state changes.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Security.disable", null);
+            return call("Security.disable");
         }
         /**
          * Enables tracking security state changes.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Security.enable", null);
+            return call("Security.enable");
         }
         /**
          * Enable/disable whether all certificate errors should be ignored.
@@ -1114,9 +1104,7 @@ public final class Security {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setIgnoreCertificateErrors(boolean ignore) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("ignore", CdpObject.json(ignore));
-            return client.call("Security.setIgnoreCertificateErrors", params);
+            return call("Security.setIgnoreCertificateErrors", params("ignore", ignore));
         }
         /**
          * Enable/disable whether all certificate errors should be ignored.
@@ -1124,7 +1112,7 @@ public final class Security {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setIgnoreCertificateErrors(SetIgnoreCertificateErrorsRequest request) {
-            return client.call("Security.setIgnoreCertificateErrors", request == null ? null : request.toMap());
+            return call("Security.setIgnoreCertificateErrors", request);
         }
         /**
          * Handles a certificate error that fired a certificateError event.
@@ -1135,10 +1123,7 @@ public final class Security {
          */
         @Deprecated
         public CompletionStage<Void> handleCertificateError(long eventId, Security.CertificateErrorAction action) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("eventId", CdpObject.json(eventId));
-            params.put("action", CdpObject.json(action));
-            return client.call("Security.handleCertificateError", params);
+            return call("Security.handleCertificateError", params("eventId", eventId, "action", action));
         }
         /**
          * Handles a certificate error that fired a certificateError event.
@@ -1148,7 +1133,7 @@ public final class Security {
          */
         @Deprecated
         public CompletionStage<Void> handleCertificateError(HandleCertificateErrorRequest request) {
-            return client.call("Security.handleCertificateError", request == null ? null : request.toMap());
+            return call("Security.handleCertificateError", request);
         }
         /**
          * Enable/disable overriding certificate errors. If enabled, all certificate error events need to be handled by the DevTools client and should be answered with {@code handleCertificateError} commands.
@@ -1158,9 +1143,7 @@ public final class Security {
          */
         @Deprecated
         public CompletionStage<Void> setOverrideCertificateErrors(boolean override) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("override", CdpObject.json(override));
-            return client.call("Security.setOverrideCertificateErrors", params);
+            return call("Security.setOverrideCertificateErrors", params("override", override));
         }
         /**
          * Enable/disable overriding certificate errors. If enabled, all certificate error events need to be handled by the DevTools client and should be answered with {@code handleCertificateError} commands.
@@ -1170,7 +1153,7 @@ public final class Security {
          */
         @Deprecated
         public CompletionStage<Void> setOverrideCertificateErrors(SetOverrideCertificateErrorsRequest request) {
-            return client.call("Security.setOverrideCertificateErrors", request == null ? null : request.toMap());
+            return call("Security.setOverrideCertificateErrors", request);
         }
         /**
          * There is a certificate error. If overriding certificate errors is enabled, then it should be handled with the {@code handleCertificateError} command. Note: this event does not fire if the certificate error has been allowed internally. Only one client per target should override certificate errors at the same time.
@@ -1180,7 +1163,7 @@ public final class Security {
          */
         @Deprecated
         public CdpSubscription onCertificateError(Consumer<CertificateErrorEvent> handler) {
-            return client.on("Security.certificateError", CertificateErrorEvent::fromMap, handler);
+            return on("Security.certificateError", CertificateErrorEvent::fromMap, handler);
         }
         /**
          * The security state of the page changed.
@@ -1189,7 +1172,7 @@ public final class Security {
          * @return a removable subscription
          */
         public CdpSubscription onVisibleSecurityStateChanged(Consumer<VisibleSecurityStateChangedEvent> handler) {
-            return client.on("Security.visibleSecurityStateChanged", VisibleSecurityStateChangedEvent::fromMap, handler);
+            return on("Security.visibleSecurityStateChanged", VisibleSecurityStateChangedEvent::fromMap, handler);
         }
         /**
          * The security state of the page changed. No longer being sent.
@@ -1199,7 +1182,7 @@ public final class Security {
          */
         @Deprecated
         public CdpSubscription onSecurityStateChanged(Consumer<SecurityStateChangedEvent> handler) {
-            return client.on("Security.securityStateChanged", SecurityStateChangedEvent::fromMap, handler);
+            return on("Security.securityStateChanged", SecurityStateChangedEvent::fromMap, handler);
         }
     }
 }

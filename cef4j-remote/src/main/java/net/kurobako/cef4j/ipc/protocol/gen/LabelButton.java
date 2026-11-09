@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,52 +13,22 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class LabelButton implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class LabelButton extends BrowserFacade {
 
     public LabelButton(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_label_button_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_label_button_t");
     }
 
     /** Dispatches {@code as_menu_button} to the runtime server. */
     public CompletableFuture<MenuButton> asMenuButton() {
         return CefFutures.map(
-            session.request(new LabelButtonAsMenuButtonRequest(handle), LabelButtonAsMenuButtonResponse.DECODER),
+            session.request(MessageIds.LABEL_BUTTON_AS_MENU_BUTTON_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new MenuButton(session, __r.result()));
     }
 
     /** Dispatches {@code set_text} to the runtime server. */
     public CompletableFuture<Void> setText(String text) {
-        return CefFutures.discard(session.request(new LabelButtonSetTextRequest(handle, text), LabelButtonSetTextResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.LABEL_BUTTON_SET_TEXT_REQUEST, new SelfHandleTextStringMessage(handle, text), EmptyMessage.DECODER));
     }
 
     /**
@@ -70,13 +39,13 @@ public final class LabelButton implements AutoCloseable {
      */
     public CompletableFuture<String> getText() {
         return CefFutures.map(
-            session.request(new LabelButtonGetTextRequest(handle), LabelButtonGetTextResponse.DECODER),
-            LabelButtonGetTextResponse::result);
+            session.request(MessageIds.LABEL_BUTTON_GET_TEXT_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /** Dispatches {@code set_image} to the runtime server. */
     public CompletableFuture<Void> setImage(int buttonState, RemoteHandle image) {
-        return CefFutures.discard(session.request(new LabelButtonSetImageRequest(handle, buttonState, image), LabelButtonSetImageResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.LABEL_BUTTON_SET_IMAGE_REQUEST, new LabelButtonSetImageRequest(handle, buttonState, image), EmptyMessage.DECODER));
     }
 
     /**
@@ -87,18 +56,18 @@ public final class LabelButton implements AutoCloseable {
      */
     public CompletableFuture<Image> getImage(int buttonState) {
         return CefFutures.map(
-            session.request(new LabelButtonGetImageRequest(handle, buttonState), LabelButtonGetImageResponse.DECODER),
+            session.request(MessageIds.LABEL_BUTTON_GET_IMAGE_REQUEST, new LabelButtonGetImageRequest(handle, buttonState), ResultHandleMessage.DECODER),
             __r -> new Image(session, __r.result()));
     }
 
     /** Dispatches {@code set_text_color} to the runtime server. */
     public CompletableFuture<Void> setTextColor(int forState, int color) {
-        return CefFutures.discard(session.request(new LabelButtonSetTextColorRequest(handle, forState, color), LabelButtonSetTextColorResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.LABEL_BUTTON_SET_TEXT_COLOR_REQUEST, new LabelButtonSetTextColorRequest(handle, forState, color), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code set_enabled_text_colors} to the runtime server. */
     public CompletableFuture<Void> setEnabledTextColors(int color) {
-        return CefFutures.discard(session.request(new LabelButtonSetEnabledTextColorsRequest(handle, color), LabelButtonSetEnabledTextColorsResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.LABEL_BUTTON_SET_ENABLED_TEXT_COLORS_REQUEST, new SelfHandleColorIntMessage(handle, color), EmptyMessage.DECODER));
     }
 
     /**
@@ -124,21 +93,21 @@ public final class LabelButton implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:457</a>
      */
     public CompletableFuture<Void> setFontList(String fontList) {
-        return CefFutures.discard(session.request(new LabelButtonSetFontListRequest(handle, fontList), LabelButtonSetFontListResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.LABEL_BUTTON_SET_FONT_LIST_REQUEST, new SelfHandleFontListStringMessage(handle, fontList), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code set_horizontal_alignment} to the runtime server. */
     public CompletableFuture<Void> setHorizontalAlignment(int alignment) {
-        return CefFutures.discard(session.request(new LabelButtonSetHorizontalAlignmentRequest(handle, alignment), LabelButtonSetHorizontalAlignmentResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.LABEL_BUTTON_SET_HORIZONTAL_ALIGNMENT_REQUEST, new LabelButtonSetHorizontalAlignmentRequest(handle, alignment), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code set_minimum_size} to the runtime server. */
-    public CompletableFuture<Void> setMinimumSize(Size size) {
-        return CefFutures.discard(session.request(new LabelButtonSetMinimumSizeRequest(handle, size), LabelButtonSetMinimumSizeResponse.DECODER));
+    public CompletableFuture<Void> setMinimumSize(net.kurobako.cef4j.gen.CefSize size) {
+        return CefFutures.discard(session.request(MessageIds.LABEL_BUTTON_SET_MINIMUM_SIZE_REQUEST, new SelfHandleSizeCefSizeMessage(handle, size), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code set_maximum_size} to the runtime server. */
-    public CompletableFuture<Void> setMaximumSize(Size size) {
-        return CefFutures.discard(session.request(new LabelButtonSetMaximumSizeRequest(handle, size), LabelButtonSetMaximumSizeResponse.DECODER));
+    public CompletableFuture<Void> setMaximumSize(net.kurobako.cef4j.gen.CefSize size) {
+        return CefFutures.discard(session.request(MessageIds.LABEL_BUTTON_SET_MAXIMUM_SIZE_REQUEST, new SelfHandleSizeCefSizeMessage(handle, size), EmptyMessage.DECODER));
     }
 }

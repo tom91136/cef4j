@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class XmlReader implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class XmlReader extends BrowserFacade {
 
     public XmlReader(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_xml_reader_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_xml_reader_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> moveToNextNode() {
         return CefFutures.map(
-            session.request(new XmlReaderMoveToNextNodeRequest(handle), XmlReaderMoveToNextNodeResponse.DECODER),
-            XmlReaderMoveToNextNodeResponse::result);
+            session.request(MessageIds.XML_READER_MOVE_TO_NEXT_NODE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> cefClose() {
         return CefFutures.map(
-            session.request(new XmlReaderCloseRequest(handle), XmlReaderCloseResponse.DECODER),
-            XmlReaderCloseResponse::result);
+            session.request(MessageIds.XML_READER_CLOSE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -82,8 +51,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasError() {
         return CefFutures.map(
-            session.request(new XmlReaderHasErrorRequest(handle), XmlReaderHasErrorResponse.DECODER),
-            XmlReaderHasErrorResponse::result);
+            session.request(MessageIds.XML_READER_HAS_ERROR_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -94,8 +63,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<String> getError() {
         return CefFutures.map(
-            session.request(new XmlReaderGetErrorRequest(handle), XmlReaderGetErrorResponse.DECODER),
-            XmlReaderGetErrorResponse::result);
+            session.request(MessageIds.XML_READER_GET_ERROR_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -106,8 +75,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> getType() {
         return CefFutures.map(
-            session.request(new XmlReaderGetTypeRequest(handle), XmlReaderGetTypeResponse.DECODER),
-            XmlReaderGetTypeResponse::result);
+            session.request(MessageIds.XML_READER_GET_TYPE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -118,8 +87,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> getDepth() {
         return CefFutures.map(
-            session.request(new XmlReaderGetDepthRequest(handle), XmlReaderGetDepthResponse.DECODER),
-            XmlReaderGetDepthResponse::result);
+            session.request(MessageIds.XML_READER_GET_DEPTH_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -130,8 +99,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<String> getLocalName() {
         return CefFutures.map(
-            session.request(new XmlReaderGetLocalNameRequest(handle), XmlReaderGetLocalNameResponse.DECODER),
-            XmlReaderGetLocalNameResponse::result);
+            session.request(MessageIds.XML_READER_GET_LOCAL_NAME_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -142,8 +111,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<String> getPrefix() {
         return CefFutures.map(
-            session.request(new XmlReaderGetPrefixRequest(handle), XmlReaderGetPrefixResponse.DECODER),
-            XmlReaderGetPrefixResponse::result);
+            session.request(MessageIds.XML_READER_GET_PREFIX_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -154,8 +123,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<String> getQualifiedName() {
         return CefFutures.map(
-            session.request(new XmlReaderGetQualifiedNameRequest(handle), XmlReaderGetQualifiedNameResponse.DECODER),
-            XmlReaderGetQualifiedNameResponse::result);
+            session.request(MessageIds.XML_READER_GET_QUALIFIED_NAME_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -166,8 +135,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<String> getNamespaceUri() {
         return CefFutures.map(
-            session.request(new XmlReaderGetNamespaceUriRequest(handle), XmlReaderGetNamespaceUriResponse.DECODER),
-            XmlReaderGetNamespaceUriResponse::result);
+            session.request(MessageIds.XML_READER_GET_NAMESPACE_URI_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -178,8 +147,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<String> getBaseUri() {
         return CefFutures.map(
-            session.request(new XmlReaderGetBaseUriRequest(handle), XmlReaderGetBaseUriResponse.DECODER),
-            XmlReaderGetBaseUriResponse::result);
+            session.request(MessageIds.XML_READER_GET_BASE_URI_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -190,8 +159,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<String> getXmlLang() {
         return CefFutures.map(
-            session.request(new XmlReaderGetXmlLangRequest(handle), XmlReaderGetXmlLangResponse.DECODER),
-            XmlReaderGetXmlLangResponse::result);
+            session.request(MessageIds.XML_READER_GET_XML_LANG_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -202,8 +171,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> isEmptyElement() {
         return CefFutures.map(
-            session.request(new XmlReaderIsEmptyElementRequest(handle), XmlReaderIsEmptyElementResponse.DECODER),
-            XmlReaderIsEmptyElementResponse::result);
+            session.request(MessageIds.XML_READER_IS_EMPTY_ELEMENT_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -214,8 +183,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasValue() {
         return CefFutures.map(
-            session.request(new XmlReaderHasValueRequest(handle), XmlReaderHasValueResponse.DECODER),
-            XmlReaderHasValueResponse::result);
+            session.request(MessageIds.XML_READER_HAS_VALUE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -226,8 +195,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<String> getValue() {
         return CefFutures.map(
-            session.request(new XmlReaderGetValueRequest(handle), XmlReaderGetValueResponse.DECODER),
-            XmlReaderGetValueResponse::result);
+            session.request(MessageIds.XML_READER_GET_VALUE_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -238,8 +207,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasAttributes() {
         return CefFutures.map(
-            session.request(new XmlReaderHasAttributesRequest(handle), XmlReaderHasAttributesResponse.DECODER),
-            XmlReaderHasAttributesResponse::result);
+            session.request(MessageIds.XML_READER_HAS_ATTRIBUTES_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -250,8 +219,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<Long> getAttributeCount() {
         return CefFutures.map(
-            session.request(new XmlReaderGetAttributeCountRequest(handle), XmlReaderGetAttributeCountResponse.DECODER),
-            XmlReaderGetAttributeCountResponse::result);
+            session.request(MessageIds.XML_READER_GET_ATTRIBUTE_COUNT_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -264,8 +233,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<String> getAttributeByindex(int index) {
         return CefFutures.map(
-            session.request(new XmlReaderGetAttributeByindexRequest(handle, index), XmlReaderGetAttributeByindexResponse.DECODER),
-            XmlReaderGetAttributeByindexResponse::result);
+            session.request(MessageIds.XML_READER_GET_ATTRIBUTE_BYINDEX_REQUEST, new SelfHandleIndexIntMessage(handle, index), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -276,8 +245,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<String> getAttributeByqname(String qualifiedName) {
         return CefFutures.map(
-            session.request(new XmlReaderGetAttributeByqnameRequest(handle, qualifiedName), XmlReaderGetAttributeByqnameResponse.DECODER),
-            XmlReaderGetAttributeByqnameResponse::result);
+            session.request(MessageIds.XML_READER_GET_ATTRIBUTE_BYQNAME_REQUEST, new SelfHandleQualifiedNameStringMessage(handle, qualifiedName), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -288,8 +257,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<String> getAttributeBylname(String localName, String namespaceURI) {
         return CefFutures.map(
-            session.request(new XmlReaderGetAttributeBylnameRequest(handle, localName, namespaceURI), XmlReaderGetAttributeBylnameResponse.DECODER),
-            XmlReaderGetAttributeBylnameResponse::result);
+            session.request(MessageIds.XML_READER_GET_ATTRIBUTE_BYLNAME_REQUEST, new SelfHandleLocalNameStringNamespaceURIStringMessage(handle, localName, namespaceURI), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -300,8 +269,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<String> getInnerXml() {
         return CefFutures.map(
-            session.request(new XmlReaderGetInnerXmlRequest(handle), XmlReaderGetInnerXmlResponse.DECODER),
-            XmlReaderGetInnerXmlResponse::result);
+            session.request(MessageIds.XML_READER_GET_INNER_XML_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -312,8 +281,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<String> getOuterXml() {
         return CefFutures.map(
-            session.request(new XmlReaderGetOuterXmlRequest(handle), XmlReaderGetOuterXmlResponse.DECODER),
-            XmlReaderGetOuterXmlResponse::result);
+            session.request(MessageIds.XML_READER_GET_OUTER_XML_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -324,8 +293,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> getLineNumber() {
         return CefFutures.map(
-            session.request(new XmlReaderGetLineNumberRequest(handle), XmlReaderGetLineNumberResponse.DECODER),
-            XmlReaderGetLineNumberResponse::result);
+            session.request(MessageIds.XML_READER_GET_LINE_NUMBER_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -338,8 +307,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> moveToAttributeByindex(int index) {
         return CefFutures.map(
-            session.request(new XmlReaderMoveToAttributeByindexRequest(handle, index), XmlReaderMoveToAttributeByindexResponse.DECODER),
-            XmlReaderMoveToAttributeByindexResponse::result);
+            session.request(MessageIds.XML_READER_MOVE_TO_ATTRIBUTE_BYINDEX_REQUEST, new SelfHandleIndexIntMessage(handle, index), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -350,8 +319,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> moveToAttributeByqname(String qualifiedName) {
         return CefFutures.map(
-            session.request(new XmlReaderMoveToAttributeByqnameRequest(handle, qualifiedName), XmlReaderMoveToAttributeByqnameResponse.DECODER),
-            XmlReaderMoveToAttributeByqnameResponse::result);
+            session.request(MessageIds.XML_READER_MOVE_TO_ATTRIBUTE_BYQNAME_REQUEST, new SelfHandleQualifiedNameStringMessage(handle, qualifiedName), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -362,8 +331,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> moveToAttributeBylname(String localName, String namespaceURI) {
         return CefFutures.map(
-            session.request(new XmlReaderMoveToAttributeBylnameRequest(handle, localName, namespaceURI), XmlReaderMoveToAttributeBylnameResponse.DECODER),
-            XmlReaderMoveToAttributeBylnameResponse::result);
+            session.request(MessageIds.XML_READER_MOVE_TO_ATTRIBUTE_BYLNAME_REQUEST, new SelfHandleLocalNameStringNamespaceURIStringMessage(handle, localName, namespaceURI), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -374,8 +343,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> moveToFirstAttribute() {
         return CefFutures.map(
-            session.request(new XmlReaderMoveToFirstAttributeRequest(handle), XmlReaderMoveToFirstAttributeResponse.DECODER),
-            XmlReaderMoveToFirstAttributeResponse::result);
+            session.request(MessageIds.XML_READER_MOVE_TO_FIRST_ATTRIBUTE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -386,8 +355,8 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> moveToNextAttribute() {
         return CefFutures.map(
-            session.request(new XmlReaderMoveToNextAttributeRequest(handle), XmlReaderMoveToNextAttributeResponse.DECODER),
-            XmlReaderMoveToNextAttributeResponse::result);
+            session.request(MessageIds.XML_READER_MOVE_TO_NEXT_ATTRIBUTE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -398,7 +367,7 @@ public final class XmlReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> moveToCarryingElement() {
         return CefFutures.map(
-            session.request(new XmlReaderMoveToCarryingElementRequest(handle), XmlReaderMoveToCarryingElementResponse.DECODER),
-            XmlReaderMoveToCarryingElementResponse::result);
+            session.request(MessageIds.XML_READER_MOVE_TO_CARRYING_ELEMENT_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

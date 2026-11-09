@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class DownloadItemCallback implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class DownloadItemCallback extends BrowserFacade {
 
     public DownloadItemCallback(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_download_item_callback_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_download_item_callback_t");
     }
 
     /**
@@ -57,7 +26,7 @@ public final class DownloadItemCallback implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:67</a>
      */
     public CompletableFuture<Void> cancel() {
-        return CefFutures.discard(session.request(new DownloadItemCallbackCancelRequest(handle), DownloadItemCallbackCancelResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.DOWNLOAD_ITEM_CALLBACK_CANCEL_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -67,7 +36,7 @@ public final class DownloadItemCallback implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:73</a>
      */
     public CompletableFuture<Void> pause() {
-        return CefFutures.discard(session.request(new DownloadItemCallbackPauseRequest(handle), DownloadItemCallbackPauseResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.DOWNLOAD_ITEM_CALLBACK_PAUSE_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -77,6 +46,6 @@ public final class DownloadItemCallback implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__handler_8h.html">cef_download_handler.h:79</a>
      */
     public CompletableFuture<Void> resume() {
-        return CefFutures.discard(session.request(new DownloadItemCallbackResumeRequest(handle), DownloadItemCallbackResumeResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.DOWNLOAD_ITEM_CALLBACK_RESUME_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 }

@@ -1,13 +1,14 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -23,6 +24,15 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class WebMCP {
     private WebMCP() {}
+    private static final CdpField<WebMCP.Annotation> ANNOTATIONS = CdpField.of("annotations", value -> java.util.Objects.requireNonNull(WebMCP.Annotation.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<DOM.BackendNodeId> BACKEND_NODE_ID = CdpField.of("backendNodeId", value -> new DOM.BackendNodeId(((Number) value).longValue()));
+    private static final CdpField<Runtime.RemoteObject> EXCEPTION = CdpField.of("exception", value -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Page.FrameId> FRAME_ID = CdpField.of("frameId", value -> new Page.FrameId((String) value));
+    private static final CdpField<String> INVOCATION_ID = CdpField.of("invocationId", value -> (String) value);
+    private static final CdpField<Runtime.StackTrace> STACK_TRACE = CdpField.of("stackTrace", value -> java.util.Objects.requireNonNull(Runtime.StackTrace.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<WebMCP.InvocationStatus> STATUS = CdpField.of("status", value -> WebMCP.InvocationStatus.of((String) value));
+    private static final CdpField<java.util.List<WebMCP.Tool>> TOOLS = CdpField.of("tools", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(WebMCP.Tool.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<WebMCP.RemovedTool>> TOOLS_2 = CdpField.of("tools", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(WebMCP.RemovedTool.fromMap(CdpObject.requireObjectMap(element0)))));
     /**
      * Tool annotations
      */
@@ -37,21 +47,21 @@ public final class WebMCP {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> readOnly() {
-            return raw("readOnly").map(value -> (Boolean) value);
+            return optionalBoolean("readOnly");
         }
         /**
          * A hint indicating that the tool output may contain untrusted content, ex: UGC, 3rd party data.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> untrustedContent() {
-            return raw("untrustedContent").map(value -> (Boolean) value);
+            return optionalBoolean("untrustedContent");
         }
         /**
          * If the declarative tool was declared with the autosubmit attribute.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> autosubmit() {
-            return raw("autosubmit").map(value -> (Boolean) value);
+            return optionalBoolean("autosubmit");
         }
         /**
          * A hint indicating that the tool does not modify any state.
@@ -112,49 +122,49 @@ public final class WebMCP {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Tool description.
          * @return the protocol field value
          */
         public String description() {
-            return (String) require("description");
+            return requireString("description");
         }
         /**
          * Schema for the tool&#x27;s input parameters.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> inputSchema() {
-            return raw("inputSchema").flatMap(CdpObject::objectMap);
+            return optionalObject("inputSchema");
         }
         /**
          * Optional annotations for the tool.
          * @return the protocol field value, empty when absent
          */
         public Optional<WebMCP.Annotation> annotations() {
-            return raw("annotations").flatMap(CdpObject::objectMap).map(WebMCP.Annotation::fromMap);
+            return optional(ANNOTATIONS);
         }
         /**
          * Frame identifier associated with the tool registration.
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Optional node ID for declarative tools.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(BACKEND_NODE_ID);
         }
         /**
          * The stack trace at the time of the registration.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.StackTrace> stackTrace() {
-            return raw("stackTrace").flatMap(CdpObject::objectMap).map(Runtime.StackTrace::fromMap);
+            return optional(STACK_TRACE);
         }
         /**
          * Tool name.
@@ -234,14 +244,14 @@ public final class WebMCP {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Frame identifier associated with the tool registration.
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Tool name.
@@ -267,15 +277,6 @@ public final class WebMCP {
      */
     public static final class InvokeToolRequest extends CdpObject {
         public InvokeToolRequest() {}
-        /**
-         * Invokes a registered tool.
-         * @param frameId protocol value
-         * @param toolName protocol value
-         * @param input protocol value
-         */
-        public InvokeToolRequest(Page.FrameId frameId, String toolName, java.util.Map<String, Object> input) {
-            frameId(frameId).toolName(toolName).input(input);
-        }
         public static InvokeToolRequest fromMap(Map<String, Object> values) {
             final InvokeToolRequest instance_ = new InvokeToolRequest();
             if (values != null) instance_.values.putAll(values);
@@ -286,21 +287,21 @@ public final class WebMCP {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Name of the tool to invoke.
          * @return the protocol field value
          */
         public String toolName() {
-            return (String) require("toolName");
+            return requireString("toolName");
         }
         /**
          * Input parameters for the tool, matching the tool&#x27;s inputSchema.
          * @return the protocol field value
          */
         public java.util.Map<String, Object> input() {
-            return CdpObject.requireObjectMap(require("input"));
+            return requireObject("input");
         }
         /**
          * Frame in which to invoke the tool.
@@ -335,13 +336,6 @@ public final class WebMCP {
      */
     public static final class CancelInvocationRequest extends CdpObject {
         public CancelInvocationRequest() {}
-        /**
-         * Cancels a pending tool invocation.
-         * @param invocationId protocol value
-         */
-        public CancelInvocationRequest(String invocationId) {
-            invocationId(invocationId);
-        }
         public static CancelInvocationRequest fromMap(Map<String, Object> values) {
             final CancelInvocationRequest instance_ = new CancelInvocationRequest();
             if (values != null) instance_.values.putAll(values);
@@ -352,7 +346,7 @@ public final class WebMCP {
          * @return the protocol field value
          */
         public String invocationId() {
-            return (String) require("invocationId");
+            return requireString("invocationId");
         }
         /**
          * Invocation identifier to cancel.
@@ -378,7 +372,7 @@ public final class WebMCP {
          * @return the protocol field value
          */
         public java.util.List<WebMCP.Tool> tools() {
-            return CdpObject.requireList(require("tools"), element0 -> java.util.Objects.requireNonNull(WebMCP.Tool.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(TOOLS);
         }
         /**
          * Array of tools that were added.
@@ -404,7 +398,7 @@ public final class WebMCP {
          * @return the protocol field value
          */
         public java.util.List<WebMCP.RemovedTool> tools() {
-            return CdpObject.requireList(require("tools"), element0 -> java.util.Objects.requireNonNull(WebMCP.RemovedTool.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(TOOLS_2);
         }
         /**
          * Array of tools that were removed.
@@ -430,28 +424,28 @@ public final class WebMCP {
          * @return the protocol field value
          */
         public String toolName() {
-            return (String) require("toolName");
+            return requireString("toolName");
         }
         /**
          * Frame id
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Invocation identifier.
          * @return the protocol field value
          */
         public String invocationId() {
-            return (String) require("invocationId");
+            return requireString("invocationId");
         }
         /**
          * The input parameters used for the invocation.
          * @return the protocol field value
          */
         public String input() {
-            return (String) require("input");
+            return requireString("input");
         }
         /**
          * Name of the tool to invoke.
@@ -504,14 +498,14 @@ public final class WebMCP {
          * @return the protocol field value
          */
         public String invocationId() {
-            return (String) require("invocationId");
+            return requireString("invocationId");
         }
         /**
          * Status of the invocation.
          * @return the protocol field value
          */
         public WebMCP.InvocationStatus status() {
-            return WebMCP.InvocationStatus.of((String) require("status"));
+            return require(STATUS);
         }
         /**
          * Output or error delivered as delivered to the agent. Missing if {@code status} is anything other than Completed. Note: The output is untrusted and poses a prompt injection risk. Clients should treat this as potentially malicious user input.
@@ -525,14 +519,14 @@ public final class WebMCP {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> errorText() {
-            return raw("errorText").map(value -> (String) value);
+            return optionalString("errorText");
         }
         /**
          * The exception object, if the javascript tool threw an error&gt;
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObject> exception() {
-            return raw("exception").flatMap(CdpObject::objectMap).map(Runtime.RemoteObject::fromMap);
+            return optional(EXCEPTION);
         }
         /**
          * Invocation identifier.
@@ -580,22 +574,21 @@ public final class WebMCP {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Enables the WebMCP domain, allowing events to be sent. Enabling the domain will trigger a toolsAdded event for all currently registered tools.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("WebMCP.enable", null);
+            return call("WebMCP.enable");
         }
         /**
          * Disables the WebMCP domain.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("WebMCP.disable", null);
+            return call("WebMCP.disable");
         }
         /**
          * Invokes a registered tool.
@@ -605,11 +598,7 @@ public final class WebMCP {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> invokeTool(Page.FrameId frameId, String toolName, java.util.Map<String, Object> input) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("frameId", CdpObject.json(frameId));
-            params.put("toolName", CdpObject.json(toolName));
-            params.put("input", CdpObject.json(input));
-            return client.call("WebMCP.invokeTool", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("invocationId")));
+            return call("WebMCP.invokeTool", params("frameId", frameId, "toolName", toolName, "input", input), INVOCATION_ID::require);
         }
         /**
          * Invokes a registered tool.
@@ -617,7 +606,7 @@ public final class WebMCP {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> invokeTool(InvokeToolRequest request) {
-            return client.call("WebMCP.invokeTool", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("invocationId")));
+            return call("WebMCP.invokeTool", request, INVOCATION_ID::require);
         }
         /**
          * Cancels a pending tool invocation.
@@ -625,9 +614,7 @@ public final class WebMCP {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> cancelInvocation(String invocationId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("invocationId", CdpObject.json(invocationId));
-            return client.call("WebMCP.cancelInvocation", params);
+            return call("WebMCP.cancelInvocation", params("invocationId", invocationId));
         }
         /**
          * Cancels a pending tool invocation.
@@ -635,7 +622,7 @@ public final class WebMCP {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> cancelInvocation(CancelInvocationRequest request) {
-            return client.call("WebMCP.cancelInvocation", request == null ? null : request.toMap());
+            return call("WebMCP.cancelInvocation", request);
         }
         /**
          * Event fired when new tools are added.
@@ -643,7 +630,7 @@ public final class WebMCP {
          * @return a removable subscription
          */
         public CdpSubscription onToolsAdded(Consumer<ToolsAddedEvent> handler) {
-            return client.on("WebMCP.toolsAdded", ToolsAddedEvent::fromMap, handler);
+            return on("WebMCP.toolsAdded", ToolsAddedEvent::fromMap, handler);
         }
         /**
          * Event fired when tools are removed.
@@ -651,7 +638,7 @@ public final class WebMCP {
          * @return a removable subscription
          */
         public CdpSubscription onToolsRemoved(Consumer<ToolsRemovedEvent> handler) {
-            return client.on("WebMCP.toolsRemoved", ToolsRemovedEvent::fromMap, handler);
+            return on("WebMCP.toolsRemoved", ToolsRemovedEvent::fromMap, handler);
         }
         /**
          * Event fired when a tool invocation starts.
@@ -659,7 +646,7 @@ public final class WebMCP {
          * @return a removable subscription
          */
         public CdpSubscription onToolInvoked(Consumer<ToolInvokedEvent> handler) {
-            return client.on("WebMCP.toolInvoked", ToolInvokedEvent::fromMap, handler);
+            return on("WebMCP.toolInvoked", ToolInvokedEvent::fromMap, handler);
         }
         /**
          * Event fired when a tool invocation completes or fails.
@@ -667,7 +654,7 @@ public final class WebMCP {
          * @return a removable subscription
          */
         public CdpSubscription onToolResponded(Consumer<ToolRespondedEvent> handler) {
-            return client.on("WebMCP.toolResponded", ToolRespondedEvent::fromMap, handler);
+            return on("WebMCP.toolResponded", ToolRespondedEvent::fromMap, handler);
         }
     }
 }

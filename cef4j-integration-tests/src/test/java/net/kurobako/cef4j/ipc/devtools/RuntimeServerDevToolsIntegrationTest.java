@@ -35,11 +35,12 @@ import net.kurobako.cef4j.cdp.generated.Network;
 import net.kurobako.cef4j.cdp.generated.Page;
 import net.kurobako.cef4j.cdp.generated.Runtime;
 import net.kurobako.cef4j.cdp.gson.GsonCdpCodec;
+import net.kurobako.cef4j.gen.CefBrowserSettings;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
-import net.kurobako.cef4j.ipc.protocol.gen.BrowserSettings;
+import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessage;
 import net.kurobako.cef4j.ipc.protocol.gen.CreateBrowserRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.CreateBrowserResponse;
-import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.EmptyMessage;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.session.CefRemoteException;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
@@ -76,13 +77,13 @@ class RuntimeServerDevToolsIntegrationTest {
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
             CompletableFuture<RemoteHandle> browserHandle = new CompletableFuture<>();
             session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
-                    LifeSpanHandlerOnAfterCreatedEvent.DECODER,
+                    MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT,
+                    BrowserHandleMessage.DECODER,
                     event -> browserHandle.complete(event.browser()));
             session.request(
-                            new CreateBrowserRequest(
-                                    "about:blank", BrowserSettings.builder().build()),
-                            CreateBrowserResponse.DECODER)
+                            MessageIds.CREATE_BROWSER_REQUEST,
+                            new CreateBrowserRequest("about:blank", new CefBrowserSettings.Mutable().toImmutable()),
+                            EmptyMessage.DECODER)
                     .get(10, TimeUnit.SECONDS);
 
             Browser browser = new Browser(session, browserHandle.get(20, TimeUnit.SECONDS));
@@ -297,7 +298,8 @@ class RuntimeServerDevToolsIntegrationTest {
 
     private static Runtime.EvaluateResult evaluate(
             Runtime.Client runtime, String expression, boolean returnByValue, boolean awaitPromise) throws Exception {
-        return get(runtime.evaluate(new Runtime.EvaluateRequest(expression)
+        return get(runtime.evaluate(new Runtime.EvaluateRequest()
+                .expression(expression)
                 .returnByValue(returnByValue)
                 .awaitPromise(awaitPromise)));
     }
@@ -309,7 +311,8 @@ class RuntimeServerDevToolsIntegrationTest {
     }
 
     private static DOM.NodeId query(DOM.Client dom, DOM.NodeId rootId, String selector) throws Exception {
-        DOM.NodeId nodeId = get(dom.querySelector(new DOM.QuerySelectorRequest(rootId, selector)));
+        DOM.NodeId nodeId = get(
+                dom.querySelector(new DOM.QuerySelectorRequest().nodeId(rootId).selector(selector)));
         assertThat(nodeId.value()).as(selector).isPositive();
         return nodeId;
     }
@@ -325,8 +328,11 @@ class RuntimeServerDevToolsIntegrationTest {
     private static void dispatchMouse(
             Input.Client input, String type, double x, double y, String button, long clickCount, long buttons)
             throws Exception {
-        Input.DispatchMouseEventRequest request =
-                new Input.DispatchMouseEventRequest(Input.DispatchMouseEventTypeValues.of(type), x, y).buttons(buttons);
+        Input.DispatchMouseEventRequest request = new Input.DispatchMouseEventRequest()
+                .type(Input.DispatchMouseEventTypeValues.of(type))
+                .x(x)
+                .y(y)
+                .buttons(buttons);
         if (!"none".equals(button)) {
             setCdpEnum(request, "button", button);
         }

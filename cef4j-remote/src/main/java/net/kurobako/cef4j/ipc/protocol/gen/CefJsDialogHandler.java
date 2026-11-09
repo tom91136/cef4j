@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -25,7 +26,7 @@ public interface CefJsDialogHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__jsdialog__handler_8h.html">cef_jsdialog_handler.h:96</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onBeforeUnloadDialog(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String messageText, int isReload, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onBeforeUnloadDialog(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String messageText, int isReload, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return Unhandled.bool(); }
 
     /**
      * Called to cancel any pending dialogs and reset any saved dialog state. Will be called due to events like page navigation irregardless of whether any dialogs are currently pending.
@@ -48,13 +49,13 @@ public interface CefJsDialogHandler {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefJsDialogHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.intercept(JsDialogHandlerOnBeforeUnloadDialogEvent.MESSAGE_ID, JsDialogHandlerOnBeforeUnloadDialogEvent.DECODER, ev -> {
+                session.intercept(MessageIds.JS_DIALOG_HANDLER_ON_BEFORE_UNLOAD_DIALOG_EVENT, JsDialogHandlerOnBeforeUnloadDialogEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onBeforeUnloadDialog(ev.browser(), ev.messageText(), ev.isReload(), ev.callback());
-                    return java.util.Optional.of(new JsDialogHandlerOnBeforeUnloadDialogResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.JS_DIALOG_HANDLER_ON_BEFORE_UNLOAD_DIALOG_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.on(JsDialogHandlerOnResetDialogStateEvent.MESSAGE_ID, JsDialogHandlerOnResetDialogStateEvent.DECODER,
+                session.on(MessageIds.JS_DIALOG_HANDLER_ON_RESET_DIALOG_STATE_EVENT, BrowserHandleMessage.DECODER,
                         ev -> handler.onResetDialogState(ev.browser())),
-                session.on(JsDialogHandlerOnDialogClosedEvent.MESSAGE_ID, JsDialogHandlerOnDialogClosedEvent.DECODER,
+                session.on(MessageIds.JS_DIALOG_HANDLER_ON_DIALOG_CLOSED_EVENT, BrowserHandleMessage.DECODER,
                         ev -> handler.onDialogClosed(ev.browser())));
     }
 }

@@ -2,24 +2,22 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class AudioHandlerOnAudioStreamStartedEvent implements CefMessageView, CefMessageEncoder {
 
-    public static final int MESSAGE_ID = 2108053238;
-
     private final RemoteHandle browser;
-    private final AudioParameters params;
+    private final net.kurobako.cef4j.gen.CefAudioParameters params;
     private final int channels;
 
-    public AudioHandlerOnAudioStreamStartedEvent(RemoteHandle browser, AudioParameters params, int channels) {
+    public AudioHandlerOnAudioStreamStartedEvent(RemoteHandle browser, net.kurobako.cef4j.gen.CefAudioParameters params, int channels) {
         this.browser = browser;
         this.params = params;
         this.channels = channels;
@@ -29,7 +27,7 @@ public final class AudioHandlerOnAudioStreamStartedEvent implements CefMessageVi
         return browser;
     }
 
-    public AudioParameters params() {
+    public net.kurobako.cef4j.gen.CefAudioParameters params() {
         return params;
     }
 
@@ -38,35 +36,23 @@ public final class AudioHandlerOnAudioStreamStartedEvent implements CefMessageVi
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return 8 + params.encodedSize();
+        return 8 + AudioParametersCodec.encodedSize(params);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(browser.id());
-            params.encodeInto(__dst);
-            __dst.putInt(channels);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(browser.id());
+            AudioParametersCodec.encode(__out, params);
+            __out.putInt(channels);
+        });
     }
 
-    public static final CefMessageDecoder<AudioHandlerOnAudioStreamStartedEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<AudioHandlerOnAudioStreamStartedEvent> DECODER = WireDecoder.message("AudioHandlerOnAudioStreamStartedEvent", __buf -> {
         final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
-        final AudioParameters params = AudioParameters.decode(__buf);
+        final net.kurobako.cef4j.gen.CefAudioParameters params = AudioParametersCodec.decode(__buf);
         final int channels = WireDecoder.int32(__buf, "channels");
-        WireDecoder.requireFullyConsumed(__buf, "AudioHandlerOnAudioStreamStartedEvent");
         return new AudioHandlerOnAudioStreamStartedEvent(browser, params, channels);
-    };
+    });
 }

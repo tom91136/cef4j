@@ -28,7 +28,7 @@ public interface CefDomVisitor {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefDomVisitor handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(DomVisitorVisitEvent.MESSAGE_ID, DomVisitorVisitEvent.DECODER,
+                session.on(MessageIds.DOM_VISITOR_VISIT_EVENT, DomVisitorVisitEvent.DECODER,
                         ev -> handler.visit(ev.document())));
     }
 }

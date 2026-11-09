@@ -1,13 +1,14 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpValue;
 import net.kurobako.cef4j.policy.NullableBoundary;
@@ -22,6 +23,9 @@ import org.jspecify.annotations.Nullable;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class IO {
     private IO() {}
+    private static final CdpField<IO.StreamHandle> HANDLE = CdpField.of("handle", value -> new IO.StreamHandle((String) value));
+    private static final CdpField<Runtime.RemoteObjectId> OBJECT_ID = CdpField.of("objectId", value -> new Runtime.RemoteObjectId((String) value));
+    private static final CdpField<String> UUID = CdpField.of("uuid", value -> (String) value);
     /**
      * This is either obtained from another method or specified as {@code blob:&lt;uuid&gt;} where {@code &lt;uuid&gt;} is an UUID of a Blob.
      */
@@ -42,13 +46,6 @@ public final class IO {
      */
     public static final class CloseRequest extends CdpObject {
         public CloseRequest() {}
-        /**
-         * Close the stream, discard any temporary backing storage.
-         * @param handle protocol value
-         */
-        public CloseRequest(IO.StreamHandle handle) {
-            handle(handle);
-        }
         public static CloseRequest fromMap(Map<String, Object> values) {
             final CloseRequest instance_ = new CloseRequest();
             if (values != null) instance_.values.putAll(values);
@@ -59,7 +56,7 @@ public final class IO {
          * @return the protocol field value
          */
         public IO.StreamHandle handle() {
-            return new IO.StreamHandle((String) require("handle"));
+            return require(HANDLE);
         }
         /**
          * Handle of the stream to close.
@@ -76,13 +73,6 @@ public final class IO {
      */
     public static final class ReadRequest extends CdpObject {
         public ReadRequest() {}
-        /**
-         * Read a chunk of the stream
-         * @param handle protocol value
-         */
-        public ReadRequest(IO.StreamHandle handle) {
-            handle(handle);
-        }
         public static ReadRequest fromMap(Map<String, Object> values) {
             final ReadRequest instance_ = new ReadRequest();
             if (values != null) instance_.values.putAll(values);
@@ -93,21 +83,21 @@ public final class IO {
          * @return the protocol field value
          */
         public IO.StreamHandle handle() {
-            return new IO.StreamHandle((String) require("handle"));
+            return require(HANDLE);
         }
         /**
          * Seek to the specified offset before reading (if not specified, proceed with offset following the last read). Some types of streams may only support sequential reads.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong offset() {
-            return raw("offset").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("offset");
         }
         /**
          * Maximum number of bytes to read (left upon the agent discretion if not specified).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong size() {
-            return raw("size").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("size");
         }
         /**
          * Handle of the stream to read.
@@ -142,13 +132,6 @@ public final class IO {
      */
     public static final class ResolveBlobRequest extends CdpObject {
         public ResolveBlobRequest() {}
-        /**
-         * Return UUID of Blob object specified by a remote object id.
-         * @param objectId protocol value
-         */
-        public ResolveBlobRequest(Runtime.RemoteObjectId objectId) {
-            objectId(objectId);
-        }
         public static ResolveBlobRequest fromMap(Map<String, Object> values) {
             final ResolveBlobRequest instance_ = new ResolveBlobRequest();
             if (values != null) instance_.values.putAll(values);
@@ -159,7 +142,7 @@ public final class IO {
          * @return the protocol field value
          */
         public Runtime.RemoteObjectId objectId() {
-            return new Runtime.RemoteObjectId((String) require("objectId"));
+            return require(OBJECT_ID);
         }
         /**
          * Object id of a Blob object wrapper.
@@ -185,21 +168,21 @@ public final class IO {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> base64Encoded() {
-            return raw("base64Encoded").map(value -> (Boolean) value);
+            return optionalBoolean("base64Encoded");
         }
         /**
          * Data that were read.
          * @return the protocol field value
          */
         public String data() {
-            return (String) require("data");
+            return requireString("data");
         }
         /**
          * Set if the end-of-file condition occurred while reading.
          * @return the protocol field value
          */
         public boolean eof() {
-            return (Boolean) require("eof");
+            return requireBoolean("eof");
         }
         /**
          * Set if the data is base64-encoded
@@ -229,18 +212,15 @@ public final class IO {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Close the stream, discard any temporary backing storage.
          * @param handle protocol value
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> close(IO.StreamHandle handle) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("handle", CdpObject.json(handle));
-            return client.call("IO.close", params);
+            return call("IO.close", params("handle", handle));
         }
         /**
          * Close the stream, discard any temporary backing storage.
@@ -248,7 +228,7 @@ public final class IO {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> close(CloseRequest request) {
-            return client.call("IO.close", request == null ? null : request.toMap());
+            return call("IO.close", request);
         }
         /**
          * Read a chunk of the stream
@@ -258,11 +238,7 @@ public final class IO {
          * @return a stage completing with the command result
          */
         public CompletionStage<ReadResult> read(IO.StreamHandle handle, @Nullable Long offset, @Nullable Long size) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("handle", CdpObject.json(handle));
-            if (offset != null) params.put("offset", CdpObject.json(offset));
-            if (size != null) params.put("size", CdpObject.json(size));
-            return client.call("IO.read", params, result_ -> new ReadResult(result_));
+            return call("IO.read", params("handle", handle, "offset", offset, "size", size), ReadResult::fromMap);
         }
         /**
          * Read a chunk of the stream
@@ -270,9 +246,7 @@ public final class IO {
          * @return a stage completing with the command result
          */
         public CompletionStage<ReadResult> read(IO.StreamHandle handle) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("handle", CdpObject.json(handle));
-            return client.call("IO.read", params, result_ -> new ReadResult(result_));
+            return call("IO.read", params("handle", handle), ReadResult::fromMap);
         }
         /**
          * Read a chunk of the stream
@@ -280,7 +254,7 @@ public final class IO {
          * @return a stage completing with the command result
          */
         public CompletionStage<ReadResult> read(ReadRequest request) {
-            return client.call("IO.read", request == null ? null : request.toMap(), result_ -> new ReadResult(result_));
+            return call("IO.read", request, ReadResult::fromMap);
         }
         /**
          * Return UUID of Blob object specified by a remote object id.
@@ -288,9 +262,7 @@ public final class IO {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> resolveBlob(Runtime.RemoteObjectId objectId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("objectId", CdpObject.json(objectId));
-            return client.call("IO.resolveBlob", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("uuid")));
+            return call("IO.resolveBlob", params("objectId", objectId), UUID::require);
         }
         /**
          * Return UUID of Blob object specified by a remote object id.
@@ -298,7 +270,7 @@ public final class IO {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> resolveBlob(ResolveBlobRequest request) {
-            return client.call("IO.resolveBlob", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("uuid")));
+            return call("IO.resolveBlob", request, UUID::require);
         }
     }
 }

@@ -1,7 +1,6 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -10,6 +9,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -26,6 +27,98 @@ import org.jspecify.annotations.Nullable;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class CSS {
     private CSS() {}
+    private static final CdpField<CSS.Value> ANIMATION_NAME = CdpField.of("animationName", value -> java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<CSS.CSSAnimationStyle>> ANIMATION_STYLES = CdpField.of("animationStyles", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSAnimationStyle.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<CSS.CSSStyle> ATTRIBUTES_STYLE = CdpField.of("attributesStyle", value -> java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<String>> BACKGROUND_COLORS = CdpField.of("backgroundColors", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<java.util.List<CSS.CSSFunctionNode>> CHILDREN = CdpField.of("children", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSFunctionNode.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<String>> CLASS_NAMES = CdpField.of("classNames", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<java.util.List<CSS.CSSComputedStyleProperty>> COMPUTED_STYLE = CdpField.of("computedStyle", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSComputedStyleProperty.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<CSS.CSSFunctionConditionNode> CONDITION = CdpField.of("condition", value -> java.util.Objects.requireNonNull(CSS.CSSFunctionConditionNode.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<CSS.CSSContainerQuery>> CONTAINER_QUERIES = CdpField.of("containerQueries", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<CSS.CSSContainerQuery> CONTAINER_QUERIES_2 = CdpField.of("containerQueries", value -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<CSS.CSSContainerQuery> CONTAINER_QUERY = CdpField.of("containerQuery", value -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<CSS.RuleUsage>> COVERAGE = CdpField.of("coverage", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.RuleUsage.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<CSS.CSSAtRule>> CSS_AT_RULES = CdpField.of("cssAtRules", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSAtRule.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<CSS.CSSFunctionRule>> CSS_FUNCTION_RULES = CdpField.of("cssFunctionRules", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSFunctionRule.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<CSS.CSSKeyframesRule>> CSS_KEYFRAMES_RULES = CdpField.of("cssKeyframesRules", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSKeyframesRule.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<CSS.CSSPositionTryRule>> CSS_POSITION_TRY_RULES = CdpField.of("cssPositionTryRules", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSPositionTryRule.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<CSS.CSSProperty>> CSS_PROPERTIES = CdpField.of("cssProperties", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSProperty.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<CSS.CSSPropertyRegistration>> CSS_PROPERTY_REGISTRATIONS = CdpField.of("cssPropertyRegistrations", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSPropertyRegistration.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<CSS.CSSPropertyRule>> CSS_PROPERTY_RULES = CdpField.of("cssPropertyRules", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSPropertyRule.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<CSS.StyleDeclarationEdit>> EDITS = CdpField.of("edits", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.StyleDeclarationEdit.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.Map<String, Object>> ENVIRONMENT_VARIABLES = CdpField.of("environmentVariables", value -> CdpObject.requireObjectMap(value));
+    private static final CdpField<java.util.List<CSS.MediaQueryExpression>> EXPRESSIONS = CdpField.of("expressions", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.MediaQueryExpression.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<CSS.ComputedStyleExtraFields> EXTRA_FIELDS = CdpField.of("extraFields", value -> java.util.Objects.requireNonNull(CSS.ComputedStyleExtraFields.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<CSS.FontFace> FONT = CdpField.of("font", value -> java.util.Objects.requireNonNull(CSS.FontFace.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<CSS.PlatformFontUsage>> FONTS = CdpField.of("fonts", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.PlatformFontUsage.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<CSS.FontVariationAxis>> FONT_VARIATION_AXES = CdpField.of("fontVariationAxes", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.FontVariationAxis.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<String>> FORCED_PSEUDO_CLASSES = CdpField.of("forcedPseudoClasses", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Page.FrameId> FRAME_ID = CdpField.of("frameId", value -> new Page.FrameId((String) value));
+    private static final CdpField<CSS.CSSStyleSheetHeader> HEADER = CdpField.of("header", value -> java.util.Objects.requireNonNull(CSS.CSSStyleSheetHeader.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<CSS.InheritedAnimatedStyleEntry>> INHERITED = CdpField.of("inherited", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.InheritedAnimatedStyleEntry.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<CSS.InheritedStyleEntry>> INHERITED_2 = CdpField.of("inherited", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.InheritedStyleEntry.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<CSS.InheritedPseudoElementMatches>> INHERITED_PSEUDO_ELEMENTS = CdpField.of("inheritedPseudoElements", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.InheritedPseudoElementMatches.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<CSS.Value> INITIAL_VALUE = CdpField.of("initialValue", value -> java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<CSS.CSSStyle> INLINE_STYLE = CdpField.of("inlineStyle", value -> java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<CSS.CSSKeyframeRule>> KEYFRAMES = CdpField.of("keyframes", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSKeyframeRule.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<CSS.Value> KEY_TEXT = CdpField.of("keyText", value -> java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<CSS.CSSLayer>> LAYERS = CdpField.of("layers", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSLayer.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<CSS.SourceRange> LOCATION = CdpField.of("location", value -> java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<DOM.LogicalAxes> LOGICAL_AXES = CdpField.of("logicalAxes", value -> DOM.LogicalAxes.of((String) value));
+    private static final CdpField<java.util.List<CSS.CSSProperty>> LONGHAND_PROPERTIES = CdpField.of("longhandProperties", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSProperty.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<CSS.RuleMatch>> MATCHED_CSSRULES = CdpField.of("matchedCSSRules", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.RuleMatch.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<CSS.RuleMatch>> MATCHES = CdpField.of("matches", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.RuleMatch.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Long>> MATCHING_SELECTORS = CdpField.of("matchingSelectors", value -> CdpObject.requireList(value, element0 -> ((Number) element0).longValue()));
+    private static final CdpField<java.util.List<CSS.CSSMedia>> MEDIA = CdpField.of("media", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSMedia.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<CSS.CSSMedia>> MEDIAS = CdpField.of("medias", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSMedia.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<CSS.CSSMedia> MEDIA_2 = CdpField.of("media", value -> java.util.Objects.requireNonNull(CSS.CSSMedia.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<CSS.MediaQuery>> MEDIA_LIST = CdpField.of("mediaList", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.MediaQuery.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<CSS.Value> NAME = CdpField.of("name", value -> java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<CSS.CSSNavigation> NAVIGATION = CdpField.of("navigation", value -> java.util.Objects.requireNonNull(CSS.CSSNavigation.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<CSS.CSSNavigation>> NAVIGATIONS = CdpField.of("navigations", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSNavigation.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<String>> NESTING_SELECTORS = CdpField.of("nestingSelectors", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<DOM.NodeId> NODE_FOR_PROPERTY_SYNTAX_VALIDATION = CdpField.of("nodeForPropertySyntaxValidation", value -> new DOM.NodeId(((Number) value).longValue()));
+    private static final CdpField<DOM.NodeId> NODE_ID = CdpField.of("nodeId", value -> new DOM.NodeId(((Number) value).longValue()));
+    private static final CdpField<java.util.List<DOM.NodeId>> NODE_IDS = CdpField.of("nodeIds", value -> CdpObject.requireList(value, element0 -> new DOM.NodeId(((Number) element0).longValue())));
+    private static final CdpField<CSS.StyleSheetOrigin> ORIGIN = CdpField.of("origin", value -> CSS.StyleSheetOrigin.of((String) value));
+    private static final CdpField<DOM.BackendNodeId> ORIGIN_TREE_SCOPE_NODE_ID = CdpField.of("originTreeScopeNodeId", value -> new DOM.BackendNodeId(((Number) value).longValue()));
+    private static final CdpField<DOM.BackendNodeId> OWNER_NODE = CdpField.of("ownerNode", value -> new DOM.BackendNodeId(((Number) value).longValue()));
+    private static final CdpField<java.util.List<CSS.CSSFunctionParameter>> PARAMETERS = CdpField.of("parameters", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSFunctionParameter.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<DOM.NodeId> PARENT_LAYOUT_NODE_ID = CdpField.of("parentLayoutNodeId", value -> new DOM.NodeId(((Number) value).longValue()));
+    private static final CdpField<DOM.PhysicalAxes> PHYSICAL_AXES = CdpField.of("physicalAxes", value -> DOM.PhysicalAxes.of((String) value));
+    private static final CdpField<java.util.List<CSS.CSSComputedStyleProperty>> PROPERTIES_TO_TRACK = CdpField.of("propertiesToTrack", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSComputedStyleProperty.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<CSS.Value> PROPERTY_NAME = CdpField.of("propertyName", value -> java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<CSS.PseudoElementMatches>> PSEUDO_ELEMENTS = CdpField.of("pseudoElements", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.PseudoElementMatches.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<DOM.PseudoType> PSEUDO_TYPE = CdpField.of("pseudoType", value -> DOM.PseudoType.of((String) value));
+    private static final CdpField<CSS.SourceRange> RANGE = CdpField.of("range", value -> java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<CSS.SourceRange>> RANGES = CdpField.of("ranges", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<String>> RESULTS = CdpField.of("results", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<CSS.CSSLayerData> ROOT_LAYER = CdpField.of("rootLayer", value -> java.util.Objects.requireNonNull(CSS.CSSLayerData.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<CSS.CSSRule> RULE = CdpField.of("rule", value -> java.util.Objects.requireNonNull(CSS.CSSRule.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<CSS.CSSRuleType>> RULE_TYPES = CdpField.of("ruleTypes", value -> CdpObject.requireList(value, element0 -> CSS.CSSRuleType.of((String) element0)));
+    private static final CdpField<java.util.List<CSS.RuleUsage>> RULE_USAGE = CdpField.of("ruleUsage", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.RuleUsage.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<CSS.CSSScope> SCOPE = CdpField.of("scope", value -> java.util.Objects.requireNonNull(CSS.CSSScope.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<CSS.CSSScope>> SCOPES = CdpField.of("scopes", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSScope.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<CSS.Value>> SELECTORS = CdpField.of("selectors", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<CSS.SelectorList> SELECTOR_LIST = CdpField.of("selectorList", value -> java.util.Objects.requireNonNull(CSS.SelectorList.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<CSS.ShorthandEntry>> SHORTHAND_ENTRIES = CdpField.of("shorthandEntries", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.ShorthandEntry.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<CSSMedia.SourceValues> SOURCE = CdpField.of("source", value -> CSSMedia.SourceValues.of((String) value));
+    private static final CdpField<String> SOURCE_MAP_URL = CdpField.of("sourceMapURL", value -> (String) value);
+    private static final CdpField<CSS.Specificity> SPECIFICITY = CdpField.of("specificity", value -> java.util.Objects.requireNonNull(CSS.Specificity.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<CSS.CSSStartingStyle>> STARTING_STYLES = CdpField.of("startingStyles", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSStartingStyle.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<CSS.CSSStyle> STYLE = CdpField.of("style", value -> java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<CSS.CSSStyle>> STYLES = CdpField.of("styles", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<DOM.StyleSheetId> STYLE_SHEET_ID = CdpField.of("styleSheetId", value -> new DOM.StyleSheetId((String) value));
+    private static final CdpField<CSSAtRule.SubsectionValues> SUBSECTION = CdpField.of("subsection", value -> CSSAtRule.SubsectionValues.of((String) value));
+    private static final CdpField<java.util.List<CSS.CSSLayerData>> SUB_LAYERS = CdpField.of("subLayers", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSLayerData.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<CSS.CSSSupports>> SUPPORTS = CdpField.of("supports", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSSupports.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<CSS.CSSSupports> SUPPORTS_2 = CdpField.of("supports", value -> java.util.Objects.requireNonNull(CSS.CSSSupports.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<String> TEXT = CdpField.of("text", value -> (String) value);
+    private static final CdpField<CSS.CSSStyle> TRANSITIONS_STYLE = CdpField.of("transitionsStyle", value -> java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<CSSAtRule.TypeValues> TYPE = CdpField.of("type", value -> CSSAtRule.TypeValues.of((String) value));
+    private static final CdpField<java.util.List<String>> VALUES = CdpField.of("values", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<CSS.SourceRange> VALUE_RANGE = CdpField.of("valueRange", value -> java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(value))));
     /**
      * Stylesheet type: &quot;injected&quot; for stylesheets injected via extension, &quot;user-agent&quot; for user-agent stylesheets, &quot;inspector&quot; for stylesheets created by the inspector (i.e. those holding the &quot;via inspector&quot; rules), &quot;regular&quot; for regular stylesheets.
      */
@@ -58,21 +151,21 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.PseudoType pseudoType() {
-            return DOM.PseudoType.of((String) require("pseudoType"));
+            return require(PSEUDO_TYPE);
         }
         /**
          * Pseudo element custom ident.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> pseudoIdentifier() {
-            return raw("pseudoIdentifier").map(value -> (String) value);
+            return optionalString("pseudoIdentifier");
         }
         /**
          * Matches of CSS rules applicable to the pseudo style.
          * @return the protocol field value
          */
         public java.util.List<CSS.RuleMatch> matches() {
-            return CdpObject.requireList(require("matches"), element0 -> java.util.Objects.requireNonNull(CSS.RuleMatch.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(MATCHES);
         }
         /**
          * Pseudo element type.
@@ -116,14 +209,14 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            return raw("name").map(value -> (String) value);
+            return optionalString("name");
         }
         /**
          * The style coming from the animation.
          * @return the protocol field value
          */
         public CSS.CSSStyle style() {
-            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(require("style"))));
+            return require(STYLE);
         }
         /**
          * The name of the animation.
@@ -158,14 +251,14 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> inlineStyle() {
-            return raw("inlineStyle").flatMap(CdpObject::objectMap).map(CSS.CSSStyle::fromMap);
+            return optional(INLINE_STYLE);
         }
         /**
          * Matches of CSS rules matching the ancestor node in the style inheritance chain.
          * @return the protocol field value
          */
         public java.util.List<CSS.RuleMatch> matchedCSSRules() {
-            return CdpObject.requireList(require("matchedCSSRules"), element0 -> java.util.Objects.requireNonNull(CSS.RuleMatch.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(MATCHED_CSSRULES);
         }
         /**
          * The ancestor node&#x27;s inline style, if any, in the style inheritance chain.
@@ -200,14 +293,14 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSAnimationStyle>> animationStyles() {
-            return raw("animationStyles").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSAnimationStyle.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(ANIMATION_STYLES);
         }
         /**
          * The style coming from the transitions of the ancestor, if any, in the style inheritance chain.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> transitionsStyle() {
-            return raw("transitionsStyle").flatMap(CdpObject::objectMap).map(CSS.CSSStyle::fromMap);
+            return optional(TRANSITIONS_STYLE);
         }
         /**
          * Styles coming from the animations of the ancestor, if any, in the style inheritance chain.
@@ -242,7 +335,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public java.util.List<CSS.PseudoElementMatches> pseudoElements() {
-            return CdpObject.requireList(require("pseudoElements"), element0 -> java.util.Objects.requireNonNull(CSS.PseudoElementMatches.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(PSEUDO_ELEMENTS);
         }
         /**
          * Matches of pseudo styles from the pseudos of an ancestor node.
@@ -268,14 +361,14 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.CSSRule rule() {
-            return java.util.Objects.requireNonNull(CSS.CSSRule.fromMap(CdpObject.requireObjectMap(require("rule"))));
+            return require(RULE);
         }
         /**
          * Matching selector indices in the rule&#x27;s selectorList selectors (0-based).
          * @return the protocol field value
          */
         public java.util.List<Long> matchingSelectors() {
-            return CdpObject.requireList(require("matchingSelectors"), element0 -> ((Number) element0).longValue());
+            return require(MATCHING_SELECTORS);
         }
         /**
          * CSS rule in the match.
@@ -310,14 +403,14 @@ public final class CSS {
          * @return the protocol field value
          */
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * Value range in the underlying resource (if available).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            return raw("range").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
+            return optional(RANGE);
         }
         /**
          * Specificity of the selector.
@@ -325,7 +418,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.Specificity> specificity() {
-            return raw("specificity").flatMap(CdpObject::objectMap).map(CSS.Specificity::fromMap);
+            return optional(SPECIFICITY);
         }
         /**
          * Value text.
@@ -371,21 +464,21 @@ public final class CSS {
          * @return the protocol field value
          */
         public long a() {
-            return ((Number) require("a")).longValue();
+            return requireLong("a");
         }
         /**
          * The b component, which represents the number of class selectors, attributes selectors, and pseudo-classes.
          * @return the protocol field value
          */
         public long b() {
-            return ((Number) require("b")).longValue();
+            return requireLong("b");
         }
         /**
          * The c component, which represents the number of type selectors and pseudo-elements.
          * @return the protocol field value
          */
         public long c() {
-            return ((Number) require("c")).longValue();
+            return requireLong("c");
         }
         /**
          * The a component, which represents the number of ID selectors.
@@ -429,14 +522,14 @@ public final class CSS {
          * @return the protocol field value
          */
         public java.util.List<CSS.Value> selectors() {
-            return CdpObject.requireList(require("selectors"), element0 -> java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(SELECTORS);
         }
         /**
          * Rule selector text.
          * @return the protocol field value
          */
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * Selectors in the list.
@@ -471,119 +564,119 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.StyleSheetId styleSheetId() {
-            return new DOM.StyleSheetId((String) require("styleSheetId"));
+            return require(STYLE_SHEET_ID);
         }
         /**
          * Owner frame identifier.
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Stylesheet resource URL. Empty if this is a constructed stylesheet created using new CSSStyleSheet() (but non-empty if this is a constructed stylesheet imported as a CSS module script).
          * @return the protocol field value
          */
         public String sourceURL() {
-            return (String) require("sourceURL");
+            return requireString("sourceURL");
         }
         /**
          * URL of source map associated with the stylesheet (if any).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> sourceMapURL() {
-            return raw("sourceMapURL").map(value -> (String) value);
+            return optionalString("sourceMapURL");
         }
         /**
          * Stylesheet origin.
          * @return the protocol field value
          */
         public CSS.StyleSheetOrigin origin() {
-            return CSS.StyleSheetOrigin.of((String) require("origin"));
+            return require(ORIGIN);
         }
         /**
          * Stylesheet title.
          * @return the protocol field value
          */
         public String title() {
-            return (String) require("title");
+            return requireString("title");
         }
         /**
          * The backend id for the owner node of the stylesheet.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> ownerNode() {
-            return raw("ownerNode").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(OWNER_NODE);
         }
         /**
          * Denotes whether the stylesheet is disabled.
          * @return the protocol field value
          */
         public boolean disabled() {
-            return (Boolean) require("disabled");
+            return requireBoolean("disabled");
         }
         /**
          * Whether the sourceURL field value comes from the sourceURL comment.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> hasSourceURL() {
-            return raw("hasSourceURL").map(value -> (Boolean) value);
+            return optionalBoolean("hasSourceURL");
         }
         /**
          * Whether this stylesheet is created for STYLE tag by parser. This flag is not set for document.written STYLE tags.
          * @return the protocol field value
          */
         public boolean isInline() {
-            return (Boolean) require("isInline");
+            return requireBoolean("isInline");
         }
         /**
          * Whether this stylesheet is mutable. Inline stylesheets become mutable after they have been modified via CSSOM API. {@code &lt;link&gt;} element&#x27;s stylesheets become mutable only if DevTools modifies them. Constructed stylesheets (new CSSStyleSheet()) are mutable immediately after creation.
          * @return the protocol field value
          */
         public boolean isMutable() {
-            return (Boolean) require("isMutable");
+            return requireBoolean("isMutable");
         }
         /**
          * True if this stylesheet is created through new CSSStyleSheet() or imported as a CSS module script.
          * @return the protocol field value
          */
         public boolean isConstructed() {
-            return (Boolean) require("isConstructed");
+            return requireBoolean("isConstructed");
         }
         /**
          * Line offset of the stylesheet within the resource (zero based).
          * @return the protocol field value
          */
         public double startLine() {
-            return ((Number) require("startLine")).doubleValue();
+            return requireDouble("startLine");
         }
         /**
          * Column offset of the stylesheet within the resource (zero based).
          * @return the protocol field value
          */
         public double startColumn() {
-            return ((Number) require("startColumn")).doubleValue();
+            return requireDouble("startColumn");
         }
         /**
          * Size of the content (in characters).
          * @return the protocol field value
          */
         public double length() {
-            return ((Number) require("length")).doubleValue();
+            return requireDouble("length");
         }
         /**
          * Line offset of the end of the stylesheet within the resource (zero based).
          * @return the protocol field value
          */
         public double endLine() {
-            return ((Number) require("endLine")).doubleValue();
+            return requireDouble("endLine");
         }
         /**
          * Column offset of the end of the stylesheet within the resource (zero based).
          * @return the protocol field value
          */
         public double endColumn() {
-            return ((Number) require("endColumn")).doubleValue();
+            return requireDouble("endColumn");
         }
         /**
          * If the style sheet was loaded from a network resource, this indicates when the resource failed to load
@@ -591,7 +684,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> loadingFailed() {
-            return raw("loadingFailed").map(value -> (Boolean) value);
+            return optionalBoolean("loadingFailed");
         }
         /**
          * The stylesheet identifier.
@@ -771,14 +864,14 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
+            return optional(STYLE_SHEET_ID);
         }
         /**
          * Rule selector data.
          * @return the protocol field value
          */
         public CSS.SelectorList selectorList() {
-            return java.util.Objects.requireNonNull(CSS.SelectorList.fromMap(CdpObject.requireObjectMap(require("selectorList"))));
+            return require(SELECTOR_LIST);
         }
         /**
          * Array of selectors from ancestor style rules, sorted by distance from the current rule.
@@ -786,21 +879,21 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> nestingSelectors() {
-            return raw("nestingSelectors").flatMap(value -> list(value, element0 -> (String) element0));
+            return optional(NESTING_SELECTORS);
         }
         /**
          * Parent stylesheet&#x27;s origin.
          * @return the protocol field value
          */
         public CSS.StyleSheetOrigin origin() {
-            return CSS.StyleSheetOrigin.of((String) require("origin"));
+            return require(ORIGIN);
         }
         /**
          * Associated style declaration.
          * @return the protocol field value
          */
         public CSS.CSSStyle style() {
-            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(require("style"))));
+            return require(STYLE);
         }
         /**
          * The BackendNodeId of the DOM node that constitutes the origin tree scope of this rule.
@@ -808,14 +901,14 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> originTreeScopeNodeId() {
-            return raw("originTreeScopeNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(ORIGIN_TREE_SCOPE_NODE_ID);
         }
         /**
          * Media list array (for rules involving media queries). The array enumerates media queries starting with the innermost one, going outwards.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSMedia>> media() {
-            return raw("media").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSMedia.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(MEDIA);
         }
         /**
          * Container query list array (for rules involving container queries). The array enumerates container queries starting with the innermost one, going outwards.
@@ -823,7 +916,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSContainerQuery>> containerQueries() {
-            return raw("containerQueries").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(CONTAINER_QUERIES);
         }
         /**
          * &#64;supports CSS at-rule array. The array enumerates &#64;supports at-rules starting with the innermost one, going outwards.
@@ -831,7 +924,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSSupports>> supports() {
-            return raw("supports").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSSupports.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(SUPPORTS);
         }
         /**
          * Cascade layer array. Contains the layer hierarchy that this rule belongs to starting with the innermost layer and going outwards.
@@ -839,7 +932,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSLayer>> layers() {
-            return raw("layers").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSLayer.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(LAYERS);
         }
         /**
          * &#64;scope CSS at-rule array. The array enumerates &#64;scope at-rules starting with the innermost one, going outwards.
@@ -847,7 +940,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSScope>> scopes() {
-            return raw("scopes").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSScope.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(SCOPES);
         }
         /**
          * The array keeps the types of ancestor CSSRules from the innermost going outwards.
@@ -855,7 +948,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSRuleType>> ruleTypes() {
-            return raw("ruleTypes").flatMap(value -> list(value, element0 -> CSS.CSSRuleType.of((String) element0)));
+            return optional(RULE_TYPES);
         }
         /**
          * &#64;starting-style CSS at-rule array. The array enumerates &#64;starting-style at-rules starting with the innermost one, going outwards.
@@ -863,7 +956,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSStartingStyle>> startingStyles() {
-            return raw("startingStyles").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSStartingStyle.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(STARTING_STYLES);
         }
         /**
          * &#64;navigation CSS at-rule array. The array enumerates &#64;navigation at-rules starting with the innermost one, going outwards.
@@ -871,7 +964,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSNavigation>> navigations() {
-            return raw("navigations").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSNavigation.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(NAVIGATIONS);
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
@@ -1046,28 +1139,28 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.StyleSheetId styleSheetId() {
-            return new DOM.StyleSheetId((String) require("styleSheetId"));
+            return require(STYLE_SHEET_ID);
         }
         /**
          * Offset of the start of the rule (including selector) from the beginning of the stylesheet.
          * @return the protocol field value
          */
         public double startOffset() {
-            return ((Number) require("startOffset")).doubleValue();
+            return requireDouble("startOffset");
         }
         /**
          * Offset of the end of the rule body from the beginning of the stylesheet.
          * @return the protocol field value
          */
         public double endOffset() {
-            return ((Number) require("endOffset")).doubleValue();
+            return requireDouble("endOffset");
         }
         /**
          * Indicates whether the rule was actually used by some element in the page.
          * @return the protocol field value
          */
         public boolean used() {
-            return (Boolean) require("used");
+            return requireBoolean("used");
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
@@ -1120,28 +1213,28 @@ public final class CSS {
          * @return the protocol field value
          */
         public long startLine() {
-            return ((Number) require("startLine")).longValue();
+            return requireLong("startLine");
         }
         /**
          * Start column of range (inclusive).
          * @return the protocol field value
          */
         public long startColumn() {
-            return ((Number) require("startColumn")).longValue();
+            return requireLong("startColumn");
         }
         /**
          * End line of range
          * @return the protocol field value
          */
         public long endLine() {
-            return ((Number) require("endLine")).longValue();
+            return requireLong("endLine");
         }
         /**
          * End column of range (exclusive).
          * @return the protocol field value
          */
         public long endColumn() {
-            return ((Number) require("endColumn")).longValue();
+            return requireLong("endColumn");
         }
         /**
          * Start line of range.
@@ -1193,21 +1286,21 @@ public final class CSS {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Shorthand value.
          * @return the protocol field value
          */
         public String value() {
-            return (String) require("value");
+            return requireString("value");
         }
         /**
          * Whether the property has &quot;!important&quot; annotation (implies {@code false} if absent).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> important() {
-            return raw("important").map(value -> (Boolean) value);
+            return optionalBoolean("important");
         }
         /**
          * Shorthand name.
@@ -1250,14 +1343,14 @@ public final class CSS {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Computed style property value.
          * @return the protocol field value
          */
         public String value() {
-            return (String) require("value");
+            return requireString("value");
         }
         /**
          * Computed style property name.
@@ -1292,7 +1385,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public boolean isAppearanceBase() {
-            return (Boolean) require("isAppearanceBase");
+            return requireBoolean("isAppearanceBase");
         }
         /**
          * Returns whether or not this node is being rendered with base appearance, which happens when it has its appearance property set to base/base-select or it is in the subtree of an element being rendered with base appearance.
@@ -1318,35 +1411,35 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
+            return optional(STYLE_SHEET_ID);
         }
         /**
          * CSS properties in the style.
          * @return the protocol field value
          */
         public java.util.List<CSS.CSSProperty> cssProperties() {
-            return CdpObject.requireList(require("cssProperties"), element0 -> java.util.Objects.requireNonNull(CSS.CSSProperty.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(CSS_PROPERTIES);
         }
         /**
          * Computed values for all shorthands found in the style.
          * @return the protocol field value
          */
         public java.util.List<CSS.ShorthandEntry> shorthandEntries() {
-            return CdpObject.requireList(require("shorthandEntries"), element0 -> java.util.Objects.requireNonNull(CSS.ShorthandEntry.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(SHORTHAND_ENTRIES);
         }
         /**
          * Style declaration text (if available).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> cssText() {
-            return raw("cssText").map(value -> (String) value);
+            return optionalString("cssText");
         }
         /**
          * Style declaration range in the enclosing stylesheet (if available).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            return raw("range").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
+            return optional(RANGE);
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
@@ -1408,56 +1501,56 @@ public final class CSS {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * The property value.
          * @return the protocol field value
          */
         public String value() {
-            return (String) require("value");
+            return requireString("value");
         }
         /**
          * Whether the property has &quot;!important&quot; annotation (implies {@code false} if absent).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> important() {
-            return raw("important").map(value -> (Boolean) value);
+            return optionalBoolean("important");
         }
         /**
          * Whether the property is implicit (implies {@code false} if absent).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> implicit() {
-            return raw("implicit").map(value -> (Boolean) value);
+            return optionalBoolean("implicit");
         }
         /**
          * The full property text as specified in the style.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> text() {
-            return raw("text").map(value -> (String) value);
+            return optionalString("text");
         }
         /**
          * Whether the property is understood by the browser (implies {@code true} if absent).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> parsedOk() {
-            return raw("parsedOk").map(value -> (Boolean) value);
+            return optionalBoolean("parsedOk");
         }
         /**
          * Whether the property is disabled by the user (present for source-based properties only).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> disabled() {
-            return raw("disabled").map(value -> (Boolean) value);
+            return optionalBoolean("disabled");
         }
         /**
          * The entire property range in the enclosing style declaration (if available).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            return raw("range").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
+            return optional(RANGE);
         }
         /**
          * Parsed longhand components of this property if it is a shorthand. This field will be empty if the given property is not a shorthand.
@@ -1465,7 +1558,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSProperty>> longhandProperties() {
-            return raw("longhandProperties").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSProperty.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(LONGHAND_PROPERTIES);
         }
         /**
          * The property name.
@@ -1582,42 +1675,42 @@ public final class CSS {
          * @return the protocol field value
          */
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * Source of the media query: &quot;mediaRule&quot; if specified by a &#64;media rule, &quot;importRule&quot; if specified by an &#64;import rule, &quot;linkedSheet&quot; if specified by a &quot;media&quot; attribute in a linked stylesheet&#x27;s LINK tag, &quot;inlineSheet&quot; if specified by a &quot;media&quot; attribute in an inline stylesheet&#x27;s STYLE tag.
          * @return the protocol field value
          */
         public CSSMedia.SourceValues source() {
-            return CSSMedia.SourceValues.of((String) require("source"));
+            return require(SOURCE);
         }
         /**
          * URL of the document containing the media query description.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> sourceURL() {
-            return raw("sourceURL").map(value -> (String) value);
+            return optionalString("sourceURL");
         }
         /**
          * The associated rule (&#64;media or &#64;import) header range in the enclosing stylesheet (if available).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            return raw("range").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
+            return optional(RANGE);
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
+            return optional(STYLE_SHEET_ID);
         }
         /**
          * Array of media queries.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.MediaQuery>> mediaList() {
-            return raw("mediaList").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.MediaQuery.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(MEDIA_LIST);
         }
         /**
          * Media query text.
@@ -1688,14 +1781,14 @@ public final class CSS {
          * @return the protocol field value
          */
         public java.util.List<CSS.MediaQueryExpression> expressions() {
-            return CdpObject.requireList(require("expressions"), element0 -> java.util.Objects.requireNonNull(CSS.MediaQueryExpression.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(EXPRESSIONS);
         }
         /**
          * Whether the media query condition is satisfied.
          * @return the protocol field value
          */
         public boolean active() {
-            return (Boolean) require("active");
+            return requireBoolean("active");
         }
         /**
          * Array of media query expressions.
@@ -1730,35 +1823,35 @@ public final class CSS {
          * @return the protocol field value
          */
         public double value() {
-            return ((Number) require("value")).doubleValue();
+            return requireDouble("value");
         }
         /**
          * Media query expression units.
          * @return the protocol field value
          */
         public String unit() {
-            return (String) require("unit");
+            return requireString("unit");
         }
         /**
          * Media query expression feature.
          * @return the protocol field value
          */
         public String feature() {
-            return (String) require("feature");
+            return requireString("feature");
         }
         /**
          * The associated range of the value text in the enclosing stylesheet (if available).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> valueRange() {
-            return raw("valueRange").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
+            return optional(VALUE_RANGE);
         }
         /**
          * Computed length of media query expression (if applicable).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble computedLength() {
-            return raw("computedLength").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("computedLength");
         }
         /**
          * Media query expression value.
@@ -1823,63 +1916,63 @@ public final class CSS {
          */
         @Deprecated
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * The associated rule header range in the enclosing stylesheet (if available).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            return raw("range").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
+            return optional(RANGE);
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
+            return optional(STYLE_SHEET_ID);
         }
         /**
          * Optional name for the container.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            return raw("name").map(value -> (String) value);
+            return optionalString("name");
         }
         /**
          * Optional physical axes queried for the container.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.PhysicalAxes> physicalAxes() {
-            return raw("physicalAxes").map(value -> DOM.PhysicalAxes.of((String) value));
+            return optional(PHYSICAL_AXES);
         }
         /**
          * Optional logical axes queried for the container.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.LogicalAxes> logicalAxes() {
-            return raw("logicalAxes").map(value -> DOM.LogicalAxes.of((String) value));
+            return optional(LOGICAL_AXES);
         }
         /**
          * true if the query contains scroll-state() queries.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> queriesScrollState() {
-            return raw("queriesScrollState").map(value -> (Boolean) value);
+            return optionalBoolean("queriesScrollState");
         }
         /**
          * true if the query contains anchored() queries.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> queriesAnchored() {
-            return raw("queriesAnchored").map(value -> (Boolean) value);
+            return optionalBoolean("queriesAnchored");
         }
         /**
          * CSSContainerRule.conditionText
          * @return the protocol field value
          */
         public String conditionText() {
-            return (String) require("conditionText");
+            return requireString("conditionText");
         }
         /**
          * Container query text. Contains the query part without the container name for a single query. Deprecated in favor of conditionText which contains the full prelude after &#64;container.
@@ -1980,28 +2073,28 @@ public final class CSS {
          * @return the protocol field value
          */
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * Whether the supports condition is satisfied.
          * @return the protocol field value
          */
         public boolean active() {
-            return (Boolean) require("active");
+            return requireBoolean("active");
         }
         /**
          * The associated rule header range in the enclosing stylesheet (if available).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            return raw("range").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
+            return optional(RANGE);
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
+            return optional(STYLE_SHEET_ID);
         }
         /**
          * Supports rule text.
@@ -2055,28 +2148,28 @@ public final class CSS {
          * @return the protocol field value
          */
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * Whether the navigation condition is satisfied.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> active() {
-            return raw("active").map(value -> (Boolean) value);
+            return optionalBoolean("active");
         }
         /**
          * The associated rule header range in the enclosing stylesheet (if available).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            return raw("range").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
+            return optional(RANGE);
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
+            return optional(STYLE_SHEET_ID);
         }
         /**
          * Navigation rule text.
@@ -2130,21 +2223,21 @@ public final class CSS {
          * @return the protocol field value
          */
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * The associated rule header range in the enclosing stylesheet (if available).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            return raw("range").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
+            return optional(RANGE);
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
+            return optional(STYLE_SHEET_ID);
         }
         /**
          * Scope rule text.
@@ -2189,21 +2282,21 @@ public final class CSS {
          * @return the protocol field value
          */
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * The associated rule header range in the enclosing stylesheet (if available).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            return raw("range").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
+            return optional(RANGE);
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
+            return optional(STYLE_SHEET_ID);
         }
         /**
          * Layer name.
@@ -2248,14 +2341,14 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.SourceRange> range() {
-            return raw("range").flatMap(CdpObject::objectMap).map(CSS.SourceRange::fromMap);
+            return optional(RANGE);
         }
         /**
          * Identifier of the stylesheet containing this object (if exists).
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
+            return optional(STYLE_SHEET_ID);
         }
         /**
          * The associated rule header range in the enclosing stylesheet (if available).
@@ -2291,21 +2384,21 @@ public final class CSS {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Direct sub-layers
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSLayerData>> subLayers() {
-            return raw("subLayers").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSLayerData.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(SUB_LAYERS);
         }
         /**
          * Layer order. The order determines the order of the layer in the cascade order. A higher number has higher priority in the cascade order.
          * @return the protocol field value
          */
         public double order() {
-            return ((Number) require("order")).doubleValue();
+            return requireDouble("order");
         }
         /**
          * Layer name.
@@ -2349,28 +2442,28 @@ public final class CSS {
          * @return the protocol field value
          */
         public String familyName() {
-            return (String) require("familyName");
+            return requireString("familyName");
         }
         /**
          * Font&#x27;s PostScript name reported by platform.
          * @return the protocol field value
          */
         public String postScriptName() {
-            return (String) require("postScriptName");
+            return requireString("postScriptName");
         }
         /**
          * Indicates if the font was downloaded or resolved locally.
          * @return the protocol field value
          */
         public boolean isCustomFont() {
-            return (Boolean) require("isCustomFont");
+            return requireBoolean("isCustomFont");
         }
         /**
          * Amount of glyphs that were rendered with this font.
          * @return the protocol field value
          */
         public double glyphCount() {
-            return ((Number) require("glyphCount")).doubleValue();
+            return requireDouble("glyphCount");
         }
         /**
          * Font&#x27;s family name reported by platform.
@@ -2423,35 +2516,35 @@ public final class CSS {
          * @return the protocol field value
          */
         public String tag() {
-            return (String) require("tag");
+            return requireString("tag");
         }
         /**
          * Human-readable variation name in the default language (normally, &quot;en&quot;).
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * The minimum value (inclusive) the font supports for this tag.
          * @return the protocol field value
          */
         public double minValue() {
-            return ((Number) require("minValue")).doubleValue();
+            return requireDouble("minValue");
         }
         /**
          * The maximum value (inclusive) the font supports for this tag.
          * @return the protocol field value
          */
         public double maxValue() {
-            return ((Number) require("maxValue")).doubleValue();
+            return requireDouble("maxValue");
         }
         /**
          * The default value.
          * @return the protocol field value
          */
         public double defaultValue() {
-            return ((Number) require("defaultValue")).doubleValue();
+            return requireDouble("defaultValue");
         }
         /**
          * The font-variation-setting tag (a.k.a. &quot;axis tag&quot;).
@@ -2513,70 +2606,70 @@ public final class CSS {
          * @return the protocol field value
          */
         public String fontFamily() {
-            return (String) require("fontFamily");
+            return requireString("fontFamily");
         }
         /**
          * The font-style.
          * @return the protocol field value
          */
         public String fontStyle() {
-            return (String) require("fontStyle");
+            return requireString("fontStyle");
         }
         /**
          * The font-variant.
          * @return the protocol field value
          */
         public String fontVariant() {
-            return (String) require("fontVariant");
+            return requireString("fontVariant");
         }
         /**
          * The font-weight.
          * @return the protocol field value
          */
         public String fontWeight() {
-            return (String) require("fontWeight");
+            return requireString("fontWeight");
         }
         /**
          * The font-stretch.
          * @return the protocol field value
          */
         public String fontStretch() {
-            return (String) require("fontStretch");
+            return requireString("fontStretch");
         }
         /**
          * The font-display.
          * @return the protocol field value
          */
         public String fontDisplay() {
-            return (String) require("fontDisplay");
+            return requireString("fontDisplay");
         }
         /**
          * The unicode-range.
          * @return the protocol field value
          */
         public String unicodeRange() {
-            return (String) require("unicodeRange");
+            return requireString("unicodeRange");
         }
         /**
          * The src.
          * @return the protocol field value
          */
         public String src() {
-            return (String) require("src");
+            return requireString("src");
         }
         /**
          * The resolved platform font family
          * @return the protocol field value
          */
         public String platformFontFamily() {
-            return (String) require("platformFontFamily");
+            return requireString("platformFontFamily");
         }
         /**
          * Available variation settings (a.k.a. &quot;axes&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.FontVariationAxis>> fontVariationAxes() {
-            return raw("fontVariationAxes").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.FontVariationAxis.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(FONT_VARIATION_AXES);
         }
         /**
          * The font-family.
@@ -2683,21 +2776,21 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
+            return optional(STYLE_SHEET_ID);
         }
         /**
          * Parent stylesheet&#x27;s origin.
          * @return the protocol field value
          */
         public CSS.StyleSheetOrigin origin() {
-            return CSS.StyleSheetOrigin.of((String) require("origin"));
+            return require(ORIGIN);
         }
         /**
          * Associated style declaration.
          * @return the protocol field value
          */
         public CSS.CSSStyle style() {
-            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(require("style"))));
+            return require(STYLE);
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
@@ -2741,35 +2834,35 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.Value name() {
-            return java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(require("name"))));
+            return require(NAME);
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
+            return optional(STYLE_SHEET_ID);
         }
         /**
          * Parent stylesheet&#x27;s origin.
          * @return the protocol field value
          */
         public CSS.StyleSheetOrigin origin() {
-            return CSS.StyleSheetOrigin.of((String) require("origin"));
+            return require(ORIGIN);
         }
         /**
          * Associated style declaration.
          * @return the protocol field value
          */
         public CSS.CSSStyle style() {
-            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(require("style"))));
+            return require(STYLE);
         }
         /**
          * Returns the active field.
          * @return the protocol field value
          */
         public boolean active() {
-            return (Boolean) require("active");
+            return requireBoolean("active");
         }
         /**
          * The prelude dashed-ident name
@@ -2831,14 +2924,14 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.Value animationName() {
-            return java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(require("animationName"))));
+            return require(ANIMATION_NAME);
         }
         /**
          * List of keyframes.
          * @return the protocol field value
          */
         public java.util.List<CSS.CSSKeyframeRule> keyframes() {
-            return CdpObject.requireList(require("keyframes"), element0 -> java.util.Objects.requireNonNull(CSS.CSSKeyframeRule.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(KEYFRAMES);
         }
         /**
          * Animation name.
@@ -2873,28 +2966,28 @@ public final class CSS {
          * @return the protocol field value
          */
         public String propertyName() {
-            return (String) require("propertyName");
+            return requireString("propertyName");
         }
         /**
          * Returns the initialValue field.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.Value> initialValue() {
-            return raw("initialValue").flatMap(CdpObject::objectMap).map(CSS.Value::fromMap);
+            return optional(INITIAL_VALUE);
         }
         /**
          * Returns the inherits field.
          * @return the protocol field value
          */
         public boolean inherits() {
-            return (Boolean) require("inherits");
+            return requireBoolean("inherits");
         }
         /**
          * Returns the syntax field.
          * @return the protocol field value
          */
         public String syntax() {
-            return (String) require("syntax");
+            return requireString("syntax");
         }
         /**
          * Sets the propertyName field.
@@ -2985,42 +3078,42 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSSAtRule.TypeValues type() {
-            return CSSAtRule.TypeValues.of((String) require("type"));
+            return require(TYPE);
         }
         /**
          * Subsection of font-feature-values, if this is a subsection.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSSAtRule.SubsectionValues> subsection() {
-            return raw("subsection").map(value -> CSSAtRule.SubsectionValues.of((String) value));
+            return optional(SUBSECTION);
         }
         /**
          * LINT.ThenChange(//third_party/blink/renderer/core/inspector/inspector_style_sheet.cc:FontVariantAlternatesFeatureType,//third_party/blink/renderer/core/inspector/inspector_css_agent.cc:FontVariantAlternatesFeatureType) Associated name, if applicable.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.Value> name() {
-            return raw("name").flatMap(CdpObject::objectMap).map(CSS.Value::fromMap);
+            return optional(NAME);
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
+            return optional(STYLE_SHEET_ID);
         }
         /**
          * Parent stylesheet&#x27;s origin.
          * @return the protocol field value
          */
         public CSS.StyleSheetOrigin origin() {
-            return CSS.StyleSheetOrigin.of((String) require("origin"));
+            return require(ORIGIN);
         }
         /**
          * Associated style declaration.
          * @return the protocol field value
          */
         public CSS.CSSStyle style() {
-            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(require("style"))));
+            return require(STYLE);
         }
         /**
          * Type of at-rule.
@@ -3091,28 +3184,28 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
+            return optional(STYLE_SHEET_ID);
         }
         /**
          * Parent stylesheet&#x27;s origin.
          * @return the protocol field value
          */
         public CSS.StyleSheetOrigin origin() {
-            return CSS.StyleSheetOrigin.of((String) require("origin"));
+            return require(ORIGIN);
         }
         /**
          * Associated property name.
          * @return the protocol field value
          */
         public CSS.Value propertyName() {
-            return java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(require("propertyName"))));
+            return require(PROPERTY_NAME);
         }
         /**
          * Associated style declaration.
          * @return the protocol field value
          */
         public CSS.CSSStyle style() {
-            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(require("style"))));
+            return require(STYLE);
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
@@ -3165,14 +3258,14 @@ public final class CSS {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * The parameter type.
          * @return the protocol field value
          */
         public String type() {
-            return (String) require("type");
+            return requireString("type");
         }
         /**
          * The parameter name.
@@ -3207,42 +3300,42 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSMedia> media() {
-            return raw("media").flatMap(CdpObject::objectMap).map(CSS.CSSMedia::fromMap);
+            return optional(MEDIA_2);
         }
         /**
          * Container query for this conditional block. Only one type of condition should be set.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSContainerQuery> containerQueries() {
-            return raw("containerQueries").flatMap(CdpObject::objectMap).map(CSS.CSSContainerQuery::fromMap);
+            return optional(CONTAINER_QUERIES_2);
         }
         /**
          * &#64;supports CSS at-rule condition. Only one type of condition should be set.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSSupports> supports() {
-            return raw("supports").flatMap(CdpObject::objectMap).map(CSS.CSSSupports::fromMap);
+            return optional(SUPPORTS_2);
         }
         /**
          * &#64;navigation condition. Only one type of condition should be set.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSNavigation> navigation() {
-            return raw("navigation").flatMap(CdpObject::objectMap).map(CSS.CSSNavigation::fromMap);
+            return optional(NAVIGATION);
         }
         /**
          * Block body.
          * @return the protocol field value
          */
         public java.util.List<CSS.CSSFunctionNode> children() {
-            return CdpObject.requireList(require("children"), element0 -> java.util.Objects.requireNonNull(CSS.CSSFunctionNode.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(CHILDREN);
         }
         /**
          * The condition text.
          * @return the protocol field value
          */
         public String conditionText() {
-            return (String) require("conditionText");
+            return requireString("conditionText");
         }
         /**
          * Media query for this conditional block. Only one type of condition should be set.
@@ -3313,14 +3406,14 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSFunctionConditionNode> condition() {
-            return raw("condition").flatMap(CdpObject::objectMap).map(CSS.CSSFunctionConditionNode::fromMap);
+            return optional(CONDITION);
         }
         /**
          * Values set by this node. If set, condition should not be set.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> style() {
-            return raw("style").flatMap(CdpObject::objectMap).map(CSS.CSSStyle::fromMap);
+            return optional(STYLE);
         }
         /**
          * A conditional block. If set, style should not be set.
@@ -3355,35 +3448,35 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.Value name() {
-            return java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(require("name"))));
+            return require(NAME);
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
+            return optional(STYLE_SHEET_ID);
         }
         /**
          * Parent stylesheet&#x27;s origin.
          * @return the protocol field value
          */
         public CSS.StyleSheetOrigin origin() {
-            return CSS.StyleSheetOrigin.of((String) require("origin"));
+            return require(ORIGIN);
         }
         /**
          * List of parameters.
          * @return the protocol field value
          */
         public java.util.List<CSS.CSSFunctionParameter> parameters() {
-            return CdpObject.requireList(require("parameters"), element0 -> java.util.Objects.requireNonNull(CSS.CSSFunctionParameter.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(PARAMETERS);
         }
         /**
          * Function body.
          * @return the protocol field value
          */
         public java.util.List<CSS.CSSFunctionNode> children() {
-            return CdpObject.requireList(require("children"), element0 -> java.util.Objects.requireNonNull(CSS.CSSFunctionNode.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(CHILDREN);
         }
         /**
          * The BackendNodeId of the DOM node that constitutes the origin tree scope of this rule.
@@ -3391,7 +3484,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> originTreeScopeNodeId() {
-            return raw("originTreeScopeNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(ORIGIN_TREE_SCOPE_NODE_ID);
         }
         /**
          * Name of the function.
@@ -3463,28 +3556,28 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.StyleSheetId> styleSheetId() {
-            return raw("styleSheetId").map(value -> new DOM.StyleSheetId((String) value));
+            return optional(STYLE_SHEET_ID);
         }
         /**
          * Parent stylesheet&#x27;s origin.
          * @return the protocol field value
          */
         public CSS.StyleSheetOrigin origin() {
-            return CSS.StyleSheetOrigin.of((String) require("origin"));
+            return require(ORIGIN);
         }
         /**
          * Associated key text.
          * @return the protocol field value
          */
         public CSS.Value keyText() {
-            return java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(require("keyText"))));
+            return require(KEY_TEXT);
         }
         /**
          * Associated style declaration.
          * @return the protocol field value
          */
         public CSS.CSSStyle style() {
-            return java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(require("style"))));
+            return require(STYLE);
         }
         /**
          * The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
@@ -3537,21 +3630,21 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.StyleSheetId styleSheetId() {
-            return new DOM.StyleSheetId((String) require("styleSheetId"));
+            return require(STYLE_SHEET_ID);
         }
         /**
          * The range of the style text in the enclosing stylesheet.
          * @return the protocol field value
          */
         public CSS.SourceRange range() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("range"))));
+            return require(RANGE);
         }
         /**
          * New style text.
          * @return the protocol field value
          */
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * The css style sheet identifier.
@@ -3586,15 +3679,6 @@ public final class CSS {
      */
     public static final class AddRuleRequest extends CdpObject {
         public AddRuleRequest() {}
-        /**
-         * Inserts a new rule with the given {@code ruleText} in a stylesheet with given {@code styleSheetId}, at the position specified by {@code location}.
-         * @param styleSheetId protocol value
-         * @param ruleText protocol value
-         * @param location protocol value
-         */
-        public AddRuleRequest(DOM.StyleSheetId styleSheetId, String ruleText, CSS.SourceRange location) {
-            styleSheetId(styleSheetId).ruleText(ruleText).location(location);
-        }
         public static AddRuleRequest fromMap(Map<String, Object> values) {
             final AddRuleRequest instance_ = new AddRuleRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3605,21 +3689,21 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.StyleSheetId styleSheetId() {
-            return new DOM.StyleSheetId((String) require("styleSheetId"));
+            return require(STYLE_SHEET_ID);
         }
         /**
          * The text of a new rule.
          * @return the protocol field value
          */
         public String ruleText() {
-            return (String) require("ruleText");
+            return requireString("ruleText");
         }
         /**
          * Text position of a new rule in the target style sheet.
          * @return the protocol field value
          */
         public CSS.SourceRange location() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("location"))));
+            return require(LOCATION);
         }
         /**
          * NodeId for the DOM node in whose context custom property declarations for registered properties should be validated. If omitted, declarations in the new rule text can only be validated statically, which may produce incorrect results if the declaration contains a var() for example.
@@ -3627,7 +3711,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeForPropertySyntaxValidation() {
-            return raw("nodeForPropertySyntaxValidation").map(value -> new DOM.NodeId(((Number) value).longValue()));
+            return optional(NODE_FOR_PROPERTY_SYNTAX_VALIDATION);
         }
         /**
          * The css style sheet identifier where a new rule should be inserted.
@@ -3672,13 +3756,6 @@ public final class CSS {
      */
     public static final class CollectClassNamesRequest extends CdpObject {
         public CollectClassNamesRequest() {}
-        /**
-         * Returns all class names from specified stylesheet.
-         * @param styleSheetId protocol value
-         */
-        public CollectClassNamesRequest(DOM.StyleSheetId styleSheetId) {
-            styleSheetId(styleSheetId);
-        }
         public static CollectClassNamesRequest fromMap(Map<String, Object> values) {
             final CollectClassNamesRequest instance_ = new CollectClassNamesRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3689,7 +3766,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.StyleSheetId styleSheetId() {
-            return new DOM.StyleSheetId((String) require("styleSheetId"));
+            return require(STYLE_SHEET_ID);
         }
         /**
          * Sets the styleSheetId field.
@@ -3706,13 +3783,6 @@ public final class CSS {
      */
     public static final class CreateStyleSheetRequest extends CdpObject {
         public CreateStyleSheetRequest() {}
-        /**
-         * Creates a new special &quot;via-inspector&quot; stylesheet in the frame with given {@code frameId}.
-         * @param frameId protocol value
-         */
-        public CreateStyleSheetRequest(Page.FrameId frameId) {
-            frameId(frameId);
-        }
         public static CreateStyleSheetRequest fromMap(Map<String, Object> values) {
             final CreateStyleSheetRequest instance_ = new CreateStyleSheetRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3723,14 +3793,14 @@ public final class CSS {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * If true, creates a new stylesheet for every call. If false, returns a stylesheet previously created by a call with force=false for the frame&#x27;s document if it exists or creates a new stylesheet (default: false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> force() {
-            return raw("force").map(value -> (Boolean) value);
+            return optionalBoolean("force");
         }
         /**
          * Identifier of the frame where &quot;via-inspector&quot; stylesheet should be created.
@@ -3756,14 +3826,6 @@ public final class CSS {
      */
     public static final class ForcePseudoStateRequest extends CdpObject {
         public ForcePseudoStateRequest() {}
-        /**
-         * Ensures that the given node will have specified pseudo-classes whenever its style is computed by the browser.
-         * @param nodeId protocol value
-         * @param forcedPseudoClasses protocol value
-         */
-        public ForcePseudoStateRequest(DOM.NodeId nodeId, java.util.List<String> forcedPseudoClasses) {
-            nodeId(nodeId).forcedPseudoClasses(forcedPseudoClasses);
-        }
         public static ForcePseudoStateRequest fromMap(Map<String, Object> values) {
             final ForcePseudoStateRequest instance_ = new ForcePseudoStateRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3774,14 +3836,14 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Element pseudo classes to force when computing the element&#x27;s style.
          * @return the protocol field value
          */
         public java.util.List<String> forcedPseudoClasses() {
-            return CdpObject.requireList(require("forcedPseudoClasses"), element0 -> (String) element0);
+            return require(FORCED_PSEUDO_CLASSES);
         }
         /**
          * The element id for which to force the pseudo state.
@@ -3807,14 +3869,6 @@ public final class CSS {
      */
     public static final class ForceStartingStyleRequest extends CdpObject {
         public ForceStartingStyleRequest() {}
-        /**
-         * Ensures that the given node is in its starting-style state.
-         * @param nodeId protocol value
-         * @param forced protocol value
-         */
-        public ForceStartingStyleRequest(DOM.NodeId nodeId, boolean forced) {
-            nodeId(nodeId).forced(forced);
-        }
         public static ForceStartingStyleRequest fromMap(Map<String, Object> values) {
             final ForceStartingStyleRequest instance_ = new ForceStartingStyleRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3825,14 +3879,14 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Boolean indicating if this is on or off.
          * @return the protocol field value
          */
         public boolean forced() {
-            return (Boolean) require("forced");
+            return requireBoolean("forced");
         }
         /**
          * The element id for which to force the starting-style state.
@@ -3858,13 +3912,6 @@ public final class CSS {
      */
     public static final class GetBackgroundColorsRequest extends CdpObject {
         public GetBackgroundColorsRequest() {}
-        /**
-         * Creates a new GetBackgroundColorsRequest with all required parameters.
-         * @param nodeId protocol value
-         */
-        public GetBackgroundColorsRequest(DOM.NodeId nodeId) {
-            nodeId(nodeId);
-        }
         public static GetBackgroundColorsRequest fromMap(Map<String, Object> values) {
             final GetBackgroundColorsRequest instance_ = new GetBackgroundColorsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3875,7 +3922,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Id of the node to get background colors for.
@@ -3892,13 +3939,6 @@ public final class CSS {
      */
     public static final class GetComputedStyleForNodeRequest extends CdpObject {
         public GetComputedStyleForNodeRequest() {}
-        /**
-         * Returns the computed style for a DOM node identified by {@code nodeId}.
-         * @param nodeId protocol value
-         */
-        public GetComputedStyleForNodeRequest(DOM.NodeId nodeId) {
-            nodeId(nodeId);
-        }
         public static GetComputedStyleForNodeRequest fromMap(Map<String, Object> values) {
             final GetComputedStyleForNodeRequest instance_ = new GetComputedStyleForNodeRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3909,7 +3949,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Sets the nodeId field.
@@ -3927,15 +3967,6 @@ public final class CSS {
      */
     public static final class ResolveValuesRequest extends CdpObject {
         public ResolveValuesRequest() {}
-        /**
-         * Resolve the specified values in the context of the provided element. For example, a value of &#x27;1em&#x27; is evaluated according to the computed &#x27;font-size&#x27; of the element and a value &#x27;calc(1px + 2px)&#x27; will be resolved to &#x27;3px&#x27;. If the {@code propertyName} was specified the {@code values} are resolved as if they were property&#x27;s declaration. If a value cannot be parsed according to the provided property syntax, the value is parsed using combined syntax as if null {@code propertyName} was provided. If the value cannot be resolved even then, return the provided value without any changes. Note: this function currently does not resolve CSS random() function, it returns unmodified random() function parts.`
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param values protocol value
-         * @param nodeId protocol value
-         */
-        public ResolveValuesRequest(java.util.List<String> values, DOM.NodeId nodeId) {
-            values(values).nodeId(nodeId);
-        }
         public static ResolveValuesRequest fromMap(Map<String, Object> values) {
             final ResolveValuesRequest instance_ = new ResolveValuesRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3946,35 +3977,35 @@ public final class CSS {
          * @return the protocol field value
          */
         public java.util.List<String> values() {
-            return CdpObject.requireList(require("values"), element0 -> (String) element0);
+            return require(VALUES);
         }
         /**
          * Id of the node in whose context the expression is evaluated
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Only longhands and custom property names are accepted.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> propertyName() {
-            return raw("propertyName").map(value -> (String) value);
+            return optionalString("propertyName");
         }
         /**
          * Pseudo element type, only works for pseudo elements that generate elements in the tree, such as ::before and ::after.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.PseudoType> pseudoType() {
-            return raw("pseudoType").map(value -> DOM.PseudoType.of((String) value));
+            return optional(PSEUDO_TYPE);
         }
         /**
          * Pseudo element custom ident.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> pseudoIdentifier() {
-            return raw("pseudoIdentifier").map(value -> (String) value);
+            return optionalString("pseudoIdentifier");
         }
         /**
          * Cascade-dependent keywords (revert/revert-layer) do not work.
@@ -4028,15 +4059,6 @@ public final class CSS {
      */
     public static final class GetLonghandPropertiesRequest extends CdpObject {
         public GetLonghandPropertiesRequest() {}
-        /**
-         * Creates a new GetLonghandPropertiesRequest with all required parameters.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param shorthandName protocol value
-         * @param value protocol value
-         */
-        public GetLonghandPropertiesRequest(String shorthandName, String value) {
-            shorthandName(shorthandName).value(value);
-        }
         public static GetLonghandPropertiesRequest fromMap(Map<String, Object> values) {
             final GetLonghandPropertiesRequest instance_ = new GetLonghandPropertiesRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4047,14 +4069,14 @@ public final class CSS {
          * @return the protocol field value
          */
         public String shorthandName() {
-            return (String) require("shorthandName");
+            return requireString("shorthandName");
         }
         /**
          * Returns the value field.
          * @return the protocol field value
          */
         public String value() {
-            return (String) require("value");
+            return requireString("value");
         }
         /**
          * Sets the shorthandName field.
@@ -4080,13 +4102,6 @@ public final class CSS {
      */
     public static final class GetInlineStylesForNodeRequest extends CdpObject {
         public GetInlineStylesForNodeRequest() {}
-        /**
-         * Returns the styles defined inline (explicitly in the &quot;style&quot; attribute and implicitly, using DOM attributes) for a DOM node identified by {@code nodeId}.
-         * @param nodeId protocol value
-         */
-        public GetInlineStylesForNodeRequest(DOM.NodeId nodeId) {
-            nodeId(nodeId);
-        }
         public static GetInlineStylesForNodeRequest fromMap(Map<String, Object> values) {
             final GetInlineStylesForNodeRequest instance_ = new GetInlineStylesForNodeRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4097,7 +4112,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Sets the nodeId field.
@@ -4115,14 +4130,6 @@ public final class CSS {
      */
     public static final class GetAnimatedStylesForNodeRequest extends CdpObject {
         public GetAnimatedStylesForNodeRequest() {}
-        /**
-         * Returns the styles coming from animations &amp; transitions including the animation &amp; transition styles coming from inheritance chain.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param nodeId protocol value
-         */
-        public GetAnimatedStylesForNodeRequest(DOM.NodeId nodeId) {
-            nodeId(nodeId);
-        }
         public static GetAnimatedStylesForNodeRequest fromMap(Map<String, Object> values) {
             final GetAnimatedStylesForNodeRequest instance_ = new GetAnimatedStylesForNodeRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4133,7 +4140,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Sets the nodeId field.
@@ -4150,13 +4157,6 @@ public final class CSS {
      */
     public static final class GetMatchedStylesForNodeRequest extends CdpObject {
         public GetMatchedStylesForNodeRequest() {}
-        /**
-         * Returns requested styles for a DOM node identified by {@code nodeId}.
-         * @param nodeId protocol value
-         */
-        public GetMatchedStylesForNodeRequest(DOM.NodeId nodeId) {
-            nodeId(nodeId);
-        }
         public static GetMatchedStylesForNodeRequest fromMap(Map<String, Object> values) {
             final GetMatchedStylesForNodeRequest instance_ = new GetMatchedStylesForNodeRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4167,7 +4167,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Sets the nodeId field.
@@ -4184,13 +4184,6 @@ public final class CSS {
      */
     public static final class GetPlatformFontsForNodeRequest extends CdpObject {
         public GetPlatformFontsForNodeRequest() {}
-        /**
-         * Requests information about platform fonts which we used to render child TextNodes in the given node.
-         * @param nodeId protocol value
-         */
-        public GetPlatformFontsForNodeRequest(DOM.NodeId nodeId) {
-            nodeId(nodeId);
-        }
         public static GetPlatformFontsForNodeRequest fromMap(Map<String, Object> values) {
             final GetPlatformFontsForNodeRequest instance_ = new GetPlatformFontsForNodeRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4201,7 +4194,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Sets the nodeId field.
@@ -4218,13 +4211,6 @@ public final class CSS {
      */
     public static final class GetStyleSheetTextRequest extends CdpObject {
         public GetStyleSheetTextRequest() {}
-        /**
-         * Returns the current textual content for a stylesheet.
-         * @param styleSheetId protocol value
-         */
-        public GetStyleSheetTextRequest(DOM.StyleSheetId styleSheetId) {
-            styleSheetId(styleSheetId);
-        }
         public static GetStyleSheetTextRequest fromMap(Map<String, Object> values) {
             final GetStyleSheetTextRequest instance_ = new GetStyleSheetTextRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4235,7 +4221,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.StyleSheetId styleSheetId() {
-            return new DOM.StyleSheetId((String) require("styleSheetId"));
+            return require(STYLE_SHEET_ID);
         }
         /**
          * Sets the styleSheetId field.
@@ -4253,14 +4239,6 @@ public final class CSS {
      */
     public static final class GetLayersForNodeRequest extends CdpObject {
         public GetLayersForNodeRequest() {}
-        /**
-         * Returns all layers parsed by the rendering engine for the tree scope of a node. Given a DOM element identified by nodeId, getLayersForNode returns the root layer for the nearest ancestor document or shadow root. The layer root contains the full layer tree for the tree scope and their ordering.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param nodeId protocol value
-         */
-        public GetLayersForNodeRequest(DOM.NodeId nodeId) {
-            nodeId(nodeId);
-        }
         public static GetLayersForNodeRequest fromMap(Map<String, Object> values) {
             final GetLayersForNodeRequest instance_ = new GetLayersForNodeRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4271,7 +4249,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Sets the nodeId field.
@@ -4289,15 +4267,6 @@ public final class CSS {
      */
     public static final class GetLocationForSelectorRequest extends CdpObject {
         public GetLocationForSelectorRequest() {}
-        /**
-         * Given a CSS selector text and a style sheet ID, getLocationForSelector returns an array of locations of the CSS selector in the style sheet.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param styleSheetId protocol value
-         * @param selectorText protocol value
-         */
-        public GetLocationForSelectorRequest(DOM.StyleSheetId styleSheetId, String selectorText) {
-            styleSheetId(styleSheetId).selectorText(selectorText);
-        }
         public static GetLocationForSelectorRequest fromMap(Map<String, Object> values) {
             final GetLocationForSelectorRequest instance_ = new GetLocationForSelectorRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4308,14 +4277,14 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.StyleSheetId styleSheetId() {
-            return new DOM.StyleSheetId((String) require("styleSheetId"));
+            return require(STYLE_SHEET_ID);
         }
         /**
          * Returns the selectorText field.
          * @return the protocol field value
          */
         public String selectorText() {
-            return (String) require("selectorText");
+            return requireString("selectorText");
         }
         /**
          * Sets the styleSheetId field.
@@ -4352,7 +4321,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeId() {
-            return raw("nodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
+            return optional(NODE_ID);
         }
         /**
          * Sets the nodeId field.
@@ -4370,14 +4339,6 @@ public final class CSS {
      */
     public static final class TrackComputedStyleUpdatesRequest extends CdpObject {
         public TrackComputedStyleUpdatesRequest() {}
-        /**
-         * Starts tracking the given computed styles for updates. The specified array of properties replaces the one previously specified. Pass empty array to disable tracking. Use takeComputedStyleUpdates to retrieve the list of nodes that had properties modified. The changes to computed style properties are only tracked for nodes pushed to the front-end by the DOM agent. If no changes to the tracked properties occur after the node has been pushed to the front-end, no updates will be issued for the node.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param propertiesToTrack protocol value
-         */
-        public TrackComputedStyleUpdatesRequest(java.util.List<CSS.CSSComputedStyleProperty> propertiesToTrack) {
-            propertiesToTrack(propertiesToTrack);
-        }
         public static TrackComputedStyleUpdatesRequest fromMap(Map<String, Object> values) {
             final TrackComputedStyleUpdatesRequest instance_ = new TrackComputedStyleUpdatesRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4388,7 +4349,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public java.util.List<CSS.CSSComputedStyleProperty> propertiesToTrack() {
-            return CdpObject.requireList(require("propertiesToTrack"), element0 -> java.util.Objects.requireNonNull(CSS.CSSComputedStyleProperty.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(PROPERTIES_TO_TRACK);
         }
         /**
          * Sets the propertiesToTrack field.
@@ -4405,15 +4366,6 @@ public final class CSS {
      */
     public static final class SetEffectivePropertyValueForNodeRequest extends CdpObject {
         public SetEffectivePropertyValueForNodeRequest() {}
-        /**
-         * Find a rule with the given active property for the given node and set the new value for this property
-         * @param nodeId protocol value
-         * @param propertyName protocol value
-         * @param value protocol value
-         */
-        public SetEffectivePropertyValueForNodeRequest(DOM.NodeId nodeId, String propertyName, String value) {
-            nodeId(nodeId).propertyName(propertyName).value(value);
-        }
         public static SetEffectivePropertyValueForNodeRequest fromMap(Map<String, Object> values) {
             final SetEffectivePropertyValueForNodeRequest instance_ = new SetEffectivePropertyValueForNodeRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4424,21 +4376,21 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Returns the propertyName field.
          * @return the protocol field value
          */
         public String propertyName() {
-            return (String) require("propertyName");
+            return requireString("propertyName");
         }
         /**
          * Returns the value field.
          * @return the protocol field value
          */
         public String value() {
-            return (String) require("value");
+            return requireString("value");
         }
         /**
          * The element id for which to set property.
@@ -4473,15 +4425,6 @@ public final class CSS {
      */
     public static final class SetPropertyRulePropertyNameRequest extends CdpObject {
         public SetPropertyRulePropertyNameRequest() {}
-        /**
-         * Modifies the property rule property name.
-         * @param styleSheetId protocol value
-         * @param range protocol value
-         * @param propertyName protocol value
-         */
-        public SetPropertyRulePropertyNameRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String propertyName) {
-            styleSheetId(styleSheetId).range(range).propertyName(propertyName);
-        }
         public static SetPropertyRulePropertyNameRequest fromMap(Map<String, Object> values) {
             final SetPropertyRulePropertyNameRequest instance_ = new SetPropertyRulePropertyNameRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4492,21 +4435,21 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.StyleSheetId styleSheetId() {
-            return new DOM.StyleSheetId((String) require("styleSheetId"));
+            return require(STYLE_SHEET_ID);
         }
         /**
          * Returns the range field.
          * @return the protocol field value
          */
         public CSS.SourceRange range() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("range"))));
+            return require(RANGE);
         }
         /**
          * Returns the propertyName field.
          * @return the protocol field value
          */
         public String propertyName() {
-            return (String) require("propertyName");
+            return requireString("propertyName");
         }
         /**
          * Sets the styleSheetId field.
@@ -4541,15 +4484,6 @@ public final class CSS {
      */
     public static final class SetKeyframeKeyRequest extends CdpObject {
         public SetKeyframeKeyRequest() {}
-        /**
-         * Modifies the keyframe rule key text.
-         * @param styleSheetId protocol value
-         * @param range protocol value
-         * @param keyText protocol value
-         */
-        public SetKeyframeKeyRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String keyText) {
-            styleSheetId(styleSheetId).range(range).keyText(keyText);
-        }
         public static SetKeyframeKeyRequest fromMap(Map<String, Object> values) {
             final SetKeyframeKeyRequest instance_ = new SetKeyframeKeyRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4560,21 +4494,21 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.StyleSheetId styleSheetId() {
-            return new DOM.StyleSheetId((String) require("styleSheetId"));
+            return require(STYLE_SHEET_ID);
         }
         /**
          * Returns the range field.
          * @return the protocol field value
          */
         public CSS.SourceRange range() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("range"))));
+            return require(RANGE);
         }
         /**
          * Returns the keyText field.
          * @return the protocol field value
          */
         public String keyText() {
-            return (String) require("keyText");
+            return requireString("keyText");
         }
         /**
          * Sets the styleSheetId field.
@@ -4609,15 +4543,6 @@ public final class CSS {
      */
     public static final class SetMediaTextRequest extends CdpObject {
         public SetMediaTextRequest() {}
-        /**
-         * Modifies the rule selector.
-         * @param styleSheetId protocol value
-         * @param range protocol value
-         * @param text protocol value
-         */
-        public SetMediaTextRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            styleSheetId(styleSheetId).range(range).text(text);
-        }
         public static SetMediaTextRequest fromMap(Map<String, Object> values) {
             final SetMediaTextRequest instance_ = new SetMediaTextRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4628,21 +4553,21 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.StyleSheetId styleSheetId() {
-            return new DOM.StyleSheetId((String) require("styleSheetId"));
+            return require(STYLE_SHEET_ID);
         }
         /**
          * Returns the range field.
          * @return the protocol field value
          */
         public CSS.SourceRange range() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("range"))));
+            return require(RANGE);
         }
         /**
          * Returns the text field.
          * @return the protocol field value
          */
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * Sets the styleSheetId field.
@@ -4680,18 +4605,6 @@ public final class CSS {
     @Deprecated
     public static final class SetContainerQueryTextRequest extends CdpObject {
         public SetContainerQueryTextRequest() {}
-        /**
-         * Modifies the expression of a container query. Deprecated. Use setContainerQueryConditionText instead.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param styleSheetId protocol value
-         * @param range protocol value
-         * @param text protocol value
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public SetContainerQueryTextRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            styleSheetId(styleSheetId).range(range).text(text);
-        }
         public static SetContainerQueryTextRequest fromMap(Map<String, Object> values) {
             final SetContainerQueryTextRequest instance_ = new SetContainerQueryTextRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4702,21 +4615,21 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.StyleSheetId styleSheetId() {
-            return new DOM.StyleSheetId((String) require("styleSheetId"));
+            return require(STYLE_SHEET_ID);
         }
         /**
          * Returns the range field.
          * @return the protocol field value
          */
         public CSS.SourceRange range() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("range"))));
+            return require(RANGE);
         }
         /**
          * Returns the text field.
          * @return the protocol field value
          */
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * Sets the styleSheetId field.
@@ -4752,16 +4665,6 @@ public final class CSS {
      */
     public static final class SetContainerQueryConditionTextRequest extends CdpObject {
         public SetContainerQueryConditionTextRequest() {}
-        /**
-         * Creates a new SetContainerQueryConditionTextRequest with all required parameters.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param styleSheetId protocol value
-         * @param range protocol value
-         * @param text protocol value
-         */
-        public SetContainerQueryConditionTextRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            styleSheetId(styleSheetId).range(range).text(text);
-        }
         public static SetContainerQueryConditionTextRequest fromMap(Map<String, Object> values) {
             final SetContainerQueryConditionTextRequest instance_ = new SetContainerQueryConditionTextRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4772,21 +4675,21 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.StyleSheetId styleSheetId() {
-            return new DOM.StyleSheetId((String) require("styleSheetId"));
+            return require(STYLE_SHEET_ID);
         }
         /**
          * Returns the range field.
          * @return the protocol field value
          */
         public CSS.SourceRange range() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("range"))));
+            return require(RANGE);
         }
         /**
          * Returns the text field.
          * @return the protocol field value
          */
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * Sets the styleSheetId field.
@@ -4822,16 +4725,6 @@ public final class CSS {
      */
     public static final class SetSupportsTextRequest extends CdpObject {
         public SetSupportsTextRequest() {}
-        /**
-         * Modifies the expression of a supports at-rule.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param styleSheetId protocol value
-         * @param range protocol value
-         * @param text protocol value
-         */
-        public SetSupportsTextRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            styleSheetId(styleSheetId).range(range).text(text);
-        }
         public static SetSupportsTextRequest fromMap(Map<String, Object> values) {
             final SetSupportsTextRequest instance_ = new SetSupportsTextRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4842,21 +4735,21 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.StyleSheetId styleSheetId() {
-            return new DOM.StyleSheetId((String) require("styleSheetId"));
+            return require(STYLE_SHEET_ID);
         }
         /**
          * Returns the range field.
          * @return the protocol field value
          */
         public CSS.SourceRange range() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("range"))));
+            return require(RANGE);
         }
         /**
          * Returns the text field.
          * @return the protocol field value
          */
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * Sets the styleSheetId field.
@@ -4892,16 +4785,6 @@ public final class CSS {
      */
     public static final class SetNavigationTextRequest extends CdpObject {
         public SetNavigationTextRequest() {}
-        /**
-         * Modifies the expression of a navigation at-rule.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param styleSheetId protocol value
-         * @param range protocol value
-         * @param text protocol value
-         */
-        public SetNavigationTextRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            styleSheetId(styleSheetId).range(range).text(text);
-        }
         public static SetNavigationTextRequest fromMap(Map<String, Object> values) {
             final SetNavigationTextRequest instance_ = new SetNavigationTextRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4912,21 +4795,21 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.StyleSheetId styleSheetId() {
-            return new DOM.StyleSheetId((String) require("styleSheetId"));
+            return require(STYLE_SHEET_ID);
         }
         /**
          * Returns the range field.
          * @return the protocol field value
          */
         public CSS.SourceRange range() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("range"))));
+            return require(RANGE);
         }
         /**
          * Returns the text field.
          * @return the protocol field value
          */
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * Sets the styleSheetId field.
@@ -4962,16 +4845,6 @@ public final class CSS {
      */
     public static final class SetScopeTextRequest extends CdpObject {
         public SetScopeTextRequest() {}
-        /**
-         * Modifies the expression of a scope at-rule.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param styleSheetId protocol value
-         * @param range protocol value
-         * @param text protocol value
-         */
-        public SetScopeTextRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            styleSheetId(styleSheetId).range(range).text(text);
-        }
         public static SetScopeTextRequest fromMap(Map<String, Object> values) {
             final SetScopeTextRequest instance_ = new SetScopeTextRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4982,21 +4855,21 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.StyleSheetId styleSheetId() {
-            return new DOM.StyleSheetId((String) require("styleSheetId"));
+            return require(STYLE_SHEET_ID);
         }
         /**
          * Returns the range field.
          * @return the protocol field value
          */
         public CSS.SourceRange range() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("range"))));
+            return require(RANGE);
         }
         /**
          * Returns the text field.
          * @return the protocol field value
          */
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * Sets the styleSheetId field.
@@ -5031,15 +4904,6 @@ public final class CSS {
      */
     public static final class SetRuleSelectorRequest extends CdpObject {
         public SetRuleSelectorRequest() {}
-        /**
-         * Modifies the rule selector.
-         * @param styleSheetId protocol value
-         * @param range protocol value
-         * @param selector protocol value
-         */
-        public SetRuleSelectorRequest(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String selector) {
-            styleSheetId(styleSheetId).range(range).selector(selector);
-        }
         public static SetRuleSelectorRequest fromMap(Map<String, Object> values) {
             final SetRuleSelectorRequest instance_ = new SetRuleSelectorRequest();
             if (values != null) instance_.values.putAll(values);
@@ -5050,21 +4914,21 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.StyleSheetId styleSheetId() {
-            return new DOM.StyleSheetId((String) require("styleSheetId"));
+            return require(STYLE_SHEET_ID);
         }
         /**
          * Returns the range field.
          * @return the protocol field value
          */
         public CSS.SourceRange range() {
-            return java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(require("range"))));
+            return require(RANGE);
         }
         /**
          * Returns the selector field.
          * @return the protocol field value
          */
         public String selector() {
-            return (String) require("selector");
+            return requireString("selector");
         }
         /**
          * Sets the styleSheetId field.
@@ -5099,14 +4963,6 @@ public final class CSS {
      */
     public static final class SetStyleSheetTextRequest extends CdpObject {
         public SetStyleSheetTextRequest() {}
-        /**
-         * Sets the new stylesheet text.
-         * @param styleSheetId protocol value
-         * @param text protocol value
-         */
-        public SetStyleSheetTextRequest(DOM.StyleSheetId styleSheetId, String text) {
-            styleSheetId(styleSheetId).text(text);
-        }
         public static SetStyleSheetTextRequest fromMap(Map<String, Object> values) {
             final SetStyleSheetTextRequest instance_ = new SetStyleSheetTextRequest();
             if (values != null) instance_.values.putAll(values);
@@ -5117,14 +4973,14 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.StyleSheetId styleSheetId() {
-            return new DOM.StyleSheetId((String) require("styleSheetId"));
+            return require(STYLE_SHEET_ID);
         }
         /**
          * Returns the text field.
          * @return the protocol field value
          */
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * Sets the styleSheetId field.
@@ -5150,13 +5006,6 @@ public final class CSS {
      */
     public static final class SetStyleTextsRequest extends CdpObject {
         public SetStyleTextsRequest() {}
-        /**
-         * Applies specified style edits one after another in the given order.
-         * @param edits protocol value
-         */
-        public SetStyleTextsRequest(java.util.List<CSS.StyleDeclarationEdit> edits) {
-            edits(edits);
-        }
         public static SetStyleTextsRequest fromMap(Map<String, Object> values) {
             final SetStyleTextsRequest instance_ = new SetStyleTextsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -5167,7 +5016,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public java.util.List<CSS.StyleDeclarationEdit> edits() {
-            return CdpObject.requireList(require("edits"), element0 -> java.util.Objects.requireNonNull(CSS.StyleDeclarationEdit.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(EDITS);
         }
         /**
          * NodeId for the DOM node in whose context custom property declarations for registered properties should be validated. If omitted, declarations in the new rule text can only be validated statically, which may produce incorrect results if the declaration contains a var() for example.
@@ -5175,7 +5024,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> nodeForPropertySyntaxValidation() {
-            return raw("nodeForPropertySyntaxValidation").map(value -> new DOM.NodeId(((Number) value).longValue()));
+            return optional(NODE_FOR_PROPERTY_SYNTAX_VALIDATION);
         }
         /**
          * Sets the edits field.
@@ -5203,14 +5052,6 @@ public final class CSS {
      */
     public static final class SetLocalFontsEnabledRequest extends CdpObject {
         public SetLocalFontsEnabledRequest() {}
-        /**
-         * Enables/disables rendering of local CSS fonts (enabled by default).
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param enabled protocol value
-         */
-        public SetLocalFontsEnabledRequest(boolean enabled) {
-            enabled(enabled);
-        }
         public static SetLocalFontsEnabledRequest fromMap(Map<String, Object> values) {
             final SetLocalFontsEnabledRequest instance_ = new SetLocalFontsEnabledRequest();
             if (values != null) instance_.values.putAll(values);
@@ -5221,7 +5062,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public boolean enabled() {
-            return (Boolean) require("enabled");
+            return requireBoolean("enabled");
         }
         /**
          * Whether rendering of local fonts is enabled.
@@ -5247,21 +5088,21 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> backgroundColors() {
-            return raw("backgroundColors").flatMap(value -> list(value, element0 -> (String) element0));
+            return optional(BACKGROUND_COLORS);
         }
         /**
          * The computed font size for this node, as a CSS computed value string (e.g. &#x27;12px&#x27;).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> computedFontSize() {
-            return raw("computedFontSize").map(value -> (String) value);
+            return optionalString("computedFontSize");
         }
         /**
          * The computed font weight for this node, as a CSS computed value string (e.g. &#x27;normal&#x27; or &#x27;100&#x27;).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> computedFontWeight() {
-            return raw("computedFontWeight").map(value -> (String) value);
+            return optionalString("computedFontWeight");
         }
         /**
          * The range of background colors behind this element, if it contains any visible text. If no visible text is present, this will be undefined. In the case of a flat background color, this will consist of simply that color. In the case of a gradient, this will consist of each of the color stops. For anything more complicated, this will be an empty array. Images will be ignored (as if the image had failed to load).
@@ -5305,7 +5146,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public java.util.List<CSS.CSSComputedStyleProperty> computedStyle() {
-            return CdpObject.requireList(require("computedStyle"), element0 -> java.util.Objects.requireNonNull(CSS.CSSComputedStyleProperty.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(COMPUTED_STYLE);
         }
         /**
          * A list of non-standard &quot;extra fields&quot; which blink stores alongside each computed style.
@@ -5313,7 +5154,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.ComputedStyleExtraFields extraFields() {
-            return java.util.Objects.requireNonNull(CSS.ComputedStyleExtraFields.fromMap(CdpObject.requireObjectMap(require("extraFields"))));
+            return require(EXTRA_FIELDS);
         }
         /**
          * Computed style for the specified DOM node.
@@ -5349,14 +5190,14 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> inlineStyle() {
-            return raw("inlineStyle").flatMap(CdpObject::objectMap).map(CSS.CSSStyle::fromMap);
+            return optional(INLINE_STYLE);
         }
         /**
          * Attribute-defined element style (e.g. resulting from &quot;width=20 height=100%&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> attributesStyle() {
-            return raw("attributesStyle").flatMap(CdpObject::objectMap).map(CSS.CSSStyle::fromMap);
+            return optional(ATTRIBUTES_STYLE);
         }
         /**
          * Inline style for the specified DOM node.
@@ -5392,21 +5233,21 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSAnimationStyle>> animationStyles() {
-            return raw("animationStyles").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSAnimationStyle.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(ANIMATION_STYLES);
         }
         /**
          * Style coming from transitions.
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> transitionsStyle() {
-            return raw("transitionsStyle").flatMap(CdpObject::objectMap).map(CSS.CSSStyle::fromMap);
+            return optional(TRANSITIONS_STYLE);
         }
         /**
          * Inherited style entries for animationsStyle and transitionsStyle from the inheritance chain of the element.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.InheritedAnimatedStyleEntry>> inherited() {
-            return raw("inherited").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.InheritedAnimatedStyleEntry.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(INHERITED);
         }
         /**
          * Styles coming from animations.
@@ -5450,84 +5291,84 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> inlineStyle() {
-            return raw("inlineStyle").flatMap(CdpObject::objectMap).map(CSS.CSSStyle::fromMap);
+            return optional(INLINE_STYLE);
         }
         /**
          * Attribute-defined element style (e.g. resulting from &quot;width=20 height=100%&quot;).
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.CSSStyle> attributesStyle() {
-            return raw("attributesStyle").flatMap(CdpObject::objectMap).map(CSS.CSSStyle::fromMap);
+            return optional(ATTRIBUTES_STYLE);
         }
         /**
          * CSS rules matching this node, from all applicable stylesheets.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.RuleMatch>> matchedCSSRules() {
-            return raw("matchedCSSRules").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.RuleMatch.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(MATCHED_CSSRULES);
         }
         /**
          * Pseudo style matches for this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.PseudoElementMatches>> pseudoElements() {
-            return raw("pseudoElements").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.PseudoElementMatches.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(PSEUDO_ELEMENTS);
         }
         /**
          * A chain of inherited styles (from the immediate node parent up to the DOM tree root).
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.InheritedStyleEntry>> inherited() {
-            return raw("inherited").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.InheritedStyleEntry.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(INHERITED_2);
         }
         /**
          * A chain of inherited pseudo element styles (from the immediate node parent up to the DOM tree root).
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.InheritedPseudoElementMatches>> inheritedPseudoElements() {
-            return raw("inheritedPseudoElements").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.InheritedPseudoElementMatches.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(INHERITED_PSEUDO_ELEMENTS);
         }
         /**
          * A list of CSS keyframed animations matching this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSKeyframesRule>> cssKeyframesRules() {
-            return raw("cssKeyframesRules").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSKeyframesRule.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(CSS_KEYFRAMES_RULES);
         }
         /**
          * A list of CSS &#64;position-try rules matching this node, based on the position-try-fallbacks property.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSPositionTryRule>> cssPositionTryRules() {
-            return raw("cssPositionTryRules").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSPositionTryRule.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(CSS_POSITION_TRY_RULES);
         }
         /**
          * Index of the active fallback in the applied position-try-fallback property, will not be set if there is no active position-try fallback.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong activePositionFallbackIndex() {
-            return raw("activePositionFallbackIndex").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("activePositionFallbackIndex");
         }
         /**
          * A list of CSS at-property rules matching this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSPropertyRule>> cssPropertyRules() {
-            return raw("cssPropertyRules").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSPropertyRule.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(CSS_PROPERTY_RULES);
         }
         /**
          * A list of CSS property registrations matching this node.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSPropertyRegistration>> cssPropertyRegistrations() {
-            return raw("cssPropertyRegistrations").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSPropertyRegistration.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(CSS_PROPERTY_REGISTRATIONS);
         }
         /**
          * A list of simple &#64;rules matching this node or its pseudo-elements.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSAtRule>> cssAtRules() {
-            return raw("cssAtRules").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSAtRule.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(CSS_AT_RULES);
         }
         /**
          * Id of the first parent element that does not have display: contents.
@@ -5535,7 +5376,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.NodeId> parentLayoutNodeId() {
-            return raw("parentLayoutNodeId").map(value -> new DOM.NodeId(((Number) value).longValue()));
+            return optional(PARENT_LAYOUT_NODE_ID);
         }
         /**
          * A list of CSS at-function rules referenced by styles of this node.
@@ -5543,7 +5384,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<CSS.CSSFunctionRule>> cssFunctionRules() {
-            return raw("cssFunctionRules").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(CSS.CSSFunctionRule.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(CSS_FUNCTION_RULES);
         }
         /**
          * Inline style for the specified DOM node.
@@ -5688,14 +5529,14 @@ public final class CSS {
          * @return the protocol field value
          */
         public java.util.List<CSS.RuleUsage> coverage() {
-            return CdpObject.requireList(require("coverage"), element0 -> java.util.Objects.requireNonNull(CSS.RuleUsage.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(COVERAGE);
         }
         /**
          * Monotonically increasing time, in seconds.
          * @return the protocol field value
          */
         public double timestamp() {
-            return ((Number) require("timestamp")).doubleValue();
+            return requireDouble("timestamp");
         }
         /**
          * Sets the coverage field.
@@ -5730,7 +5571,7 @@ public final class CSS {
          * @return the protocol field value, empty when absent
          */
         public Optional<CSS.FontFace> font() {
-            return raw("font").flatMap(CdpObject::objectMap).map(CSS.FontFace::fromMap);
+            return optional(FONT);
         }
         /**
          * The web font that has loaded.
@@ -5766,7 +5607,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public CSS.CSSStyleSheetHeader header() {
-            return java.util.Objects.requireNonNull(CSS.CSSStyleSheetHeader.fromMap(CdpObject.requireObjectMap(require("header"))));
+            return require(HEADER);
         }
         /**
          * Added stylesheet metainfo.
@@ -5792,7 +5633,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.StyleSheetId styleSheetId() {
-            return new DOM.StyleSheetId((String) require("styleSheetId"));
+            return require(STYLE_SHEET_ID);
         }
         /**
          * Sets the styleSheetId field.
@@ -5818,7 +5659,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.StyleSheetId styleSheetId() {
-            return new DOM.StyleSheetId((String) require("styleSheetId"));
+            return require(STYLE_SHEET_ID);
         }
         /**
          * Identifier of the removed stylesheet.
@@ -5845,7 +5686,7 @@ public final class CSS {
          * @return the protocol field value
          */
         public DOM.NodeId nodeId() {
-            return new DOM.NodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * The node id that has updated computed styles.
@@ -5857,9 +5698,8 @@ public final class CSS {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Inserts a new rule with the given {@code ruleText} in a stylesheet with given {@code styleSheetId}, at the position specified by {@code location}.
          * @param styleSheetId protocol value
@@ -5869,12 +5709,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSRule> addRule(DOM.StyleSheetId styleSheetId, String ruleText, CSS.SourceRange location, DOM.NodeId nodeForPropertySyntaxValidation) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("styleSheetId", CdpObject.json(styleSheetId));
-            params.put("ruleText", CdpObject.json(ruleText));
-            params.put("location", CdpObject.json(location));
-            params.put("nodeForPropertySyntaxValidation", CdpObject.json(nodeForPropertySyntaxValidation));
-            return client.call("CSS.addRule", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSRule.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("rule"))))));
+            return call("CSS.addRule", params("styleSheetId", styleSheetId, "ruleText", ruleText, "location", location, "nodeForPropertySyntaxValidation", nodeForPropertySyntaxValidation), RULE::require);
         }
         /**
          * Inserts a new rule with the given {@code ruleText} in a stylesheet with given {@code styleSheetId}, at the position specified by {@code location}.
@@ -5884,11 +5719,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSRule> addRule(DOM.StyleSheetId styleSheetId, String ruleText, CSS.SourceRange location) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("styleSheetId", CdpObject.json(styleSheetId));
-            params.put("ruleText", CdpObject.json(ruleText));
-            params.put("location", CdpObject.json(location));
-            return client.call("CSS.addRule", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSRule.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("rule"))))));
+            return call("CSS.addRule", params("styleSheetId", styleSheetId, "ruleText", ruleText, "location", location), RULE::require);
         }
         /**
          * Inserts a new rule with the given {@code ruleText} in a stylesheet with given {@code styleSheetId}, at the position specified by {@code location}.
@@ -5896,7 +5727,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSRule> addRule(AddRuleRequest request) {
-            return client.call("CSS.addRule", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSRule.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("rule"))))));
+            return call("CSS.addRule", request, RULE::require);
         }
         /**
          * Returns all class names from specified stylesheet.
@@ -5904,9 +5735,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> collectClassNames(DOM.StyleSheetId styleSheetId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("styleSheetId", CdpObject.json(styleSheetId));
-            return client.call("CSS.collectClassNames", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("classNames")), element0 -> (String) element0));
+            return call("CSS.collectClassNames", params("styleSheetId", styleSheetId), CLASS_NAMES::require);
         }
         /**
          * Returns all class names from specified stylesheet.
@@ -5914,7 +5743,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> collectClassNames(CollectClassNamesRequest request) {
-            return client.call("CSS.collectClassNames", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("classNames")), element0 -> (String) element0));
+            return call("CSS.collectClassNames", request, CLASS_NAMES::require);
         }
         /**
          * Creates a new special &quot;via-inspector&quot; stylesheet in the frame with given {@code frameId}.
@@ -5923,10 +5752,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.StyleSheetId> createStyleSheet(Page.FrameId frameId, boolean force) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("frameId", CdpObject.json(frameId));
-            params.put("force", CdpObject.json(force));
-            return client.call("CSS.createStyleSheet", params, result_ -> new DOM.StyleSheetId((String) java.util.Objects.requireNonNull(result_.get("styleSheetId"))));
+            return call("CSS.createStyleSheet", params("frameId", frameId, "force", force), STYLE_SHEET_ID::require);
         }
         /**
          * Creates a new special &quot;via-inspector&quot; stylesheet in the frame with given {@code frameId}.
@@ -5934,9 +5760,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.StyleSheetId> createStyleSheet(Page.FrameId frameId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("frameId", CdpObject.json(frameId));
-            return client.call("CSS.createStyleSheet", params, result_ -> new DOM.StyleSheetId((String) java.util.Objects.requireNonNull(result_.get("styleSheetId"))));
+            return call("CSS.createStyleSheet", params("frameId", frameId), STYLE_SHEET_ID::require);
         }
         /**
          * Creates a new special &quot;via-inspector&quot; stylesheet in the frame with given {@code frameId}.
@@ -5944,21 +5768,21 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<DOM.StyleSheetId> createStyleSheet(CreateStyleSheetRequest request) {
-            return client.call("CSS.createStyleSheet", request == null ? null : request.toMap(), result_ -> new DOM.StyleSheetId((String) java.util.Objects.requireNonNull(result_.get("styleSheetId"))));
+            return call("CSS.createStyleSheet", request, STYLE_SHEET_ID::require);
         }
         /**
          * Disables the CSS agent for the given page.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("CSS.disable", null);
+            return call("CSS.disable");
         }
         /**
          * Enables the CSS agent for the given page. Clients should not assume that the CSS agent has been enabled until the result of this command is received.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("CSS.enable", null);
+            return call("CSS.enable");
         }
         /**
          * Ensures that the given node will have specified pseudo-classes whenever its style is computed by the browser.
@@ -5967,10 +5791,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> forcePseudoState(DOM.NodeId nodeId, java.util.List<String> forcedPseudoClasses) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("forcedPseudoClasses", CdpObject.json(forcedPseudoClasses));
-            return client.call("CSS.forcePseudoState", params);
+            return call("CSS.forcePseudoState", params("nodeId", nodeId, "forcedPseudoClasses", forcedPseudoClasses));
         }
         /**
          * Ensures that the given node will have specified pseudo-classes whenever its style is computed by the browser.
@@ -5978,7 +5799,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> forcePseudoState(ForcePseudoStateRequest request) {
-            return client.call("CSS.forcePseudoState", request == null ? null : request.toMap());
+            return call("CSS.forcePseudoState", request);
         }
         /**
          * Ensures that the given node is in its starting-style state.
@@ -5987,10 +5808,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> forceStartingStyle(DOM.NodeId nodeId, boolean forced) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("forced", CdpObject.json(forced));
-            return client.call("CSS.forceStartingStyle", params);
+            return call("CSS.forceStartingStyle", params("nodeId", nodeId, "forced", forced));
         }
         /**
          * Ensures that the given node is in its starting-style state.
@@ -5998,7 +5816,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> forceStartingStyle(ForceStartingStyleRequest request) {
-            return client.call("CSS.forceStartingStyle", request == null ? null : request.toMap());
+            return call("CSS.forceStartingStyle", request);
         }
         /**
          * Invokes CSS.getBackgroundColors.
@@ -6006,9 +5824,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetBackgroundColorsResult> getBackgroundColors(DOM.NodeId nodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("CSS.getBackgroundColors", params, result_ -> new GetBackgroundColorsResult(result_));
+            return call("CSS.getBackgroundColors", params("nodeId", nodeId), GetBackgroundColorsResult::fromMap);
         }
         /**
          * Invokes CSS.getBackgroundColors with a request object.
@@ -6016,7 +5832,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetBackgroundColorsResult> getBackgroundColors(GetBackgroundColorsRequest request) {
-            return client.call("CSS.getBackgroundColors", request == null ? null : request.toMap(), result_ -> new GetBackgroundColorsResult(result_));
+            return call("CSS.getBackgroundColors", request, GetBackgroundColorsResult::fromMap);
         }
         /**
          * Returns the computed style for a DOM node identified by {@code nodeId}.
@@ -6024,9 +5840,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetComputedStyleForNodeResult> getComputedStyleForNode(DOM.NodeId nodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("CSS.getComputedStyleForNode", params, result_ -> new GetComputedStyleForNodeResult(result_));
+            return call("CSS.getComputedStyleForNode", params("nodeId", nodeId), GetComputedStyleForNodeResult::fromMap);
         }
         /**
          * Returns the computed style for a DOM node identified by {@code nodeId}.
@@ -6034,7 +5848,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetComputedStyleForNodeResult> getComputedStyleForNode(GetComputedStyleForNodeRequest request) {
-            return client.call("CSS.getComputedStyleForNode", request == null ? null : request.toMap(), result_ -> new GetComputedStyleForNodeResult(result_));
+            return call("CSS.getComputedStyleForNode", request, GetComputedStyleForNodeResult::fromMap);
         }
         /**
          * Resolve the specified values in the context of the provided element. For example, a value of &#x27;1em&#x27; is evaluated according to the computed &#x27;font-size&#x27; of the element and a value &#x27;calc(1px + 2px)&#x27; will be resolved to &#x27;3px&#x27;. If the {@code propertyName} was specified the {@code values} are resolved as if they were property&#x27;s declaration. If a value cannot be parsed according to the provided property syntax, the value is parsed using combined syntax as if null {@code propertyName} was provided. If the value cannot be resolved even then, return the provided value without any changes. Note: this function currently does not resolve CSS random() function, it returns unmodified random() function parts.`
@@ -6047,13 +5861,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> resolveValues(java.util.List<String> values, DOM.NodeId nodeId, @Nullable String propertyName, DOM.@Nullable PseudoType pseudoType, @Nullable String pseudoIdentifier) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("values", CdpObject.json(values));
-            params.put("nodeId", CdpObject.json(nodeId));
-            if (propertyName != null) params.put("propertyName", CdpObject.json(propertyName));
-            if (pseudoType != null) params.put("pseudoType", CdpObject.json(pseudoType));
-            if (pseudoIdentifier != null) params.put("pseudoIdentifier", CdpObject.json(pseudoIdentifier));
-            return client.call("CSS.resolveValues", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("results")), element0 -> (String) element0));
+            return call("CSS.resolveValues", params("values", values, "nodeId", nodeId, "propertyName", propertyName, "pseudoType", pseudoType, "pseudoIdentifier", pseudoIdentifier), RESULTS::require);
         }
         /**
          * Resolve the specified values in the context of the provided element. For example, a value of &#x27;1em&#x27; is evaluated according to the computed &#x27;font-size&#x27; of the element and a value &#x27;calc(1px + 2px)&#x27; will be resolved to &#x27;3px&#x27;. If the {@code propertyName} was specified the {@code values} are resolved as if they were property&#x27;s declaration. If a value cannot be parsed according to the provided property syntax, the value is parsed using combined syntax as if null {@code propertyName} was provided. If the value cannot be resolved even then, return the provided value without any changes. Note: this function currently does not resolve CSS random() function, it returns unmodified random() function parts.`
@@ -6063,10 +5871,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> resolveValues(java.util.List<String> values, DOM.NodeId nodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("values", CdpObject.json(values));
-            params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("CSS.resolveValues", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("results")), element0 -> (String) element0));
+            return call("CSS.resolveValues", params("values", values, "nodeId", nodeId), RESULTS::require);
         }
         /**
          * Resolve the specified values in the context of the provided element. For example, a value of &#x27;1em&#x27; is evaluated according to the computed &#x27;font-size&#x27; of the element and a value &#x27;calc(1px + 2px)&#x27; will be resolved to &#x27;3px&#x27;. If the {@code propertyName} was specified the {@code values} are resolved as if they were property&#x27;s declaration. If a value cannot be parsed according to the provided property syntax, the value is parsed using combined syntax as if null {@code propertyName} was provided. If the value cannot be resolved even then, return the provided value without any changes. Note: this function currently does not resolve CSS random() function, it returns unmodified random() function parts.`
@@ -6075,7 +5880,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> resolveValues(ResolveValuesRequest request) {
-            return client.call("CSS.resolveValues", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("results")), element0 -> (String) element0));
+            return call("CSS.resolveValues", request, RESULTS::require);
         }
         /**
          * Invokes CSS.getLonghandProperties.
@@ -6085,10 +5890,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.CSSProperty>> getLonghandProperties(String shorthandName, String value) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("shorthandName", CdpObject.json(shorthandName));
-            params.put("value", CdpObject.json(value));
-            return client.call("CSS.getLonghandProperties", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("longhandProperties")), element0 -> java.util.Objects.requireNonNull(CSS.CSSProperty.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("CSS.getLonghandProperties", params("shorthandName", shorthandName, "value", value), LONGHAND_PROPERTIES::require);
         }
         /**
          * Invokes CSS.getLonghandProperties with a request object.
@@ -6097,7 +5899,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.CSSProperty>> getLonghandProperties(GetLonghandPropertiesRequest request) {
-            return client.call("CSS.getLonghandProperties", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("longhandProperties")), element0 -> java.util.Objects.requireNonNull(CSS.CSSProperty.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("CSS.getLonghandProperties", request, LONGHAND_PROPERTIES::require);
         }
         /**
          * Returns the styles defined inline (explicitly in the &quot;style&quot; attribute and implicitly, using DOM attributes) for a DOM node identified by {@code nodeId}.
@@ -6105,9 +5907,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetInlineStylesForNodeResult> getInlineStylesForNode(DOM.NodeId nodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("CSS.getInlineStylesForNode", params, result_ -> new GetInlineStylesForNodeResult(result_));
+            return call("CSS.getInlineStylesForNode", params("nodeId", nodeId), GetInlineStylesForNodeResult::fromMap);
         }
         /**
          * Returns the styles defined inline (explicitly in the &quot;style&quot; attribute and implicitly, using DOM attributes) for a DOM node identified by {@code nodeId}.
@@ -6115,7 +5915,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetInlineStylesForNodeResult> getInlineStylesForNode(GetInlineStylesForNodeRequest request) {
-            return client.call("CSS.getInlineStylesForNode", request == null ? null : request.toMap(), result_ -> new GetInlineStylesForNodeResult(result_));
+            return call("CSS.getInlineStylesForNode", request, GetInlineStylesForNodeResult::fromMap);
         }
         /**
          * Returns the styles coming from animations &amp; transitions including the animation &amp; transition styles coming from inheritance chain.
@@ -6124,9 +5924,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetAnimatedStylesForNodeResult> getAnimatedStylesForNode(DOM.NodeId nodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("CSS.getAnimatedStylesForNode", params, result_ -> new GetAnimatedStylesForNodeResult(result_));
+            return call("CSS.getAnimatedStylesForNode", params("nodeId", nodeId), GetAnimatedStylesForNodeResult::fromMap);
         }
         /**
          * Returns the styles coming from animations &amp; transitions including the animation &amp; transition styles coming from inheritance chain.
@@ -6135,7 +5933,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetAnimatedStylesForNodeResult> getAnimatedStylesForNode(GetAnimatedStylesForNodeRequest request) {
-            return client.call("CSS.getAnimatedStylesForNode", request == null ? null : request.toMap(), result_ -> new GetAnimatedStylesForNodeResult(result_));
+            return call("CSS.getAnimatedStylesForNode", request, GetAnimatedStylesForNodeResult::fromMap);
         }
         /**
          * Returns requested styles for a DOM node identified by {@code nodeId}.
@@ -6143,9 +5941,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetMatchedStylesForNodeResult> getMatchedStylesForNode(DOM.NodeId nodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("CSS.getMatchedStylesForNode", params, result_ -> new GetMatchedStylesForNodeResult(result_));
+            return call("CSS.getMatchedStylesForNode", params("nodeId", nodeId), GetMatchedStylesForNodeResult::fromMap);
         }
         /**
          * Returns requested styles for a DOM node identified by {@code nodeId}.
@@ -6153,7 +5949,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetMatchedStylesForNodeResult> getMatchedStylesForNode(GetMatchedStylesForNodeRequest request) {
-            return client.call("CSS.getMatchedStylesForNode", request == null ? null : request.toMap(), result_ -> new GetMatchedStylesForNodeResult(result_));
+            return call("CSS.getMatchedStylesForNode", request, GetMatchedStylesForNodeResult::fromMap);
         }
         /**
          * Returns the values of the default UA-defined environment variables used in env()
@@ -6161,14 +5957,14 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.Map<String, Object>> getEnvironmentVariables() {
-            return client.call("CSS.getEnvironmentVariables", null, result_ -> CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("environmentVariables"))));
+            return call("CSS.getEnvironmentVariables", ENVIRONMENT_VARIABLES::require);
         }
         /**
          * Returns all media queries parsed by the rendering engine.
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.CSSMedia>> getMediaQueries() {
-            return client.call("CSS.getMediaQueries", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("medias")), element0 -> java.util.Objects.requireNonNull(CSS.CSSMedia.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("CSS.getMediaQueries", MEDIAS::require);
         }
         /**
          * Requests information about platform fonts which we used to render child TextNodes in the given node.
@@ -6176,9 +5972,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.PlatformFontUsage>> getPlatformFontsForNode(DOM.NodeId nodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("CSS.getPlatformFontsForNode", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("fonts")), element0 -> java.util.Objects.requireNonNull(CSS.PlatformFontUsage.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("CSS.getPlatformFontsForNode", params("nodeId", nodeId), FONTS::require);
         }
         /**
          * Requests information about platform fonts which we used to render child TextNodes in the given node.
@@ -6186,7 +5980,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.PlatformFontUsage>> getPlatformFontsForNode(GetPlatformFontsForNodeRequest request) {
-            return client.call("CSS.getPlatformFontsForNode", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("fonts")), element0 -> java.util.Objects.requireNonNull(CSS.PlatformFontUsage.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("CSS.getPlatformFontsForNode", request, FONTS::require);
         }
         /**
          * Returns the current textual content for a stylesheet.
@@ -6194,9 +5988,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> getStyleSheetText(DOM.StyleSheetId styleSheetId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("styleSheetId", CdpObject.json(styleSheetId));
-            return client.call("CSS.getStyleSheetText", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("text")));
+            return call("CSS.getStyleSheetText", params("styleSheetId", styleSheetId), TEXT::require);
         }
         /**
          * Returns the current textual content for a stylesheet.
@@ -6204,7 +5996,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> getStyleSheetText(GetStyleSheetTextRequest request) {
-            return client.call("CSS.getStyleSheetText", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("text")));
+            return call("CSS.getStyleSheetText", request, TEXT::require);
         }
         /**
          * Returns all layers parsed by the rendering engine for the tree scope of a node. Given a DOM element identified by nodeId, getLayersForNode returns the root layer for the nearest ancestor document or shadow root. The layer root contains the full layer tree for the tree scope and their ordering.
@@ -6213,9 +6005,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSLayerData> getLayersForNode(DOM.NodeId nodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("CSS.getLayersForNode", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSLayerData.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("rootLayer"))))));
+            return call("CSS.getLayersForNode", params("nodeId", nodeId), ROOT_LAYER::require);
         }
         /**
          * Returns all layers parsed by the rendering engine for the tree scope of a node. Given a DOM element identified by nodeId, getLayersForNode returns the root layer for the nearest ancestor document or shadow root. The layer root contains the full layer tree for the tree scope and their ordering.
@@ -6224,7 +6014,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSLayerData> getLayersForNode(GetLayersForNodeRequest request) {
-            return client.call("CSS.getLayersForNode", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSLayerData.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("rootLayer"))))));
+            return call("CSS.getLayersForNode", request, ROOT_LAYER::require);
         }
         /**
          * Given a CSS selector text and a style sheet ID, getLocationForSelector returns an array of locations of the CSS selector in the style sheet.
@@ -6234,10 +6024,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.SourceRange>> getLocationForSelector(DOM.StyleSheetId styleSheetId, String selectorText) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("styleSheetId", CdpObject.json(styleSheetId));
-            params.put("selectorText", CdpObject.json(selectorText));
-            return client.call("CSS.getLocationForSelector", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("ranges")), element0 -> java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("CSS.getLocationForSelector", params("styleSheetId", styleSheetId, "selectorText", selectorText), RANGES::require);
         }
         /**
          * Given a CSS selector text and a style sheet ID, getLocationForSelector returns an array of locations of the CSS selector in the style sheet.
@@ -6246,7 +6033,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.SourceRange>> getLocationForSelector(GetLocationForSelectorRequest request) {
-            return client.call("CSS.getLocationForSelector", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("ranges")), element0 -> java.util.Objects.requireNonNull(CSS.SourceRange.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("CSS.getLocationForSelector", request, RANGES::require);
         }
         /**
          * Starts tracking the given node for the computed style updates and whenever the computed style is updated for node, it queues a {@code computedStyleUpdated} event with throttling. There can only be 1 node tracked for computed style updates so passing a new node id removes tracking from the previous node. Pass {@code undefined} to disable tracking.
@@ -6255,9 +6042,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackComputedStyleUpdatesForNode(DOM.NodeId nodeId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            return client.call("CSS.trackComputedStyleUpdatesForNode", params);
+            return call("CSS.trackComputedStyleUpdatesForNode", params("nodeId", nodeId));
         }
         /**
          * Starts tracking the given node for the computed style updates and whenever the computed style is updated for node, it queues a {@code computedStyleUpdated} event with throttling. There can only be 1 node tracked for computed style updates so passing a new node id removes tracking from the previous node. Pass {@code undefined} to disable tracking.
@@ -6265,7 +6050,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackComputedStyleUpdatesForNode() {
-            return client.call("CSS.trackComputedStyleUpdatesForNode", null);
+            return call("CSS.trackComputedStyleUpdatesForNode");
         }
         /**
          * Starts tracking the given node for the computed style updates and whenever the computed style is updated for node, it queues a {@code computedStyleUpdated} event with throttling. There can only be 1 node tracked for computed style updates so passing a new node id removes tracking from the previous node. Pass {@code undefined} to disable tracking.
@@ -6274,7 +6059,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackComputedStyleUpdatesForNode(TrackComputedStyleUpdatesForNodeRequest request) {
-            return client.call("CSS.trackComputedStyleUpdatesForNode", request == null ? null : request.toMap());
+            return call("CSS.trackComputedStyleUpdatesForNode", request);
         }
         /**
          * Starts tracking the given computed styles for updates. The specified array of properties replaces the one previously specified. Pass empty array to disable tracking. Use takeComputedStyleUpdates to retrieve the list of nodes that had properties modified. The changes to computed style properties are only tracked for nodes pushed to the front-end by the DOM agent. If no changes to the tracked properties occur after the node has been pushed to the front-end, no updates will be issued for the node.
@@ -6283,9 +6068,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackComputedStyleUpdates(java.util.List<CSS.CSSComputedStyleProperty> propertiesToTrack) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("propertiesToTrack", CdpObject.json(propertiesToTrack));
-            return client.call("CSS.trackComputedStyleUpdates", params);
+            return call("CSS.trackComputedStyleUpdates", params("propertiesToTrack", propertiesToTrack));
         }
         /**
          * Starts tracking the given computed styles for updates. The specified array of properties replaces the one previously specified. Pass empty array to disable tracking. Use takeComputedStyleUpdates to retrieve the list of nodes that had properties modified. The changes to computed style properties are only tracked for nodes pushed to the front-end by the DOM agent. If no changes to the tracked properties occur after the node has been pushed to the front-end, no updates will be issued for the node.
@@ -6294,7 +6077,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackComputedStyleUpdates(TrackComputedStyleUpdatesRequest request) {
-            return client.call("CSS.trackComputedStyleUpdates", request == null ? null : request.toMap());
+            return call("CSS.trackComputedStyleUpdates", request);
         }
         /**
          * Polls the next batch of computed style updates.
@@ -6302,7 +6085,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<DOM.NodeId>> takeComputedStyleUpdates() {
-            return client.call("CSS.takeComputedStyleUpdates", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("nodeIds")), element0 -> new DOM.NodeId(((Number) element0).longValue())));
+            return call("CSS.takeComputedStyleUpdates", NODE_IDS::require);
         }
         /**
          * Find a rule with the given active property for the given node and set the new value for this property
@@ -6312,11 +6095,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setEffectivePropertyValueForNode(DOM.NodeId nodeId, String propertyName, String value) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("nodeId", CdpObject.json(nodeId));
-            params.put("propertyName", CdpObject.json(propertyName));
-            params.put("value", CdpObject.json(value));
-            return client.call("CSS.setEffectivePropertyValueForNode", params);
+            return call("CSS.setEffectivePropertyValueForNode", params("nodeId", nodeId, "propertyName", propertyName, "value", value));
         }
         /**
          * Find a rule with the given active property for the given node and set the new value for this property
@@ -6324,7 +6103,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setEffectivePropertyValueForNode(SetEffectivePropertyValueForNodeRequest request) {
-            return client.call("CSS.setEffectivePropertyValueForNode", request == null ? null : request.toMap());
+            return call("CSS.setEffectivePropertyValueForNode", request);
         }
         /**
          * Modifies the property rule property name.
@@ -6334,11 +6113,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.Value> setPropertyRulePropertyName(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String propertyName) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("styleSheetId", CdpObject.json(styleSheetId));
-            params.put("range", CdpObject.json(range));
-            params.put("propertyName", CdpObject.json(propertyName));
-            return client.call("CSS.setPropertyRulePropertyName", params, result_ -> java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("propertyName"))))));
+            return call("CSS.setPropertyRulePropertyName", params("styleSheetId", styleSheetId, "range", range, "propertyName", propertyName), PROPERTY_NAME::require);
         }
         /**
          * Modifies the property rule property name.
@@ -6346,7 +6121,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.Value> setPropertyRulePropertyName(SetPropertyRulePropertyNameRequest request) {
-            return client.call("CSS.setPropertyRulePropertyName", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("propertyName"))))));
+            return call("CSS.setPropertyRulePropertyName", request, PROPERTY_NAME::require);
         }
         /**
          * Modifies the keyframe rule key text.
@@ -6356,11 +6131,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.Value> setKeyframeKey(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String keyText) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("styleSheetId", CdpObject.json(styleSheetId));
-            params.put("range", CdpObject.json(range));
-            params.put("keyText", CdpObject.json(keyText));
-            return client.call("CSS.setKeyframeKey", params, result_ -> java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("keyText"))))));
+            return call("CSS.setKeyframeKey", params("styleSheetId", styleSheetId, "range", range, "keyText", keyText), KEY_TEXT::require);
         }
         /**
          * Modifies the keyframe rule key text.
@@ -6368,7 +6139,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.Value> setKeyframeKey(SetKeyframeKeyRequest request) {
-            return client.call("CSS.setKeyframeKey", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.Value.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("keyText"))))));
+            return call("CSS.setKeyframeKey", request, KEY_TEXT::require);
         }
         /**
          * Modifies the rule selector.
@@ -6378,11 +6149,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSMedia> setMediaText(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("styleSheetId", CdpObject.json(styleSheetId));
-            params.put("range", CdpObject.json(range));
-            params.put("text", CdpObject.json(text));
-            return client.call("CSS.setMediaText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSMedia.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("media"))))));
+            return call("CSS.setMediaText", params("styleSheetId", styleSheetId, "range", range, "text", text), MEDIA_2::require);
         }
         /**
          * Modifies the rule selector.
@@ -6390,7 +6157,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSMedia> setMediaText(SetMediaTextRequest request) {
-            return client.call("CSS.setMediaText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSMedia.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("media"))))));
+            return call("CSS.setMediaText", request, MEDIA_2::require);
         }
         /**
          * Modifies the expression of a container query. Deprecated. Use setContainerQueryConditionText instead.
@@ -6403,11 +6170,7 @@ public final class CSS {
          */
         @Deprecated
         public CompletionStage<CSS.CSSContainerQuery> setContainerQueryText(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("styleSheetId", CdpObject.json(styleSheetId));
-            params.put("range", CdpObject.json(range));
-            params.put("text", CdpObject.json(text));
-            return client.call("CSS.setContainerQueryText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("containerQuery"))))));
+            return call("CSS.setContainerQueryText", params("styleSheetId", styleSheetId, "range", range, "text", text), CONTAINER_QUERY::require);
         }
         /**
          * Modifies the expression of a container query. Deprecated. Use setContainerQueryConditionText instead.
@@ -6418,7 +6181,7 @@ public final class CSS {
          */
         @Deprecated
         public CompletionStage<CSS.CSSContainerQuery> setContainerQueryText(SetContainerQueryTextRequest request) {
-            return client.call("CSS.setContainerQueryText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("containerQuery"))))));
+            return call("CSS.setContainerQueryText", request, CONTAINER_QUERY::require);
         }
         /**
          * Invokes CSS.setContainerQueryConditionText.
@@ -6429,11 +6192,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSContainerQuery> setContainerQueryConditionText(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("styleSheetId", CdpObject.json(styleSheetId));
-            params.put("range", CdpObject.json(range));
-            params.put("text", CdpObject.json(text));
-            return client.call("CSS.setContainerQueryConditionText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("containerQuery"))))));
+            return call("CSS.setContainerQueryConditionText", params("styleSheetId", styleSheetId, "range", range, "text", text), CONTAINER_QUERY::require);
         }
         /**
          * Invokes CSS.setContainerQueryConditionText with a request object.
@@ -6442,7 +6201,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSContainerQuery> setContainerQueryConditionText(SetContainerQueryConditionTextRequest request) {
-            return client.call("CSS.setContainerQueryConditionText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSContainerQuery.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("containerQuery"))))));
+            return call("CSS.setContainerQueryConditionText", request, CONTAINER_QUERY::require);
         }
         /**
          * Modifies the expression of a supports at-rule.
@@ -6453,11 +6212,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSSupports> setSupportsText(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("styleSheetId", CdpObject.json(styleSheetId));
-            params.put("range", CdpObject.json(range));
-            params.put("text", CdpObject.json(text));
-            return client.call("CSS.setSupportsText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSSupports.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("supports"))))));
+            return call("CSS.setSupportsText", params("styleSheetId", styleSheetId, "range", range, "text", text), SUPPORTS_2::require);
         }
         /**
          * Modifies the expression of a supports at-rule.
@@ -6466,7 +6221,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSSupports> setSupportsText(SetSupportsTextRequest request) {
-            return client.call("CSS.setSupportsText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSSupports.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("supports"))))));
+            return call("CSS.setSupportsText", request, SUPPORTS_2::require);
         }
         /**
          * Modifies the expression of a navigation at-rule.
@@ -6477,11 +6232,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSNavigation> setNavigationText(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("styleSheetId", CdpObject.json(styleSheetId));
-            params.put("range", CdpObject.json(range));
-            params.put("text", CdpObject.json(text));
-            return client.call("CSS.setNavigationText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSNavigation.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("navigation"))))));
+            return call("CSS.setNavigationText", params("styleSheetId", styleSheetId, "range", range, "text", text), NAVIGATION::require);
         }
         /**
          * Modifies the expression of a navigation at-rule.
@@ -6490,7 +6241,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSNavigation> setNavigationText(SetNavigationTextRequest request) {
-            return client.call("CSS.setNavigationText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSNavigation.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("navigation"))))));
+            return call("CSS.setNavigationText", request, NAVIGATION::require);
         }
         /**
          * Modifies the expression of a scope at-rule.
@@ -6501,11 +6252,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSScope> setScopeText(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String text) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("styleSheetId", CdpObject.json(styleSheetId));
-            params.put("range", CdpObject.json(range));
-            params.put("text", CdpObject.json(text));
-            return client.call("CSS.setScopeText", params, result_ -> java.util.Objects.requireNonNull(CSS.CSSScope.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("scope"))))));
+            return call("CSS.setScopeText", params("styleSheetId", styleSheetId, "range", range, "text", text), SCOPE::require);
         }
         /**
          * Modifies the expression of a scope at-rule.
@@ -6514,7 +6261,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.CSSScope> setScopeText(SetScopeTextRequest request) {
-            return client.call("CSS.setScopeText", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.CSSScope.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("scope"))))));
+            return call("CSS.setScopeText", request, SCOPE::require);
         }
         /**
          * Modifies the rule selector.
@@ -6524,11 +6271,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.SelectorList> setRuleSelector(DOM.StyleSheetId styleSheetId, CSS.SourceRange range, String selector) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("styleSheetId", CdpObject.json(styleSheetId));
-            params.put("range", CdpObject.json(range));
-            params.put("selector", CdpObject.json(selector));
-            return client.call("CSS.setRuleSelector", params, result_ -> java.util.Objects.requireNonNull(CSS.SelectorList.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("selectorList"))))));
+            return call("CSS.setRuleSelector", params("styleSheetId", styleSheetId, "range", range, "selector", selector), SELECTOR_LIST::require);
         }
         /**
          * Modifies the rule selector.
@@ -6536,7 +6279,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<CSS.SelectorList> setRuleSelector(SetRuleSelectorRequest request) {
-            return client.call("CSS.setRuleSelector", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(CSS.SelectorList.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("selectorList"))))));
+            return call("CSS.setRuleSelector", request, SELECTOR_LIST::require);
         }
         /**
          * Sets the new stylesheet text.
@@ -6545,10 +6288,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<Optional<String>> setStyleSheetText(DOM.StyleSheetId styleSheetId, String text) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("styleSheetId", CdpObject.json(styleSheetId));
-            params.put("text", CdpObject.json(text));
-            return client.call("CSS.setStyleSheetText", params, result_ -> Optional.ofNullable(result_.get("sourceMapURL")).map(value -> (String) value));
+            return call("CSS.setStyleSheetText", params("styleSheetId", styleSheetId, "text", text), SOURCE_MAP_URL::optional);
         }
         /**
          * Sets the new stylesheet text.
@@ -6556,7 +6296,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<Optional<String>> setStyleSheetText(SetStyleSheetTextRequest request) {
-            return client.call("CSS.setStyleSheetText", request == null ? null : request.toMap(), result_ -> Optional.ofNullable(result_.get("sourceMapURL")).map(value -> (String) value));
+            return call("CSS.setStyleSheetText", request, SOURCE_MAP_URL::optional);
         }
         /**
          * Applies specified style edits one after another in the given order.
@@ -6565,10 +6305,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.CSSStyle>> setStyleTexts(java.util.List<CSS.StyleDeclarationEdit> edits, DOM.NodeId nodeForPropertySyntaxValidation) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("edits", CdpObject.json(edits));
-            params.put("nodeForPropertySyntaxValidation", CdpObject.json(nodeForPropertySyntaxValidation));
-            return client.call("CSS.setStyleTexts", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("styles")), element0 -> java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("CSS.setStyleTexts", params("edits", edits, "nodeForPropertySyntaxValidation", nodeForPropertySyntaxValidation), STYLES::require);
         }
         /**
          * Applies specified style edits one after another in the given order.
@@ -6576,9 +6313,7 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.CSSStyle>> setStyleTexts(java.util.List<CSS.StyleDeclarationEdit> edits) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("edits", CdpObject.json(edits));
-            return client.call("CSS.setStyleTexts", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("styles")), element0 -> java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("CSS.setStyleTexts", params("edits", edits), STYLES::require);
         }
         /**
          * Applies specified style edits one after another in the given order.
@@ -6586,28 +6321,28 @@ public final class CSS {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.CSSStyle>> setStyleTexts(SetStyleTextsRequest request) {
-            return client.call("CSS.setStyleTexts", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("styles")), element0 -> java.util.Objects.requireNonNull(CSS.CSSStyle.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("CSS.setStyleTexts", request, STYLES::require);
         }
         /**
          * Enables the selector recording.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startRuleUsageTracking() {
-            return client.call("CSS.startRuleUsageTracking", null);
+            return call("CSS.startRuleUsageTracking");
         }
         /**
          * Stop tracking rule usage and return the list of rules that were used since last call to {@code takeCoverageDelta} (or since start of coverage instrumentation).
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<CSS.RuleUsage>> stopRuleUsageTracking() {
-            return client.call("CSS.stopRuleUsageTracking", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("ruleUsage")), element0 -> java.util.Objects.requireNonNull(CSS.RuleUsage.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("CSS.stopRuleUsageTracking", RULE_USAGE::require);
         }
         /**
          * Obtain list of rules that became used since last call to this method (or since start of coverage instrumentation).
          * @return a stage completing with the command result
          */
         public CompletionStage<TakeCoverageDeltaResult> takeCoverageDelta() {
-            return client.call("CSS.takeCoverageDelta", null, result_ -> new TakeCoverageDeltaResult(result_));
+            return call("CSS.takeCoverageDelta", TakeCoverageDeltaResult::fromMap);
         }
         /**
          * Enables/disables rendering of local CSS fonts (enabled by default).
@@ -6616,9 +6351,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setLocalFontsEnabled(boolean enabled) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("enabled", CdpObject.json(enabled));
-            return client.call("CSS.setLocalFontsEnabled", params);
+            return call("CSS.setLocalFontsEnabled", params("enabled", enabled));
         }
         /**
          * Enables/disables rendering of local CSS fonts (enabled by default).
@@ -6627,7 +6360,7 @@ public final class CSS {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setLocalFontsEnabled(SetLocalFontsEnabledRequest request) {
-            return client.call("CSS.setLocalFontsEnabled", request == null ? null : request.toMap());
+            return call("CSS.setLocalFontsEnabled", request);
         }
         /**
          * Fires whenever a web font is updated. A non-empty font parameter indicates a successfully loaded web font.
@@ -6635,7 +6368,7 @@ public final class CSS {
          * @return a removable subscription
          */
         public CdpSubscription onFontsUpdated(Consumer<FontsUpdatedEvent> handler) {
-            return client.on("CSS.fontsUpdated", FontsUpdatedEvent::fromMap, handler);
+            return on("CSS.fontsUpdated", FontsUpdatedEvent::fromMap, handler);
         }
         /**
          * Fires whenever a MediaQuery result changes (for example, after a browser window has been resized.) The current implementation considers only viewport-dependent media features.
@@ -6643,7 +6376,7 @@ public final class CSS {
          * @return a removable subscription
          */
         public CdpSubscription onMediaQueryResultChanged(Consumer<MediaQueryResultChangedEvent> handler) {
-            return client.on("CSS.mediaQueryResultChanged", MediaQueryResultChangedEvent::fromMap, handler);
+            return on("CSS.mediaQueryResultChanged", MediaQueryResultChangedEvent::fromMap, handler);
         }
         /**
          * Fired whenever an active document stylesheet is added.
@@ -6651,7 +6384,7 @@ public final class CSS {
          * @return a removable subscription
          */
         public CdpSubscription onStyleSheetAdded(Consumer<StyleSheetAddedEvent> handler) {
-            return client.on("CSS.styleSheetAdded", StyleSheetAddedEvent::fromMap, handler);
+            return on("CSS.styleSheetAdded", StyleSheetAddedEvent::fromMap, handler);
         }
         /**
          * Fired whenever a stylesheet is changed as a result of the client operation.
@@ -6659,7 +6392,7 @@ public final class CSS {
          * @return a removable subscription
          */
         public CdpSubscription onStyleSheetChanged(Consumer<StyleSheetChangedEvent> handler) {
-            return client.on("CSS.styleSheetChanged", StyleSheetChangedEvent::fromMap, handler);
+            return on("CSS.styleSheetChanged", StyleSheetChangedEvent::fromMap, handler);
         }
         /**
          * Fired whenever an active document stylesheet is removed.
@@ -6667,7 +6400,7 @@ public final class CSS {
          * @return a removable subscription
          */
         public CdpSubscription onStyleSheetRemoved(Consumer<StyleSheetRemovedEvent> handler) {
-            return client.on("CSS.styleSheetRemoved", StyleSheetRemovedEvent::fromMap, handler);
+            return on("CSS.styleSheetRemoved", StyleSheetRemovedEvent::fromMap, handler);
         }
         /**
          * Subscribes to CSS.computedStyleUpdated.
@@ -6676,7 +6409,7 @@ public final class CSS {
          * @return a removable subscription
          */
         public CdpSubscription onComputedStyleUpdated(Consumer<ComputedStyleUpdatedEvent> handler) {
-            return client.on("CSS.computedStyleUpdated", ComputedStyleUpdatedEvent::fromMap, handler);
+            return on("CSS.computedStyleUpdated", ComputedStyleUpdatedEvent::fromMap, handler);
         }
     }
 }

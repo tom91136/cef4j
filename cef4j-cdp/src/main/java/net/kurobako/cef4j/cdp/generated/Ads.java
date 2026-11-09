@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
@@ -18,6 +20,7 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Ads {
     private Ads() {}
+    private static final CdpField<Ads.AdMetrics> METRICS = CdpField.of("metrics", value -> java.util.Objects.requireNonNull(Ads.AdMetrics.fromMap(CdpObject.requireObjectMap(value))));
     /**
      * Ad metrics for a page.
      */
@@ -32,42 +35,42 @@ public final class Ads {
          * @return the protocol field value
          */
         public long viewportAdDensityByArea() {
-            return ((Number) require("viewportAdDensityByArea")).longValue();
+            return requireLong("viewportAdDensityByArea");
         }
         /**
          * The time-weighted average of the viewport ad density by area, measured across the duration of the page.
          * @return the protocol field value
          */
         public double averageViewportAdDensityByArea() {
-            return ((Number) require("averageViewportAdDensityByArea")).doubleValue();
+            return requireDouble("averageViewportAdDensityByArea");
         }
         /**
          * The number of ads currently visible within the viewport.
          * @return the protocol field value
          */
         public long viewportAdCount() {
-            return ((Number) require("viewportAdCount")).longValue();
+            return requireLong("viewportAdCount");
         }
         /**
          * The time-weighted average of the viewport ad count, measured across the duration of the page.
          * @return the protocol field value
          */
         public double averageViewportAdCount() {
-            return ((Number) require("averageViewportAdCount")).doubleValue();
+            return requireDouble("averageViewportAdCount");
         }
         /**
          * The total ad CPU usage, in milliseconds.
          * @return the protocol field value
          */
         public double totalAdCpuTime() {
-            return ((Number) require("totalAdCpuTime")).doubleValue();
+            return requireDouble("totalAdCpuTime");
         }
         /**
          * The total ad network bytes.
          * @return the protocol field value
          */
         public double totalAdNetworkBytes() {
-            return ((Number) require("totalAdNetworkBytes")).doubleValue();
+            return requireDouble("totalAdNetworkBytes");
         }
         /**
          * The viewport ad density by area, represented as a percentage (an integer between 0 and 100).
@@ -124,15 +127,14 @@ public final class Ads {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Retrieves ad metrics for the current page.
          * @return a stage completing with the command result
          */
         public CompletionStage<Ads.AdMetrics> getAdMetrics() {
-            return client.call("Ads.getAdMetrics", null, result_ -> java.util.Objects.requireNonNull(Ads.AdMetrics.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("metrics"))))));
+            return call("Ads.getAdMetrics", METRICS::require);
         }
     }
 }

@@ -2,24 +2,22 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class BrowserHostSendMouseMoveEventRequest implements CefMessageView, CefMessageEncoder {
 
-    public static final int MESSAGE_ID = 747572728;
-
     private final RemoteHandle self;
-    private final MouseEvent event;
+    private final net.kurobako.cef4j.gen.CefMouseEvent event;
     private final int mouseLeave;
 
-    public BrowserHostSendMouseMoveEventRequest(RemoteHandle self, MouseEvent event, int mouseLeave) {
+    public BrowserHostSendMouseMoveEventRequest(RemoteHandle self, net.kurobako.cef4j.gen.CefMouseEvent event, int mouseLeave) {
         this.self = self;
         this.event = event;
         this.mouseLeave = mouseLeave;
@@ -29,7 +27,7 @@ public final class BrowserHostSendMouseMoveEventRequest implements CefMessageVie
         return self;
     }
 
-    public MouseEvent event() {
+    public net.kurobako.cef4j.gen.CefMouseEvent event() {
         return event;
     }
 
@@ -38,35 +36,23 @@ public final class BrowserHostSendMouseMoveEventRequest implements CefMessageVie
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return 8 + event.encodedSize();
+        return 8 + MouseEventCodec.encodedSize(event);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            event.encodeInto(__dst);
-            __dst.putInt(mouseLeave);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            MouseEventCodec.encode(__out, event);
+            __out.putInt(mouseLeave);
+        });
     }
 
-    public static final CefMessageDecoder<BrowserHostSendMouseMoveEventRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<BrowserHostSendMouseMoveEventRequest> DECODER = WireDecoder.message("BrowserHostSendMouseMoveEventRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
-        final MouseEvent event = MouseEvent.decode(__buf);
+        final net.kurobako.cef4j.gen.CefMouseEvent event = MouseEventCodec.decode(__buf);
         final int mouseLeave = WireDecoder.int32(__buf, "mouseLeave");
-        WireDecoder.requireFullyConsumed(__buf, "BrowserHostSendMouseMoveEventRequest");
         return new BrowserHostSendMouseMoveEventRequest(self, event, mouseLeave);
-    };
+    });
 }

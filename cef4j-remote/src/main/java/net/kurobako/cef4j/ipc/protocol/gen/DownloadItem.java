@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class DownloadItem implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class DownloadItem extends BrowserFacade {
 
     public DownloadItem(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_download_item_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_download_item_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class DownloadItem implements AutoCloseable {
      */
     public CompletableFuture<Integer> isValid() {
         return CefFutures.map(
-            session.request(new DownloadItemIsValidRequest(handle), DownloadItemIsValidResponse.DECODER),
-            DownloadItemIsValidResponse::result);
+            session.request(MessageIds.DOWNLOAD_ITEM_IS_VALID_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class DownloadItem implements AutoCloseable {
      */
     public CompletableFuture<Integer> isInProgress() {
         return CefFutures.map(
-            session.request(new DownloadItemIsInProgressRequest(handle), DownloadItemIsInProgressResponse.DECODER),
-            DownloadItemIsInProgressResponse::result);
+            session.request(MessageIds.DOWNLOAD_ITEM_IS_IN_PROGRESS_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -82,8 +51,8 @@ public final class DownloadItem implements AutoCloseable {
      */
     public CompletableFuture<Integer> isComplete() {
         return CefFutures.map(
-            session.request(new DownloadItemIsCompleteRequest(handle), DownloadItemIsCompleteResponse.DECODER),
-            DownloadItemIsCompleteResponse::result);
+            session.request(MessageIds.DOWNLOAD_ITEM_IS_COMPLETE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -94,8 +63,8 @@ public final class DownloadItem implements AutoCloseable {
      */
     public CompletableFuture<Integer> isCanceled() {
         return CefFutures.map(
-            session.request(new DownloadItemIsCanceledRequest(handle), DownloadItemIsCanceledResponse.DECODER),
-            DownloadItemIsCanceledResponse::result);
+            session.request(MessageIds.DOWNLOAD_ITEM_IS_CANCELED_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -106,8 +75,8 @@ public final class DownloadItem implements AutoCloseable {
      */
     public CompletableFuture<Integer> isInterrupted() {
         return CefFutures.map(
-            session.request(new DownloadItemIsInterruptedRequest(handle), DownloadItemIsInterruptedResponse.DECODER),
-            DownloadItemIsInterruptedResponse::result);
+            session.request(MessageIds.DOWNLOAD_ITEM_IS_INTERRUPTED_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -118,8 +87,8 @@ public final class DownloadItem implements AutoCloseable {
      */
     public CompletableFuture<Integer> getInterruptReason() {
         return CefFutures.map(
-            session.request(new DownloadItemGetInterruptReasonRequest(handle), DownloadItemGetInterruptReasonResponse.DECODER),
-            DownloadItemGetInterruptReasonResponse::result);
+            session.request(MessageIds.DOWNLOAD_ITEM_GET_INTERRUPT_REASON_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -130,8 +99,8 @@ public final class DownloadItem implements AutoCloseable {
      */
     public CompletableFuture<Long> getCurrentSpeed() {
         return CefFutures.map(
-            session.request(new DownloadItemGetCurrentSpeedRequest(handle), DownloadItemGetCurrentSpeedResponse.DECODER),
-            DownloadItemGetCurrentSpeedResponse::result);
+            session.request(MessageIds.DOWNLOAD_ITEM_GET_CURRENT_SPEED_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -142,8 +111,8 @@ public final class DownloadItem implements AutoCloseable {
      */
     public CompletableFuture<Integer> getPercentComplete() {
         return CefFutures.map(
-            session.request(new DownloadItemGetPercentCompleteRequest(handle), DownloadItemGetPercentCompleteResponse.DECODER),
-            DownloadItemGetPercentCompleteResponse::result);
+            session.request(MessageIds.DOWNLOAD_ITEM_GET_PERCENT_COMPLETE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -154,8 +123,8 @@ public final class DownloadItem implements AutoCloseable {
      */
     public CompletableFuture<Long> getTotalBytes() {
         return CefFutures.map(
-            session.request(new DownloadItemGetTotalBytesRequest(handle), DownloadItemGetTotalBytesResponse.DECODER),
-            DownloadItemGetTotalBytesResponse::result);
+            session.request(MessageIds.DOWNLOAD_ITEM_GET_TOTAL_BYTES_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -166,8 +135,8 @@ public final class DownloadItem implements AutoCloseable {
      */
     public CompletableFuture<Long> getReceivedBytes() {
         return CefFutures.map(
-            session.request(new DownloadItemGetReceivedBytesRequest(handle), DownloadItemGetReceivedBytesResponse.DECODER),
-            DownloadItemGetReceivedBytesResponse::result);
+            session.request(MessageIds.DOWNLOAD_ITEM_GET_RECEIVED_BYTES_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -176,10 +145,10 @@ public final class DownloadItem implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:119</a>
      */
-    public CompletableFuture<BaseTime> getStartTime() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefBaseTime> getStartTime() {
         return CefFutures.map(
-            session.request(new DownloadItemGetStartTimeRequest(handle), DownloadItemGetStartTimeResponse.DECODER),
-            DownloadItemGetStartTimeResponse::result);
+            session.request(MessageIds.DOWNLOAD_ITEM_GET_START_TIME_REQUEST, new SelfHandleMessage(handle), ResultCefBaseTimeMessage.DECODER),
+            ResultCefBaseTimeMessage::result);
     }
 
     /**
@@ -188,10 +157,10 @@ public final class DownloadItem implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__download__item_8h.html">cef_download_item.h:125</a>
      */
-    public CompletableFuture<BaseTime> getEndTime() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefBaseTime> getEndTime() {
         return CefFutures.map(
-            session.request(new DownloadItemGetEndTimeRequest(handle), DownloadItemGetEndTimeResponse.DECODER),
-            DownloadItemGetEndTimeResponse::result);
+            session.request(MessageIds.DOWNLOAD_ITEM_GET_END_TIME_REQUEST, new SelfHandleMessage(handle), ResultCefBaseTimeMessage.DECODER),
+            ResultCefBaseTimeMessage::result);
     }
 
     /**
@@ -202,8 +171,8 @@ public final class DownloadItem implements AutoCloseable {
      */
     public CompletableFuture<String> getFullPath() {
         return CefFutures.map(
-            session.request(new DownloadItemGetFullPathRequest(handle), DownloadItemGetFullPathResponse.DECODER),
-            DownloadItemGetFullPathResponse::result);
+            session.request(MessageIds.DOWNLOAD_ITEM_GET_FULL_PATH_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -214,8 +183,8 @@ public final class DownloadItem implements AutoCloseable {
      */
     public CompletableFuture<Integer> getId() {
         return CefFutures.map(
-            session.request(new DownloadItemGetIdRequest(handle), DownloadItemGetIdResponse.DECODER),
-            DownloadItemGetIdResponse::result);
+            session.request(MessageIds.DOWNLOAD_ITEM_GET_ID_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -226,8 +195,8 @@ public final class DownloadItem implements AutoCloseable {
      */
     public CompletableFuture<String> getUrl() {
         return CefFutures.map(
-            session.request(new DownloadItemGetUrlRequest(handle), DownloadItemGetUrlResponse.DECODER),
-            DownloadItemGetUrlResponse::result);
+            session.request(MessageIds.DOWNLOAD_ITEM_GET_URL_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -238,8 +207,8 @@ public final class DownloadItem implements AutoCloseable {
      */
     public CompletableFuture<String> getOriginalUrl() {
         return CefFutures.map(
-            session.request(new DownloadItemGetOriginalUrlRequest(handle), DownloadItemGetOriginalUrlResponse.DECODER),
-            DownloadItemGetOriginalUrlResponse::result);
+            session.request(MessageIds.DOWNLOAD_ITEM_GET_ORIGINAL_URL_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -250,8 +219,8 @@ public final class DownloadItem implements AutoCloseable {
      */
     public CompletableFuture<String> getSuggestedFileName() {
         return CefFutures.map(
-            session.request(new DownloadItemGetSuggestedFileNameRequest(handle), DownloadItemGetSuggestedFileNameResponse.DECODER),
-            DownloadItemGetSuggestedFileNameResponse::result);
+            session.request(MessageIds.DOWNLOAD_ITEM_GET_SUGGESTED_FILE_NAME_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -262,8 +231,8 @@ public final class DownloadItem implements AutoCloseable {
      */
     public CompletableFuture<String> getContentDisposition() {
         return CefFutures.map(
-            session.request(new DownloadItemGetContentDispositionRequest(handle), DownloadItemGetContentDispositionResponse.DECODER),
-            DownloadItemGetContentDispositionResponse::result);
+            session.request(MessageIds.DOWNLOAD_ITEM_GET_CONTENT_DISPOSITION_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -274,8 +243,8 @@ public final class DownloadItem implements AutoCloseable {
      */
     public CompletableFuture<String> getMimeType() {
         return CefFutures.map(
-            session.request(new DownloadItemGetMimeTypeRequest(handle), DownloadItemGetMimeTypeResponse.DECODER),
-            DownloadItemGetMimeTypeResponse::result);
+            session.request(MessageIds.DOWNLOAD_ITEM_GET_MIME_TYPE_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -287,7 +256,7 @@ public final class DownloadItem implements AutoCloseable {
      */
     public CompletableFuture<Integer> isPaused() {
         return CefFutures.map(
-            session.request(new DownloadItemIsPausedRequest(handle), DownloadItemIsPausedResponse.DECODER),
-            DownloadItemIsPausedResponse::result);
+            session.request(MessageIds.DOWNLOAD_ITEM_IS_PAUSED_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

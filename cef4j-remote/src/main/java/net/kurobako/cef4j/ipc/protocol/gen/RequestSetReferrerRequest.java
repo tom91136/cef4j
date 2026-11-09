@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,11 +9,10 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class RequestSetReferrerRequest implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 628001551;
 
     private final RemoteHandle self;
     private final String referrerUrl;
@@ -41,36 +39,23 @@ public final class RequestSetReferrerRequest implements CefMessageView, CefMessa
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 12 + referrerUrlBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putInt(referrerUrlBytes.length);
-            __dst.put(referrerUrlBytes);
-            __dst.putInt(policy);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            WireEncoder.bytes(__out, referrerUrlBytes);
+            __out.putInt(policy);
+        });
     }
 
-    public static final CefMessageDecoder<RequestSetReferrerRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<RequestSetReferrerRequest> DECODER = WireDecoder.message("RequestSetReferrerRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final String referrerUrl = WireDecoder.utf8(__buf, "referrerUrl");
         final int policy = WireDecoder.int32(__buf, "policy");
-        WireDecoder.requireFullyConsumed(__buf, "RequestSetReferrerRequest");
         return new RequestSetReferrerRequest(self, referrerUrl, policy);
-    };
+    });
 }

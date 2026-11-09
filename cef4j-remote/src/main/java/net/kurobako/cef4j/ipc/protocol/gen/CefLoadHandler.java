@@ -57,13 +57,13 @@ public interface CefLoadHandler {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefLoadHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(LoadHandlerOnLoadingStateChangeEvent.MESSAGE_ID, LoadHandlerOnLoadingStateChangeEvent.DECODER,
+                session.on(MessageIds.LOAD_HANDLER_ON_LOADING_STATE_CHANGE_EVENT, LoadHandlerOnLoadingStateChangeEvent.DECODER,
                         ev -> handler.onLoadingStateChange(ev.browser(), ev.isLoading(), ev.canGoBack(), ev.canGoForward())),
-                session.on(LoadHandlerOnLoadStartEvent.MESSAGE_ID, LoadHandlerOnLoadStartEvent.DECODER,
+                session.on(MessageIds.LOAD_HANDLER_ON_LOAD_START_EVENT, LoadHandlerOnLoadStartEvent.DECODER,
                         ev -> handler.onLoadStart(ev.browser(), ev.frame(), ev.transitionType())),
-                session.on(LoadHandlerOnLoadEndEvent.MESSAGE_ID, LoadHandlerOnLoadEndEvent.DECODER,
+                session.on(MessageIds.LOAD_HANDLER_ON_LOAD_END_EVENT, LoadHandlerOnLoadEndEvent.DECODER,
                         ev -> handler.onLoadEnd(ev.browser(), ev.frame(), ev.httpStatusCode())),
-                session.on(LoadHandlerOnLoadErrorEvent.MESSAGE_ID, LoadHandlerOnLoadErrorEvent.DECODER,
+                session.on(MessageIds.LOAD_HANDLER_ON_LOAD_ERROR_EVENT, LoadHandlerOnLoadErrorEvent.DECODER,
                         ev -> handler.onLoadError(ev.browser(), ev.frame(), ev.errorCode(), ev.errorText(), ev.failedUrl())));
     }
 }

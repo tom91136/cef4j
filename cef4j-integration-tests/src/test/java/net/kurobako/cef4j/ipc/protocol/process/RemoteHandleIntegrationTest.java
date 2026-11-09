@@ -6,7 +6,8 @@ import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
-import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessage;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -28,10 +29,9 @@ class RemoteHandleIntegrationTest {
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
-            session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, ev -> {
-                        if (!handleFuture.isDone()) handleFuture.complete(ev.browser());
-                    });
+            session.onLatest(MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, BrowserHandleMessage.DECODER, ev -> {
+                if (!handleFuture.isDone()) handleFuture.complete(ev.browser());
+            });
 
             RemoteHandle handle = handleFuture.get(20, TimeUnit.SECONDS);
             assertThat(handle.id()).isPositive();

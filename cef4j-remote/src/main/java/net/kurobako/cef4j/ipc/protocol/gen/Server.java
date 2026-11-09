@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class Server implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class Server extends BrowserFacade {
 
     public Server(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_server_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_server_t");
     }
 
     /**
@@ -58,7 +27,7 @@ public final class Server implements AutoCloseable {
      */
     public CompletableFuture<TaskRunner> getTaskRunner() {
         return CefFutures.map(
-            session.request(new ServerGetTaskRunnerRequest(handle), ServerGetTaskRunnerResponse.DECODER),
+            session.request(MessageIds.SERVER_GET_TASK_RUNNER_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new TaskRunner(session, __r.result()));
     }
 
@@ -69,7 +38,7 @@ public final class Server implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:88</a>
      */
     public CompletableFuture<Void> shutdown() {
-        return CefFutures.discard(session.request(new ServerShutdownRequest(handle), ServerShutdownResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.SERVER_SHUTDOWN_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -80,8 +49,8 @@ public final class Server implements AutoCloseable {
      */
     public CompletableFuture<Integer> isRunning() {
         return CefFutures.map(
-            session.request(new ServerIsRunningRequest(handle), ServerIsRunningResponse.DECODER),
-            ServerIsRunningResponse::result);
+            session.request(MessageIds.SERVER_IS_RUNNING_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -92,8 +61,8 @@ public final class Server implements AutoCloseable {
      */
     public CompletableFuture<String> getAddress() {
         return CefFutures.map(
-            session.request(new ServerGetAddressRequest(handle), ServerGetAddressResponse.DECODER),
-            ServerGetAddressResponse::result);
+            session.request(MessageIds.SERVER_GET_ADDRESS_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -104,8 +73,8 @@ public final class Server implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasConnection() {
         return CefFutures.map(
-            session.request(new ServerHasConnectionRequest(handle), ServerHasConnectionResponse.DECODER),
-            ServerHasConnectionResponse::result);
+            session.request(MessageIds.SERVER_HAS_CONNECTION_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -116,8 +85,8 @@ public final class Server implements AutoCloseable {
      */
     public CompletableFuture<Integer> isValidConnection(int connectionId) {
         return CefFutures.map(
-            session.request(new ServerIsValidConnectionRequest(handle, connectionId), ServerIsValidConnectionResponse.DECODER),
-            ServerIsValidConnectionResponse::result);
+            session.request(MessageIds.SERVER_IS_VALID_CONNECTION_REQUEST, new SelfHandleConnectionIdIntMessage(handle, connectionId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -130,7 +99,7 @@ public final class Server implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:125</a>
      */
     public CompletableFuture<Void> sendHttp200Response(int connectionId, String contentType, byte[] data) {
-        return CefFutures.discard(session.request(new ServerSendHttp200ResponseRequest(handle, connectionId, contentType, data), ServerSendHttp200ResponseResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.SERVER_SEND_HTTP200_RESPONSE_REQUEST, new ServerSendHttp200ResponseRequest(handle, connectionId, contentType, data), EmptyMessage.DECODER));
     }
 
     /**
@@ -140,7 +109,7 @@ public final class Server implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:138</a>
      */
     public CompletableFuture<Void> sendHttp404Response(int connectionId) {
-        return CefFutures.discard(session.request(new ServerSendHttp404ResponseRequest(handle, connectionId), ServerSendHttp404ResponseResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.SERVER_SEND_HTTP404_RESPONSE_REQUEST, new SelfHandleConnectionIdIntMessage(handle, connectionId), EmptyMessage.DECODER));
     }
 
     /**
@@ -150,7 +119,7 @@ public final class Server implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:146</a>
      */
     public CompletableFuture<Void> sendHttp500Response(int connectionId, String errorMessage) {
-        return CefFutures.discard(session.request(new ServerSendHttp500ResponseRequest(handle, connectionId, errorMessage), ServerSendHttp500ResponseResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.SERVER_SEND_HTTP500_RESPONSE_REQUEST, new ServerSendHttp500ResponseRequest(handle, connectionId, errorMessage), EmptyMessage.DECODER));
     }
 
     /**
@@ -163,7 +132,7 @@ public final class Server implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:177</a>
      */
     public CompletableFuture<Void> sendRawData(int connectionId, byte[] data) {
-        return CefFutures.discard(session.request(new ServerSendRawDataRequest(handle, connectionId, data), ServerSendRawDataResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.SERVER_SEND_RAW_DATA_REQUEST, new SelfHandleConnectionIdIntDataBytesMessage(handle, connectionId, data), EmptyMessage.DECODER));
     }
 
     /**
@@ -173,7 +142,7 @@ public final class Server implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:190</a>
      */
     public CompletableFuture<Void> closeConnection(int connectionId) {
-        return CefFutures.discard(session.request(new ServerCloseConnectionRequest(handle, connectionId), ServerCloseConnectionResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.SERVER_CLOSE_CONNECTION_REQUEST, new SelfHandleConnectionIdIntMessage(handle, connectionId), EmptyMessage.DECODER));
     }
 
     /**
@@ -186,6 +155,6 @@ public final class Server implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__server_8h.html">cef_server.h:197</a>
      */
     public CompletableFuture<Void> sendWebSocketMessage(int connectionId, byte[] data) {
-        return CefFutures.discard(session.request(new ServerSendWebSocketMessageRequest(handle, connectionId, data), ServerSendWebSocketMessageResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.SERVER_SEND_WEB_SOCKET_MESSAGE_REQUEST, new SelfHandleConnectionIdIntDataBytesMessage(handle, connectionId, data), EmptyMessage.DECODER));
     }
 }

@@ -1,7 +1,6 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -10,6 +9,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -25,6 +26,47 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Storage {
     private Storage() {}
+    private static final CdpField<Network.TimeSinceEpoch> ACCESS_TIME = CdpField.of("accessTime", value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+    private static final CdpField<java.util.List<String>> ASSOCIATED_SITES = CdpField.of("associatedSites", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<java.util.List<Storage.InterestGroupAuctionId>> AUCTIONS = CdpField.of("auctions", value -> CdpObject.requireList(value, element0 -> new Storage.InterestGroupAuctionId((String) element0)));
+    private static final CdpField<Browser.BrowserContextID> BROWSER_CONTEXT_ID = CdpField.of("browserContextId", value -> new Browser.BrowserContextID((String) value));
+    private static final CdpField<Storage.StorageBucket> BUCKET = CdpField.of("bucket", value -> java.util.Objects.requireNonNull(Storage.StorageBucket.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Storage.StorageBucketInfo> BUCKET_INFO = CdpField.of("bucketInfo", value -> java.util.Objects.requireNonNull(Storage.StorageBucketInfo.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Network.CookieParam>> COOKIES = CdpField.of("cookies", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.CookieParam.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Network.Cookie>> COOKIES_2 = CdpField.of("cookies", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Network.Cookie.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Network.TimeSinceEpoch> CREATION_TIME = CdpField.of("creationTime", value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+    private static final CdpField<java.util.List<String>> DELETED_SITES = CdpField.of("deletedSites", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<java.util.Map<String, Object>> DETAILS = CdpField.of("details", value -> CdpObject.requireObjectMap(value));
+    private static final CdpField<Boolean> DID_DELETE_TOKENS = CdpField.of("didDeleteTokens", value -> (Boolean) value);
+    private static final CdpField<Storage.StorageBucketsDurability> DURABILITY = CdpField.of("durability", value -> Storage.StorageBucketsDurability.of((String) value));
+    private static final CdpField<java.util.List<Storage.SharedStorageEntry>> ENTRIES = CdpField.of("entries", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Storage.SharedStorageEntry.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Network.TimeSinceEpoch> EVENT_TIME = CdpField.of("eventTime", value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+    private static final CdpField<Network.TimeSinceEpoch> EXPIRATION = CdpField.of("expiration", value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+    private static final CdpField<Network.TimeSinceEpoch> FINISHED_TIME = CdpField.of("finishedTime", value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+    private static final CdpField<Page.FrameId> FRAME_ID = CdpField.of("frameId", value -> new Page.FrameId((String) value));
+    private static final CdpField<java.util.List<String>> HASHES = CdpField.of("hashes", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Page.FrameId> MAIN_FRAME_ID = CdpField.of("mainFrameId", value -> new Page.FrameId((String) value));
+    private static final CdpField<Storage.SharedStorageMetadata> METADATA = CdpField.of("metadata", value -> java.util.Objects.requireNonNull(Storage.SharedStorageMetadata.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Storage.SharedStorageAccessMethod> METHOD = CdpField.of("method", value -> Storage.SharedStorageAccessMethod.of((String) value));
+    private static final CdpField<Storage.SharedStorageAccessParams> PARAMS = CdpField.of("params", value -> java.util.Objects.requireNonNull(Storage.SharedStorageAccessParams.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Storage.InterestGroupAuctionId> PARENT_AUCTION_ID = CdpField.of("parentAuctionId", value -> new Storage.InterestGroupAuctionId((String) value));
+    private static final CdpField<java.util.List<String>> PRIMARY_SITES = CdpField.of("primarySites", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Storage.SharedStoragePrivateAggregationConfig> PRIVATE_AGGREGATION_CONFIG = CdpField.of("privateAggregationConfig", value -> java.util.Objects.requireNonNull(Storage.SharedStoragePrivateAggregationConfig.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Storage.SharedStorageReportingMetadata>> REPORTING_METADATA = CdpField.of("reportingMetadata", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Storage.SharedStorageReportingMetadata.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Network.RequestId> REQUEST_ID = CdpField.of("requestId", value -> new Network.RequestId((String) value));
+    private static final CdpField<Storage.SharedStorageAccessScope> SCOPE = CdpField.of("scope", value -> Storage.SharedStorageAccessScope.of((String) value));
+    private static final CdpField<java.util.List<String>> SERVICE_SITES = CdpField.of("serviceSites", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<java.util.List<Storage.RelatedWebsiteSet>> SETS = CdpField.of("sets", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Storage.RelatedWebsiteSet.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Storage.SerializedStorageKey> STORAGE_KEY = CdpField.of("storageKey", value -> new Storage.SerializedStorageKey((String) value));
+    private static final CdpField<Storage.StorageType> STORAGE_TYPE = CdpField.of("storageType", value -> Storage.StorageType.of((String) value));
+    private static final CdpField<java.util.List<Storage.TrustTokens>> TOKENS = CdpField.of("tokens", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Storage.TrustTokens.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Storage.InterestGroupAccessType> TYPE = CdpField.of("type", value -> Storage.InterestGroupAccessType.of((String) value));
+    private static final CdpField<Storage.InterestGroupAuctionEventType> TYPE_2 = CdpField.of("type", value -> Storage.InterestGroupAuctionEventType.of((String) value));
+    private static final CdpField<Storage.InterestGroupAuctionFetchType> TYPE_3 = CdpField.of("type", value -> Storage.InterestGroupAuctionFetchType.of((String) value));
+    private static final CdpField<Storage.InterestGroupAuctionId> UNIQUE_AUCTION_ID = CdpField.of("uniqueAuctionId", value -> new Storage.InterestGroupAuctionId((String) value));
+    private static final CdpField<java.util.List<Storage.SharedStorageUrlWithMetadata>> URLS_WITH_METADATA = CdpField.of("urlsWithMetadata", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Storage.SharedStorageUrlWithMetadata.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Storage.UsageForType>> USAGE_BREAKDOWN = CdpField.of("usageBreakdown", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Storage.UsageForType.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Target.TargetID> WORKLET_TARGET_ID = CdpField.of("workletTargetId", value -> new Target.TargetID((String) value));
     /**
      * Tagged String wire value for SerializedStorageKey.
      */
@@ -81,14 +123,14 @@ public final class Storage {
          * @return the protocol field value
          */
         public Storage.StorageType storageType() {
-            return Storage.StorageType.of((String) require("storageType"));
+            return require(STORAGE_TYPE);
         }
         /**
          * Storage usage (bytes).
          * @return the protocol field value
          */
         public double usage() {
-            return ((Number) require("usage")).doubleValue();
+            return requireDouble("usage");
         }
         /**
          * Name of storage type.
@@ -124,14 +166,14 @@ public final class Storage {
          * @return the protocol field value
          */
         public String issuerOrigin() {
-            return (String) require("issuerOrigin");
+            return requireString("issuerOrigin");
         }
         /**
          * Returns the count field.
          * @return the protocol field value
          */
         public double count() {
-            return ((Number) require("count")).doubleValue();
+            return requireDouble("count");
         }
         /**
          * Sets the issuerOrigin field.
@@ -288,14 +330,14 @@ public final class Storage {
          * @return the protocol field value
          */
         public String key() {
-            return (String) require("key");
+            return requireString("key");
         }
         /**
          * Returns the value field.
          * @return the protocol field value
          */
         public String value() {
-            return (String) require("value");
+            return requireString("value");
         }
         /**
          * Sets the key field.
@@ -330,28 +372,28 @@ public final class Storage {
          * @return the protocol field value
          */
         public Network.TimeSinceEpoch creationTime() {
-            return new Network.TimeSinceEpoch(((Number) require("creationTime")).doubleValue());
+            return require(CREATION_TIME);
         }
         /**
          * Number of key-value pairs stored in origin&#x27;s shared storage.
          * @return the protocol field value
          */
         public long length() {
-            return ((Number) require("length")).longValue();
+            return requireLong("length");
         }
         /**
          * Current amount of bits of entropy remaining in the navigation budget.
          * @return the protocol field value
          */
         public double remainingBudget() {
-            return ((Number) require("remainingBudget")).doubleValue();
+            return requireDouble("remainingBudget");
         }
         /**
          * Total number of bytes stored as key-value pairs in origin&#x27;s shared storage.
          * @return the protocol field value
          */
         public long bytesUsed() {
-            return ((Number) require("bytesUsed")).longValue();
+            return requireLong("bytesUsed");
         }
         /**
          * Time when the origin&#x27;s shared storage was last created.
@@ -404,28 +446,28 @@ public final class Storage {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> aggregationCoordinatorOrigin() {
-            return raw("aggregationCoordinatorOrigin").map(value -> (String) value);
+            return optionalString("aggregationCoordinatorOrigin");
         }
         /**
          * The context ID provided.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> contextId() {
-            return raw("contextId").map(value -> (String) value);
+            return optionalString("contextId");
         }
         /**
          * Configures the maximum size allowed for filtering IDs.
          * @return the protocol field value
          */
         public long filteringIdMaxBytes() {
-            return ((Number) require("filteringIdMaxBytes")).longValue();
+            return requireLong("filteringIdMaxBytes");
         }
         /**
          * The limit on the number of contributions in the final report.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong maxContributions() {
-            return raw("maxContributions").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("maxContributions");
         }
         /**
          * The chosen aggregation service deployment.
@@ -478,14 +520,14 @@ public final class Storage {
          * @return the protocol field value
          */
         public String eventType() {
-            return (String) require("eventType");
+            return requireString("eventType");
         }
         /**
          * Returns the reportingUrl field.
          * @return the protocol field value
          */
         public String reportingUrl() {
-            return (String) require("reportingUrl");
+            return requireString("reportingUrl");
         }
         /**
          * Sets the eventType field.
@@ -520,14 +562,14 @@ public final class Storage {
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Any associated reporting metadata.
          * @return the protocol field value
          */
         public java.util.List<Storage.SharedStorageReportingMetadata> reportingMetadata() {
-            return CdpObject.requireList(require("reportingMetadata"), element0 -> java.util.Objects.requireNonNull(Storage.SharedStorageReportingMetadata.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(REPORTING_METADATA);
         }
         /**
          * Spec of candidate URL.
@@ -562,119 +604,119 @@ public final class Storage {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> scriptSourceUrl() {
-            return raw("scriptSourceUrl").map(value -> (String) value);
+            return optionalString("scriptSourceUrl");
         }
         /**
          * String denoting &quot;context-origin&quot;, &quot;script-origin&quot;, or a custom origin to be used as the worklet&#x27;s data origin. Present only for SharedStorageAccessMethod: createWorklet.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> dataOrigin() {
-            return raw("dataOrigin").map(value -> (String) value);
+            return optionalString("dataOrigin");
         }
         /**
          * Name of the registered operation to be run. Present only for SharedStorageAccessMethods: run and selectURL.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> operationName() {
-            return raw("operationName").map(value -> (String) value);
+            return optionalString("operationName");
         }
         /**
          * ID of the operation call. Present only for SharedStorageAccessMethods: run and selectURL.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> operationId() {
-            return raw("operationId").map(value -> (String) value);
+            return optionalString("operationId");
         }
         /**
          * Whether or not to keep the worket alive for future run or selectURL calls. Present only for SharedStorageAccessMethods: run and selectURL.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> keepAlive() {
-            return raw("keepAlive").map(value -> (Boolean) value);
+            return optionalBoolean("keepAlive");
         }
         /**
          * Configures the private aggregation options. Present only for SharedStorageAccessMethods: run and selectURL.
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.SharedStoragePrivateAggregationConfig> privateAggregationConfig() {
-            return raw("privateAggregationConfig").flatMap(CdpObject::objectMap).map(Storage.SharedStoragePrivateAggregationConfig::fromMap);
+            return optional(PRIVATE_AGGREGATION_CONFIG);
         }
         /**
          * The operation&#x27;s serialized data in bytes (converted to a string). Present only for SharedStorageAccessMethods: run and selectURL. TODO(crbug.com/401011862): Consider updating this parameter to binary.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> serializedData() {
-            return raw("serializedData").map(value -> (String) value);
+            return optionalString("serializedData");
         }
         /**
          * Array of candidate URLs&#x27; specs, along with any associated metadata. Present only for SharedStorageAccessMethod: selectURL.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Storage.SharedStorageUrlWithMetadata>> urlsWithMetadata() {
-            return raw("urlsWithMetadata").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Storage.SharedStorageUrlWithMetadata.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(URLS_WITH_METADATA);
         }
         /**
          * Spec of the URN:UUID generated for a selectURL call. Present only for SharedStorageAccessMethod: selectURL.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> urnUuid() {
-            return raw("urnUuid").map(value -> (String) value);
+            return optionalString("urnUuid");
         }
         /**
          * Key for a specific entry in an origin&#x27;s shared storage. Present only for SharedStorageAccessMethods: set, append, delete, and get.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> key() {
-            return raw("key").map(value -> (String) value);
+            return optionalString("key");
         }
         /**
          * Value for a specific entry in an origin&#x27;s shared storage. Present only for SharedStorageAccessMethods: set and append.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> value() {
-            return raw("value").map(value -> (String) value);
+            return optionalString("value");
         }
         /**
          * Whether or not to set an entry for a key if that key is already present. Present only for SharedStorageAccessMethod: set.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> ignoreIfPresent() {
-            return raw("ignoreIfPresent").map(value -> (Boolean) value);
+            return optionalBoolean("ignoreIfPresent");
         }
         /**
          * A number denoting the (0-based) order of the worklet&#x27;s creation relative to all other shared storage worklets created by documents using the current storage partition. Present only for SharedStorageAccessMethods: addModule, createWorklet.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong workletOrdinal() {
-            return raw("workletOrdinal").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("workletOrdinal");
         }
         /**
          * Hex representation of the DevTools token used as the TargetID for the associated shared storage worklet. Present only for SharedStorageAccessMethods: addModule, createWorklet, run, selectURL, and any other SharedStorageAccessMethod when the SharedStorageAccessScope is sharedStorageWorklet.
          * @return the protocol field value, empty when absent
          */
         public Optional<Target.TargetID> workletTargetId() {
-            return raw("workletTargetId").map(value -> new Target.TargetID((String) value));
+            return optional(WORKLET_TARGET_ID);
         }
         /**
          * Name of the lock to be acquired, if present. Optionally present only for SharedStorageAccessMethods: batchUpdate, set, append, delete, and clear.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> withLock() {
-            return raw("withLock").map(value -> (String) value);
+            return optionalString("withLock");
         }
         /**
          * If the method has been called as part of a batchUpdate, then this number identifies the batch to which it belongs. Optionally present only for SharedStorageAccessMethods: batchUpdate (required), set, append, delete, and clear.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> batchUpdateId() {
-            return raw("batchUpdateId").map(value -> (String) value);
+            return optionalString("batchUpdateId");
         }
         /**
          * Number of modifier methods sent in batch. Present only for SharedStorageAccessMethod: batchUpdate.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong batchSize() {
-            return raw("batchSize").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("batchSize");
         }
         /**
          * Spec of the module script URL. Present only for SharedStorageAccessMethods: addModule and createWorklet.
@@ -859,14 +901,14 @@ public final class Storage {
          * @return the protocol field value
          */
         public Storage.SerializedStorageKey storageKey() {
-            return new Storage.SerializedStorageKey((String) require("storageKey"));
+            return require(STORAGE_KEY);
         }
         /**
          * If not specified, it is the default bucket of the storageKey.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            return raw("name").map(value -> (String) value);
+            return optionalString("name");
         }
         /**
          * Sets the storageKey field.
@@ -900,42 +942,42 @@ public final class Storage {
          * @return the protocol field value
          */
         public Storage.StorageBucket bucket() {
-            return java.util.Objects.requireNonNull(Storage.StorageBucket.fromMap(CdpObject.requireObjectMap(require("bucket"))));
+            return require(BUCKET);
         }
         /**
          * Returns the id field.
          * @return the protocol field value
          */
         public String id() {
-            return (String) require("id");
+            return requireString("id");
         }
         /**
          * Returns the expiration field.
          * @return the protocol field value
          */
         public Network.TimeSinceEpoch expiration() {
-            return new Network.TimeSinceEpoch(((Number) require("expiration")).doubleValue());
+            return require(EXPIRATION);
         }
         /**
          * Storage quota (bytes).
          * @return the protocol field value
          */
         public double quota() {
-            return ((Number) require("quota")).doubleValue();
+            return requireDouble("quota");
         }
         /**
          * Returns the persistent field.
          * @return the protocol field value
          */
         public boolean persistent() {
-            return (Boolean) require("persistent");
+            return requireBoolean("persistent");
         }
         /**
          * Returns the durability field.
          * @return the protocol field value
          */
         public Storage.StorageBucketsDurability durability() {
-            return Storage.StorageBucketsDurability.of((String) require("durability"));
+            return require(DURABILITY);
         }
         /**
          * Sets the bucket field.
@@ -1007,21 +1049,21 @@ public final class Storage {
          * @return the protocol field value
          */
         public java.util.List<String> primarySites() {
-            return CdpObject.requireList(require("primarySites"), element0 -> (String) element0);
+            return require(PRIMARY_SITES);
         }
         /**
          * The associated sites of this set, along with the ccTLDs if there is any.
          * @return the protocol field value
          */
         public java.util.List<String> associatedSites() {
-            return CdpObject.requireList(require("associatedSites"), element0 -> (String) element0);
+            return require(ASSOCIATED_SITES);
         }
         /**
          * The service sites of this set, along with the ccTLDs if there is any.
          * @return the protocol field value
          */
         public java.util.List<String> serviceSites() {
-            return CdpObject.requireList(require("serviceSites"), element0 -> (String) element0);
+            return require(SERVICE_SITES);
         }
         /**
          * The primary site of this set, along with the ccTLDs if there is any.
@@ -1058,15 +1100,6 @@ public final class Storage {
     @Deprecated
     public static final class GetStorageKeyForFrameRequest extends CdpObject {
         public GetStorageKeyForFrameRequest() {}
-        /**
-         * Returns a storage key given a frame id. Deprecated. Please use Storage.getStorageKey instead.
-         * @param frameId protocol value
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public GetStorageKeyForFrameRequest(Page.FrameId frameId) {
-            frameId(frameId);
-        }
         public static GetStorageKeyForFrameRequest fromMap(Map<String, Object> values) {
             final GetStorageKeyForFrameRequest instance_ = new GetStorageKeyForFrameRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1077,7 +1110,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Sets the frameId field.
@@ -1105,7 +1138,7 @@ public final class Storage {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return raw("frameId").map(value -> new Page.FrameId((String) value));
+            return optional(FRAME_ID);
         }
         /**
          * Sets the frameId field.
@@ -1122,14 +1155,6 @@ public final class Storage {
      */
     public static final class ClearDataForOriginRequest extends CdpObject {
         public ClearDataForOriginRequest() {}
-        /**
-         * Clears storage for origin.
-         * @param origin protocol value
-         * @param storageTypes protocol value
-         */
-        public ClearDataForOriginRequest(String origin, String storageTypes) {
-            origin(origin).storageTypes(storageTypes);
-        }
         public static ClearDataForOriginRequest fromMap(Map<String, Object> values) {
             final ClearDataForOriginRequest instance_ = new ClearDataForOriginRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1140,14 +1165,14 @@ public final class Storage {
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * Comma separated list of StorageType to clear.
          * @return the protocol field value
          */
         public String storageTypes() {
-            return (String) require("storageTypes");
+            return requireString("storageTypes");
         }
         /**
          * Security origin.
@@ -1173,14 +1198,6 @@ public final class Storage {
      */
     public static final class ClearDataForStorageKeyRequest extends CdpObject {
         public ClearDataForStorageKeyRequest() {}
-        /**
-         * Clears storage for storage key.
-         * @param storageKey protocol value
-         * @param storageTypes protocol value
-         */
-        public ClearDataForStorageKeyRequest(String storageKey, String storageTypes) {
-            storageKey(storageKey).storageTypes(storageTypes);
-        }
         public static ClearDataForStorageKeyRequest fromMap(Map<String, Object> values) {
             final ClearDataForStorageKeyRequest instance_ = new ClearDataForStorageKeyRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1191,14 +1208,14 @@ public final class Storage {
          * @return the protocol field value
          */
         public String storageKey() {
-            return (String) require("storageKey");
+            return requireString("storageKey");
         }
         /**
          * Comma separated list of StorageType to clear.
          * @return the protocol field value
          */
         public String storageTypes() {
-            return (String) require("storageTypes");
+            return requireString("storageTypes");
         }
         /**
          * Storage key.
@@ -1234,7 +1251,7 @@ public final class Storage {
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            return raw("browserContextId").map(value -> new Browser.BrowserContextID((String) value));
+            return optional(BROWSER_CONTEXT_ID);
         }
         /**
          * Browser context to use when called on the browser endpoint.
@@ -1251,13 +1268,6 @@ public final class Storage {
      */
     public static final class SetCookiesRequest extends CdpObject {
         public SetCookiesRequest() {}
-        /**
-         * Sets given cookies.
-         * @param cookies protocol value
-         */
-        public SetCookiesRequest(java.util.List<Network.CookieParam> cookies) {
-            cookies(cookies);
-        }
         public static SetCookiesRequest fromMap(Map<String, Object> values) {
             final SetCookiesRequest instance_ = new SetCookiesRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1268,14 +1278,14 @@ public final class Storage {
          * @return the protocol field value
          */
         public java.util.List<Network.CookieParam> cookies() {
-            return CdpObject.requireList(require("cookies"), element0 -> java.util.Objects.requireNonNull(Network.CookieParam.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(COOKIES);
         }
         /**
          * Browser context to use when called on the browser endpoint.
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            return raw("browserContextId").map(value -> new Browser.BrowserContextID((String) value));
+            return optional(BROWSER_CONTEXT_ID);
         }
         /**
          * Cookies to be set.
@@ -1311,7 +1321,7 @@ public final class Storage {
          * @return the protocol field value, empty when absent
          */
         public Optional<Browser.BrowserContextID> browserContextId() {
-            return raw("browserContextId").map(value -> new Browser.BrowserContextID((String) value));
+            return optional(BROWSER_CONTEXT_ID);
         }
         /**
          * Browser context to use when called on the browser endpoint.
@@ -1328,13 +1338,6 @@ public final class Storage {
      */
     public static final class GetUsageAndQuotaRequest extends CdpObject {
         public GetUsageAndQuotaRequest() {}
-        /**
-         * Returns usage and quota in bytes.
-         * @param origin protocol value
-         */
-        public GetUsageAndQuotaRequest(String origin) {
-            origin(origin);
-        }
         public static GetUsageAndQuotaRequest fromMap(Map<String, Object> values) {
             final GetUsageAndQuotaRequest instance_ = new GetUsageAndQuotaRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1345,7 +1348,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * Security origin.
@@ -1363,14 +1366,6 @@ public final class Storage {
      */
     public static final class OverrideQuotaForOriginRequest extends CdpObject {
         public OverrideQuotaForOriginRequest() {}
-        /**
-         * Override quota for the specified origin
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param origin protocol value
-         */
-        public OverrideQuotaForOriginRequest(String origin) {
-            origin(origin);
-        }
         public static OverrideQuotaForOriginRequest fromMap(Map<String, Object> values) {
             final OverrideQuotaForOriginRequest instance_ = new OverrideQuotaForOriginRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1381,14 +1376,14 @@ public final class Storage {
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * The quota size (in bytes) to override the original quota with. If this is called multiple times, the overridden quota will be equal to the quotaSize provided in the final call. If this is called without specifying a quotaSize, the quota will be reset to the default value for the specified origin. If this is called multiple times with different origins, the override will be maintained for each origin until it is disabled (called without a quotaSize).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble quotaSize() {
-            return raw("quotaSize").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("quotaSize");
         }
         /**
          * Security origin.
@@ -1414,13 +1409,6 @@ public final class Storage {
      */
     public static final class TrackCacheStorageForOriginRequest extends CdpObject {
         public TrackCacheStorageForOriginRequest() {}
-        /**
-         * Registers origin to be notified when an update occurs to its cache storage list.
-         * @param origin protocol value
-         */
-        public TrackCacheStorageForOriginRequest(String origin) {
-            origin(origin);
-        }
         public static TrackCacheStorageForOriginRequest fromMap(Map<String, Object> values) {
             final TrackCacheStorageForOriginRequest instance_ = new TrackCacheStorageForOriginRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1431,7 +1419,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * Security origin.
@@ -1448,13 +1436,6 @@ public final class Storage {
      */
     public static final class TrackCacheStorageForStorageKeyRequest extends CdpObject {
         public TrackCacheStorageForStorageKeyRequest() {}
-        /**
-         * Registers storage key to be notified when an update occurs to its cache storage list.
-         * @param storageKey protocol value
-         */
-        public TrackCacheStorageForStorageKeyRequest(String storageKey) {
-            storageKey(storageKey);
-        }
         public static TrackCacheStorageForStorageKeyRequest fromMap(Map<String, Object> values) {
             final TrackCacheStorageForStorageKeyRequest instance_ = new TrackCacheStorageForStorageKeyRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1465,7 +1446,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public String storageKey() {
-            return (String) require("storageKey");
+            return requireString("storageKey");
         }
         /**
          * Storage key.
@@ -1482,13 +1463,6 @@ public final class Storage {
      */
     public static final class TrackIndexedDBForOriginRequest extends CdpObject {
         public TrackIndexedDBForOriginRequest() {}
-        /**
-         * Registers origin to be notified when an update occurs to its IndexedDB.
-         * @param origin protocol value
-         */
-        public TrackIndexedDBForOriginRequest(String origin) {
-            origin(origin);
-        }
         public static TrackIndexedDBForOriginRequest fromMap(Map<String, Object> values) {
             final TrackIndexedDBForOriginRequest instance_ = new TrackIndexedDBForOriginRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1499,7 +1473,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * Security origin.
@@ -1516,13 +1490,6 @@ public final class Storage {
      */
     public static final class TrackIndexedDBForStorageKeyRequest extends CdpObject {
         public TrackIndexedDBForStorageKeyRequest() {}
-        /**
-         * Registers storage key to be notified when an update occurs to its IndexedDB.
-         * @param storageKey protocol value
-         */
-        public TrackIndexedDBForStorageKeyRequest(String storageKey) {
-            storageKey(storageKey);
-        }
         public static TrackIndexedDBForStorageKeyRequest fromMap(Map<String, Object> values) {
             final TrackIndexedDBForStorageKeyRequest instance_ = new TrackIndexedDBForStorageKeyRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1533,7 +1500,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public String storageKey() {
-            return (String) require("storageKey");
+            return requireString("storageKey");
         }
         /**
          * Storage key.
@@ -1550,13 +1517,6 @@ public final class Storage {
      */
     public static final class UntrackCacheStorageForOriginRequest extends CdpObject {
         public UntrackCacheStorageForOriginRequest() {}
-        /**
-         * Unregisters origin from receiving notifications for cache storage.
-         * @param origin protocol value
-         */
-        public UntrackCacheStorageForOriginRequest(String origin) {
-            origin(origin);
-        }
         public static UntrackCacheStorageForOriginRequest fromMap(Map<String, Object> values) {
             final UntrackCacheStorageForOriginRequest instance_ = new UntrackCacheStorageForOriginRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1567,7 +1527,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * Security origin.
@@ -1584,13 +1544,6 @@ public final class Storage {
      */
     public static final class UntrackCacheStorageForStorageKeyRequest extends CdpObject {
         public UntrackCacheStorageForStorageKeyRequest() {}
-        /**
-         * Unregisters storage key from receiving notifications for cache storage.
-         * @param storageKey protocol value
-         */
-        public UntrackCacheStorageForStorageKeyRequest(String storageKey) {
-            storageKey(storageKey);
-        }
         public static UntrackCacheStorageForStorageKeyRequest fromMap(Map<String, Object> values) {
             final UntrackCacheStorageForStorageKeyRequest instance_ = new UntrackCacheStorageForStorageKeyRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1601,7 +1554,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public String storageKey() {
-            return (String) require("storageKey");
+            return requireString("storageKey");
         }
         /**
          * Storage key.
@@ -1618,13 +1571,6 @@ public final class Storage {
      */
     public static final class UntrackIndexedDBForOriginRequest extends CdpObject {
         public UntrackIndexedDBForOriginRequest() {}
-        /**
-         * Unregisters origin from receiving notifications for IndexedDB.
-         * @param origin protocol value
-         */
-        public UntrackIndexedDBForOriginRequest(String origin) {
-            origin(origin);
-        }
         public static UntrackIndexedDBForOriginRequest fromMap(Map<String, Object> values) {
             final UntrackIndexedDBForOriginRequest instance_ = new UntrackIndexedDBForOriginRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1635,7 +1581,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * Security origin.
@@ -1652,13 +1598,6 @@ public final class Storage {
      */
     public static final class UntrackIndexedDBForStorageKeyRequest extends CdpObject {
         public UntrackIndexedDBForStorageKeyRequest() {}
-        /**
-         * Unregisters storage key from receiving notifications for IndexedDB.
-         * @param storageKey protocol value
-         */
-        public UntrackIndexedDBForStorageKeyRequest(String storageKey) {
-            storageKey(storageKey);
-        }
         public static UntrackIndexedDBForStorageKeyRequest fromMap(Map<String, Object> values) {
             final UntrackIndexedDBForStorageKeyRequest instance_ = new UntrackIndexedDBForStorageKeyRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1669,7 +1608,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public String storageKey() {
-            return (String) require("storageKey");
+            return requireString("storageKey");
         }
         /**
          * Storage key.
@@ -1687,14 +1626,6 @@ public final class Storage {
      */
     public static final class ClearTrustTokensRequest extends CdpObject {
         public ClearTrustTokensRequest() {}
-        /**
-         * Removes all Trust Tokens issued by the provided issuerOrigin. Leaves other stored data, including the issuer&#x27;s Redemption Records, intact.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param issuerOrigin protocol value
-         */
-        public ClearTrustTokensRequest(String issuerOrigin) {
-            issuerOrigin(issuerOrigin);
-        }
         public static ClearTrustTokensRequest fromMap(Map<String, Object> values) {
             final ClearTrustTokensRequest instance_ = new ClearTrustTokensRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1705,7 +1636,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public String issuerOrigin() {
-            return (String) require("issuerOrigin");
+            return requireString("issuerOrigin");
         }
         /**
          * Sets the issuerOrigin field.
@@ -1723,15 +1654,6 @@ public final class Storage {
      */
     public static final class GetInterestGroupDetailsRequest extends CdpObject {
         public GetInterestGroupDetailsRequest() {}
-        /**
-         * Gets details for a named interest group.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param ownerOrigin protocol value
-         * @param name protocol value
-         */
-        public GetInterestGroupDetailsRequest(String ownerOrigin, String name) {
-            ownerOrigin(ownerOrigin).name(name);
-        }
         public static GetInterestGroupDetailsRequest fromMap(Map<String, Object> values) {
             final GetInterestGroupDetailsRequest instance_ = new GetInterestGroupDetailsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1742,14 +1664,14 @@ public final class Storage {
          * @return the protocol field value
          */
         public String ownerOrigin() {
-            return (String) require("ownerOrigin");
+            return requireString("ownerOrigin");
         }
         /**
          * Returns the name field.
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Sets the ownerOrigin field.
@@ -1776,14 +1698,6 @@ public final class Storage {
      */
     public static final class SetInterestGroupTrackingRequest extends CdpObject {
         public SetInterestGroupTrackingRequest() {}
-        /**
-         * Enables/Disables issuing of interestGroupAccessed events.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param enable protocol value
-         */
-        public SetInterestGroupTrackingRequest(boolean enable) {
-            enable(enable);
-        }
         public static SetInterestGroupTrackingRequest fromMap(Map<String, Object> values) {
             final SetInterestGroupTrackingRequest instance_ = new SetInterestGroupTrackingRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1794,7 +1708,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public boolean enable() {
-            return (Boolean) require("enable");
+            return requireBoolean("enable");
         }
         /**
          * Sets the enable field.
@@ -1812,14 +1726,6 @@ public final class Storage {
      */
     public static final class SetInterestGroupAuctionTrackingRequest extends CdpObject {
         public SetInterestGroupAuctionTrackingRequest() {}
-        /**
-         * Enables/Disables issuing of interestGroupAuctionEventOccurred and interestGroupAuctionNetworkRequestCreated.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param enable protocol value
-         */
-        public SetInterestGroupAuctionTrackingRequest(boolean enable) {
-            enable(enable);
-        }
         public static SetInterestGroupAuctionTrackingRequest fromMap(Map<String, Object> values) {
             final SetInterestGroupAuctionTrackingRequest instance_ = new SetInterestGroupAuctionTrackingRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1830,7 +1736,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public boolean enable() {
-            return (Boolean) require("enable");
+            return requireBoolean("enable");
         }
         /**
          * Sets the enable field.
@@ -1848,14 +1754,6 @@ public final class Storage {
      */
     public static final class GetSharedStorageMetadataRequest extends CdpObject {
         public GetSharedStorageMetadataRequest() {}
-        /**
-         * Gets metadata for an origin&#x27;s shared storage.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param ownerOrigin protocol value
-         */
-        public GetSharedStorageMetadataRequest(String ownerOrigin) {
-            ownerOrigin(ownerOrigin);
-        }
         public static GetSharedStorageMetadataRequest fromMap(Map<String, Object> values) {
             final GetSharedStorageMetadataRequest instance_ = new GetSharedStorageMetadataRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1866,7 +1764,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public String ownerOrigin() {
-            return (String) require("ownerOrigin");
+            return requireString("ownerOrigin");
         }
         /**
          * Sets the ownerOrigin field.
@@ -1884,14 +1782,6 @@ public final class Storage {
      */
     public static final class GetSharedStorageEntriesRequest extends CdpObject {
         public GetSharedStorageEntriesRequest() {}
-        /**
-         * Gets the entries in an given origin&#x27;s shared storage.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param ownerOrigin protocol value
-         */
-        public GetSharedStorageEntriesRequest(String ownerOrigin) {
-            ownerOrigin(ownerOrigin);
-        }
         public static GetSharedStorageEntriesRequest fromMap(Map<String, Object> values) {
             final GetSharedStorageEntriesRequest instance_ = new GetSharedStorageEntriesRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1902,7 +1792,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public String ownerOrigin() {
-            return (String) require("ownerOrigin");
+            return requireString("ownerOrigin");
         }
         /**
          * Sets the ownerOrigin field.
@@ -1920,16 +1810,6 @@ public final class Storage {
      */
     public static final class SetSharedStorageEntryRequest extends CdpObject {
         public SetSharedStorageEntryRequest() {}
-        /**
-         * Sets entry with {@code key} and {@code value} for a given origin&#x27;s shared storage.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param ownerOrigin protocol value
-         * @param key protocol value
-         * @param value protocol value
-         */
-        public SetSharedStorageEntryRequest(String ownerOrigin, String key, String value) {
-            ownerOrigin(ownerOrigin).key(key).value(value);
-        }
         public static SetSharedStorageEntryRequest fromMap(Map<String, Object> values) {
             final SetSharedStorageEntryRequest instance_ = new SetSharedStorageEntryRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1940,28 +1820,28 @@ public final class Storage {
          * @return the protocol field value
          */
         public String ownerOrigin() {
-            return (String) require("ownerOrigin");
+            return requireString("ownerOrigin");
         }
         /**
          * Returns the key field.
          * @return the protocol field value
          */
         public String key() {
-            return (String) require("key");
+            return requireString("key");
         }
         /**
          * Returns the value field.
          * @return the protocol field value
          */
         public String value() {
-            return (String) require("value");
+            return requireString("value");
         }
         /**
          * If {@code ignoreIfPresent} is included and true, then only sets the entry if {@code key} doesn&#x27;t already exist.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> ignoreIfPresent() {
-            return raw("ignoreIfPresent").map(value -> (Boolean) value);
+            return optionalBoolean("ignoreIfPresent");
         }
         /**
          * Sets the ownerOrigin field.
@@ -2006,15 +1886,6 @@ public final class Storage {
      */
     public static final class DeleteSharedStorageEntryRequest extends CdpObject {
         public DeleteSharedStorageEntryRequest() {}
-        /**
-         * Deletes entry for {@code key} (if it exists) for a given origin&#x27;s shared storage.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param ownerOrigin protocol value
-         * @param key protocol value
-         */
-        public DeleteSharedStorageEntryRequest(String ownerOrigin, String key) {
-            ownerOrigin(ownerOrigin).key(key);
-        }
         public static DeleteSharedStorageEntryRequest fromMap(Map<String, Object> values) {
             final DeleteSharedStorageEntryRequest instance_ = new DeleteSharedStorageEntryRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2025,14 +1896,14 @@ public final class Storage {
          * @return the protocol field value
          */
         public String ownerOrigin() {
-            return (String) require("ownerOrigin");
+            return requireString("ownerOrigin");
         }
         /**
          * Returns the key field.
          * @return the protocol field value
          */
         public String key() {
-            return (String) require("key");
+            return requireString("key");
         }
         /**
          * Sets the ownerOrigin field.
@@ -2059,14 +1930,6 @@ public final class Storage {
      */
     public static final class ClearSharedStorageEntriesRequest extends CdpObject {
         public ClearSharedStorageEntriesRequest() {}
-        /**
-         * Clears all entries for a given origin&#x27;s shared storage.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param ownerOrigin protocol value
-         */
-        public ClearSharedStorageEntriesRequest(String ownerOrigin) {
-            ownerOrigin(ownerOrigin);
-        }
         public static ClearSharedStorageEntriesRequest fromMap(Map<String, Object> values) {
             final ClearSharedStorageEntriesRequest instance_ = new ClearSharedStorageEntriesRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2077,7 +1940,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public String ownerOrigin() {
-            return (String) require("ownerOrigin");
+            return requireString("ownerOrigin");
         }
         /**
          * Sets the ownerOrigin field.
@@ -2095,14 +1958,6 @@ public final class Storage {
      */
     public static final class ResetSharedStorageBudgetRequest extends CdpObject {
         public ResetSharedStorageBudgetRequest() {}
-        /**
-         * Resets the budget for {@code ownerOrigin} by clearing all budget withdrawals.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param ownerOrigin protocol value
-         */
-        public ResetSharedStorageBudgetRequest(String ownerOrigin) {
-            ownerOrigin(ownerOrigin);
-        }
         public static ResetSharedStorageBudgetRequest fromMap(Map<String, Object> values) {
             final ResetSharedStorageBudgetRequest instance_ = new ResetSharedStorageBudgetRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2113,7 +1968,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public String ownerOrigin() {
-            return (String) require("ownerOrigin");
+            return requireString("ownerOrigin");
         }
         /**
          * Sets the ownerOrigin field.
@@ -2131,14 +1986,6 @@ public final class Storage {
      */
     public static final class SetSharedStorageTrackingRequest extends CdpObject {
         public SetSharedStorageTrackingRequest() {}
-        /**
-         * Enables/disables issuing of sharedStorageAccessed events.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param enable protocol value
-         */
-        public SetSharedStorageTrackingRequest(boolean enable) {
-            enable(enable);
-        }
         public static SetSharedStorageTrackingRequest fromMap(Map<String, Object> values) {
             final SetSharedStorageTrackingRequest instance_ = new SetSharedStorageTrackingRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2149,7 +1996,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public boolean enable() {
-            return (Boolean) require("enable");
+            return requireBoolean("enable");
         }
         /**
          * Sets the enable field.
@@ -2167,15 +2014,6 @@ public final class Storage {
      */
     public static final class SetStorageBucketTrackingRequest extends CdpObject {
         public SetStorageBucketTrackingRequest() {}
-        /**
-         * Set tracking for a storage key&#x27;s buckets.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param storageKey protocol value
-         * @param enable protocol value
-         */
-        public SetStorageBucketTrackingRequest(String storageKey, boolean enable) {
-            storageKey(storageKey).enable(enable);
-        }
         public static SetStorageBucketTrackingRequest fromMap(Map<String, Object> values) {
             final SetStorageBucketTrackingRequest instance_ = new SetStorageBucketTrackingRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2186,14 +2024,14 @@ public final class Storage {
          * @return the protocol field value
          */
         public String storageKey() {
-            return (String) require("storageKey");
+            return requireString("storageKey");
         }
         /**
          * Returns the enable field.
          * @return the protocol field value
          */
         public boolean enable() {
-            return (Boolean) require("enable");
+            return requireBoolean("enable");
         }
         /**
          * Sets the storageKey field.
@@ -2220,14 +2058,6 @@ public final class Storage {
      */
     public static final class DeleteStorageBucketRequest extends CdpObject {
         public DeleteStorageBucketRequest() {}
-        /**
-         * Deletes the Storage Bucket with the given storage key and bucket name.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param bucket protocol value
-         */
-        public DeleteStorageBucketRequest(Storage.StorageBucket bucket) {
-            bucket(bucket);
-        }
         public static DeleteStorageBucketRequest fromMap(Map<String, Object> values) {
             final DeleteStorageBucketRequest instance_ = new DeleteStorageBucketRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2238,7 +2068,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public Storage.StorageBucket bucket() {
-            return java.util.Objects.requireNonNull(Storage.StorageBucket.fromMap(CdpObject.requireObjectMap(require("bucket"))));
+            return require(BUCKET);
         }
         /**
          * Sets the bucket field.
@@ -2255,15 +2085,6 @@ public final class Storage {
      */
     public static final class SetProtectedAudienceKAnonymityRequest extends CdpObject {
         public SetProtectedAudienceKAnonymityRequest() {}
-        /**
-         * Creates a new SetProtectedAudienceKAnonymityRequest with all required parameters.
-         * @param owner protocol value
-         * @param name protocol value
-         * @param hashes protocol value
-         */
-        public SetProtectedAudienceKAnonymityRequest(String owner, String name, java.util.List<String> hashes) {
-            owner(owner).name(name).hashes(hashes);
-        }
         public static SetProtectedAudienceKAnonymityRequest fromMap(Map<String, Object> values) {
             final SetProtectedAudienceKAnonymityRequest instance_ = new SetProtectedAudienceKAnonymityRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2274,21 +2095,21 @@ public final class Storage {
          * @return the protocol field value
          */
         public String owner() {
-            return (String) require("owner");
+            return requireString("owner");
         }
         /**
          * Returns the name field.
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Returns the hashes field.
          * @return the protocol field value
          */
         public java.util.List<String> hashes() {
-            return CdpObject.requireList(require("hashes"), element0 -> (String) element0);
+            return require(HASHES);
         }
         /**
          * Sets the owner field.
@@ -2332,28 +2153,28 @@ public final class Storage {
          * @return the protocol field value
          */
         public double usage() {
-            return ((Number) require("usage")).doubleValue();
+            return requireDouble("usage");
         }
         /**
          * Storage quota (bytes).
          * @return the protocol field value
          */
         public double quota() {
-            return ((Number) require("quota")).doubleValue();
+            return requireDouble("quota");
         }
         /**
          * Whether or not the origin has an active storage quota override
          * @return the protocol field value
          */
         public boolean overrideActive() {
-            return (Boolean) require("overrideActive");
+            return requireBoolean("overrideActive");
         }
         /**
          * Storage usage per type (bytes).
          * @return the protocol field value
          */
         public java.util.List<Storage.UsageForType> usageBreakdown() {
-            return CdpObject.requireList(require("usageBreakdown"), element0 -> java.util.Objects.requireNonNull(Storage.UsageForType.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(USAGE_BREAKDOWN);
         }
         /**
          * Storage usage (bytes).
@@ -2406,28 +2227,28 @@ public final class Storage {
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * Storage key to update.
          * @return the protocol field value
          */
         public String storageKey() {
-            return (String) require("storageKey");
+            return requireString("storageKey");
         }
         /**
          * Storage bucket to update.
          * @return the protocol field value
          */
         public String bucketId() {
-            return (String) require("bucketId");
+            return requireString("bucketId");
         }
         /**
          * Name of cache in origin.
          * @return the protocol field value
          */
         public String cacheName() {
-            return (String) require("cacheName");
+            return requireString("cacheName");
         }
         /**
          * Origin to update.
@@ -2480,21 +2301,21 @@ public final class Storage {
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * Storage key to update.
          * @return the protocol field value
          */
         public String storageKey() {
-            return (String) require("storageKey");
+            return requireString("storageKey");
         }
         /**
          * Storage bucket to update.
          * @return the protocol field value
          */
         public String bucketId() {
-            return (String) require("bucketId");
+            return requireString("bucketId");
         }
         /**
          * Origin to update.
@@ -2538,35 +2359,35 @@ public final class Storage {
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * Storage key to update.
          * @return the protocol field value
          */
         public String storageKey() {
-            return (String) require("storageKey");
+            return requireString("storageKey");
         }
         /**
          * Storage bucket to update.
          * @return the protocol field value
          */
         public String bucketId() {
-            return (String) require("bucketId");
+            return requireString("bucketId");
         }
         /**
          * Database to update.
          * @return the protocol field value
          */
         public String databaseName() {
-            return (String) require("databaseName");
+            return requireString("databaseName");
         }
         /**
          * ObjectStore to update.
          * @return the protocol field value
          */
         public String objectStoreName() {
-            return (String) require("objectStoreName");
+            return requireString("objectStoreName");
         }
         /**
          * Origin to update.
@@ -2628,21 +2449,21 @@ public final class Storage {
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * Storage key to update.
          * @return the protocol field value
          */
         public String storageKey() {
-            return (String) require("storageKey");
+            return requireString("storageKey");
         }
         /**
          * Storage bucket to update.
          * @return the protocol field value
          */
         public String bucketId() {
-            return (String) require("bucketId");
+            return requireString("bucketId");
         }
         /**
          * Origin to update.
@@ -2686,56 +2507,56 @@ public final class Storage {
          * @return the protocol field value
          */
         public Network.TimeSinceEpoch accessTime() {
-            return new Network.TimeSinceEpoch(((Number) require("accessTime")).doubleValue());
+            return require(ACCESS_TIME);
         }
         /**
          * Returns the type field.
          * @return the protocol field value
          */
         public Storage.InterestGroupAccessType type() {
-            return Storage.InterestGroupAccessType.of((String) require("type"));
+            return require(TYPE);
         }
         /**
          * Returns the ownerOrigin field.
          * @return the protocol field value
          */
         public String ownerOrigin() {
-            return (String) require("ownerOrigin");
+            return requireString("ownerOrigin");
         }
         /**
          * Returns the name field.
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * For topLevelBid/topLevelAdditionalBid, and when appropriate, win and additionalBidWin
          * @return the protocol field value, empty when absent
          */
         public Optional<String> componentSellerOrigin() {
-            return raw("componentSellerOrigin").map(value -> (String) value);
+            return optionalString("componentSellerOrigin");
         }
         /**
          * For bid or somethingBid event, if done locally and not on a server.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble bid() {
-            return raw("bid").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("bid");
         }
         /**
          * Returns the bidCurrency field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> bidCurrency() {
-            return raw("bidCurrency").map(value -> (String) value);
+            return optionalString("bidCurrency");
         }
         /**
          * For non-global events --- links to interestGroupAuctionEvent
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.InterestGroupAuctionId> uniqueAuctionId() {
-            return raw("uniqueAuctionId").map(value -> new Storage.InterestGroupAuctionId((String) value));
+            return optional(UNIQUE_AUCTION_ID);
         }
         /**
          * Sets the accessTime field.
@@ -2824,35 +2645,35 @@ public final class Storage {
          * @return the protocol field value
          */
         public Network.TimeSinceEpoch eventTime() {
-            return new Network.TimeSinceEpoch(((Number) require("eventTime")).doubleValue());
+            return require(EVENT_TIME);
         }
         /**
          * Returns the type field.
          * @return the protocol field value
          */
         public Storage.InterestGroupAuctionEventType type() {
-            return Storage.InterestGroupAuctionEventType.of((String) require("type"));
+            return require(TYPE_2);
         }
         /**
          * Returns the uniqueAuctionId field.
          * @return the protocol field value
          */
         public Storage.InterestGroupAuctionId uniqueAuctionId() {
-            return new Storage.InterestGroupAuctionId((String) require("uniqueAuctionId"));
+            return require(UNIQUE_AUCTION_ID);
         }
         /**
          * Set for child auctions.
          * @return the protocol field value, empty when absent
          */
         public Optional<Storage.InterestGroupAuctionId> parentAuctionId() {
-            return raw("parentAuctionId").map(value -> new Storage.InterestGroupAuctionId((String) value));
+            return optional(PARENT_AUCTION_ID);
         }
         /**
          * Set for started and configResolved
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> auctionConfig() {
-            return raw("auctionConfig").flatMap(CdpObject::objectMap);
+            return optionalObject("auctionConfig");
         }
         /**
          * Sets the eventTime field.
@@ -2914,21 +2735,21 @@ public final class Storage {
          * @return the protocol field value
          */
         public Storage.InterestGroupAuctionFetchType type() {
-            return Storage.InterestGroupAuctionFetchType.of((String) require("type"));
+            return require(TYPE_3);
         }
         /**
          * Returns the requestId field.
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * This is the set of the auctions using the worklet that issued this request. In the case of trusted signals, it&#x27;s possible that only some of them actually care about the keys being queried.
          * @return the protocol field value
          */
         public java.util.List<Storage.InterestGroupAuctionId> auctions() {
-            return CdpObject.requireList(require("auctions"), element0 -> new Storage.InterestGroupAuctionId((String) element0));
+            return require(AUCTIONS);
         }
         /**
          * Sets the type field.
@@ -2972,49 +2793,49 @@ public final class Storage {
          * @return the protocol field value
          */
         public Network.TimeSinceEpoch accessTime() {
-            return new Network.TimeSinceEpoch(((Number) require("accessTime")).doubleValue());
+            return require(ACCESS_TIME);
         }
         /**
          * Enum value indicating the access scope.
          * @return the protocol field value
          */
         public Storage.SharedStorageAccessScope scope() {
-            return Storage.SharedStorageAccessScope.of((String) require("scope"));
+            return require(SCOPE);
         }
         /**
          * Enum value indicating the Shared Storage API method invoked.
          * @return the protocol field value
          */
         public Storage.SharedStorageAccessMethod method() {
-            return Storage.SharedStorageAccessMethod.of((String) require("method"));
+            return require(METHOD);
         }
         /**
          * DevTools Frame Token for the primary frame tree&#x27;s root.
          * @return the protocol field value
          */
         public Page.FrameId mainFrameId() {
-            return new Page.FrameId((String) require("mainFrameId"));
+            return require(MAIN_FRAME_ID);
         }
         /**
          * Serialization of the origin owning the Shared Storage data.
          * @return the protocol field value
          */
         public String ownerOrigin() {
-            return (String) require("ownerOrigin");
+            return requireString("ownerOrigin");
         }
         /**
          * Serialization of the site owning the Shared Storage data.
          * @return the protocol field value
          */
         public String ownerSite() {
-            return (String) require("ownerSite");
+            return requireString("ownerSite");
         }
         /**
          * The sub-parameters wrapped by {@code params} are all optional and their presence/absence depends on {@code type}.
          * @return the protocol field value
          */
         public Storage.SharedStorageAccessParams params() {
-            return java.util.Objects.requireNonNull(Storage.SharedStorageAccessParams.fromMap(CdpObject.requireObjectMap(require("params"))));
+            return require(PARAMS);
         }
         /**
          * Time of the access.
@@ -3094,49 +2915,49 @@ public final class Storage {
          * @return the protocol field value
          */
         public Network.TimeSinceEpoch finishedTime() {
-            return new Network.TimeSinceEpoch(((Number) require("finishedTime")).doubleValue());
+            return require(FINISHED_TIME);
         }
         /**
          * Time, in microseconds, from start of shared storage JS API call until end of operation execution in the worklet.
          * @return the protocol field value
          */
         public long executionTime() {
-            return ((Number) require("executionTime")).longValue();
+            return requireLong("executionTime");
         }
         /**
          * Enum value indicating the Shared Storage API method invoked.
          * @return the protocol field value
          */
         public Storage.SharedStorageAccessMethod method() {
-            return Storage.SharedStorageAccessMethod.of((String) require("method"));
+            return require(METHOD);
         }
         /**
          * ID of the operation call.
          * @return the protocol field value
          */
         public String operationId() {
-            return (String) require("operationId");
+            return requireString("operationId");
         }
         /**
          * Hex representation of the DevTools token used as the TargetID for the associated shared storage worklet.
          * @return the protocol field value
          */
         public Target.TargetID workletTargetId() {
-            return new Target.TargetID((String) require("workletTargetId"));
+            return require(WORKLET_TARGET_ID);
         }
         /**
          * DevTools Frame Token for the primary frame tree&#x27;s root.
          * @return the protocol field value
          */
         public Page.FrameId mainFrameId() {
-            return new Page.FrameId((String) require("mainFrameId"));
+            return require(MAIN_FRAME_ID);
         }
         /**
          * Serialization of the origin owning the Shared Storage data.
          * @return the protocol field value
          */
         public String ownerOrigin() {
-            return (String) require("ownerOrigin");
+            return requireString("ownerOrigin");
         }
         /**
          * Time that the operation finished.
@@ -3216,7 +3037,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public Storage.StorageBucketInfo bucketInfo() {
-            return java.util.Objects.requireNonNull(Storage.StorageBucketInfo.fromMap(CdpObject.requireObjectMap(require("bucketInfo"))));
+            return require(BUCKET_INFO);
         }
         /**
          * Sets the bucketInfo field.
@@ -3242,7 +3063,7 @@ public final class Storage {
          * @return the protocol field value
          */
         public String bucketId() {
-            return (String) require("bucketId");
+            return requireString("bucketId");
         }
         /**
          * Sets the bucketId field.
@@ -3254,9 +3075,8 @@ public final class Storage {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Returns a storage key given a frame id. Deprecated. Please use Storage.getStorageKey instead.
          * @param frameId protocol value
@@ -3265,9 +3085,7 @@ public final class Storage {
          */
         @Deprecated
         public CompletionStage<Storage.SerializedStorageKey> getStorageKeyForFrame(Page.FrameId frameId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("frameId", CdpObject.json(frameId));
-            return client.call("Storage.getStorageKeyForFrame", params, result_ -> new Storage.SerializedStorageKey((String) java.util.Objects.requireNonNull(result_.get("storageKey"))));
+            return call("Storage.getStorageKeyForFrame", params("frameId", frameId), STORAGE_KEY::require);
         }
         /**
          * Returns a storage key given a frame id. Deprecated. Please use Storage.getStorageKey instead.
@@ -3277,7 +3095,7 @@ public final class Storage {
          */
         @Deprecated
         public CompletionStage<Storage.SerializedStorageKey> getStorageKeyForFrame(GetStorageKeyForFrameRequest request) {
-            return client.call("Storage.getStorageKeyForFrame", request == null ? null : request.toMap(), result_ -> new Storage.SerializedStorageKey((String) java.util.Objects.requireNonNull(result_.get("storageKey"))));
+            return call("Storage.getStorageKeyForFrame", request, STORAGE_KEY::require);
         }
         /**
          * Returns storage key for the given frame. If no frame ID is provided, the storage key of the target executing this command is returned.
@@ -3286,9 +3104,7 @@ public final class Storage {
          * @return a stage completing with the command result
          */
         public CompletionStage<Storage.SerializedStorageKey> getStorageKey(Page.FrameId frameId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("frameId", CdpObject.json(frameId));
-            return client.call("Storage.getStorageKey", params, result_ -> new Storage.SerializedStorageKey((String) java.util.Objects.requireNonNull(result_.get("storageKey"))));
+            return call("Storage.getStorageKey", params("frameId", frameId), STORAGE_KEY::require);
         }
         /**
          * Returns storage key for the given frame. If no frame ID is provided, the storage key of the target executing this command is returned.
@@ -3296,7 +3112,7 @@ public final class Storage {
          * @return a stage completing with the command result
          */
         public CompletionStage<Storage.SerializedStorageKey> getStorageKey() {
-            return client.call("Storage.getStorageKey", null, result_ -> new Storage.SerializedStorageKey((String) java.util.Objects.requireNonNull(result_.get("storageKey"))));
+            return call("Storage.getStorageKey", STORAGE_KEY::require);
         }
         /**
          * Returns storage key for the given frame. If no frame ID is provided, the storage key of the target executing this command is returned.
@@ -3305,7 +3121,7 @@ public final class Storage {
          * @return a stage completing with the command result
          */
         public CompletionStage<Storage.SerializedStorageKey> getStorageKey(GetStorageKeyRequest request) {
-            return client.call("Storage.getStorageKey", request == null ? null : request.toMap(), result_ -> new Storage.SerializedStorageKey((String) java.util.Objects.requireNonNull(result_.get("storageKey"))));
+            return call("Storage.getStorageKey", request, STORAGE_KEY::require);
         }
         /**
          * Clears storage for origin.
@@ -3314,10 +3130,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearDataForOrigin(String origin, String storageTypes) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("origin", CdpObject.json(origin));
-            params.put("storageTypes", CdpObject.json(storageTypes));
-            return client.call("Storage.clearDataForOrigin", params);
+            return call("Storage.clearDataForOrigin", params("origin", origin, "storageTypes", storageTypes));
         }
         /**
          * Clears storage for origin.
@@ -3325,7 +3138,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearDataForOrigin(ClearDataForOriginRequest request) {
-            return client.call("Storage.clearDataForOrigin", request == null ? null : request.toMap());
+            return call("Storage.clearDataForOrigin", request);
         }
         /**
          * Clears storage for storage key.
@@ -3334,10 +3147,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearDataForStorageKey(String storageKey, String storageTypes) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("storageKey", CdpObject.json(storageKey));
-            params.put("storageTypes", CdpObject.json(storageTypes));
-            return client.call("Storage.clearDataForStorageKey", params);
+            return call("Storage.clearDataForStorageKey", params("storageKey", storageKey, "storageTypes", storageTypes));
         }
         /**
          * Clears storage for storage key.
@@ -3345,7 +3155,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearDataForStorageKey(ClearDataForStorageKeyRequest request) {
-            return client.call("Storage.clearDataForStorageKey", request == null ? null : request.toMap());
+            return call("Storage.clearDataForStorageKey", request);
         }
         /**
          * Returns all browser cookies.
@@ -3353,16 +3163,14 @@ public final class Storage {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Network.Cookie>> getCookies(Browser.BrowserContextID browserContextId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("browserContextId", CdpObject.json(browserContextId));
-            return client.call("Storage.getCookies", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("cookies")), element0 -> java.util.Objects.requireNonNull(Network.Cookie.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Storage.getCookies", params("browserContextId", browserContextId), COOKIES_2::require);
         }
         /**
          * Returns all browser cookies.
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Network.Cookie>> getCookies() {
-            return client.call("Storage.getCookies", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("cookies")), element0 -> java.util.Objects.requireNonNull(Network.Cookie.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Storage.getCookies", COOKIES_2::require);
         }
         /**
          * Returns all browser cookies.
@@ -3370,7 +3178,7 @@ public final class Storage {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Network.Cookie>> getCookies(GetCookiesRequest request) {
-            return client.call("Storage.getCookies", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("cookies")), element0 -> java.util.Objects.requireNonNull(Network.Cookie.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Storage.getCookies", request, COOKIES_2::require);
         }
         /**
          * Sets given cookies.
@@ -3379,10 +3187,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setCookies(java.util.List<Network.CookieParam> cookies, Browser.BrowserContextID browserContextId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("cookies", CdpObject.json(cookies));
-            params.put("browserContextId", CdpObject.json(browserContextId));
-            return client.call("Storage.setCookies", params);
+            return call("Storage.setCookies", params("cookies", cookies, "browserContextId", browserContextId));
         }
         /**
          * Sets given cookies.
@@ -3390,9 +3195,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setCookies(java.util.List<Network.CookieParam> cookies) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("cookies", CdpObject.json(cookies));
-            return client.call("Storage.setCookies", params);
+            return call("Storage.setCookies", params("cookies", cookies));
         }
         /**
          * Sets given cookies.
@@ -3400,7 +3203,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setCookies(SetCookiesRequest request) {
-            return client.call("Storage.setCookies", request == null ? null : request.toMap());
+            return call("Storage.setCookies", request);
         }
         /**
          * Clears cookies.
@@ -3408,16 +3211,14 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearCookies(Browser.BrowserContextID browserContextId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("browserContextId", CdpObject.json(browserContextId));
-            return client.call("Storage.clearCookies", params);
+            return call("Storage.clearCookies", params("browserContextId", browserContextId));
         }
         /**
          * Clears cookies.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearCookies() {
-            return client.call("Storage.clearCookies", null);
+            return call("Storage.clearCookies");
         }
         /**
          * Clears cookies.
@@ -3425,7 +3226,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearCookies(ClearCookiesRequest request) {
-            return client.call("Storage.clearCookies", request == null ? null : request.toMap());
+            return call("Storage.clearCookies", request);
         }
         /**
          * Returns usage and quota in bytes.
@@ -3433,9 +3234,7 @@ public final class Storage {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetUsageAndQuotaResult> getUsageAndQuota(String origin) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("origin", CdpObject.json(origin));
-            return client.call("Storage.getUsageAndQuota", params, result_ -> new GetUsageAndQuotaResult(result_));
+            return call("Storage.getUsageAndQuota", params("origin", origin), GetUsageAndQuotaResult::fromMap);
         }
         /**
          * Returns usage and quota in bytes.
@@ -3443,7 +3242,7 @@ public final class Storage {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetUsageAndQuotaResult> getUsageAndQuota(GetUsageAndQuotaRequest request) {
-            return client.call("Storage.getUsageAndQuota", request == null ? null : request.toMap(), result_ -> new GetUsageAndQuotaResult(result_));
+            return call("Storage.getUsageAndQuota", request, GetUsageAndQuotaResult::fromMap);
         }
         /**
          * Override quota for the specified origin
@@ -3453,10 +3252,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> overrideQuotaForOrigin(String origin, double quotaSize) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("origin", CdpObject.json(origin));
-            params.put("quotaSize", CdpObject.json(quotaSize));
-            return client.call("Storage.overrideQuotaForOrigin", params);
+            return call("Storage.overrideQuotaForOrigin", params("origin", origin, "quotaSize", quotaSize));
         }
         /**
          * Override quota for the specified origin
@@ -3465,9 +3261,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> overrideQuotaForOrigin(String origin) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("origin", CdpObject.json(origin));
-            return client.call("Storage.overrideQuotaForOrigin", params);
+            return call("Storage.overrideQuotaForOrigin", params("origin", origin));
         }
         /**
          * Override quota for the specified origin
@@ -3476,7 +3270,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> overrideQuotaForOrigin(OverrideQuotaForOriginRequest request) {
-            return client.call("Storage.overrideQuotaForOrigin", request == null ? null : request.toMap());
+            return call("Storage.overrideQuotaForOrigin", request);
         }
         /**
          * Registers origin to be notified when an update occurs to its cache storage list.
@@ -3484,9 +3278,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackCacheStorageForOrigin(String origin) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("origin", CdpObject.json(origin));
-            return client.call("Storage.trackCacheStorageForOrigin", params);
+            return call("Storage.trackCacheStorageForOrigin", params("origin", origin));
         }
         /**
          * Registers origin to be notified when an update occurs to its cache storage list.
@@ -3494,7 +3286,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackCacheStorageForOrigin(TrackCacheStorageForOriginRequest request) {
-            return client.call("Storage.trackCacheStorageForOrigin", request == null ? null : request.toMap());
+            return call("Storage.trackCacheStorageForOrigin", request);
         }
         /**
          * Registers storage key to be notified when an update occurs to its cache storage list.
@@ -3502,9 +3294,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackCacheStorageForStorageKey(String storageKey) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("storageKey", CdpObject.json(storageKey));
-            return client.call("Storage.trackCacheStorageForStorageKey", params);
+            return call("Storage.trackCacheStorageForStorageKey", params("storageKey", storageKey));
         }
         /**
          * Registers storage key to be notified when an update occurs to its cache storage list.
@@ -3512,7 +3302,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackCacheStorageForStorageKey(TrackCacheStorageForStorageKeyRequest request) {
-            return client.call("Storage.trackCacheStorageForStorageKey", request == null ? null : request.toMap());
+            return call("Storage.trackCacheStorageForStorageKey", request);
         }
         /**
          * Registers origin to be notified when an update occurs to its IndexedDB.
@@ -3520,9 +3310,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackIndexedDBForOrigin(String origin) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("origin", CdpObject.json(origin));
-            return client.call("Storage.trackIndexedDBForOrigin", params);
+            return call("Storage.trackIndexedDBForOrigin", params("origin", origin));
         }
         /**
          * Registers origin to be notified when an update occurs to its IndexedDB.
@@ -3530,7 +3318,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackIndexedDBForOrigin(TrackIndexedDBForOriginRequest request) {
-            return client.call("Storage.trackIndexedDBForOrigin", request == null ? null : request.toMap());
+            return call("Storage.trackIndexedDBForOrigin", request);
         }
         /**
          * Registers storage key to be notified when an update occurs to its IndexedDB.
@@ -3538,9 +3326,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackIndexedDBForStorageKey(String storageKey) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("storageKey", CdpObject.json(storageKey));
-            return client.call("Storage.trackIndexedDBForStorageKey", params);
+            return call("Storage.trackIndexedDBForStorageKey", params("storageKey", storageKey));
         }
         /**
          * Registers storage key to be notified when an update occurs to its IndexedDB.
@@ -3548,7 +3334,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> trackIndexedDBForStorageKey(TrackIndexedDBForStorageKeyRequest request) {
-            return client.call("Storage.trackIndexedDBForStorageKey", request == null ? null : request.toMap());
+            return call("Storage.trackIndexedDBForStorageKey", request);
         }
         /**
          * Unregisters origin from receiving notifications for cache storage.
@@ -3556,9 +3342,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> untrackCacheStorageForOrigin(String origin) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("origin", CdpObject.json(origin));
-            return client.call("Storage.untrackCacheStorageForOrigin", params);
+            return call("Storage.untrackCacheStorageForOrigin", params("origin", origin));
         }
         /**
          * Unregisters origin from receiving notifications for cache storage.
@@ -3566,7 +3350,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> untrackCacheStorageForOrigin(UntrackCacheStorageForOriginRequest request) {
-            return client.call("Storage.untrackCacheStorageForOrigin", request == null ? null : request.toMap());
+            return call("Storage.untrackCacheStorageForOrigin", request);
         }
         /**
          * Unregisters storage key from receiving notifications for cache storage.
@@ -3574,9 +3358,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> untrackCacheStorageForStorageKey(String storageKey) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("storageKey", CdpObject.json(storageKey));
-            return client.call("Storage.untrackCacheStorageForStorageKey", params);
+            return call("Storage.untrackCacheStorageForStorageKey", params("storageKey", storageKey));
         }
         /**
          * Unregisters storage key from receiving notifications for cache storage.
@@ -3584,7 +3366,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> untrackCacheStorageForStorageKey(UntrackCacheStorageForStorageKeyRequest request) {
-            return client.call("Storage.untrackCacheStorageForStorageKey", request == null ? null : request.toMap());
+            return call("Storage.untrackCacheStorageForStorageKey", request);
         }
         /**
          * Unregisters origin from receiving notifications for IndexedDB.
@@ -3592,9 +3374,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> untrackIndexedDBForOrigin(String origin) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("origin", CdpObject.json(origin));
-            return client.call("Storage.untrackIndexedDBForOrigin", params);
+            return call("Storage.untrackIndexedDBForOrigin", params("origin", origin));
         }
         /**
          * Unregisters origin from receiving notifications for IndexedDB.
@@ -3602,7 +3382,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> untrackIndexedDBForOrigin(UntrackIndexedDBForOriginRequest request) {
-            return client.call("Storage.untrackIndexedDBForOrigin", request == null ? null : request.toMap());
+            return call("Storage.untrackIndexedDBForOrigin", request);
         }
         /**
          * Unregisters storage key from receiving notifications for IndexedDB.
@@ -3610,9 +3390,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> untrackIndexedDBForStorageKey(String storageKey) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("storageKey", CdpObject.json(storageKey));
-            return client.call("Storage.untrackIndexedDBForStorageKey", params);
+            return call("Storage.untrackIndexedDBForStorageKey", params("storageKey", storageKey));
         }
         /**
          * Unregisters storage key from receiving notifications for IndexedDB.
@@ -3620,7 +3398,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> untrackIndexedDBForStorageKey(UntrackIndexedDBForStorageKeyRequest request) {
-            return client.call("Storage.untrackIndexedDBForStorageKey", request == null ? null : request.toMap());
+            return call("Storage.untrackIndexedDBForStorageKey", request);
         }
         /**
          * Returns the number of stored Trust Tokens per issuer for the current browsing context.
@@ -3628,7 +3406,7 @@ public final class Storage {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Storage.TrustTokens>> getTrustTokens() {
-            return client.call("Storage.getTrustTokens", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("tokens")), element0 -> java.util.Objects.requireNonNull(Storage.TrustTokens.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Storage.getTrustTokens", TOKENS::require);
         }
         /**
          * Removes all Trust Tokens issued by the provided issuerOrigin. Leaves other stored data, including the issuer&#x27;s Redemption Records, intact.
@@ -3637,9 +3415,7 @@ public final class Storage {
          * @return a stage completing with the command result
          */
         public CompletionStage<Boolean> clearTrustTokens(String issuerOrigin) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("issuerOrigin", CdpObject.json(issuerOrigin));
-            return client.call("Storage.clearTrustTokens", params, result_ -> (Boolean) java.util.Objects.requireNonNull(result_.get("didDeleteTokens")));
+            return call("Storage.clearTrustTokens", params("issuerOrigin", issuerOrigin), DID_DELETE_TOKENS::require);
         }
         /**
          * Removes all Trust Tokens issued by the provided issuerOrigin. Leaves other stored data, including the issuer&#x27;s Redemption Records, intact.
@@ -3648,7 +3424,7 @@ public final class Storage {
          * @return a stage completing with the command result
          */
         public CompletionStage<Boolean> clearTrustTokens(ClearTrustTokensRequest request) {
-            return client.call("Storage.clearTrustTokens", request == null ? null : request.toMap(), result_ -> (Boolean) java.util.Objects.requireNonNull(result_.get("didDeleteTokens")));
+            return call("Storage.clearTrustTokens", request, DID_DELETE_TOKENS::require);
         }
         /**
          * Gets details for a named interest group.
@@ -3658,10 +3434,7 @@ public final class Storage {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.Map<String, Object>> getInterestGroupDetails(String ownerOrigin, String name) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("ownerOrigin", CdpObject.json(ownerOrigin));
-            params.put("name", CdpObject.json(name));
-            return client.call("Storage.getInterestGroupDetails", params, result_ -> CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("details"))));
+            return call("Storage.getInterestGroupDetails", params("ownerOrigin", ownerOrigin, "name", name), DETAILS::require);
         }
         /**
          * Gets details for a named interest group.
@@ -3670,7 +3443,7 @@ public final class Storage {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.Map<String, Object>> getInterestGroupDetails(GetInterestGroupDetailsRequest request) {
-            return client.call("Storage.getInterestGroupDetails", request == null ? null : request.toMap(), result_ -> CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("details"))));
+            return call("Storage.getInterestGroupDetails", request, DETAILS::require);
         }
         /**
          * Enables/Disables issuing of interestGroupAccessed events.
@@ -3679,9 +3452,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setInterestGroupTracking(boolean enable) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("enable", CdpObject.json(enable));
-            return client.call("Storage.setInterestGroupTracking", params);
+            return call("Storage.setInterestGroupTracking", params("enable", enable));
         }
         /**
          * Enables/Disables issuing of interestGroupAccessed events.
@@ -3690,7 +3461,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setInterestGroupTracking(SetInterestGroupTrackingRequest request) {
-            return client.call("Storage.setInterestGroupTracking", request == null ? null : request.toMap());
+            return call("Storage.setInterestGroupTracking", request);
         }
         /**
          * Enables/Disables issuing of interestGroupAuctionEventOccurred and interestGroupAuctionNetworkRequestCreated.
@@ -3699,9 +3470,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setInterestGroupAuctionTracking(boolean enable) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("enable", CdpObject.json(enable));
-            return client.call("Storage.setInterestGroupAuctionTracking", params);
+            return call("Storage.setInterestGroupAuctionTracking", params("enable", enable));
         }
         /**
          * Enables/Disables issuing of interestGroupAuctionEventOccurred and interestGroupAuctionNetworkRequestCreated.
@@ -3710,7 +3479,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setInterestGroupAuctionTracking(SetInterestGroupAuctionTrackingRequest request) {
-            return client.call("Storage.setInterestGroupAuctionTracking", request == null ? null : request.toMap());
+            return call("Storage.setInterestGroupAuctionTracking", request);
         }
         /**
          * Gets metadata for an origin&#x27;s shared storage.
@@ -3719,9 +3488,7 @@ public final class Storage {
          * @return a stage completing with the command result
          */
         public CompletionStage<Storage.SharedStorageMetadata> getSharedStorageMetadata(String ownerOrigin) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("ownerOrigin", CdpObject.json(ownerOrigin));
-            return client.call("Storage.getSharedStorageMetadata", params, result_ -> java.util.Objects.requireNonNull(Storage.SharedStorageMetadata.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("metadata"))))));
+            return call("Storage.getSharedStorageMetadata", params("ownerOrigin", ownerOrigin), METADATA::require);
         }
         /**
          * Gets metadata for an origin&#x27;s shared storage.
@@ -3730,7 +3497,7 @@ public final class Storage {
          * @return a stage completing with the command result
          */
         public CompletionStage<Storage.SharedStorageMetadata> getSharedStorageMetadata(GetSharedStorageMetadataRequest request) {
-            return client.call("Storage.getSharedStorageMetadata", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Storage.SharedStorageMetadata.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("metadata"))))));
+            return call("Storage.getSharedStorageMetadata", request, METADATA::require);
         }
         /**
          * Gets the entries in an given origin&#x27;s shared storage.
@@ -3739,9 +3506,7 @@ public final class Storage {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Storage.SharedStorageEntry>> getSharedStorageEntries(String ownerOrigin) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("ownerOrigin", CdpObject.json(ownerOrigin));
-            return client.call("Storage.getSharedStorageEntries", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("entries")), element0 -> java.util.Objects.requireNonNull(Storage.SharedStorageEntry.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Storage.getSharedStorageEntries", params("ownerOrigin", ownerOrigin), ENTRIES::require);
         }
         /**
          * Gets the entries in an given origin&#x27;s shared storage.
@@ -3750,7 +3515,7 @@ public final class Storage {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Storage.SharedStorageEntry>> getSharedStorageEntries(GetSharedStorageEntriesRequest request) {
-            return client.call("Storage.getSharedStorageEntries", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("entries")), element0 -> java.util.Objects.requireNonNull(Storage.SharedStorageEntry.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Storage.getSharedStorageEntries", request, ENTRIES::require);
         }
         /**
          * Sets entry with {@code key} and {@code value} for a given origin&#x27;s shared storage.
@@ -3762,12 +3527,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSharedStorageEntry(String ownerOrigin, String key, String value, boolean ignoreIfPresent) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("ownerOrigin", CdpObject.json(ownerOrigin));
-            params.put("key", CdpObject.json(key));
-            params.put("value", CdpObject.json(value));
-            params.put("ignoreIfPresent", CdpObject.json(ignoreIfPresent));
-            return client.call("Storage.setSharedStorageEntry", params);
+            return call("Storage.setSharedStorageEntry", params("ownerOrigin", ownerOrigin, "key", key, "value", value, "ignoreIfPresent", ignoreIfPresent));
         }
         /**
          * Sets entry with {@code key} and {@code value} for a given origin&#x27;s shared storage.
@@ -3778,11 +3538,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSharedStorageEntry(String ownerOrigin, String key, String value) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("ownerOrigin", CdpObject.json(ownerOrigin));
-            params.put("key", CdpObject.json(key));
-            params.put("value", CdpObject.json(value));
-            return client.call("Storage.setSharedStorageEntry", params);
+            return call("Storage.setSharedStorageEntry", params("ownerOrigin", ownerOrigin, "key", key, "value", value));
         }
         /**
          * Sets entry with {@code key} and {@code value} for a given origin&#x27;s shared storage.
@@ -3791,7 +3547,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSharedStorageEntry(SetSharedStorageEntryRequest request) {
-            return client.call("Storage.setSharedStorageEntry", request == null ? null : request.toMap());
+            return call("Storage.setSharedStorageEntry", request);
         }
         /**
          * Deletes entry for {@code key} (if it exists) for a given origin&#x27;s shared storage.
@@ -3801,10 +3557,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteSharedStorageEntry(String ownerOrigin, String key) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("ownerOrigin", CdpObject.json(ownerOrigin));
-            params.put("key", CdpObject.json(key));
-            return client.call("Storage.deleteSharedStorageEntry", params);
+            return call("Storage.deleteSharedStorageEntry", params("ownerOrigin", ownerOrigin, "key", key));
         }
         /**
          * Deletes entry for {@code key} (if it exists) for a given origin&#x27;s shared storage.
@@ -3813,7 +3566,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteSharedStorageEntry(DeleteSharedStorageEntryRequest request) {
-            return client.call("Storage.deleteSharedStorageEntry", request == null ? null : request.toMap());
+            return call("Storage.deleteSharedStorageEntry", request);
         }
         /**
          * Clears all entries for a given origin&#x27;s shared storage.
@@ -3822,9 +3575,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearSharedStorageEntries(String ownerOrigin) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("ownerOrigin", CdpObject.json(ownerOrigin));
-            return client.call("Storage.clearSharedStorageEntries", params);
+            return call("Storage.clearSharedStorageEntries", params("ownerOrigin", ownerOrigin));
         }
         /**
          * Clears all entries for a given origin&#x27;s shared storage.
@@ -3833,7 +3584,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearSharedStorageEntries(ClearSharedStorageEntriesRequest request) {
-            return client.call("Storage.clearSharedStorageEntries", request == null ? null : request.toMap());
+            return call("Storage.clearSharedStorageEntries", request);
         }
         /**
          * Resets the budget for {@code ownerOrigin} by clearing all budget withdrawals.
@@ -3842,9 +3593,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> resetSharedStorageBudget(String ownerOrigin) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("ownerOrigin", CdpObject.json(ownerOrigin));
-            return client.call("Storage.resetSharedStorageBudget", params);
+            return call("Storage.resetSharedStorageBudget", params("ownerOrigin", ownerOrigin));
         }
         /**
          * Resets the budget for {@code ownerOrigin} by clearing all budget withdrawals.
@@ -3853,7 +3602,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> resetSharedStorageBudget(ResetSharedStorageBudgetRequest request) {
-            return client.call("Storage.resetSharedStorageBudget", request == null ? null : request.toMap());
+            return call("Storage.resetSharedStorageBudget", request);
         }
         /**
          * Enables/disables issuing of sharedStorageAccessed events.
@@ -3862,9 +3611,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSharedStorageTracking(boolean enable) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("enable", CdpObject.json(enable));
-            return client.call("Storage.setSharedStorageTracking", params);
+            return call("Storage.setSharedStorageTracking", params("enable", enable));
         }
         /**
          * Enables/disables issuing of sharedStorageAccessed events.
@@ -3873,7 +3620,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSharedStorageTracking(SetSharedStorageTrackingRequest request) {
-            return client.call("Storage.setSharedStorageTracking", request == null ? null : request.toMap());
+            return call("Storage.setSharedStorageTracking", request);
         }
         /**
          * Set tracking for a storage key&#x27;s buckets.
@@ -3883,10 +3630,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setStorageBucketTracking(String storageKey, boolean enable) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("storageKey", CdpObject.json(storageKey));
-            params.put("enable", CdpObject.json(enable));
-            return client.call("Storage.setStorageBucketTracking", params);
+            return call("Storage.setStorageBucketTracking", params("storageKey", storageKey, "enable", enable));
         }
         /**
          * Set tracking for a storage key&#x27;s buckets.
@@ -3895,7 +3639,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setStorageBucketTracking(SetStorageBucketTrackingRequest request) {
-            return client.call("Storage.setStorageBucketTracking", request == null ? null : request.toMap());
+            return call("Storage.setStorageBucketTracking", request);
         }
         /**
          * Deletes the Storage Bucket with the given storage key and bucket name.
@@ -3904,9 +3648,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteStorageBucket(Storage.StorageBucket bucket) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("bucket", CdpObject.json(bucket));
-            return client.call("Storage.deleteStorageBucket", params);
+            return call("Storage.deleteStorageBucket", params("bucket", bucket));
         }
         /**
          * Deletes the Storage Bucket with the given storage key and bucket name.
@@ -3915,7 +3657,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deleteStorageBucket(DeleteStorageBucketRequest request) {
-            return client.call("Storage.deleteStorageBucket", request == null ? null : request.toMap());
+            return call("Storage.deleteStorageBucket", request);
         }
         /**
          * Deletes state for sites identified as potential bounce trackers, immediately.
@@ -3923,7 +3665,7 @@ public final class Storage {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<String>> runBounceTrackingMitigations() {
-            return client.call("Storage.runBounceTrackingMitigations", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("deletedSites")), element0 -> (String) element0));
+            return call("Storage.runBounceTrackingMitigations", DELETED_SITES::require);
         }
         /**
          * Returns the effective Related Website Sets in use by this profile for the browser session. The effective Related Website Sets will not change during a browser session.
@@ -3931,7 +3673,7 @@ public final class Storage {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Storage.RelatedWebsiteSet>> getRelatedWebsiteSets() {
-            return client.call("Storage.getRelatedWebsiteSets", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("sets")), element0 -> java.util.Objects.requireNonNull(Storage.RelatedWebsiteSet.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Storage.getRelatedWebsiteSets", SETS::require);
         }
         /**
          * Invokes Storage.setProtectedAudienceKAnonymity.
@@ -3941,11 +3683,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setProtectedAudienceKAnonymity(String owner, String name, java.util.List<String> hashes) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("owner", CdpObject.json(owner));
-            params.put("name", CdpObject.json(name));
-            params.put("hashes", CdpObject.json(hashes));
-            return client.call("Storage.setProtectedAudienceKAnonymity", params);
+            return call("Storage.setProtectedAudienceKAnonymity", params("owner", owner, "name", name, "hashes", hashes));
         }
         /**
          * Invokes Storage.setProtectedAudienceKAnonymity with a request object.
@@ -3953,7 +3691,7 @@ public final class Storage {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setProtectedAudienceKAnonymity(SetProtectedAudienceKAnonymityRequest request) {
-            return client.call("Storage.setProtectedAudienceKAnonymity", request == null ? null : request.toMap());
+            return call("Storage.setProtectedAudienceKAnonymity", request);
         }
         /**
          * A cache&#x27;s contents have been modified.
@@ -3961,7 +3699,7 @@ public final class Storage {
          * @return a removable subscription
          */
         public CdpSubscription onCacheStorageContentUpdated(Consumer<CacheStorageContentUpdatedEvent> handler) {
-            return client.on("Storage.cacheStorageContentUpdated", CacheStorageContentUpdatedEvent::fromMap, handler);
+            return on("Storage.cacheStorageContentUpdated", CacheStorageContentUpdatedEvent::fromMap, handler);
         }
         /**
          * A cache has been added/deleted.
@@ -3969,7 +3707,7 @@ public final class Storage {
          * @return a removable subscription
          */
         public CdpSubscription onCacheStorageListUpdated(Consumer<CacheStorageListUpdatedEvent> handler) {
-            return client.on("Storage.cacheStorageListUpdated", CacheStorageListUpdatedEvent::fromMap, handler);
+            return on("Storage.cacheStorageListUpdated", CacheStorageListUpdatedEvent::fromMap, handler);
         }
         /**
          * The origin&#x27;s IndexedDB object store has been modified.
@@ -3977,7 +3715,7 @@ public final class Storage {
          * @return a removable subscription
          */
         public CdpSubscription onIndexedDBContentUpdated(Consumer<IndexedDBContentUpdatedEvent> handler) {
-            return client.on("Storage.indexedDBContentUpdated", IndexedDBContentUpdatedEvent::fromMap, handler);
+            return on("Storage.indexedDBContentUpdated", IndexedDBContentUpdatedEvent::fromMap, handler);
         }
         /**
          * The origin&#x27;s IndexedDB database list has been modified.
@@ -3985,7 +3723,7 @@ public final class Storage {
          * @return a removable subscription
          */
         public CdpSubscription onIndexedDBListUpdated(Consumer<IndexedDBListUpdatedEvent> handler) {
-            return client.on("Storage.indexedDBListUpdated", IndexedDBListUpdatedEvent::fromMap, handler);
+            return on("Storage.indexedDBListUpdated", IndexedDBListUpdatedEvent::fromMap, handler);
         }
         /**
          * One of the interest groups was accessed. Note that these events are global to all targets sharing an interest group store.
@@ -3993,7 +3731,7 @@ public final class Storage {
          * @return a removable subscription
          */
         public CdpSubscription onInterestGroupAccessed(Consumer<InterestGroupAccessedEvent> handler) {
-            return client.on("Storage.interestGroupAccessed", InterestGroupAccessedEvent::fromMap, handler);
+            return on("Storage.interestGroupAccessed", InterestGroupAccessedEvent::fromMap, handler);
         }
         /**
          * An auction involving interest groups is taking place. These events are target-specific.
@@ -4001,7 +3739,7 @@ public final class Storage {
          * @return a removable subscription
          */
         public CdpSubscription onInterestGroupAuctionEventOccurred(Consumer<InterestGroupAuctionEventOccurredEvent> handler) {
-            return client.on("Storage.interestGroupAuctionEventOccurred", InterestGroupAuctionEventOccurredEvent::fromMap, handler);
+            return on("Storage.interestGroupAuctionEventOccurred", InterestGroupAuctionEventOccurredEvent::fromMap, handler);
         }
         /**
          * Specifies which auctions a particular network fetch may be related to, and in what role. Note that it is not ordered with respect to Network.requestWillBeSent (but will happen before loadingFinished loadingFailed).
@@ -4009,7 +3747,7 @@ public final class Storage {
          * @return a removable subscription
          */
         public CdpSubscription onInterestGroupAuctionNetworkRequestCreated(Consumer<InterestGroupAuctionNetworkRequestCreatedEvent> handler) {
-            return client.on("Storage.interestGroupAuctionNetworkRequestCreated", InterestGroupAuctionNetworkRequestCreatedEvent::fromMap, handler);
+            return on("Storage.interestGroupAuctionNetworkRequestCreated", InterestGroupAuctionNetworkRequestCreatedEvent::fromMap, handler);
         }
         /**
          * Shared storage was accessed by the associated page. The following parameters are included in all events.
@@ -4017,7 +3755,7 @@ public final class Storage {
          * @return a removable subscription
          */
         public CdpSubscription onSharedStorageAccessed(Consumer<SharedStorageAccessedEvent> handler) {
-            return client.on("Storage.sharedStorageAccessed", SharedStorageAccessedEvent::fromMap, handler);
+            return on("Storage.sharedStorageAccessed", SharedStorageAccessedEvent::fromMap, handler);
         }
         /**
          * A shared storage run or selectURL operation finished its execution. The following parameters are included in all events.
@@ -4025,7 +3763,7 @@ public final class Storage {
          * @return a removable subscription
          */
         public CdpSubscription onSharedStorageWorkletOperationExecutionFinished(Consumer<SharedStorageWorkletOperationExecutionFinishedEvent> handler) {
-            return client.on("Storage.sharedStorageWorkletOperationExecutionFinished", SharedStorageWorkletOperationExecutionFinishedEvent::fromMap, handler);
+            return on("Storage.sharedStorageWorkletOperationExecutionFinished", SharedStorageWorkletOperationExecutionFinishedEvent::fromMap, handler);
         }
         /**
          * Subscribes to Storage.storageBucketCreatedOrUpdated.
@@ -4033,7 +3771,7 @@ public final class Storage {
          * @return a removable subscription
          */
         public CdpSubscription onStorageBucketCreatedOrUpdated(Consumer<StorageBucketCreatedOrUpdatedEvent> handler) {
-            return client.on("Storage.storageBucketCreatedOrUpdated", StorageBucketCreatedOrUpdatedEvent::fromMap, handler);
+            return on("Storage.storageBucketCreatedOrUpdated", StorageBucketCreatedOrUpdatedEvent::fromMap, handler);
         }
         /**
          * Subscribes to Storage.storageBucketDeleted.
@@ -4041,7 +3779,7 @@ public final class Storage {
          * @return a removable subscription
          */
         public CdpSubscription onStorageBucketDeleted(Consumer<StorageBucketDeletedEvent> handler) {
-            return client.on("Storage.storageBucketDeleted", StorageBucketDeletedEvent::fromMap, handler);
+            return on("Storage.storageBucketDeleted", StorageBucketDeletedEvent::fromMap, handler);
         }
     }
 }

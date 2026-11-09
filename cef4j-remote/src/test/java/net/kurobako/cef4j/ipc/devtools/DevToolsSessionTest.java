@@ -32,7 +32,7 @@ class DevToolsSessionTest {
         @Override
         @SuppressWarnings("unchecked")
         public <R extends CefMessageView> CompletableFuture<R> request(
-                CefMessageEncoder request, CefMessageDecoder<R> decoder) {
+                int messageId, CefMessageEncoder request, CefMessageDecoder<R> decoder) {
             return (CompletableFuture<R>) this.request;
         }
 

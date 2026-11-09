@@ -2,18 +2,16 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class ComponentUpdateCallbackOnCompleteCallbackEvent implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 347199445;
 
     private final int callbackId;
     private final String componentId;
@@ -40,36 +38,23 @@ public final class ComponentUpdateCallbackOnCompleteCallbackEvent implements Cef
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 12 + componentIdBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(callbackId);
-            __dst.putInt(componentIdBytes.length);
-            __dst.put(componentIdBytes);
-            __dst.putInt(error);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(callbackId);
+            WireEncoder.bytes(__out, componentIdBytes);
+            __out.putInt(error);
+        });
     }
 
-    public static final CefMessageDecoder<ComponentUpdateCallbackOnCompleteCallbackEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<ComponentUpdateCallbackOnCompleteCallbackEvent> DECODER = WireDecoder.message("ComponentUpdateCallbackOnCompleteCallbackEvent", __buf -> {
         final int callbackId = WireDecoder.int32(__buf, "callbackId");
         final String componentId = WireDecoder.utf8(__buf, "componentId");
         final int error = WireDecoder.int32(__buf, "error");
-        WireDecoder.requireFullyConsumed(__buf, "ComponentUpdateCallbackOnCompleteCallbackEvent");
         return new ComponentUpdateCallbackOnCompleteCallbackEvent(callbackId, componentId, error);
-    };
+    });
 }

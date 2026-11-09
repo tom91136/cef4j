@@ -1,0 +1,136 @@
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-types
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+package net.kurobako.cef4j.gen;
+
+import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
+
+/**
+ * Key event types.
+ *
+ * <p>Definition generated from cef_types.h
+ *
+ * <pre>typedef enum {
+ *   KEYEVENT_RAWKEYDOWN = 0,
+ *   KEYEVENT_KEYDOWN = 1,
+ *   KEYEVENT_KEYUP = 2,
+ *   KEYEVENT_CHAR = 3
+ * } cef_key_event_type_t;</pre>
+ *
+ * <p>Possible values: {@link Kind#RAWKEYDOWN}, {@link Kind#KEYDOWN}, {@link Kind#KEYUP}, {@link Kind#CHAR}
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
+ */
+@Generated("./mvnw generate-sources -pl cef4j-types -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@NullableBoundary("generated external ABI")
+public final class CefKeyEventType implements CefEnum<CefKeyEventType> {
+
+    /** Known constants for {@link CefKeyEventType}. */
+    public enum Kind {
+        /** Notification that a key transitioned from "up" to "down". */
+        RAWKEYDOWN(new EnumConstant(0, "0", "KEYEVENT_RAWKEYDOWN")),
+        /**
+         * Notification that a key was pressed. This does not necessarily correspond to a character depending on the key
+         * and language. Use KEYEVENT_CHAR for character input.
+         */
+        KEYDOWN(new EnumConstant(1, "1", "KEYEVENT_KEYDOWN")),
+        /** Notification that a key was released. */
+        KEYUP(new EnumConstant(2, "2", "KEYEVENT_KEYUP")),
+        /**
+         * Notification that a character was typed. Use this for text input. Key down events may generate 0, 1, or more
+         * than one character event depending on the key, locale, and operating system.
+         */
+        CHAR(new EnumConstant(3, "3", "KEYEVENT_CHAR"));
+
+        private static final Kind[] VALUES = Kind.values();
+
+        private final EnumConstant constant;
+
+        Kind(EnumConstant constant) {
+            this.constant = constant;
+        }
+
+        /** The underlying C enum numeric value. */
+        public long value() {
+            return constant.value();
+        }
+
+        /** The original C expression/literal (e.g. {@code "1 << 3"}), or the numeric string. */
+        public String expr() {
+            return constant.expr();
+        }
+
+        /** The C constant name (e.g., {@code "cef_key_event_type_t"}). */
+        public String cName() {
+            return constant.name();
+        }
+
+        @Override
+        public String toString() {
+            return cName() + "(expr=" + expr() + ", value=" + value() + ")";
+        }
+    }
+
+    /** The underlying C enum numeric value. This may not correspond to any known {@link Kind}. */
+    public final long value;
+
+    private CefKeyEventType(long value) {
+        this.value = value;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long value() {
+        return value;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String expr() {
+        return kind().map(Kind::expr).orElse(String.valueOf(value));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String name() {
+        return kind().map(Kind::cName).orElse("UNKNOWN(" + value + ")");
+    }
+
+    /**
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
+     */
+    public java.util.Optional<Kind> kind() {
+        for (Kind k : Kind.VALUES) {
+            if (k.value() == value) return java.util.Optional.of(k);
+        }
+        return java.util.Optional.empty();
+    }
+
+    /** Returns an instance for the given raw value, use {@link #kind} to resolve to a concrete enum. */
+    public static CefKeyEventType of(long v) {
+        return new CefKeyEventType(v);
+    }
+
+    /** Returns an instance for the given known constant. */
+    public static CefKeyEventType of(Kind k) {
+        return new CefKeyEventType(k.value());
+    }
+
+    @Override
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof CefKeyEventType)) return false;
+        return this.value == ((CefKeyEventType) obj).value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(value);
+    }
+
+    @Override
+    public String toString() {
+        return kind().map(Kind::toString).orElse("UNKNOWN(value=" + value + ")");
+    }
+}

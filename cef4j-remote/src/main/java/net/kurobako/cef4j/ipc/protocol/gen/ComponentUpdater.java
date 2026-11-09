@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class ComponentUpdater implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class ComponentUpdater extends BrowserFacade {
 
     public ComponentUpdater(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_component_updater_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_component_updater_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class ComponentUpdater implements AutoCloseable {
      */
     public CompletableFuture<Long> getComponentCount() {
         return CefFutures.map(
-            session.request(new ComponentUpdaterGetComponentCountRequest(handle), ComponentUpdaterGetComponentCountResponse.DECODER),
-            ComponentUpdaterGetComponentCountResponse::result);
+            session.request(MessageIds.COMPONENT_UPDATER_GET_COMPONENT_COUNT_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -70,7 +39,7 @@ public final class ComponentUpdater implements AutoCloseable {
      */
     public CompletableFuture<Component> getComponentById(String componentId) {
         return CefFutures.map(
-            session.request(new ComponentUpdaterGetComponentByIdRequest(handle, componentId), ComponentUpdaterGetComponentByIdResponse.DECODER),
+            session.request(MessageIds.COMPONENT_UPDATER_GET_COMPONENT_BY_ID_REQUEST, new ComponentUpdaterGetComponentByIdRequest(handle, componentId), ResultHandleMessage.DECODER),
             __r -> new Component(session, __r.result()));
     }
 
@@ -85,6 +54,6 @@ public final class ComponentUpdater implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:144</a>
      */
     public CompletableFuture<Void> update(String componentId, int priority, RemoteHandle callback) {
-        return CefFutures.discard(session.request(new ComponentUpdaterUpdateRequest(handle, componentId, priority, callback), ComponentUpdaterUpdateResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.COMPONENT_UPDATER_UPDATE_REQUEST, new ComponentUpdaterUpdateRequest(handle, componentId, priority, callback), EmptyMessage.DECODER));
     }
 }

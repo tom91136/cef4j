@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class RequestContext implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class RequestContext extends BrowserFacade {
 
     public RequestContext(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_request_context_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_request_context_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class RequestContext implements AutoCloseable {
      */
     public CompletableFuture<Integer> isSame(RemoteHandle other) {
         return CefFutures.map(
-            session.request(new RequestContextIsSameRequest(handle, other), RequestContextIsSameResponse.DECODER),
-            RequestContextIsSameResponse::result);
+            session.request(MessageIds.REQUEST_CONTEXT_IS_SAME_REQUEST, new SelfHandleOtherHandleMessage(handle, other), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class RequestContext implements AutoCloseable {
      */
     public CompletableFuture<Integer> isSharingWith(RemoteHandle other) {
         return CefFutures.map(
-            session.request(new RequestContextIsSharingWithRequest(handle, other), RequestContextIsSharingWithResponse.DECODER),
-            RequestContextIsSharingWithResponse::result);
+            session.request(MessageIds.REQUEST_CONTEXT_IS_SHARING_WITH_REQUEST, new SelfHandleOtherHandleMessage(handle, other), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -82,8 +51,8 @@ public final class RequestContext implements AutoCloseable {
      */
     public CompletableFuture<Integer> isGlobal() {
         return CefFutures.map(
-            session.request(new RequestContextIsGlobalRequest(handle), RequestContextIsGlobalResponse.DECODER),
-            RequestContextIsGlobalResponse::result);
+            session.request(MessageIds.REQUEST_CONTEXT_IS_GLOBAL_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -94,8 +63,8 @@ public final class RequestContext implements AutoCloseable {
      */
     public CompletableFuture<RemoteHandle> getHandler() {
         return CefFutures.map(
-            session.request(new RequestContextGetHandlerRequest(handle), RequestContextGetHandlerResponse.DECODER),
-            RequestContextGetHandlerResponse::result);
+            session.request(MessageIds.REQUEST_CONTEXT_GET_HANDLER_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
+            ResultHandleMessage::result);
     }
 
     /**
@@ -106,8 +75,8 @@ public final class RequestContext implements AutoCloseable {
      */
     public CompletableFuture<String> getCachePath() {
         return CefFutures.map(
-            session.request(new RequestContextGetCachePathRequest(handle), RequestContextGetCachePathResponse.DECODER),
-            RequestContextGetCachePathResponse::result);
+            session.request(MessageIds.REQUEST_CONTEXT_GET_CACHE_PATH_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -120,7 +89,7 @@ public final class RequestContext implements AutoCloseable {
      */
     public CompletableFuture<CookieManager> getCookieManager(RemoteHandle callback) {
         return CefFutures.map(
-            session.request(new RequestContextGetCookieManagerRequest(handle, callback), RequestContextGetCookieManagerResponse.DECODER),
+            session.request(MessageIds.REQUEST_CONTEXT_GET_COOKIE_MANAGER_REQUEST, new SelfHandleCallbackHandleMessage(handle, callback), ResultHandleMessage.DECODER),
             __r -> new CookieManager(session, __r.result()));
     }
 
@@ -135,8 +104,8 @@ public final class RequestContext implements AutoCloseable {
      */
     public CompletableFuture<Integer> registerSchemeHandlerFactory(String schemeName, String domainName, RemoteHandle factory) {
         return CefFutures.map(
-            session.request(new RequestContextRegisterSchemeHandlerFactoryRequest(handle, schemeName, domainName, factory), RequestContextRegisterSchemeHandlerFactoryResponse.DECODER),
-            RequestContextRegisterSchemeHandlerFactoryResponse::result);
+            session.request(MessageIds.REQUEST_CONTEXT_REGISTER_SCHEME_HANDLER_FACTORY_REQUEST, new RequestContextRegisterSchemeHandlerFactoryRequest(handle, schemeName, domainName, factory), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -147,8 +116,8 @@ public final class RequestContext implements AutoCloseable {
      */
     public CompletableFuture<Integer> clearSchemeHandlerFactories() {
         return CefFutures.map(
-            session.request(new RequestContextClearSchemeHandlerFactoriesRequest(handle), RequestContextClearSchemeHandlerFactoriesResponse.DECODER),
-            RequestContextClearSchemeHandlerFactoriesResponse::result);
+            session.request(MessageIds.REQUEST_CONTEXT_CLEAR_SCHEME_HANDLER_FACTORIES_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -160,7 +129,7 @@ public final class RequestContext implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:203</a>
      */
     public CompletableFuture<Void> clearCertificateExceptions(RemoteHandle callback) {
-        return CefFutures.discard(session.request(new RequestContextClearCertificateExceptionsRequest(handle, callback), RequestContextClearCertificateExceptionsResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.REQUEST_CONTEXT_CLEAR_CERTIFICATE_EXCEPTIONS_REQUEST, new SelfHandleCallbackHandleMessage(handle, callback), EmptyMessage.DECODER));
     }
 
     /**
@@ -172,7 +141,7 @@ public final class RequestContext implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:224</a>
      */
     public CompletableFuture<Void> clearHttpAuthCredentials(RemoteHandle callback) {
-        return CefFutures.discard(session.request(new RequestContextClearHttpAuthCredentialsRequest(handle, callback), RequestContextClearHttpAuthCredentialsResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.REQUEST_CONTEXT_CLEAR_HTTP_AUTH_CREDENTIALS_REQUEST, new SelfHandleCallbackHandleMessage(handle, callback), EmptyMessage.DECODER));
     }
 
     /**
@@ -184,7 +153,7 @@ public final class RequestContext implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:233</a>
      */
     public CompletableFuture<Void> closeAllConnections(RemoteHandle callback) {
-        return CefFutures.discard(session.request(new RequestContextCloseAllConnectionsRequest(handle, callback), RequestContextCloseAllConnectionsResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.REQUEST_CONTEXT_CLOSE_ALL_CONNECTIONS_REQUEST, new SelfHandleCallbackHandleMessage(handle, callback), EmptyMessage.DECODER));
     }
 
     /**
@@ -194,7 +163,7 @@ public final class RequestContext implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:243</a>
      */
     public CompletableFuture<Void> resolveHost(String origin, RemoteHandle callback) {
-        return CefFutures.discard(session.request(new RequestContextResolveHostRequest(handle, origin, callback), RequestContextResolveHostResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.REQUEST_CONTEXT_RESOLVE_HOST_REQUEST, new RequestContextResolveHostRequest(handle, origin, callback), EmptyMessage.DECODER));
     }
 
     /**
@@ -207,7 +176,7 @@ public final class RequestContext implements AutoCloseable {
      */
     public CompletableFuture<MediaRouter> getMediaRouter(RemoteHandle callback) {
         return CefFutures.map(
-            session.request(new RequestContextGetMediaRouterRequest(handle, callback), RequestContextGetMediaRouterResponse.DECODER),
+            session.request(MessageIds.REQUEST_CONTEXT_GET_MEDIA_ROUTER_REQUEST, new SelfHandleCallbackHandleMessage(handle, callback), ResultHandleMessage.DECODER),
             __r -> new MediaRouter(session, __r.result()));
     }
 
@@ -222,7 +191,7 @@ public final class RequestContext implements AutoCloseable {
      */
     public CompletableFuture<Value> getWebsiteSetting(String requestingUrl, String topLevelUrl, int contentType) {
         return CefFutures.map(
-            session.request(new RequestContextGetWebsiteSettingRequest(handle, requestingUrl, topLevelUrl, contentType), RequestContextGetWebsiteSettingResponse.DECODER),
+            session.request(MessageIds.REQUEST_CONTEXT_GET_WEBSITE_SETTING_REQUEST, new SelfHandleRequestingUrlStringTopLevelUrlStringContentTypeIntMessage(handle, requestingUrl, topLevelUrl, contentType), ResultHandleMessage.DECODER),
             __r -> new Value(session, __r.result()));
     }
 
@@ -239,7 +208,7 @@ public final class RequestContext implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:272</a>
      */
     public CompletableFuture<Void> setWebsiteSetting(String requestingUrl, String topLevelUrl, int contentType, RemoteHandle value) {
-        return CefFutures.discard(session.request(new RequestContextSetWebsiteSettingRequest(handle, requestingUrl, topLevelUrl, contentType, value), RequestContextSetWebsiteSettingResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.REQUEST_CONTEXT_SET_WEBSITE_SETTING_REQUEST, new RequestContextSetWebsiteSettingRequest(handle, requestingUrl, topLevelUrl, contentType, value), EmptyMessage.DECODER));
     }
 
     /**
@@ -253,8 +222,8 @@ public final class RequestContext implements AutoCloseable {
      */
     public CompletableFuture<Integer> getContentSetting(String requestingUrl, String topLevelUrl, int contentType) {
         return CefFutures.map(
-            session.request(new RequestContextGetContentSettingRequest(handle, requestingUrl, topLevelUrl, contentType), RequestContextGetContentSettingResponse.DECODER),
-            RequestContextGetContentSettingResponse::result);
+            session.request(MessageIds.REQUEST_CONTEXT_GET_CONTENT_SETTING_REQUEST, new SelfHandleRequestingUrlStringTopLevelUrlStringContentTypeIntMessage(handle, requestingUrl, topLevelUrl, contentType), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -269,7 +238,7 @@ public final class RequestContext implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:306</a>
      */
     public CompletableFuture<Void> setContentSetting(String requestingUrl, String topLevelUrl, int contentType, int value) {
-        return CefFutures.discard(session.request(new RequestContextSetContentSettingRequest(handle, requestingUrl, topLevelUrl, contentType, value), RequestContextSetContentSettingResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.REQUEST_CONTEXT_SET_CONTENT_SETTING_REQUEST, new RequestContextSetContentSettingRequest(handle, requestingUrl, topLevelUrl, contentType, value), EmptyMessage.DECODER));
     }
 
     /**
@@ -279,7 +248,7 @@ public final class RequestContext implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:337</a>
      */
     public CompletableFuture<Void> setChromeColorScheme(int variant, int userColor) {
-        return CefFutures.discard(session.request(new RequestContextSetChromeColorSchemeRequest(handle, variant, userColor), RequestContextSetChromeColorSchemeResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.REQUEST_CONTEXT_SET_CHROME_COLOR_SCHEME_REQUEST, new RequestContextSetChromeColorSchemeRequest(handle, variant, userColor), EmptyMessage.DECODER));
     }
 
     /**
@@ -290,8 +259,8 @@ public final class RequestContext implements AutoCloseable {
      */
     public CompletableFuture<Integer> getChromeColorSchemeMode() {
         return CefFutures.map(
-            session.request(new RequestContextGetChromeColorSchemeModeRequest(handle), RequestContextGetChromeColorSchemeModeResponse.DECODER),
-            RequestContextGetChromeColorSchemeModeResponse::result);
+            session.request(MessageIds.REQUEST_CONTEXT_GET_CHROME_COLOR_SCHEME_MODE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -302,8 +271,8 @@ public final class RequestContext implements AutoCloseable {
      */
     public CompletableFuture<Integer> getChromeColorSchemeColor() {
         return CefFutures.map(
-            session.request(new RequestContextGetChromeColorSchemeColorRequest(handle), RequestContextGetChromeColorSchemeColorResponse.DECODER),
-            RequestContextGetChromeColorSchemeColorResponse::result);
+            session.request(MessageIds.REQUEST_CONTEXT_GET_CHROME_COLOR_SCHEME_COLOR_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -314,8 +283,8 @@ public final class RequestContext implements AutoCloseable {
      */
     public CompletableFuture<Integer> getChromeColorSchemeVariant() {
         return CefFutures.map(
-            session.request(new RequestContextGetChromeColorSchemeVariantRequest(handle), RequestContextGetChromeColorSchemeVariantResponse.DECODER),
-            RequestContextGetChromeColorSchemeVariantResponse::result);
+            session.request(MessageIds.REQUEST_CONTEXT_GET_CHROME_COLOR_SCHEME_VARIANT_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -327,8 +296,8 @@ public final class RequestContext implements AutoCloseable {
      */
     public CompletableFuture<RemoteHandle> addSettingObserver(RemoteHandle observer) {
         return CefFutures.map(
-            session.request(new RequestContextAddSettingObserverRequest(handle, observer), RequestContextAddSettingObserverResponse.DECODER),
-            RequestContextAddSettingObserverResponse::result);
+            session.request(MessageIds.REQUEST_CONTEXT_ADD_SETTING_OBSERVER_REQUEST, new SelfHandleObserverHandleMessage(handle, observer), ResultHandleMessage.DECODER),
+            ResultHandleMessage::result);
     }
 
     /**
@@ -341,6 +310,6 @@ public final class RequestContext implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request__context_8h.html">cef_request_context.h:216</a>
      */
     public CompletableFuture<Void> clearHttpCache(RemoteHandle callback) {
-        return CefFutures.discard(session.request(new RequestContextClearHttpCacheRequest(handle, callback), RequestContextClearHttpCacheResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.REQUEST_CONTEXT_CLEAR_HTTP_CACHE_REQUEST, new SelfHandleCallbackHandleMessage(handle, callback), EmptyMessage.DECODER));
     }
 }

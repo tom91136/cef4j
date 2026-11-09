@@ -132,12 +132,7 @@ object CppRendererDispatcherEmitter {
         m.handleStructByField.get(name).exists(facadeStructs.contains)
       case _ => false
     }
-    val paramsOk = m.explicitParams.forall(p => fieldOk(p.name, p.ty))
-    val resultOk = m.resultField match {
-      case None    => true
-      case Some(f) => fieldOk("result", f.ty)
-    }
-    paramsOk && resultOk
+    m.fieldsSatisfy(fieldOk)
   }
 
   private def tableFieldName(cefStruct: String): String = {

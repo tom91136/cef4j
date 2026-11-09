@@ -2,19 +2,16 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class BrowserGetFrameIdentifiersRequest implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 163990147;
 
     private final RemoteHandle self;
     private final String[] identifiers;
@@ -33,38 +30,21 @@ public final class BrowserGetFrameIdentifiersRequest implements CefMessageView, 
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return 8 + java.util.Arrays.stream(identifiers).mapToInt(__s -> 4 + __s.getBytes(StandardCharsets.UTF_8).length).sum();
+        return 8 + WireEncoder.utf8ListSize(identifiers);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putInt(identifiers.length);
-            for (final String __s : identifiers) {
-                final byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
-                __dst.putInt(__b.length);
-                __dst.put(__b);
-            }
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            WireEncoder.utf8List(__out, identifiers);
+        });
     }
 
-    public static final CefMessageDecoder<BrowserGetFrameIdentifiersRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<BrowserGetFrameIdentifiersRequest> DECODER = WireDecoder.message("BrowserGetFrameIdentifiersRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final String[] identifiers = WireDecoder.utf8List(__buf, "identifiers");
-        WireDecoder.requireFullyConsumed(__buf, "BrowserGetFrameIdentifiersRequest");
         return new BrowserGetFrameIdentifiersRequest(self, identifiers);
-    };
+    });
 }

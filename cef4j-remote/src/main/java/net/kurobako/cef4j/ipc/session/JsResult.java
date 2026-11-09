@@ -52,9 +52,10 @@ public final class JsResult {
     }
 
     /**
-     * Constructs from the wire fields. Matches the order/encoding of {@code EvaluateJavascriptResponse}: the server
-     * packs a single {@code int64} for the double bits via {@link Double#longBitsToDouble} so the value survives intact
-     * across both encodings.
+     * Constructs from the wire fields. Matches the order/encoding of
+     * {@code ValueKindIntBoolValueBoolIntValueIntDoubleValueLongStringValueStringErrorMessageStringEtc6a348bMessage}:
+     * the server packs a single {@code int64} for the double bits via {@link Double#longBitsToDouble} so the value
+     * survives intact across both encodings.
      */
     public static JsResult fromWire(
             int valueKind,

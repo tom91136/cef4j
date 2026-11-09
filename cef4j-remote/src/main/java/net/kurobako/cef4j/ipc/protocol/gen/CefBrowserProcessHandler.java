@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -62,7 +63,7 @@ public interface CefBrowserProcessHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser__process__handler_8h.html">cef_browser_process_handler.h:100</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onAlreadyRunningAppRelaunch(net.kurobako.cef4j.ipc.session.RemoteHandle commandLine, String currentDirectory) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onAlreadyRunningAppRelaunch(net.kurobako.cef4j.ipc.session.RemoteHandle commandLine, String currentDirectory) { return Unhandled.bool(); }
 
     /**
      * Called from any thread when work has been scheduled for the browser process main (UI) thread. This callback is used in combination with cef_settings_t.external_message_pump and CefDoMessageLoopWork() in cases where the CEF message loop must be integrated into an existing application message loop (see additional comments and warnings on CefDoMessageLoopWork). This callback should schedule a CefDoMessageLoopWork() call to happen on the main (UI) thread. {@code delay_ms} is the requested delay in milliseconds. If {@code delay_ms} is &lt;= 0 then the call should happen reasonably soon. If {@code delay_ms} is > 0 then the call should be scheduled to happen after the specified delay and any currently pending scheduled call should be cancelled.
@@ -76,17 +77,17 @@ public interface CefBrowserProcessHandler {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefBrowserProcessHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(BrowserProcessHandlerOnRegisterCustomPreferencesEvent.MESSAGE_ID, BrowserProcessHandlerOnRegisterCustomPreferencesEvent.DECODER,
+                session.on(MessageIds.BROWSER_PROCESS_HANDLER_ON_REGISTER_CUSTOM_PREFERENCES_EVENT, BrowserProcessHandlerOnRegisterCustomPreferencesEvent.DECODER,
                         ev -> handler.onRegisterCustomPreferences(ev.type(), ev.registrar())),
-                session.on(BrowserProcessHandlerOnContextInitializedEvent.MESSAGE_ID, BrowserProcessHandlerOnContextInitializedEvent.DECODER,
+                session.on(MessageIds.BROWSER_PROCESS_HANDLER_ON_CONTEXT_INITIALIZED_EVENT, EmptyMessage.DECODER,
                         ev -> handler.onContextInitialized()),
-                session.on(BrowserProcessHandlerOnBeforeChildProcessLaunchEvent.MESSAGE_ID, BrowserProcessHandlerOnBeforeChildProcessLaunchEvent.DECODER,
+                session.on(MessageIds.BROWSER_PROCESS_HANDLER_ON_BEFORE_CHILD_PROCESS_LAUNCH_EVENT, BrowserProcessHandlerOnBeforeChildProcessLaunchEvent.DECODER,
                         ev -> handler.onBeforeChildProcessLaunch(ev.commandLine())),
-                session.intercept(BrowserProcessHandlerOnAlreadyRunningAppRelaunchEvent.MESSAGE_ID, BrowserProcessHandlerOnAlreadyRunningAppRelaunchEvent.DECODER, ev -> {
+                session.intercept(MessageIds.BROWSER_PROCESS_HANDLER_ON_ALREADY_RUNNING_APP_RELAUNCH_EVENT, BrowserProcessHandlerOnAlreadyRunningAppRelaunchEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onAlreadyRunningAppRelaunch(ev.commandLine(), ev.currentDirectory());
-                    return java.util.Optional.of(new BrowserProcessHandlerOnAlreadyRunningAppRelaunchResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.BROWSER_PROCESS_HANDLER_ON_ALREADY_RUNNING_APP_RELAUNCH_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.on(BrowserProcessHandlerOnScheduleMessagePumpWorkEvent.MESSAGE_ID, BrowserProcessHandlerOnScheduleMessagePumpWorkEvent.DECODER,
+                session.on(MessageIds.BROWSER_PROCESS_HANDLER_ON_SCHEDULE_MESSAGE_PUMP_WORK_EVENT, BrowserProcessHandlerOnScheduleMessagePumpWorkEvent.DECODER,
                         ev -> handler.onScheduleMessagePumpWork(ev.delayMs())));
     }
 }

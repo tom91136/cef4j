@@ -1,0 +1,119 @@
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-types
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+package net.kurobako.cef4j.gen;
+
+import java.util.Optional;
+import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
+
+/**
+ * Class representing a snapshot of a component's state at the time of retrieval. To get updated information, retrieve a
+ * new CefComponent object via {@link net.kurobako.cef4j.gen.CefComponentUpdater#getComponentById(String)} or
+ * GetComponents. The methods of this class may be called on any thread.
+ *
+ * <p>Definition generated from cef_component_updater_capi.h
+ *
+ * <pre>typedef struct _cef_component_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_component_t;</pre>
+ *
+ * @see <a
+ *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:65</a>
+ */
+@Generated("./mvnw generate-sources -pl cef4j-types -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@NullableBoundary("generated external ABI")
+public interface CefComponent extends CefLibraryObject {
+
+    /**
+     * Returns the ID (media source URN or URL) for this source.
+     *
+     * <p>Definition generated from cef_component_updater_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_id)(struct _cef_component_t* self);</pre>
+     *
+     * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:299</a>
+     */
+    Optional<String> getId();
+
+    /**
+     * Returns the human-readable name of this component. Returns an empty string if the component is not installed.
+     *
+     * <p>Definition generated from cef_component_updater_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_name)(struct _cef_component_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:80</a>
+     */
+    Optional<String> getName();
+
+    /**
+     * Returns the version of this component as a string (e.g., "1.2.3.4"). Returns an empty string if the component is
+     * not installed.
+     *
+     * <p>Definition generated from cef_component_updater_capi.h
+     *
+     * <pre>cef_string_userfree_t (CEF_CALLBACK* get_version)(struct _cef_component_t* self);</pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:87</a>
+     */
+    Optional<String> getVersion();
+
+    /**
+     * Returns the state of this component at the time this object was created. A component is considered installed when
+     * its state is one of: {@link net.kurobako.cef4j.gen.CefComponentState.Kind#UPDATED},
+     * {@link net.kurobako.cef4j.gen.CefComponentState.Kind#UP_TO_DATE}, or
+     * {@link net.kurobako.cef4j.gen.CefComponentState.Kind#RUN}.
+     *
+     * <p>Definition generated from cef_component_updater_capi.h
+     *
+     * <pre>cef_component_state_t (CEF_CALLBACK* get_state)(struct _cef_component_t* self);</pre>
+     *
+     * @return the result, or {@code CEF_COMPONENT_STATE_NEW} for default handling
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__component__updater_8h.html">cef_component_updater.h:94</a>
+     */
+    CefComponentState getState();
+
+    final class NativePeer extends net.kurobako.cef4j.peer.NativeObject implements CefComponent {
+        NativePeer(long ptr) {
+            super("CefComponent", ptr, NativePeer::release0);
+        }
+
+        private static native void release0(long ptr);
+
+        @Override
+        public Optional<String> getId() {
+            checkNotClosed();
+            return Optional.ofNullable(getId0(nativePtr));
+        }
+
+        @Override
+        public Optional<String> getName() {
+            checkNotClosed();
+            return Optional.ofNullable(getName0(nativePtr));
+        }
+
+        @Override
+        public Optional<String> getVersion() {
+            checkNotClosed();
+            return Optional.ofNullable(getVersion0(nativePtr));
+        }
+
+        @Override
+        public CefComponentState getState() {
+            checkNotClosed();
+            return getState0(nativePtr);
+        }
+
+        static native String getId0(long self);
+
+        static native String getName0(long self);
+
+        static native String getVersion0(long self);
+
+        static native CefComponentState getState0(long self);
+    }
+}

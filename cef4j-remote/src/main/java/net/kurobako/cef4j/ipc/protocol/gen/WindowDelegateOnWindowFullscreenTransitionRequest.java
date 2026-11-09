@@ -2,18 +2,16 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class WindowDelegateOnWindowFullscreenTransitionRequest implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 598957207;
 
     private final RemoteHandle self;
     private final RemoteHandle window;
@@ -38,35 +36,23 @@ public final class WindowDelegateOnWindowFullscreenTransitionRequest implements 
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 12;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putInt(window.id());
-            __dst.putInt(isCompleted);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            __out.putInt(window.id());
+            __out.putInt(isCompleted);
+        });
     }
 
-    public static final CefMessageDecoder<WindowDelegateOnWindowFullscreenTransitionRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<WindowDelegateOnWindowFullscreenTransitionRequest> DECODER = WireDecoder.message("WindowDelegateOnWindowFullscreenTransitionRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final RemoteHandle window = WireDecoder.handle(__buf, "window");
         final int isCompleted = WireDecoder.int32(__buf, "isCompleted");
-        WireDecoder.requireFullyConsumed(__buf, "WindowDelegateOnWindowFullscreenTransitionRequest");
         return new WindowDelegateOnWindowFullscreenTransitionRequest(self, window, isCompleted);
-    };
+    });
 }

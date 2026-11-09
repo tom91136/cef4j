@@ -37,45 +37,9 @@ object JavaNativeCodeGen {
 
     val nativeDecls = fns.map(renderNativeDecl(_)).mkString("\n\n")
 
-    s"""    final class NativePeer implements $javaName, AutoCloseable {
-        private final long nativePtr;
-        private final java.lang.ref.Cleaner.Cleanable cleanable;
-        private volatile boolean closed;
-
+    s"""    final class NativePeer extends net.kurobako.cef4j.peer.NativeObject implements $javaName {
         NativePeer(long ptr) {
-            this.nativePtr = ptr;
-            this.cleanable = net.kurobako.cef4j.NativeCleaner.INSTANCE.register(this, new Release(ptr));
-        }
-
-        @Override
-        public void peerClose() {
-            closed = true;
-            cleanable.clean();
-        }
-
-        @Override
-        public boolean peerIsClosed() {
-            return closed;
-        }
-
-        private void checkNotClosed() {
-            if (closed) throw new IllegalStateException("$javaName has been closed");
-        }
-
-        private static final org.slf4j.Logger _log = org.slf4j.LoggerFactory.getLogger($javaName.class);
-
-        private static class Release implements Runnable {
-            private final long ptr;
-
-            Release(long ptr) {
-                this.ptr = ptr;
-            }
-
-            @Override
-            public void run() {
-                if (_log.isTraceEnabled()) _log.trace("release $javaName 0x{}", Long.toHexString(ptr));
-                release0(ptr);
-            }
+            super("$javaName", ptr, NativePeer::release0);
         }
 
         private static native void release0(long ptr);
@@ -87,23 +51,6 @@ $nativeDecls
 ${
         if (extraNativeDecls.nonEmpty) "\n" + extraNativeDecls.mkString("\n") else ""
       }
-
-        @Override
-        public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
-            if (this == obj) return true;
-            if (!(obj instanceof NativePeer)) return false;
-            return this.nativePtr == ((NativePeer) obj).nativePtr;
-        }
-
-        @Override
-        public int hashCode() {
-            return Long.hashCode(nativePtr);
-        }
-
-        @Override
-        public String toString() {
-            return "$javaName{0x" + Long.toHexString(nativePtr) + "}";
-        }
     }"""
   }
 

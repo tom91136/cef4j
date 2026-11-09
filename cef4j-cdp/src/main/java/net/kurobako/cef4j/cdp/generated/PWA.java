@@ -1,12 +1,13 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpValue;
 import net.kurobako.cef4j.policy.NullableBoundary;
@@ -22,6 +23,13 @@ import org.jspecify.annotations.Nullable;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class PWA {
     private PWA() {}
+    private static final CdpField<java.util.List<PWA.FileHandlerAccept>> ACCEPTS = CdpField.of("accepts", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(PWA.FileHandlerAccept.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<PWA.DisplayMode> DISPLAY_MODE = CdpField.of("displayMode", value -> PWA.DisplayMode.of((String) value));
+    private static final CdpField<java.util.List<String>> FILES = CdpField.of("files", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<java.util.List<String>> FILE_EXTENSIONS = CdpField.of("fileExtensions", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<java.util.List<PWA.FileHandler>> FILE_HANDLERS = CdpField.of("fileHandlers", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(PWA.FileHandler.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Target.TargetID> TARGET_ID = CdpField.of("targetId", value -> new Target.TargetID((String) value));
+    private static final CdpField<java.util.List<Target.TargetID>> TARGET_IDS = CdpField.of("targetIds", value -> CdpObject.requireList(value, element0 -> new Target.TargetID((String) element0)));
     /**
      * The following types are the replica of https://crsrc.org/c/chrome/browser/web_applications/proto/web_app_os_integration_state.proto;drc=9910d3be894c8f142c977ba1023f30a656bc13fc;l=67
      */
@@ -36,14 +44,14 @@ public final class PWA {
          * @return the protocol field value
          */
         public String mediaType() {
-            return (String) require("mediaType");
+            return requireString("mediaType");
         }
         /**
          * Returns the fileExtensions field.
          * @return the protocol field value
          */
         public java.util.List<String> fileExtensions() {
-            return CdpObject.requireList(require("fileExtensions"), element0 -> (String) element0);
+            return require(FILE_EXTENSIONS);
         }
         /**
          * New name of the mimetype according to https://www.iana.org/assignments/media-types/media-types.xhtml
@@ -77,21 +85,21 @@ public final class PWA {
          * @return the protocol field value
          */
         public String action() {
-            return (String) require("action");
+            return requireString("action");
         }
         /**
          * Returns the accepts field.
          * @return the protocol field value
          */
         public java.util.List<PWA.FileHandlerAccept> accepts() {
-            return CdpObject.requireList(require("accepts"), element0 -> java.util.Objects.requireNonNull(PWA.FileHandlerAccept.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(ACCEPTS);
         }
         /**
          * Returns the displayName field.
          * @return the protocol field value
          */
         public String displayName() {
-            return (String) require("displayName");
+            return requireString("displayName");
         }
         /**
          * Sets the action field.
@@ -142,13 +150,6 @@ public final class PWA {
      */
     public static final class GetOsAppStateRequest extends CdpObject {
         public GetOsAppStateRequest() {}
-        /**
-         * Returns the following OS state for the given manifest id.
-         * @param manifestId protocol value
-         */
-        public GetOsAppStateRequest(String manifestId) {
-            manifestId(manifestId);
-        }
         public static GetOsAppStateRequest fromMap(Map<String, Object> values) {
             final GetOsAppStateRequest instance_ = new GetOsAppStateRequest();
             if (values != null) instance_.values.putAll(values);
@@ -159,7 +160,7 @@ public final class PWA {
          * @return the protocol field value
          */
         public String manifestId() {
-            return (String) require("manifestId");
+            return requireString("manifestId");
         }
         /**
          * The id from the webapp&#x27;s manifest file, commonly it&#x27;s the url of the site installing the webapp. See https://web.dev/learn/pwa/web-app-manifest.
@@ -182,19 +183,6 @@ public final class PWA {
      */
     public static final class InstallRequest extends CdpObject {
         public InstallRequest() {}
-        /**
-         * Installs the given manifest identity, optionally using the given installUrlOrBundleUrl
-         * <p>IWA-specific install description: manifestId corresponds to isolated-app:// + web_package::SignedWebBundleId
-         * <p>File installation mode: The installUrlOrBundleUrl can be either file:// or http(s):// pointing to a signed web bundle (.swbn). In this case SignedWebBundleId must correspond to The .swbn file&#x27;s signing key.
-         * <p>Dev proxy installation mode: installUrlOrBundleUrl must be http(s):// that serves dev mode IWA. web_package::SignedWebBundleId must be of type dev proxy.
-         * <p>The advantage of dev proxy mode is that all changes to IWA automatically will be reflected in the running app without reinstallation.
-         * <p>To generate bundle id for proxy mode: 1. Generate 32 random bytes. 2. Add a specific suffix at the end following the documentation https://github.com/WICG/isolated-web-apps/blob/main/Scheme.md#suffix 3. Encode the entire sequence using Base32 without padding.
-         * <p>If Chrome is not in IWA dev mode, the installation will fail, regardless of the state of the allowlist.
-         * @param manifestId protocol value
-         */
-        public InstallRequest(String manifestId) {
-            manifestId(manifestId);
-        }
         public static InstallRequest fromMap(Map<String, Object> values) {
             final InstallRequest instance_ = new InstallRequest();
             if (values != null) instance_.values.putAll(values);
@@ -205,14 +193,14 @@ public final class PWA {
          * @return the protocol field value
          */
         public String manifestId() {
-            return (String) require("manifestId");
+            return requireString("manifestId");
         }
         /**
          * The location of the app or bundle overriding the one derived from the manifestId.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> installUrlOrBundleUrl() {
-            return raw("installUrlOrBundleUrl").map(value -> (String) value);
+            return optionalString("installUrlOrBundleUrl");
         }
         /**
          * Sets the manifestId field.
@@ -238,13 +226,6 @@ public final class PWA {
      */
     public static final class UninstallRequest extends CdpObject {
         public UninstallRequest() {}
-        /**
-         * Uninstalls the given manifest_id and closes any opened app windows.
-         * @param manifestId protocol value
-         */
-        public UninstallRequest(String manifestId) {
-            manifestId(manifestId);
-        }
         public static UninstallRequest fromMap(Map<String, Object> values) {
             final UninstallRequest instance_ = new UninstallRequest();
             if (values != null) instance_.values.putAll(values);
@@ -255,7 +236,7 @@ public final class PWA {
          * @return the protocol field value
          */
         public String manifestId() {
-            return (String) require("manifestId");
+            return requireString("manifestId");
         }
         /**
          * Sets the manifestId field.
@@ -272,13 +253,6 @@ public final class PWA {
      */
     public static final class LaunchRequest extends CdpObject {
         public LaunchRequest() {}
-        /**
-         * Launches the installed web app, or an url in the same web app instead of the default start url if it is provided. Returns a page Target.TargetID which can be used to attach to via Target.attachToTarget or similar APIs.
-         * @param manifestId protocol value
-         */
-        public LaunchRequest(String manifestId) {
-            manifestId(manifestId);
-        }
         public static LaunchRequest fromMap(Map<String, Object> values) {
             final LaunchRequest instance_ = new LaunchRequest();
             if (values != null) instance_.values.putAll(values);
@@ -289,14 +263,14 @@ public final class PWA {
          * @return the protocol field value
          */
         public String manifestId() {
-            return (String) require("manifestId");
+            return requireString("manifestId");
         }
         /**
          * Returns the url field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return raw("url").map(value -> (String) value);
+            return optionalString("url");
         }
         /**
          * Sets the manifestId field.
@@ -324,16 +298,6 @@ public final class PWA {
      */
     public static final class LaunchFilesInAppRequest extends CdpObject {
         public LaunchFilesInAppRequest() {}
-        /**
-         * Opens one or more local files from an installed web app identified by its manifestId. The web app needs to have file handlers registered to process the files. The API returns one or more page Target.TargetIDs which can be used to attach to via Target.attachToTarget or similar APIs. If some files in the parameters cannot be handled by the web app, they will be ignored. If none of the files can be handled, this API returns an error. If no files are provided as the parameter, this API also returns an error.
-         * <p>According to the definition of the file handlers in the manifest file, one Target.TargetID may represent a page handling one or more files. The order of the returned Target.TargetIDs is not guaranteed.
-         * <p>TODO(crbug.com/339454034): Check the existences of the input files.
-         * @param manifestId protocol value
-         * @param files protocol value
-         */
-        public LaunchFilesInAppRequest(String manifestId, java.util.List<String> files) {
-            manifestId(manifestId).files(files);
-        }
         public static LaunchFilesInAppRequest fromMap(Map<String, Object> values) {
             final LaunchFilesInAppRequest instance_ = new LaunchFilesInAppRequest();
             if (values != null) instance_.values.putAll(values);
@@ -344,14 +308,14 @@ public final class PWA {
          * @return the protocol field value
          */
         public String manifestId() {
-            return (String) require("manifestId");
+            return requireString("manifestId");
         }
         /**
          * Returns the files field.
          * @return the protocol field value
          */
         public java.util.List<String> files() {
-            return CdpObject.requireList(require("files"), element0 -> (String) element0);
+            return require(FILES);
         }
         /**
          * Sets the manifestId field.
@@ -377,13 +341,6 @@ public final class PWA {
      */
     public static final class OpenCurrentPageInAppRequest extends CdpObject {
         public OpenCurrentPageInAppRequest() {}
-        /**
-         * Opens the current page in its web app identified by the manifest id, needs to be called on a page target. This function returns immediately without waiting for the app to finish loading.
-         * @param manifestId protocol value
-         */
-        public OpenCurrentPageInAppRequest(String manifestId) {
-            manifestId(manifestId);
-        }
         public static OpenCurrentPageInAppRequest fromMap(Map<String, Object> values) {
             final OpenCurrentPageInAppRequest instance_ = new OpenCurrentPageInAppRequest();
             if (values != null) instance_.values.putAll(values);
@@ -394,7 +351,7 @@ public final class PWA {
          * @return the protocol field value
          */
         public String manifestId() {
-            return (String) require("manifestId");
+            return requireString("manifestId");
         }
         /**
          * Sets the manifestId field.
@@ -413,15 +370,6 @@ public final class PWA {
      */
     public static final class ChangeAppUserSettingsRequest extends CdpObject {
         public ChangeAppUserSettingsRequest() {}
-        /**
-         * Changes user settings of the web app identified by its manifestId. If the app was not installed, this command returns an error. Unset parameters will be ignored; unrecognized values will cause an error.
-         * <p>Unlike the ones defined in the manifest files of the web apps, these settings are provided by the browser and controlled by the users, they impact the way the browser handling the web apps.
-         * <p>See the comment of each parameter.
-         * @param manifestId protocol value
-         */
-        public ChangeAppUserSettingsRequest(String manifestId) {
-            manifestId(manifestId);
-        }
         public static ChangeAppUserSettingsRequest fromMap(Map<String, Object> values) {
             final ChangeAppUserSettingsRequest instance_ = new ChangeAppUserSettingsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -432,7 +380,7 @@ public final class PWA {
          * @return the protocol field value
          */
         public String manifestId() {
-            return (String) require("manifestId");
+            return requireString("manifestId");
         }
         /**
          * If user allows the links clicked on by the user in the app&#x27;s scope, or extended scope if the manifest has scope extensions and the flags {@code DesktopPWAsLinkCapturingWithScopeExtensions} and {@code WebAppEnableScopeExtensions} are enabled.
@@ -441,14 +389,14 @@ public final class PWA {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> linkCapturing() {
-            return raw("linkCapturing").map(value -> (Boolean) value);
+            return optionalBoolean("linkCapturing");
         }
         /**
          * Returns the displayMode field.
          * @return the protocol field value, empty when absent
          */
         public Optional<PWA.DisplayMode> displayMode() {
-            return raw("displayMode").map(value -> PWA.DisplayMode.of((String) value));
+            return optional(DISPLAY_MODE);
         }
         /**
          * Sets the manifestId field.
@@ -494,14 +442,14 @@ public final class PWA {
          * @return the protocol field value
          */
         public long badgeCount() {
-            return ((Number) require("badgeCount")).longValue();
+            return requireLong("badgeCount");
         }
         /**
          * Returns the fileHandlers field.
          * @return the protocol field value
          */
         public java.util.List<PWA.FileHandler> fileHandlers() {
-            return CdpObject.requireList(require("fileHandlers"), element0 -> java.util.Objects.requireNonNull(PWA.FileHandler.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(FILE_HANDLERS);
         }
         /**
          * Sets the badgeCount field.
@@ -522,18 +470,15 @@ public final class PWA {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Returns the following OS state for the given manifest id.
          * @param manifestId protocol value
          * @return a stage completing with the command result
          */
         public CompletionStage<GetOsAppStateResult> getOsAppState(String manifestId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("manifestId", CdpObject.json(manifestId));
-            return client.call("PWA.getOsAppState", params, result_ -> new GetOsAppStateResult(result_));
+            return call("PWA.getOsAppState", params("manifestId", manifestId), GetOsAppStateResult::fromMap);
         }
         /**
          * Returns the following OS state for the given manifest id.
@@ -541,7 +486,7 @@ public final class PWA {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetOsAppStateResult> getOsAppState(GetOsAppStateRequest request) {
-            return client.call("PWA.getOsAppState", request == null ? null : request.toMap(), result_ -> new GetOsAppStateResult(result_));
+            return call("PWA.getOsAppState", request, GetOsAppStateResult::fromMap);
         }
         /**
          * Installs the given manifest identity, optionally using the given installUrlOrBundleUrl
@@ -556,10 +501,7 @@ public final class PWA {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> install(String manifestId, String installUrlOrBundleUrl) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("manifestId", CdpObject.json(manifestId));
-            params.put("installUrlOrBundleUrl", CdpObject.json(installUrlOrBundleUrl));
-            return client.call("PWA.install", params);
+            return call("PWA.install", params("manifestId", manifestId, "installUrlOrBundleUrl", installUrlOrBundleUrl));
         }
         /**
          * Installs the given manifest identity, optionally using the given installUrlOrBundleUrl
@@ -573,9 +515,7 @@ public final class PWA {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> install(String manifestId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("manifestId", CdpObject.json(manifestId));
-            return client.call("PWA.install", params);
+            return call("PWA.install", params("manifestId", manifestId));
         }
         /**
          * Installs the given manifest identity, optionally using the given installUrlOrBundleUrl
@@ -589,7 +529,7 @@ public final class PWA {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> install(InstallRequest request) {
-            return client.call("PWA.install", request == null ? null : request.toMap());
+            return call("PWA.install", request);
         }
         /**
          * Uninstalls the given manifest_id and closes any opened app windows.
@@ -597,9 +537,7 @@ public final class PWA {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> uninstall(String manifestId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("manifestId", CdpObject.json(manifestId));
-            return client.call("PWA.uninstall", params);
+            return call("PWA.uninstall", params("manifestId", manifestId));
         }
         /**
          * Uninstalls the given manifest_id and closes any opened app windows.
@@ -607,7 +545,7 @@ public final class PWA {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> uninstall(UninstallRequest request) {
-            return client.call("PWA.uninstall", request == null ? null : request.toMap());
+            return call("PWA.uninstall", request);
         }
         /**
          * Launches the installed web app, or an url in the same web app instead of the default start url if it is provided. Returns a page Target.TargetID which can be used to attach to via Target.attachToTarget or similar APIs.
@@ -616,10 +554,7 @@ public final class PWA {
          * @return a stage completing with the command result
          */
         public CompletionStage<Target.TargetID> launch(String manifestId, String url) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("manifestId", CdpObject.json(manifestId));
-            params.put("url", CdpObject.json(url));
-            return client.call("PWA.launch", params, result_ -> new Target.TargetID((String) java.util.Objects.requireNonNull(result_.get("targetId"))));
+            return call("PWA.launch", params("manifestId", manifestId, "url", url), TARGET_ID::require);
         }
         /**
          * Launches the installed web app, or an url in the same web app instead of the default start url if it is provided. Returns a page Target.TargetID which can be used to attach to via Target.attachToTarget or similar APIs.
@@ -627,9 +562,7 @@ public final class PWA {
          * @return a stage completing with the command result
          */
         public CompletionStage<Target.TargetID> launch(String manifestId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("manifestId", CdpObject.json(manifestId));
-            return client.call("PWA.launch", params, result_ -> new Target.TargetID((String) java.util.Objects.requireNonNull(result_.get("targetId"))));
+            return call("PWA.launch", params("manifestId", manifestId), TARGET_ID::require);
         }
         /**
          * Launches the installed web app, or an url in the same web app instead of the default start url if it is provided. Returns a page Target.TargetID which can be used to attach to via Target.attachToTarget or similar APIs.
@@ -637,7 +570,7 @@ public final class PWA {
          * @return a stage completing with the command result
          */
         public CompletionStage<Target.TargetID> launch(LaunchRequest request) {
-            return client.call("PWA.launch", request == null ? null : request.toMap(), result_ -> new Target.TargetID((String) java.util.Objects.requireNonNull(result_.get("targetId"))));
+            return call("PWA.launch", request, TARGET_ID::require);
         }
         /**
          * Opens one or more local files from an installed web app identified by its manifestId. The web app needs to have file handlers registered to process the files. The API returns one or more page Target.TargetIDs which can be used to attach to via Target.attachToTarget or similar APIs. If some files in the parameters cannot be handled by the web app, they will be ignored. If none of the files can be handled, this API returns an error. If no files are provided as the parameter, this API also returns an error.
@@ -648,10 +581,7 @@ public final class PWA {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Target.TargetID>> launchFilesInApp(String manifestId, java.util.List<String> files) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("manifestId", CdpObject.json(manifestId));
-            params.put("files", CdpObject.json(files));
-            return client.call("PWA.launchFilesInApp", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("targetIds")), element0 -> new Target.TargetID((String) element0)));
+            return call("PWA.launchFilesInApp", params("manifestId", manifestId, "files", files), TARGET_IDS::require);
         }
         /**
          * Opens one or more local files from an installed web app identified by its manifestId. The web app needs to have file handlers registered to process the files. The API returns one or more page Target.TargetIDs which can be used to attach to via Target.attachToTarget or similar APIs. If some files in the parameters cannot be handled by the web app, they will be ignored. If none of the files can be handled, this API returns an error. If no files are provided as the parameter, this API also returns an error.
@@ -661,7 +591,7 @@ public final class PWA {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Target.TargetID>> launchFilesInApp(LaunchFilesInAppRequest request) {
-            return client.call("PWA.launchFilesInApp", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("targetIds")), element0 -> new Target.TargetID((String) element0)));
+            return call("PWA.launchFilesInApp", request, TARGET_IDS::require);
         }
         /**
          * Opens the current page in its web app identified by the manifest id, needs to be called on a page target. This function returns immediately without waiting for the app to finish loading.
@@ -669,9 +599,7 @@ public final class PWA {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> openCurrentPageInApp(String manifestId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("manifestId", CdpObject.json(manifestId));
-            return client.call("PWA.openCurrentPageInApp", params);
+            return call("PWA.openCurrentPageInApp", params("manifestId", manifestId));
         }
         /**
          * Opens the current page in its web app identified by the manifest id, needs to be called on a page target. This function returns immediately without waiting for the app to finish loading.
@@ -679,7 +607,7 @@ public final class PWA {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> openCurrentPageInApp(OpenCurrentPageInAppRequest request) {
-            return client.call("PWA.openCurrentPageInApp", request == null ? null : request.toMap());
+            return call("PWA.openCurrentPageInApp", request);
         }
         /**
          * Changes user settings of the web app identified by its manifestId. If the app was not installed, this command returns an error. Unset parameters will be ignored; unrecognized values will cause an error.
@@ -691,11 +619,7 @@ public final class PWA {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> changeAppUserSettings(String manifestId, @Nullable Boolean linkCapturing, PWA.@Nullable DisplayMode displayMode) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("manifestId", CdpObject.json(manifestId));
-            if (linkCapturing != null) params.put("linkCapturing", CdpObject.json(linkCapturing));
-            if (displayMode != null) params.put("displayMode", CdpObject.json(displayMode));
-            return client.call("PWA.changeAppUserSettings", params);
+            return call("PWA.changeAppUserSettings", params("manifestId", manifestId, "linkCapturing", linkCapturing, "displayMode", displayMode));
         }
         /**
          * Changes user settings of the web app identified by its manifestId. If the app was not installed, this command returns an error. Unset parameters will be ignored; unrecognized values will cause an error.
@@ -705,9 +629,7 @@ public final class PWA {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> changeAppUserSettings(String manifestId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("manifestId", CdpObject.json(manifestId));
-            return client.call("PWA.changeAppUserSettings", params);
+            return call("PWA.changeAppUserSettings", params("manifestId", manifestId));
         }
         /**
          * Changes user settings of the web app identified by its manifestId. If the app was not installed, this command returns an error. Unset parameters will be ignored; unrecognized values will cause an error.
@@ -717,7 +639,7 @@ public final class PWA {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> changeAppUserSettings(ChangeAppUserSettingsRequest request) {
-            return client.call("PWA.changeAppUserSettings", request == null ? null : request.toMap());
+            return call("PWA.changeAppUserSettings", request);
         }
     }
 }

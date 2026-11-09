@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,57 +13,27 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class TextField implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class TextField extends BrowserFacade {
 
     public TextField(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_textfield_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_textfield_t");
     }
 
     /** Dispatches {@code set_password_input} to the runtime server. */
     public CompletableFuture<Void> setPasswordInput(int passwordInput) {
-        return CefFutures.discard(session.request(new TextFieldSetPasswordInputRequest(handle, passwordInput), TextFieldSetPasswordInputResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.TEXT_FIELD_SET_PASSWORD_INPUT_REQUEST, new TextFieldSetPasswordInputRequest(handle, passwordInput), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code is_password_input} to the runtime server. */
     public CompletableFuture<Integer> isPasswordInput() {
         return CefFutures.map(
-            session.request(new TextFieldIsPasswordInputRequest(handle), TextFieldIsPasswordInputResponse.DECODER),
-            TextFieldIsPasswordInputResponse::result);
+            session.request(MessageIds.TEXT_FIELD_IS_PASSWORD_INPUT_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code set_read_only} to the runtime server. */
     public CompletableFuture<Void> setReadOnly(int readOnly) {
-        return CefFutures.discard(session.request(new TextFieldSetReadOnlyRequest(handle, readOnly), TextFieldSetReadOnlyResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.TEXT_FIELD_SET_READ_ONLY_REQUEST, new TextFieldSetReadOnlyRequest(handle, readOnly), EmptyMessage.DECODER));
     }
 
     /**
@@ -75,8 +44,8 @@ public final class TextField implements AutoCloseable {
      */
     public CompletableFuture<Integer> isReadOnly() {
         return CefFutures.map(
-            session.request(new TextFieldIsReadOnlyRequest(handle), TextFieldIsReadOnlyResponse.DECODER),
-            TextFieldIsReadOnlyResponse::result);
+            session.request(MessageIds.TEXT_FIELD_IS_READ_ONLY_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -87,23 +56,23 @@ public final class TextField implements AutoCloseable {
      */
     public CompletableFuture<String> getText() {
         return CefFutures.map(
-            session.request(new TextFieldGetTextRequest(handle), TextFieldGetTextResponse.DECODER),
-            TextFieldGetTextResponse::result);
+            session.request(MessageIds.TEXT_FIELD_GET_TEXT_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /** Dispatches {@code set_text} to the runtime server. */
     public CompletableFuture<Void> setText(String text) {
-        return CefFutures.discard(session.request(new TextFieldSetTextRequest(handle, text), TextFieldSetTextResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.TEXT_FIELD_SET_TEXT_REQUEST, new SelfHandleTextStringMessage(handle, text), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code append_text} to the runtime server. */
     public CompletableFuture<Void> appendText(String text) {
-        return CefFutures.discard(session.request(new TextFieldAppendTextRequest(handle, text), TextFieldAppendTextResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.TEXT_FIELD_APPEND_TEXT_REQUEST, new SelfHandleTextStringMessage(handle, text), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code insert_or_replace_text} to the runtime server. */
     public CompletableFuture<Void> insertOrReplaceText(String text) {
-        return CefFutures.discard(session.request(new TextFieldInsertOrReplaceTextRequest(handle, text), TextFieldInsertOrReplaceTextResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.TEXT_FIELD_INSERT_OR_REPLACE_TEXT_REQUEST, new SelfHandleTextStringMessage(handle, text), EmptyMessage.DECODER));
     }
 
     /**
@@ -114,15 +83,15 @@ public final class TextField implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasSelection() {
         return CefFutures.map(
-            session.request(new TextFieldHasSelectionRequest(handle), TextFieldHasSelectionResponse.DECODER),
-            TextFieldHasSelectionResponse::result);
+            session.request(MessageIds.TEXT_FIELD_HAS_SELECTION_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code get_selected_text} to the runtime server. */
     public CompletableFuture<String> getSelectedText() {
         return CefFutures.map(
-            session.request(new TextFieldGetSelectedTextRequest(handle), TextFieldGetSelectedTextResponse.DECODER),
-            TextFieldGetSelectedTextResponse::result);
+            session.request(MessageIds.TEXT_FIELD_GET_SELECTED_TEXT_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -132,31 +101,31 @@ public final class TextField implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__frame_8h.html">cef_frame.h:110</a>
      */
     public CompletableFuture<Void> selectAll(int reversed) {
-        return CefFutures.discard(session.request(new TextFieldSelectAllRequest(handle, reversed), TextFieldSelectAllResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.TEXT_FIELD_SELECT_ALL_REQUEST, new TextFieldSelectAllRequest(handle, reversed), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code clear_selection} to the runtime server. */
     public CompletableFuture<Void> clearSelection() {
-        return CefFutures.discard(session.request(new TextFieldClearSelectionRequest(handle), TextFieldClearSelectionResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.TEXT_FIELD_CLEAR_SELECTION_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code get_selected_range} to the runtime server. */
-    public CompletableFuture<Range> getSelectedRange() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefRange> getSelectedRange() {
         return CefFutures.map(
-            session.request(new TextFieldGetSelectedRangeRequest(handle), TextFieldGetSelectedRangeResponse.DECODER),
+            session.request(MessageIds.TEXT_FIELD_GET_SELECTED_RANGE_REQUEST, new SelfHandleMessage(handle), TextFieldGetSelectedRangeResponse.DECODER),
             TextFieldGetSelectedRangeResponse::result);
     }
 
     /** Dispatches {@code select_range} to the runtime server. */
-    public CompletableFuture<Void> selectRange(Range range) {
-        return CefFutures.discard(session.request(new TextFieldSelectRangeRequest(handle, range), TextFieldSelectRangeResponse.DECODER));
+    public CompletableFuture<Void> selectRange(net.kurobako.cef4j.gen.CefRange range) {
+        return CefFutures.discard(session.request(MessageIds.TEXT_FIELD_SELECT_RANGE_REQUEST, new TextFieldSelectRangeRequest(handle, range), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code get_cursor_position} to the runtime server. */
     public CompletableFuture<Long> getCursorPosition() {
         return CefFutures.map(
-            session.request(new TextFieldGetCursorPositionRequest(handle), TextFieldGetCursorPositionResponse.DECODER),
-            TextFieldGetCursorPositionResponse::result);
+            session.request(MessageIds.TEXT_FIELD_GET_CURSOR_POSITION_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -182,24 +151,24 @@ public final class TextField implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:457</a>
      */
     public CompletableFuture<Void> setFontList(String fontList) {
-        return CefFutures.discard(session.request(new TextFieldSetFontListRequest(handle, fontList), TextFieldSetFontListResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.TEXT_FIELD_SET_FONT_LIST_REQUEST, new SelfHandleFontListStringMessage(handle, fontList), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code apply_text_color} to the runtime server. */
-    public CompletableFuture<Void> applyTextColor(int color, Range range) {
-        return CefFutures.discard(session.request(new TextFieldApplyTextColorRequest(handle, color, range), TextFieldApplyTextColorResponse.DECODER));
+    public CompletableFuture<Void> applyTextColor(int color, net.kurobako.cef4j.gen.CefRange range) {
+        return CefFutures.discard(session.request(MessageIds.TEXT_FIELD_APPLY_TEXT_COLOR_REQUEST, new TextFieldApplyTextColorRequest(handle, color, range), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code apply_text_style} to the runtime server. */
-    public CompletableFuture<Void> applyTextStyle(int style, int add, Range range) {
-        return CefFutures.discard(session.request(new TextFieldApplyTextStyleRequest(handle, style, add, range), TextFieldApplyTextStyleResponse.DECODER));
+    public CompletableFuture<Void> applyTextStyle(int style, int add, net.kurobako.cef4j.gen.CefRange range) {
+        return CefFutures.discard(session.request(MessageIds.TEXT_FIELD_APPLY_TEXT_STYLE_REQUEST, new TextFieldApplyTextStyleRequest(handle, style, add, range), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code is_command_enabled} to the runtime server. */
     public CompletableFuture<Integer> isCommandEnabled(int commandId) {
         return CefFutures.map(
-            session.request(new TextFieldIsCommandEnabledRequest(handle, commandId), TextFieldIsCommandEnabledResponse.DECODER),
-            TextFieldIsCommandEnabledResponse::result);
+            session.request(MessageIds.TEXT_FIELD_IS_COMMAND_ENABLED_REQUEST, new SelfHandleCommandIdIntMessage(handle, commandId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -209,28 +178,28 @@ public final class TextField implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:53</a>
      */
     public CompletableFuture<Void> executeCommand(int commandId) {
-        return CefFutures.discard(session.request(new TextFieldExecuteCommandRequest(handle, commandId), TextFieldExecuteCommandResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.TEXT_FIELD_EXECUTE_COMMAND_REQUEST, new SelfHandleCommandIdIntMessage(handle, commandId), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code clear_edit_history} to the runtime server. */
     public CompletableFuture<Void> clearEditHistory() {
-        return CefFutures.discard(session.request(new TextFieldClearEditHistoryRequest(handle), TextFieldClearEditHistoryResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.TEXT_FIELD_CLEAR_EDIT_HISTORY_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code set_placeholder_text} to the runtime server. */
     public CompletableFuture<Void> setPlaceholderText(String text) {
-        return CefFutures.discard(session.request(new TextFieldSetPlaceholderTextRequest(handle, text), TextFieldSetPlaceholderTextResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.TEXT_FIELD_SET_PLACEHOLDER_TEXT_REQUEST, new SelfHandleTextStringMessage(handle, text), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code get_placeholder_text} to the runtime server. */
     public CompletableFuture<String> getPlaceholderText() {
         return CefFutures.map(
-            session.request(new TextFieldGetPlaceholderTextRequest(handle), TextFieldGetPlaceholderTextResponse.DECODER),
-            TextFieldGetPlaceholderTextResponse::result);
+            session.request(MessageIds.TEXT_FIELD_GET_PLACEHOLDER_TEXT_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /** Dispatches {@code set_accessible_name} to the runtime server. */
     public CompletableFuture<Void> setAccessibleName(String name) {
-        return CefFutures.discard(session.request(new TextFieldSetAccessibleNameRequest(handle, name), TextFieldSetAccessibleNameResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.TEXT_FIELD_SET_ACCESSIBLE_NAME_REQUEST, new SelfHandleNameStringMessage(handle, name), EmptyMessage.DECODER));
     }
 }

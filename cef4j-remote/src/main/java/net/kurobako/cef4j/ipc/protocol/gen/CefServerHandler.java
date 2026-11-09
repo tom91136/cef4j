@@ -94,21 +94,21 @@ public interface CefServerHandler {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefServerHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(ServerHandlerOnServerCreatedEvent.MESSAGE_ID, ServerHandlerOnServerCreatedEvent.DECODER,
+                session.on(MessageIds.SERVER_HANDLER_ON_SERVER_CREATED_EVENT, ServerHandleMessage.DECODER,
                         ev -> handler.onServerCreated(ev.server())),
-                session.on(ServerHandlerOnServerDestroyedEvent.MESSAGE_ID, ServerHandlerOnServerDestroyedEvent.DECODER,
+                session.on(MessageIds.SERVER_HANDLER_ON_SERVER_DESTROYED_EVENT, ServerHandleMessage.DECODER,
                         ev -> handler.onServerDestroyed(ev.server())),
-                session.on(ServerHandlerOnClientConnectedEvent.MESSAGE_ID, ServerHandlerOnClientConnectedEvent.DECODER,
+                session.on(MessageIds.SERVER_HANDLER_ON_CLIENT_CONNECTED_EVENT, ServerHandleConnectionIdIntMessage.DECODER,
                         ev -> handler.onClientConnected(ev.server(), ev.connectionId())),
-                session.on(ServerHandlerOnClientDisconnectedEvent.MESSAGE_ID, ServerHandlerOnClientDisconnectedEvent.DECODER,
+                session.on(MessageIds.SERVER_HANDLER_ON_CLIENT_DISCONNECTED_EVENT, ServerHandleConnectionIdIntMessage.DECODER,
                         ev -> handler.onClientDisconnected(ev.server(), ev.connectionId())),
-                session.on(ServerHandlerOnHttpRequestEvent.MESSAGE_ID, ServerHandlerOnHttpRequestEvent.DECODER,
+                session.on(MessageIds.SERVER_HANDLER_ON_HTTP_REQUEST_EVENT, ServerHandlerOnHttpRequestEvent.DECODER,
                         ev -> handler.onHttpRequest(ev.server(), ev.connectionId(), ev.clientAddress(), ev.request())),
-                session.on(ServerHandlerOnWebSocketRequestEvent.MESSAGE_ID, ServerHandlerOnWebSocketRequestEvent.DECODER,
+                session.on(MessageIds.SERVER_HANDLER_ON_WEB_SOCKET_REQUEST_EVENT, ServerHandlerOnWebSocketRequestEvent.DECODER,
                         ev -> handler.onWebSocketRequest(ev.server(), ev.connectionId(), ev.clientAddress(), ev.request(), ev.callback())),
-                session.on(ServerHandlerOnWebSocketConnectedEvent.MESSAGE_ID, ServerHandlerOnWebSocketConnectedEvent.DECODER,
+                session.on(MessageIds.SERVER_HANDLER_ON_WEB_SOCKET_CONNECTED_EVENT, ServerHandleConnectionIdIntMessage.DECODER,
                         ev -> handler.onWebSocketConnected(ev.server(), ev.connectionId())),
-                session.on(ServerHandlerOnWebSocketMessageEvent.MESSAGE_ID, ServerHandlerOnWebSocketMessageEvent.DECODER,
+                session.on(MessageIds.SERVER_HANDLER_ON_WEB_SOCKET_MESSAGE_EVENT, ServerHandlerOnWebSocketMessageEvent.DECODER,
                         ev -> handler.onWebSocketMessage(ev.server(), ev.connectionId(), ev.data())));
     }
 }

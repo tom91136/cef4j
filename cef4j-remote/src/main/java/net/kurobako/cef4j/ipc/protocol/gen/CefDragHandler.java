@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -23,14 +24,14 @@ public interface CefDragHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__handler_8h.html">cef_drag_handler.h:55</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onDragEnter(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle dragData, int mask) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onDragEnter(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle dragData, int mask) { return Unhandled.bool(); }
 
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefDragHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.intercept(DragHandlerOnDragEnterEvent.MESSAGE_ID, DragHandlerOnDragEnterEvent.DECODER, ev -> {
+                session.intercept(MessageIds.DRAG_HANDLER_ON_DRAG_ENTER_EVENT, DragHandlerOnDragEnterEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onDragEnter(ev.browser(), ev.dragData(), ev.mask());
-                    return java.util.Optional.of(new DragHandlerOnDragEnterResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.DRAG_HANDLER_ON_DRAG_ENTER_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }));
     }
 }

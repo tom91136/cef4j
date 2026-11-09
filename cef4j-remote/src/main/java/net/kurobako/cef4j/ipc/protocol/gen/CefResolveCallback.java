@@ -30,7 +30,7 @@ public interface CefResolveCallback {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefResolveCallback handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(ResolveCallbackOnResolveCompletedEvent.MESSAGE_ID, ResolveCallbackOnResolveCompletedEvent.DECODER,
+                session.on(MessageIds.RESOLVE_CALLBACK_ON_RESOLVE_COMPLETED_EVENT, ResolveCallbackOnResolveCompletedEvent.DECODER,
                         ev -> handler.onResolveCompleted(ev.result(), ev.resolvedIps())));
     }
 }

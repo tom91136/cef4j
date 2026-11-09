@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -65,7 +66,7 @@ public interface CefDisplayHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:90</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onTooltip(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String text) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onTooltip(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String text) { return Unhandled.bool(); }
 
     /**
      * Called when the browser receives a status message. {@code value} contains the text that will be displayed in the status message.
@@ -88,7 +89,7 @@ public interface CefDisplayHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:111</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onConsoleMessage(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int level, String message, String source, int line) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onConsoleMessage(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int level, String message, String source, int line) { return Unhandled.bool(); }
 
     /**
      * Called when auto-resize is enabled via {@code CefBrowserHost.setAutoResizeEnabled()} and the contents have auto-resized. {@code new_size} will be the desired size in DIP coordinates. Return {@code true} if the resize was handled or {@code false} for default handling.
@@ -97,7 +98,7 @@ public interface CefDisplayHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:124</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onAutoResize(net.kurobako.cef4j.ipc.session.RemoteHandle browser, Size newSize) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onAutoResize(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.gen.CefSize newSize) { return Unhandled.bool(); }
 
     /**
      * Called when the browser's access to an audio and/or video source has changed.
@@ -120,38 +121,38 @@ public interface CefDisplayHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__display__handler_8h.html">cef_display_handler.h:168</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onContentsBoundsChange(net.kurobako.cef4j.ipc.session.RemoteHandle browser, Rect newBounds) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onContentsBoundsChange(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.gen.CefRect newBounds) { return Unhandled.bool(); }
 
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefDisplayHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(DisplayHandlerOnAddressChangeEvent.MESSAGE_ID, DisplayHandlerOnAddressChangeEvent.DECODER,
+                session.on(MessageIds.DISPLAY_HANDLER_ON_ADDRESS_CHANGE_EVENT, DisplayHandlerOnAddressChangeEvent.DECODER,
                         ev -> handler.onAddressChange(ev.browser(), ev.frame(), ev.url())),
-                session.on(DisplayHandlerOnTitleChangeEvent.MESSAGE_ID, DisplayHandlerOnTitleChangeEvent.DECODER,
+                session.on(MessageIds.DISPLAY_HANDLER_ON_TITLE_CHANGE_EVENT, DisplayHandlerOnTitleChangeEvent.DECODER,
                         ev -> handler.onTitleChange(ev.browser(), ev.title())),
-                session.on(DisplayHandlerOnFaviconUrlchangeEvent.MESSAGE_ID, DisplayHandlerOnFaviconUrlchangeEvent.DECODER,
+                session.on(MessageIds.DISPLAY_HANDLER_ON_FAVICON_URLCHANGE_EVENT, DisplayHandlerOnFaviconUrlchangeEvent.DECODER,
                         ev -> handler.onFaviconUrlchange(ev.browser(), ev.iconUrls())),
-                session.on(DisplayHandlerOnFullscreenModeChangeEvent.MESSAGE_ID, DisplayHandlerOnFullscreenModeChangeEvent.DECODER,
+                session.on(MessageIds.DISPLAY_HANDLER_ON_FULLSCREEN_MODE_CHANGE_EVENT, DisplayHandlerOnFullscreenModeChangeEvent.DECODER,
                         ev -> handler.onFullscreenModeChange(ev.browser(), ev.fullscreen())),
-                session.intercept(DisplayHandlerOnTooltipEvent.MESSAGE_ID, DisplayHandlerOnTooltipEvent.DECODER, ev -> {
+                session.intercept(MessageIds.DISPLAY_HANDLER_ON_TOOLTIP_EVENT, DisplayHandlerOnTooltipEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onTooltip(ev.browser(), ev.text());
-                    return java.util.Optional.of(new DisplayHandlerOnTooltipResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.DISPLAY_HANDLER_ON_TOOLTIP_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.on(DisplayHandlerOnStatusMessageEvent.MESSAGE_ID, DisplayHandlerOnStatusMessageEvent.DECODER,
+                session.on(MessageIds.DISPLAY_HANDLER_ON_STATUS_MESSAGE_EVENT, DisplayHandlerOnStatusMessageEvent.DECODER,
                         ev -> handler.onStatusMessage(ev.browser(), ev.value())),
-                session.intercept(DisplayHandlerOnConsoleMessageEvent.MESSAGE_ID, DisplayHandlerOnConsoleMessageEvent.DECODER, ev -> {
+                session.intercept(MessageIds.DISPLAY_HANDLER_ON_CONSOLE_MESSAGE_EVENT, DisplayHandlerOnConsoleMessageEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onConsoleMessage(ev.browser(), ev.level(), ev.message(), ev.source(), ev.line());
-                    return java.util.Optional.of(new DisplayHandlerOnConsoleMessageResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.DISPLAY_HANDLER_ON_CONSOLE_MESSAGE_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.intercept(DisplayHandlerOnAutoResizeEvent.MESSAGE_ID, DisplayHandlerOnAutoResizeEvent.DECODER, ev -> {
+                session.intercept(MessageIds.DISPLAY_HANDLER_ON_AUTO_RESIZE_EVENT, DisplayHandlerOnAutoResizeEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onAutoResize(ev.browser(), ev.newSize());
-                    return java.util.Optional.of(new DisplayHandlerOnAutoResizeResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.DISPLAY_HANDLER_ON_AUTO_RESIZE_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.on(DisplayHandlerOnMediaAccessChangeEvent.MESSAGE_ID, DisplayHandlerOnMediaAccessChangeEvent.DECODER,
+                session.on(MessageIds.DISPLAY_HANDLER_ON_MEDIA_ACCESS_CHANGE_EVENT, DisplayHandlerOnMediaAccessChangeEvent.DECODER,
                         ev -> handler.onMediaAccessChange(ev.browser(), ev.hasVideoAccess(), ev.hasAudioAccess())),
-                session.intercept(DisplayHandlerOnContentsBoundsChangeEvent.MESSAGE_ID, DisplayHandlerOnContentsBoundsChangeEvent.DECODER, ev -> {
+                session.intercept(MessageIds.DISPLAY_HANDLER_ON_CONTENTS_BOUNDS_CHANGE_EVENT, DisplayHandlerOnContentsBoundsChangeEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onContentsBoundsChange(ev.browser(), ev.newBounds());
-                    return java.util.Optional.of(new DisplayHandlerOnContentsBoundsChangeResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.DISPLAY_HANDLER_ON_CONTENTS_BOUNDS_CHANGE_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }));
     }
 }

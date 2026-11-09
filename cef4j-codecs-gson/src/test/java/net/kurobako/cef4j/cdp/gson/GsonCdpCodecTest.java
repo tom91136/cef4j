@@ -29,7 +29,8 @@ final class GsonCdpCodecTest {
         try (CdpClient client = new CdpClient(transport, new GsonCdpCodec())) {
             Runtime.EvaluateResult result = client.domains()
                     .runtime()
-                    .evaluate(new Runtime.EvaluateRequest("'hello'").returnByValue(true))
+                    .evaluate(
+                            new Runtime.EvaluateRequest().expression("'hello'").returnByValue(true))
                     .toCompletableFuture()
                     .join();
 

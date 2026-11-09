@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,11 +9,10 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class V8SetPropertyRequest implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 19;
 
     private final RemoteHandle frame;
     private final int v8Handle;
@@ -79,39 +77,26 @@ public final class V8SetPropertyRequest implements CefMessageView, CefMessageEnc
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 37 + propertyNameBytes.length + stringValueBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(frame.id());
-            __dst.putInt(v8Handle);
-            __dst.putInt(propertyNameBytes.length);
-            __dst.put(propertyNameBytes);
-            __dst.putInt(valueKind);
-            __dst.put((byte) (boolValue ? 1 : 0));
-            __dst.putInt(intValue);
-            __dst.putLong(doubleValue);
-            __dst.putInt(stringValueBytes.length);
-            __dst.put(stringValueBytes);
-            __dst.putInt(valueHandle);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(frame.id());
+            __out.putInt(v8Handle);
+            WireEncoder.bytes(__out, propertyNameBytes);
+            __out.putInt(valueKind);
+            WireEncoder.bool(__out, boolValue);
+            __out.putInt(intValue);
+            __out.putLong(doubleValue);
+            WireEncoder.bytes(__out, stringValueBytes);
+            __out.putInt(valueHandle);
+        });
     }
 
-    public static final CefMessageDecoder<V8SetPropertyRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<V8SetPropertyRequest> DECODER = WireDecoder.message("V8SetPropertyRequest", __buf -> {
         final RemoteHandle frame = WireDecoder.handle(__buf, "frame");
         final int v8Handle = WireDecoder.int32(__buf, "v8Handle");
         final String propertyName = WireDecoder.utf8(__buf, "propertyName");
@@ -121,7 +106,6 @@ public final class V8SetPropertyRequest implements CefMessageView, CefMessageEnc
         final long doubleValue = WireDecoder.int64(__buf, "doubleValue");
         final String stringValue = WireDecoder.utf8(__buf, "stringValue");
         final int valueHandle = WireDecoder.int32(__buf, "valueHandle");
-        WireDecoder.requireFullyConsumed(__buf, "V8SetPropertyRequest");
         return new V8SetPropertyRequest(frame, v8Handle, propertyName, valueKind, boolValue, intValue, doubleValue, stringValue, valueHandle);
-    };
+    });
 }

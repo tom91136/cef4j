@@ -1,7 +1,6 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -10,6 +9,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -25,6 +26,111 @@ import org.jspecify.annotations.Nullable;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Page {
     private Page() {}
+    private static final CdpField<java.util.List<String>> ACCEPTS = CdpField.of("accepts", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<java.util.List<Page.FileFilter>> ACCEPTS_2 = CdpField.of("accepts", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.FileFilter.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Page.AdFrameStatus> AD_FRAME_STATUS = CdpField.of("adFrameStatus", value -> java.util.Objects.requireNonNull(Page.AdFrameStatus.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Page.AdFrameType> AD_FRAME_TYPE = CdpField.of("adFrameType", value -> Page.AdFrameType.of((String) value));
+    private static final CdpField<Network.AdAncestry> AD_SCRIPT_ANCESTRY = CdpField.of("adScriptAncestry", value -> java.util.Objects.requireNonNull(Network.AdAncestry.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<DOM.BackendNodeId> BACKEND_NODE_ID = CdpField.of("backendNodeId", value -> new DOM.BackendNodeId(((Number) value).longValue()));
+    private static final CdpField<SetDownloadBehaviorBehaviorValues> BEHAVIOR = CdpField.of("behavior", value -> SetDownloadBehaviorBehaviorValues.of((String) value));
+    private static final CdpField<Page.PermissionsPolicyBlockReason> BLOCK_REASON = CdpField.of("blockReason", value -> Page.PermissionsPolicyBlockReason.of((String) value));
+    private static final CdpField<java.util.List<Page.BackForwardCacheNotRestoredExplanationTree>> CHILDREN = CdpField.of("children", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.BackForwardCacheNotRestoredExplanationTree.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Page.FrameResourceTree>> CHILD_FRAMES = CdpField.of("childFrames", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.FrameResourceTree.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Page.FrameTree>> CHILD_FRAMES_2 = CdpField.of("childFrames", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.FrameTree.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Page.Viewport> CLIP = CdpField.of("clip", value -> java.util.Objects.requireNonNull(Page.Viewport.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<SetTouchEmulationEnabledConfigurationValues> CONFIGURATION = CdpField.of("configuration", value -> SetTouchEmulationEnabledConfigurationValues.of((String) value));
+    private static final CdpField<String> CONTENT = CdpField.of("content", value -> (String) value);
+    private static final CdpField<DOM.Rect> CONTENT_SIZE = CdpField.of("contentSize", value -> java.util.Objects.requireNonNull(DOM.Rect.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Page.CrossOriginIsolatedContextType> CROSS_ORIGIN_ISOLATED_CONTEXT_TYPE = CdpField.of("crossOriginIsolatedContextType", value -> Page.CrossOriginIsolatedContextType.of((String) value));
+    private static final CdpField<DOM.Rect> CSS_CONTENT_SIZE = CdpField.of("cssContentSize", value -> java.util.Objects.requireNonNull(DOM.Rect.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Page.LayoutViewport> CSS_LAYOUT_VIEWPORT = CdpField.of("cssLayoutViewport", value -> java.util.Objects.requireNonNull(Page.LayoutViewport.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Page.VisualViewport> CSS_VISUAL_VIEWPORT = CdpField.of("cssVisualViewport", value -> java.util.Objects.requireNonNull(Page.VisualViewport.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<String> DATA = CdpField.of("data", value -> (String) value);
+    private static final CdpField<java.util.List<Page.BackForwardCacheBlockingDetails>> DETAILS = CdpField.of("details", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.BackForwardCacheBlockingDetails.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<String>> DISPLAY_OVERRIDES = CdpField.of("displayOverrides", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Page.ClientNavigationDisposition> DISPOSITION = CdpField.of("disposition", value -> Page.ClientNavigationDisposition.of((String) value));
+    private static final CdpField<java.util.List<Page.NavigationEntry>> ENTRIES = CdpField.of("entries", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.NavigationEntry.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Page.AppManifestError>> ERRORS = CdpField.of("errors", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.AppManifestError.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Page.InstallabilityErrorArgument>> ERROR_ARGUMENTS = CdpField.of("errorArguments", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.InstallabilityErrorArgument.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Runtime.ExecutionContextId> EXECUTION_CONTEXT_ID = CdpField.of("executionContextId", value -> new Runtime.ExecutionContextId(((Number) value).longValue()));
+    private static final CdpField<Network.TimeSinceEpoch> EXPIRY_TIME = CdpField.of("expiryTime", value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+    private static final CdpField<java.util.List<Page.AdFrameExplanation>> EXPLANATIONS = CdpField.of("explanations", value -> CdpObject.requireList(value, element0 -> Page.AdFrameExplanation.of((String) element0)));
+    private static final CdpField<java.util.List<Page.BackForwardCacheNotRestoredExplanation>> EXPLANATIONS_2 = CdpField.of("explanations", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.BackForwardCacheNotRestoredExplanation.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Page.PermissionsPolicyFeature> FEATURE = CdpField.of("feature", value -> Page.PermissionsPolicyFeature.of((String) value));
+    private static final CdpField<java.util.List<Page.FileFilter>> FILES = CdpField.of("files", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.FileFilter.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Page.FileHandler>> FILE_HANDLERS = CdpField.of("fileHandlers", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.FileHandler.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Page.FontFamilies> FONT_FAMILIES = CdpField.of("fontFamilies", value -> java.util.Objects.requireNonNull(Page.FontFamilies.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Page.FontSizes> FONT_SIZES = CdpField.of("fontSizes", value -> java.util.Objects.requireNonNull(Page.FontSizes.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<CaptureScreenshotFormatValues> FORMAT = CdpField.of("format", value -> CaptureScreenshotFormatValues.of((String) value));
+    private static final CdpField<CaptureSnapshotFormatValues> FORMAT_2 = CdpField.of("format", value -> CaptureSnapshotFormatValues.of((String) value));
+    private static final CdpField<StartScreencastFormatValues> FORMAT_3 = CdpField.of("format", value -> StartScreencastFormatValues.of((String) value));
+    private static final CdpField<java.util.List<Page.ScriptFontFamilies>> FOR_SCRIPTS = CdpField.of("forScripts", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.ScriptFontFamilies.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Page.Frame> FRAME = CdpField.of("frame", value -> java.util.Objects.requireNonNull(Page.Frame.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Page.FrameId> FRAME_ID = CdpField.of("frameId", value -> new Page.FrameId((String) value));
+    private static final CdpField<Page.FrameTree> FRAME_TREE = CdpField.of("frameTree", value -> java.util.Objects.requireNonNull(Page.FrameTree.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Page.FrameResourceTree> FRAME_TREE_2 = CdpField.of("frameTree", value -> java.util.Objects.requireNonNull(Page.FrameResourceTree.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Page.GatedAPIFeatures>> GATED_APIFEATURES = CdpField.of("gatedAPIFeatures", value -> CdpObject.requireList(value, element0 -> Page.GatedAPIFeatures.of((String) element0)));
+    private static final CdpField<java.util.List<Page.ImageResource>> ICONS = CdpField.of("icons", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.ImageResource.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Page.FrameId> ID = CdpField.of("id", value -> new Page.FrameId((String) value));
+    private static final CdpField<Page.ScriptIdentifier> IDENTIFIER = CdpField.of("identifier", value -> new Page.ScriptIdentifier((String) value));
+    private static final CdpField<Page.ImageResource> IMAGE = CdpField.of("image", value -> java.util.Objects.requireNonNull(Page.ImageResource.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Page.InstallabilityError>> INSTALLABILITY_ERRORS = CdpField.of("installabilityErrors", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.InstallabilityError.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Network.TimeSinceEpoch> LAST_MODIFIED = CdpField.of("lastModified", value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+    private static final CdpField<Page.LaunchHandler> LAUNCH_HANDLER = CdpField.of("launchHandler", value -> java.util.Objects.requireNonNull(Page.LaunchHandler.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Page.LayoutViewport> LAYOUT_VIEWPORT = CdpField.of("layoutViewport", value -> java.util.Objects.requireNonNull(Page.LayoutViewport.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.LoaderId> LOADER_ID = CdpField.of("loaderId", value -> new Network.LoaderId((String) value));
+    private static final CdpField<Page.PermissionsPolicyBlockLocator> LOCATOR = CdpField.of("locator", value -> java.util.Objects.requireNonNull(Page.PermissionsPolicyBlockLocator.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Page.WebAppManifest> MANIFEST = CdpField.of("manifest", value -> java.util.Objects.requireNonNull(Page.WebAppManifest.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Page.ScreencastFrameMetadata> METADATA = CdpField.of("metadata", value -> java.util.Objects.requireNonNull(Page.ScreencastFrameMetadata.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<SetSPCTransactionModeModeValues> MODE = CdpField.of("mode", value -> SetSPCTransactionModeModeValues.of((String) value));
+    private static final CdpField<SetRPHRegistrationModeModeValues> MODE_2 = CdpField.of("mode", value -> SetRPHRegistrationModeModeValues.of((String) value));
+    private static final CdpField<FileChooserOpenedEvent.ModeValues> MODE_3 = CdpField.of("mode", value -> FileChooserOpenedEvent.ModeValues.of((String) value));
+    private static final CdpField<FrameStartedNavigatingEvent.NavigationTypeValues> NAVIGATION_TYPE = CdpField.of("navigationType", value -> FrameStartedNavigatingEvent.NavigationTypeValues.of((String) value));
+    private static final CdpField<NavigatedWithinDocumentEvent.NavigationTypeValues> NAVIGATION_TYPE_2 = CdpField.of("navigationType", value -> NavigatedWithinDocumentEvent.NavigationTypeValues.of((String) value));
+    private static final CdpField<java.util.List<Page.BackForwardCacheNotRestoredExplanation>> NOT_RESTORED_EXPLANATIONS = CdpField.of("notRestoredExplanations", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.BackForwardCacheNotRestoredExplanation.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Page.BackForwardCacheNotRestoredExplanationTree> NOT_RESTORED_EXPLANATIONS_TREE = CdpField.of("notRestoredExplanationsTree", value -> java.util.Objects.requireNonNull(Page.BackForwardCacheNotRestoredExplanationTree.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Page.OriginTrial>> ORIGIN_TRIALS = CdpField.of("originTrials", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.OriginTrial.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Page.FrameId> PARENT_FRAME_ID = CdpField.of("parentFrameId", value -> new Page.FrameId((String) value));
+    private static final CdpField<Page.FrameId> PARENT_ID = CdpField.of("parentId", value -> new Page.FrameId((String) value));
+    private static final CdpField<Page.AppManifestParsedProperties> PARSED = CdpField.of("parsed", value -> java.util.Objects.requireNonNull(Page.AppManifestParsedProperties.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Page.OriginTrialToken> PARSED_TOKEN = CdpField.of("parsedToken", value -> java.util.Objects.requireNonNull(Page.OriginTrialToken.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<String> PRIMARY_ICON = CdpField.of("primaryIcon", value -> (String) value);
+    private static final CdpField<java.util.List<Page.ProtocolHandler>> PROTOCOL_HANDLERS = CdpField.of("protocolHandlers", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.ProtocolHandler.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Page.BackForwardCacheNotRestoredReason> REASON = CdpField.of("reason", value -> Page.BackForwardCacheNotRestoredReason.of((String) value));
+    private static final CdpField<FrameDetachedEvent.ReasonValues> REASON_2 = CdpField.of("reason", value -> FrameDetachedEvent.ReasonValues.of((String) value));
+    private static final CdpField<Page.ClientNavigationReason> REASON_3 = CdpField.of("reason", value -> Page.ClientNavigationReason.of((String) value));
+    private static final CdpField<Page.ReferrerPolicy> REFERRER_POLICY = CdpField.of("referrerPolicy", value -> Page.ReferrerPolicy.of((String) value));
+    private static final CdpField<java.util.List<Page.RelatedApplication>> RELATED_APPLICATIONS = CdpField.of("relatedApplications", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.RelatedApplication.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Page.FrameResource>> RESOURCES = CdpField.of("resources", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.FrameResource.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Debugger.SearchMatch>> RESULT = CdpField.of("result", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Debugger.SearchMatch.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Page.ScopeExtension>> SCOPE_EXTENSIONS = CdpField.of("scopeExtensions", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.ScopeExtension.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Page.Screenshot>> SCREENSHOTS = CdpField.of("screenshots", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.Screenshot.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Emulation.ScreenOrientation> SCREEN_ORIENTATION = CdpField.of("screenOrientation", value -> java.util.Objects.requireNonNull(Emulation.ScreenOrientation.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Page.CompilationCacheParams>> SCRIPTS = CdpField.of("scripts", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.CompilationCacheParams.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Page.SecureContextType> SECURE_CONTEXT_TYPE = CdpField.of("secureContextType", value -> Page.SecureContextType.of((String) value));
+    private static final CdpField<Page.SecurityOriginDetails> SECURITY_ORIGIN_DETAILS = CdpField.of("securityOriginDetails", value -> java.util.Objects.requireNonNull(Page.SecurityOriginDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Page.ShareTarget> SHARE_TARGET = CdpField.of("shareTarget", value -> java.util.Objects.requireNonNull(Page.ShareTarget.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Page.Shortcut>> SHORTCUTS = CdpField.of("shortcuts", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.Shortcut.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Runtime.StackTrace> STACK = CdpField.of("stack", value -> java.util.Objects.requireNonNull(Runtime.StackTrace.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<SetWebLifecycleStateStateValues> STATE = CdpField.of("state", value -> SetWebLifecycleStateStateValues.of((String) value));
+    private static final CdpField<java.util.List<Page.PermissionsPolicyFeatureState>> STATES = CdpField.of("states", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.PermissionsPolicyFeatureState.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<DownloadProgressEvent.StateValues> STATE_2 = CdpField.of("state", value -> DownloadProgressEvent.StateValues.of((String) value));
+    private static final CdpField<Page.OriginTrialTokenStatus> STATUS = CdpField.of("status", value -> Page.OriginTrialTokenStatus.of((String) value));
+    private static final CdpField<Page.OriginTrialStatus> STATUS_2 = CdpField.of("status", value -> Page.OriginTrialStatus.of((String) value));
+    private static final CdpField<IO.StreamHandle> STREAM = CdpField.of("stream", value -> new IO.StreamHandle((String) value));
+    private static final CdpField<Network.TimeSinceEpoch> TIMESTAMP = CdpField.of("timestamp", value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+    private static final CdpField<Network.MonotonicTime> TIMESTAMP_2 = CdpField.of("timestamp", value -> new Network.MonotonicTime(((Number) value).doubleValue()));
+    private static final CdpField<java.util.List<Page.OriginTrialTokenWithStatus>> TOKENS_WITH_STATUS = CdpField.of("tokensWithStatus", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Page.OriginTrialTokenWithStatus.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<PrintToPDFTransferModeValues> TRANSFER_MODE = CdpField.of("transferMode", value -> PrintToPDFTransferModeValues.of((String) value));
+    private static final CdpField<Page.TransitionType> TRANSITION_TYPE = CdpField.of("transitionType", value -> Page.TransitionType.of((String) value));
+    private static final CdpField<Network.ResourceType> TYPE = CdpField.of("type", value -> Network.ResourceType.of((String) value));
+    private static final CdpField<Page.BackForwardCacheNotRestoredReasonType> TYPE_2 = CdpField.of("type", value -> Page.BackForwardCacheNotRestoredReasonType.of((String) value));
+    private static final CdpField<Page.NavigationType> TYPE_3 = CdpField.of("type", value -> Page.NavigationType.of((String) value));
+    private static final CdpField<Page.DialogType> TYPE_4 = CdpField.of("type", value -> Page.DialogType.of((String) value));
+    private static final CdpField<Page.OriginTrialUsageRestriction> USAGE_RESTRICTION = CdpField.of("usageRestriction", value -> Page.OriginTrialUsageRestriction.of((String) value));
+    private static final CdpField<Page.Viewport> VIEWPORT = CdpField.of("viewport", value -> java.util.Objects.requireNonNull(Page.Viewport.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Page.VisualViewport> VISUAL_VIEWPORT = CdpField.of("visualViewport", value -> java.util.Objects.requireNonNull(Page.VisualViewport.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<String>> WINDOW_FEATURES = CdpField.of("windowFeatures", value -> CdpObject.requireList(value, element0 -> (String) element0));
     /**
      * Unique frame identifier.
      */
@@ -91,14 +197,14 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.AdFrameType adFrameType() {
-            return Page.AdFrameType.of((String) require("adFrameType"));
+            return require(AD_FRAME_TYPE);
         }
         /**
          * Returns the explanations field.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Page.AdFrameExplanation>> explanations() {
-            return raw("explanations").flatMap(value -> list(value, element0 -> Page.AdFrameExplanation.of((String) element0)));
+            return optional(EXPLANATIONS);
         }
         /**
          * Sets the adFrameType field.
@@ -333,14 +439,14 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Returns the blockReason field.
          * @return the protocol field value
          */
         public Page.PermissionsPolicyBlockReason blockReason() {
-            return Page.PermissionsPolicyBlockReason.of((String) require("blockReason"));
+            return require(BLOCK_REASON);
         }
         /**
          * Sets the frameId field.
@@ -375,21 +481,21 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.PermissionsPolicyFeature feature() {
-            return Page.PermissionsPolicyFeature.of((String) require("feature"));
+            return require(FEATURE);
         }
         /**
          * Returns the allowed field.
          * @return the protocol field value
          */
         public boolean allowed() {
-            return (Boolean) require("allowed");
+            return requireBoolean("allowed");
         }
         /**
          * Returns the locator field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.PermissionsPolicyBlockLocator> locator() {
-            return raw("locator").flatMap(CdpObject::objectMap).map(Page.PermissionsPolicyBlockLocator::fromMap);
+            return optional(LOCATOR);
         }
         /**
          * Sets the feature field.
@@ -496,42 +602,42 @@ public final class Page {
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * Returns the matchSubDomains field.
          * @return the protocol field value
          */
         public boolean matchSubDomains() {
-            return (Boolean) require("matchSubDomains");
+            return requireBoolean("matchSubDomains");
         }
         /**
          * Returns the trialName field.
          * @return the protocol field value
          */
         public String trialName() {
-            return (String) require("trialName");
+            return requireString("trialName");
         }
         /**
          * Returns the expiryTime field.
          * @return the protocol field value
          */
         public Network.TimeSinceEpoch expiryTime() {
-            return new Network.TimeSinceEpoch(((Number) require("expiryTime")).doubleValue());
+            return require(EXPIRY_TIME);
         }
         /**
          * Returns the isThirdParty field.
          * @return the protocol field value
          */
         public boolean isThirdParty() {
-            return (Boolean) require("isThirdParty");
+            return requireBoolean("isThirdParty");
         }
         /**
          * Returns the usageRestriction field.
          * @return the protocol field value
          */
         public Page.OriginTrialUsageRestriction usageRestriction() {
-            return Page.OriginTrialUsageRestriction.of((String) require("usageRestriction"));
+            return require(USAGE_RESTRICTION);
         }
         /**
          * Sets the origin field.
@@ -602,21 +708,21 @@ public final class Page {
          * @return the protocol field value
          */
         public String rawTokenText() {
-            return (String) require("rawTokenText");
+            return requireString("rawTokenText");
         }
         /**
          * {@code parsedToken} is present only when the token is extractable and parsable.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.OriginTrialToken> parsedToken() {
-            return raw("parsedToken").flatMap(CdpObject::objectMap).map(Page.OriginTrialToken::fromMap);
+            return optional(PARSED_TOKEN);
         }
         /**
          * Returns the status field.
          * @return the protocol field value
          */
         public Page.OriginTrialTokenStatus status() {
-            return Page.OriginTrialTokenStatus.of((String) require("status"));
+            return require(STATUS);
         }
         /**
          * Sets the rawTokenText field.
@@ -660,21 +766,21 @@ public final class Page {
          * @return the protocol field value
          */
         public String trialName() {
-            return (String) require("trialName");
+            return requireString("trialName");
         }
         /**
          * Returns the status field.
          * @return the protocol field value
          */
         public Page.OriginTrialStatus status() {
-            return Page.OriginTrialStatus.of((String) require("status"));
+            return require(STATUS_2);
         }
         /**
          * Returns the tokensWithStatus field.
          * @return the protocol field value
          */
         public java.util.List<Page.OriginTrialTokenWithStatus> tokensWithStatus() {
-            return CdpObject.requireList(require("tokensWithStatus"), element0 -> java.util.Objects.requireNonNull(Page.OriginTrialTokenWithStatus.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(TOKENS_WITH_STATUS);
         }
         /**
          * Sets the trialName field.
@@ -719,7 +825,7 @@ public final class Page {
          * @return the protocol field value
          */
         public boolean isLocalhost() {
-            return (Boolean) require("isLocalhost");
+            return requireBoolean("isLocalhost");
         }
         /**
          * Indicates whether the frame document&#x27;s security origin is one of the local hostnames (e.g. &quot;localhost&quot;) or IP addresses (IPv4 127.0.0.0/8 or IPv6 ::1).
@@ -745,35 +851,35 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId id() {
-            return new Page.FrameId((String) require("id"));
+            return require(ID);
         }
         /**
          * Parent frame identifier.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> parentId() {
-            return raw("parentId").map(value -> new Page.FrameId((String) value));
+            return optional(PARENT_ID);
         }
         /**
          * Identifier of the loader associated with this frame.
          * @return the protocol field value
          */
         public Network.LoaderId loaderId() {
-            return new Network.LoaderId((String) require("loaderId"));
+            return require(LOADER_ID);
         }
         /**
          * Frame&#x27;s name as specified in the tag.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            return raw("name").map(value -> (String) value);
+            return optionalString("name");
         }
         /**
          * Frame document&#x27;s URL without fragment.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Frame document&#x27;s URL fragment including the &#x27;#&#x27;.
@@ -781,7 +887,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> urlFragment() {
-            return raw("urlFragment").map(value -> (String) value);
+            return optionalString("urlFragment");
         }
         /**
          * Frame document&#x27;s registered domain, taking the public suffixes list into account. Extracted from the Frame&#x27;s url. Example URLs: http://www.google.com/file.html -&gt; &quot;google.com&quot; http://a.b.co.uk/file.html -&gt; &quot;b.co.uk&quot;
@@ -789,14 +895,14 @@ public final class Page {
          * @return the protocol field value
          */
         public String domainAndRegistry() {
-            return (String) require("domainAndRegistry");
+            return requireString("domainAndRegistry");
         }
         /**
          * Frame document&#x27;s security origin.
          * @return the protocol field value
          */
         public String securityOrigin() {
-            return (String) require("securityOrigin");
+            return requireString("securityOrigin");
         }
         /**
          * Additional details about the frame document&#x27;s security origin.
@@ -804,14 +910,14 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.SecurityOriginDetails> securityOriginDetails() {
-            return raw("securityOriginDetails").flatMap(CdpObject::objectMap).map(Page.SecurityOriginDetails::fromMap);
+            return optional(SECURITY_ORIGIN_DETAILS);
         }
         /**
          * Frame document&#x27;s mimeType as determined by the browser.
          * @return the protocol field value
          */
         public String mimeType() {
-            return (String) require("mimeType");
+            return requireString("mimeType");
         }
         /**
          * If the frame failed to load, this contains the URL that could not be loaded. Note that unlike url above, this URL may contain a fragment.
@@ -819,7 +925,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> unreachableUrl() {
-            return raw("unreachableUrl").map(value -> (String) value);
+            return optionalString("unreachableUrl");
         }
         /**
          * Indicates whether this frame was tagged as an ad and why.
@@ -827,7 +933,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.AdFrameStatus> adFrameStatus() {
-            return raw("adFrameStatus").flatMap(CdpObject::objectMap).map(Page.AdFrameStatus::fromMap);
+            return optional(AD_FRAME_STATUS);
         }
         /**
          * Indicates whether the main document is a secure context and explains why that is the case.
@@ -835,7 +941,7 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.SecureContextType secureContextType() {
-            return Page.SecureContextType.of((String) require("secureContextType"));
+            return require(SECURE_CONTEXT_TYPE);
         }
         /**
          * Indicates whether this is a cross origin isolated context.
@@ -843,7 +949,7 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.CrossOriginIsolatedContextType crossOriginIsolatedContextType() {
-            return Page.CrossOriginIsolatedContextType.of((String) require("crossOriginIsolatedContextType"));
+            return require(CROSS_ORIGIN_ISOLATED_CONTEXT_TYPE);
         }
         /**
          * Indicated which gated APIs / features are available.
@@ -851,7 +957,7 @@ public final class Page {
          * @return the protocol field value
          */
         public java.util.List<Page.GatedAPIFeatures> gatedAPIFeatures() {
-            return CdpObject.requireList(require("gatedAPIFeatures"), element0 -> Page.GatedAPIFeatures.of((String) element0));
+            return require(GATED_APIFEATURES);
         }
         /**
          * Frame unique identifier.
@@ -1012,49 +1118,49 @@ public final class Page {
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Type of this resource.
          * @return the protocol field value
          */
         public Network.ResourceType type() {
-            return Network.ResourceType.of((String) require("type"));
+            return require(TYPE);
         }
         /**
          * Resource mimeType as determined by the browser.
          * @return the protocol field value
          */
         public String mimeType() {
-            return (String) require("mimeType");
+            return requireString("mimeType");
         }
         /**
          * last-modified timestamp as reported by server.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.TimeSinceEpoch> lastModified() {
-            return raw("lastModified").map(value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+            return optional(LAST_MODIFIED);
         }
         /**
          * Resource content size.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble contentSize() {
-            return raw("contentSize").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("contentSize");
         }
         /**
          * True if the resource failed to load.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> failed() {
-            return raw("failed").map(value -> (Boolean) value);
+            return optionalBoolean("failed");
         }
         /**
          * True if the resource was canceled during loading.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> canceled() {
-            return raw("canceled").map(value -> (Boolean) value);
+            return optionalBoolean("canceled");
         }
         /**
          * Resource URL.
@@ -1135,21 +1241,21 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.Frame frame() {
-            return java.util.Objects.requireNonNull(Page.Frame.fromMap(CdpObject.requireObjectMap(require("frame"))));
+            return require(FRAME);
         }
         /**
          * Child frames.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Page.FrameResourceTree>> childFrames() {
-            return raw("childFrames").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Page.FrameResourceTree.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(CHILD_FRAMES);
         }
         /**
          * Information about frame resources.
          * @return the protocol field value
          */
         public java.util.List<Page.FrameResource> resources() {
-            return CdpObject.requireList(require("resources"), element0 -> java.util.Objects.requireNonNull(Page.FrameResource.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(RESOURCES);
         }
         /**
          * Frame information for this tree item.
@@ -1193,14 +1299,14 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.Frame frame() {
-            return java.util.Objects.requireNonNull(Page.Frame.fromMap(CdpObject.requireObjectMap(require("frame"))));
+            return require(FRAME);
         }
         /**
          * Child frames.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Page.FrameTree>> childFrames() {
-            return raw("childFrames").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Page.FrameTree.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(CHILD_FRAMES_2);
         }
         /**
          * Frame information for this tree item.
@@ -1277,35 +1383,35 @@ public final class Page {
          * @return the protocol field value
          */
         public long id() {
-            return ((Number) require("id")).longValue();
+            return requireLong("id");
         }
         /**
          * URL of the navigation history entry.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * URL that the user typed in the url bar.
          * @return the protocol field value
          */
         public String userTypedURL() {
-            return (String) require("userTypedURL");
+            return requireString("userTypedURL");
         }
         /**
          * Title of the navigation history entry.
          * @return the protocol field value
          */
         public String title() {
-            return (String) require("title");
+            return requireString("title");
         }
         /**
          * Transition type.
          * @return the protocol field value
          */
         public Page.TransitionType transitionType() {
-            return Page.TransitionType.of((String) require("transitionType"));
+            return require(TRANSITION_TYPE);
         }
         /**
          * Unique id of the navigation history entry.
@@ -1368,49 +1474,49 @@ public final class Page {
          * @return the protocol field value
          */
         public double offsetTop() {
-            return ((Number) require("offsetTop")).doubleValue();
+            return requireDouble("offsetTop");
         }
         /**
          * Page scale factor.
          * @return the protocol field value
          */
         public double pageScaleFactor() {
-            return ((Number) require("pageScaleFactor")).doubleValue();
+            return requireDouble("pageScaleFactor");
         }
         /**
          * Device screen width in DIP.
          * @return the protocol field value
          */
         public double deviceWidth() {
-            return ((Number) require("deviceWidth")).doubleValue();
+            return requireDouble("deviceWidth");
         }
         /**
          * Device screen height in DIP.
          * @return the protocol field value
          */
         public double deviceHeight() {
-            return ((Number) require("deviceHeight")).doubleValue();
+            return requireDouble("deviceHeight");
         }
         /**
          * Position of horizontal scroll in CSS pixels.
          * @return the protocol field value
          */
         public double scrollOffsetX() {
-            return ((Number) require("scrollOffsetX")).doubleValue();
+            return requireDouble("scrollOffsetX");
         }
         /**
          * Position of vertical scroll in CSS pixels.
          * @return the protocol field value
          */
         public double scrollOffsetY() {
-            return ((Number) require("scrollOffsetY")).doubleValue();
+            return requireDouble("scrollOffsetY");
         }
         /**
          * Frame swap timestamp.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.TimeSinceEpoch> timestamp() {
-            return raw("timestamp").map(value -> new Network.TimeSinceEpoch(((Number) value).doubleValue()));
+            return optional(TIMESTAMP);
         }
         /**
          * Top offset in DIP.
@@ -1508,28 +1614,28 @@ public final class Page {
          * @return the protocol field value
          */
         public String message() {
-            return (String) require("message");
+            return requireString("message");
         }
         /**
          * If critical, this is a non-recoverable parse error.
          * @return the protocol field value
          */
         public long critical() {
-            return ((Number) require("critical")).longValue();
+            return requireLong("critical");
         }
         /**
          * Error line.
          * @return the protocol field value
          */
         public long line() {
-            return ((Number) require("line")).longValue();
+            return requireLong("line");
         }
         /**
          * Error column.
          * @return the protocol field value
          */
         public long column() {
-            return ((Number) require("column")).longValue();
+            return requireLong("column");
         }
         /**
          * Error message.
@@ -1583,7 +1689,7 @@ public final class Page {
          * @return the protocol field value
          */
         public String scope() {
-            return (String) require("scope");
+            return requireString("scope");
         }
         /**
          * Computed scope value
@@ -1609,28 +1715,28 @@ public final class Page {
          * @return the protocol field value
          */
         public long pageX() {
-            return ((Number) require("pageX")).longValue();
+            return requireLong("pageX");
         }
         /**
          * Vertical offset relative to the document (CSS pixels).
          * @return the protocol field value
          */
         public long pageY() {
-            return ((Number) require("pageY")).longValue();
+            return requireLong("pageY");
         }
         /**
          * Width (CSS pixels), excludes scrollbar if present.
          * @return the protocol field value
          */
         public long clientWidth() {
-            return ((Number) require("clientWidth")).longValue();
+            return requireLong("clientWidth");
         }
         /**
          * Height (CSS pixels), excludes scrollbar if present.
          * @return the protocol field value
          */
         public long clientHeight() {
-            return ((Number) require("clientHeight")).longValue();
+            return requireLong("clientHeight");
         }
         /**
          * Horizontal offset relative to the document (CSS pixels).
@@ -1683,56 +1789,56 @@ public final class Page {
          * @return the protocol field value
          */
         public double offsetX() {
-            return ((Number) require("offsetX")).doubleValue();
+            return requireDouble("offsetX");
         }
         /**
          * Vertical offset relative to the layout viewport (CSS pixels).
          * @return the protocol field value
          */
         public double offsetY() {
-            return ((Number) require("offsetY")).doubleValue();
+            return requireDouble("offsetY");
         }
         /**
          * Horizontal offset relative to the document (CSS pixels).
          * @return the protocol field value
          */
         public double pageX() {
-            return ((Number) require("pageX")).doubleValue();
+            return requireDouble("pageX");
         }
         /**
          * Vertical offset relative to the document (CSS pixels).
          * @return the protocol field value
          */
         public double pageY() {
-            return ((Number) require("pageY")).doubleValue();
+            return requireDouble("pageY");
         }
         /**
          * Width (CSS pixels), excludes scrollbar if present.
          * @return the protocol field value
          */
         public double clientWidth() {
-            return ((Number) require("clientWidth")).doubleValue();
+            return requireDouble("clientWidth");
         }
         /**
          * Height (CSS pixels), excludes scrollbar if present.
          * @return the protocol field value
          */
         public double clientHeight() {
-            return ((Number) require("clientHeight")).doubleValue();
+            return requireDouble("clientHeight");
         }
         /**
          * Scale relative to the ideal viewport (size at width=device-width).
          * @return the protocol field value
          */
         public double scale() {
-            return ((Number) require("scale")).doubleValue();
+            return requireDouble("scale");
         }
         /**
          * Page zoom factor (CSS to device independent pixels ratio).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble zoom() {
-            return raw("zoom").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("zoom");
         }
         /**
          * Horizontal offset relative to the layout viewport (CSS pixels).
@@ -1821,35 +1927,35 @@ public final class Page {
          * @return the protocol field value
          */
         public double x() {
-            return ((Number) require("x")).doubleValue();
+            return requireDouble("x");
         }
         /**
          * Y offset in device independent pixels (dip).
          * @return the protocol field value
          */
         public double y() {
-            return ((Number) require("y")).doubleValue();
+            return requireDouble("y");
         }
         /**
          * Rectangle width in device independent pixels (dip).
          * @return the protocol field value
          */
         public double width() {
-            return ((Number) require("width")).doubleValue();
+            return requireDouble("width");
         }
         /**
          * Rectangle height in device independent pixels (dip).
          * @return the protocol field value
          */
         public double height() {
-            return ((Number) require("height")).doubleValue();
+            return requireDouble("height");
         }
         /**
          * Page scale factor.
          * @return the protocol field value
          */
         public double scale() {
-            return ((Number) require("scale")).doubleValue();
+            return requireDouble("scale");
         }
         /**
          * X offset in device independent pixels (dip).
@@ -1912,49 +2018,49 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> standard() {
-            return raw("standard").map(value -> (String) value);
+            return optionalString("standard");
         }
         /**
          * The fixed font-family.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> fixed() {
-            return raw("fixed").map(value -> (String) value);
+            return optionalString("fixed");
         }
         /**
          * The serif font-family.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> serif() {
-            return raw("serif").map(value -> (String) value);
+            return optionalString("serif");
         }
         /**
          * The sansSerif font-family.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> sansSerif() {
-            return raw("sansSerif").map(value -> (String) value);
+            return optionalString("sansSerif");
         }
         /**
          * The cursive font-family.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> cursive() {
-            return raw("cursive").map(value -> (String) value);
+            return optionalString("cursive");
         }
         /**
          * The fantasy font-family.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> fantasy() {
-            return raw("fantasy").map(value -> (String) value);
+            return optionalString("fantasy");
         }
         /**
          * The math font-family.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> math() {
-            return raw("math").map(value -> (String) value);
+            return optionalString("math");
         }
         /**
          * The standard font-family.
@@ -2035,14 +2141,14 @@ public final class Page {
          * @return the protocol field value
          */
         public String script() {
-            return (String) require("script");
+            return requireString("script");
         }
         /**
          * Generic font families collection for the script.
          * @return the protocol field value
          */
         public Page.FontFamilies fontFamilies() {
-            return java.util.Objects.requireNonNull(Page.FontFamilies.fromMap(CdpObject.requireObjectMap(require("fontFamilies"))));
+            return require(FONT_FAMILIES);
         }
         /**
          * Name of the script which these font families are defined for.
@@ -2078,14 +2184,14 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong standard() {
-            return raw("standard").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("standard");
         }
         /**
          * Default fixed font size.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong fixed() {
-            return raw("fixed").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("fixed");
         }
         /**
          * Default standard font size.
@@ -2164,14 +2270,14 @@ public final class Page {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Argument value (e.g. value:&#x27;64&#x27;).
          * @return the protocol field value
          */
         public String value() {
-            return (String) require("value");
+            return requireString("value");
         }
         /**
          * Argument name (e.g. name:&#x27;minimum-icon-size-in-pixels&#x27;).
@@ -2207,14 +2313,14 @@ public final class Page {
          * @return the protocol field value
          */
         public String errorId() {
-            return (String) require("errorId");
+            return requireString("errorId");
         }
         /**
          * The list of error arguments (e.g. {name:&#x27;minimum-icon-size-in-pixels&#x27;, value:&#x27;64&#x27;}).
          * @return the protocol field value
          */
         public java.util.List<Page.InstallabilityErrorArgument> errorArguments() {
-            return CdpObject.requireList(require("errorArguments"), element0 -> java.util.Objects.requireNonNull(Page.InstallabilityErrorArgument.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(ERROR_ARGUMENTS);
         }
         /**
          * The error id (e.g. &#x27;manifest-missing-suitable-icon&#x27;).
@@ -2273,14 +2379,14 @@ public final class Page {
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * A hint to the backend whether eager compilation is recommended. (the actual compilation mode used is upon backend discretion).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> eager() {
-            return raw("eager").map(value -> (Boolean) value);
+            return optionalBoolean("eager");
         }
         /**
          * The URL of the script to produce a compilation cache entry for.
@@ -2315,14 +2421,14 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            return raw("name").map(value -> (String) value);
+            return optionalString("name");
         }
         /**
          * Returns the accepts field.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> accepts() {
-            return raw("accepts").flatMap(value -> list(value, element0 -> (String) element0));
+            return optional(ACCEPTS);
         }
         /**
          * Sets the name field.
@@ -2357,35 +2463,35 @@ public final class Page {
          * @return the protocol field value
          */
         public String action() {
-            return (String) require("action");
+            return requireString("action");
         }
         /**
          * Returns the name field.
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Returns the icons field.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Page.ImageResource>> icons() {
-            return raw("icons").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Page.ImageResource.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(ICONS);
         }
         /**
          * Mimic a map, name is the key, accepts is the value.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Page.FileFilter>> accepts() {
-            return raw("accepts").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Page.FileFilter.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(ACCEPTS_2);
         }
         /**
          * Won&#x27;t repeat the enums, using string for easy comparison. Same as the other enums below.
          * @return the protocol field value
          */
         public String launchType() {
-            return (String) require("launchType");
+            return requireString("launchType");
         }
         /**
          * Sets the action field.
@@ -2448,21 +2554,21 @@ public final class Page {
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Returns the sizes field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> sizes() {
-            return raw("sizes").map(value -> (String) value);
+            return optionalString("sizes");
         }
         /**
          * Returns the type field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> type() {
-            return raw("type").map(value -> (String) value);
+            return optionalString("type");
         }
         /**
          * The src field in the definition, but changing to url in favor of consistency.
@@ -2506,7 +2612,7 @@ public final class Page {
          * @return the protocol field value
          */
         public String clientMode() {
-            return (String) require("clientMode");
+            return requireString("clientMode");
         }
         /**
          * Sets the clientMode field.
@@ -2532,14 +2638,14 @@ public final class Page {
          * @return the protocol field value
          */
         public String protocol() {
-            return (String) require("protocol");
+            return requireString("protocol");
         }
         /**
          * Returns the url field.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Sets the protocol field.
@@ -2574,14 +2680,14 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> id() {
-            return raw("id").map(value -> (String) value);
+            return optionalString("id");
         }
         /**
          * Returns the url field.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Sets the id field.
@@ -2616,14 +2722,14 @@ public final class Page {
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * Returns the hasOriginWildcard field.
          * @return the protocol field value
          */
         public boolean hasOriginWildcard() {
-            return (Boolean) require("hasOriginWildcard");
+            return requireBoolean("hasOriginWildcard");
         }
         /**
          * Instead of using tuple, this field always returns the serialized string for easy understanding and comparison.
@@ -2658,21 +2764,21 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.ImageResource image() {
-            return java.util.Objects.requireNonNull(Page.ImageResource.fromMap(CdpObject.requireObjectMap(require("image"))));
+            return require(IMAGE);
         }
         /**
          * Returns the formFactor field.
          * @return the protocol field value
          */
         public String formFactor() {
-            return (String) require("formFactor");
+            return requireString("formFactor");
         }
         /**
          * Returns the label field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> label() {
-            return raw("label").map(value -> (String) value);
+            return optionalString("label");
         }
         /**
          * Sets the image field.
@@ -2716,49 +2822,49 @@ public final class Page {
          * @return the protocol field value
          */
         public String action() {
-            return (String) require("action");
+            return requireString("action");
         }
         /**
          * Returns the method field.
          * @return the protocol field value
          */
         public String method() {
-            return (String) require("method");
+            return requireString("method");
         }
         /**
          * Returns the enctype field.
          * @return the protocol field value
          */
         public String enctype() {
-            return (String) require("enctype");
+            return requireString("enctype");
         }
         /**
          * Embed the ShareTargetParams
          * @return the protocol field value, empty when absent
          */
         public Optional<String> title() {
-            return raw("title").map(value -> (String) value);
+            return optionalString("title");
         }
         /**
          * Returns the text field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> text() {
-            return raw("text").map(value -> (String) value);
+            return optionalString("text");
         }
         /**
          * Returns the url field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return raw("url").map(value -> (String) value);
+            return optionalString("url");
         }
         /**
          * Returns the files field.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Page.FileFilter>> files() {
-            return raw("files").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Page.FileFilter.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(FILES);
         }
         /**
          * Sets the action field.
@@ -2838,14 +2944,14 @@ public final class Page {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Returns the url field.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Sets the name field.
@@ -2880,161 +2986,161 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> backgroundColor() {
-            return raw("backgroundColor").map(value -> (String) value);
+            return optionalString("backgroundColor");
         }
         /**
          * The extra description provided by the manifest.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> description() {
-            return raw("description").map(value -> (String) value);
+            return optionalString("description");
         }
         /**
          * Returns the dir field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> dir() {
-            return raw("dir").map(value -> (String) value);
+            return optionalString("dir");
         }
         /**
          * Returns the display field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> display() {
-            return raw("display").map(value -> (String) value);
+            return optionalString("display");
         }
         /**
          * The overrided display mode controlled by the user.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> displayOverrides() {
-            return raw("displayOverrides").flatMap(value -> list(value, element0 -> (String) element0));
+            return optional(DISPLAY_OVERRIDES);
         }
         /**
          * The handlers to open files.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Page.FileHandler>> fileHandlers() {
-            return raw("fileHandlers").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Page.FileHandler.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(FILE_HANDLERS);
         }
         /**
          * Returns the icons field.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Page.ImageResource>> icons() {
-            return raw("icons").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Page.ImageResource.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(ICONS);
         }
         /**
          * Returns the id field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> id() {
-            return raw("id").map(value -> (String) value);
+            return optionalString("id");
         }
         /**
          * Returns the lang field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> lang() {
-            return raw("lang").map(value -> (String) value);
+            return optionalString("lang");
         }
         /**
          * TODO(crbug.com/1231886): This field is non-standard and part of a Chrome experiment. See: https://github.com/WICG/web-app-launch/blob/main/launch_handler.md
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.LaunchHandler> launchHandler() {
-            return raw("launchHandler").flatMap(CdpObject::objectMap).map(Page.LaunchHandler::fromMap);
+            return optional(LAUNCH_HANDLER);
         }
         /**
          * Returns the name field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            return raw("name").map(value -> (String) value);
+            return optionalString("name");
         }
         /**
          * Returns the orientation field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> orientation() {
-            return raw("orientation").map(value -> (String) value);
+            return optionalString("orientation");
         }
         /**
          * Returns the preferRelatedApplications field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> preferRelatedApplications() {
-            return raw("preferRelatedApplications").map(value -> (Boolean) value);
+            return optionalBoolean("preferRelatedApplications");
         }
         /**
          * The handlers to open protocols.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Page.ProtocolHandler>> protocolHandlers() {
-            return raw("protocolHandlers").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Page.ProtocolHandler.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(PROTOCOL_HANDLERS);
         }
         /**
          * Returns the relatedApplications field.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Page.RelatedApplication>> relatedApplications() {
-            return raw("relatedApplications").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Page.RelatedApplication.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(RELATED_APPLICATIONS);
         }
         /**
          * Returns the scope field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> scope() {
-            return raw("scope").map(value -> (String) value);
+            return optionalString("scope");
         }
         /**
          * Non-standard, see https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Page.ScopeExtension>> scopeExtensions() {
-            return raw("scopeExtensions").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Page.ScopeExtension.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(SCOPE_EXTENSIONS);
         }
         /**
          * The screenshots used by chromium.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Page.Screenshot>> screenshots() {
-            return raw("screenshots").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Page.Screenshot.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(SCREENSHOTS);
         }
         /**
          * Returns the shareTarget field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.ShareTarget> shareTarget() {
-            return raw("shareTarget").flatMap(CdpObject::objectMap).map(Page.ShareTarget::fromMap);
+            return optional(SHARE_TARGET);
         }
         /**
          * Returns the shortName field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> shortName() {
-            return raw("shortName").map(value -> (String) value);
+            return optionalString("shortName");
         }
         /**
          * Returns the shortcuts field.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Page.Shortcut>> shortcuts() {
-            return raw("shortcuts").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Page.Shortcut.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(SHORTCUTS);
         }
         /**
          * Returns the startUrl field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> startUrl() {
-            return raw("startUrl").map(value -> (String) value);
+            return optionalString("startUrl");
         }
         /**
          * Returns the themeColor field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> themeColor() {
-            return raw("themeColor").map(value -> (String) value);
+            return optionalString("themeColor");
         }
         /**
          * Sets the backgroundColor field.
@@ -3456,28 +3562,28 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return raw("url").map(value -> (String) value);
+            return optionalString("url");
         }
         /**
          * Function name where blockage happened. Optional because of anonymous functions and tests.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> function() {
-            return raw("function").map(value -> (String) value);
+            return optionalString("function");
         }
         /**
          * Line number in the script (0-based).
          * @return the protocol field value
          */
         public long lineNumber() {
-            return ((Number) require("lineNumber")).longValue();
+            return requireLong("lineNumber");
         }
         /**
          * Column number in the script (0-based).
          * @return the protocol field value
          */
         public long columnNumber() {
-            return ((Number) require("columnNumber")).longValue();
+            return requireLong("columnNumber");
         }
         /**
          * Url of the file where blockage happened. Optional because of tests.
@@ -3530,28 +3636,28 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.BackForwardCacheNotRestoredReasonType type() {
-            return Page.BackForwardCacheNotRestoredReasonType.of((String) require("type"));
+            return require(TYPE_2);
         }
         /**
          * Not restored reason
          * @return the protocol field value
          */
         public Page.BackForwardCacheNotRestoredReason reason() {
-            return Page.BackForwardCacheNotRestoredReason.of((String) require("reason"));
+            return require(REASON);
         }
         /**
          * Context associated with the reason. The meaning of this context is dependent on the reason: - EmbedderExtensionSentMessageToCachedFrame: the extension ID.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> context() {
-            return raw("context").map(value -> (String) value);
+            return optionalString("context");
         }
         /**
          * Returns the details field.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Page.BackForwardCacheBlockingDetails>> details() {
-            return raw("details").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Page.BackForwardCacheBlockingDetails.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(DETAILS);
         }
         /**
          * Type of the reason
@@ -3604,21 +3710,21 @@ public final class Page {
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Not restored reasons of each frame
          * @return the protocol field value
          */
         public java.util.List<Page.BackForwardCacheNotRestoredExplanation> explanations() {
-            return CdpObject.requireList(require("explanations"), element0 -> java.util.Objects.requireNonNull(Page.BackForwardCacheNotRestoredExplanation.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(EXPLANATIONS_2);
         }
         /**
          * Array of children frame
          * @return the protocol field value
          */
         public java.util.List<Page.BackForwardCacheNotRestoredExplanationTree> children() {
-            return CdpObject.requireList(require("children"), element0 -> java.util.Objects.requireNonNull(Page.BackForwardCacheNotRestoredExplanationTree.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(CHILDREN);
         }
         /**
          * URL of each frame
@@ -3656,16 +3762,6 @@ public final class Page {
     @Deprecated
     public static final class AddScriptToEvaluateOnLoadRequest extends CdpObject {
         public AddScriptToEvaluateOnLoadRequest() {}
-        /**
-         * Deprecated, please use addScriptToEvaluateOnNewDocument instead.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param scriptSource protocol value
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public AddScriptToEvaluateOnLoadRequest(String scriptSource) {
-            scriptSource(scriptSource);
-        }
         public static AddScriptToEvaluateOnLoadRequest fromMap(Map<String, Object> values) {
             final AddScriptToEvaluateOnLoadRequest instance_ = new AddScriptToEvaluateOnLoadRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3676,7 +3772,7 @@ public final class Page {
          * @return the protocol field value
          */
         public String scriptSource() {
-            return (String) require("scriptSource");
+            return requireString("scriptSource");
         }
         /**
          * Sets the scriptSource field.
@@ -3693,13 +3789,6 @@ public final class Page {
      */
     public static final class AddScriptToEvaluateOnNewDocumentRequest extends CdpObject {
         public AddScriptToEvaluateOnNewDocumentRequest() {}
-        /**
-         * Evaluates given script in every frame upon creation (before loading frame&#x27;s scripts).
-         * @param source protocol value
-         */
-        public AddScriptToEvaluateOnNewDocumentRequest(String source) {
-            source(source);
-        }
         public static AddScriptToEvaluateOnNewDocumentRequest fromMap(Map<String, Object> values) {
             final AddScriptToEvaluateOnNewDocumentRequest instance_ = new AddScriptToEvaluateOnNewDocumentRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3710,7 +3799,7 @@ public final class Page {
          * @return the protocol field value
          */
         public String source() {
-            return (String) require("source");
+            return requireString("source");
         }
         /**
          * If specified, creates an isolated world with the given name and evaluates given script in it. This world name will be used as the ExecutionContextDescription::name when the corresponding event is emitted.
@@ -3718,7 +3807,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> worldName() {
-            return raw("worldName").map(value -> (String) value);
+            return optionalString("worldName");
         }
         /**
          * Specifies whether command line API should be available to the script, defaults to false.
@@ -3726,7 +3815,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeCommandLineAPI() {
-            return raw("includeCommandLineAPI").map(value -> (Boolean) value);
+            return optionalBoolean("includeCommandLineAPI");
         }
         /**
          * If true, runs the script immediately on existing execution contexts or worlds. Default: false.
@@ -3734,7 +3823,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> runImmediately() {
-            return raw("runImmediately").map(value -> (Boolean) value);
+            return optionalBoolean("runImmediately");
         }
         /**
          * Sets the source field.
@@ -3791,21 +3880,21 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<CaptureScreenshotFormatValues> format() {
-            return raw("format").map(value -> CaptureScreenshotFormatValues.of((String) value));
+            return optional(FORMAT);
         }
         /**
          * Compression quality from range [0..100] (jpeg only).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong quality() {
-            return raw("quality").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("quality");
         }
         /**
          * Capture the screenshot of a given region only.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.Viewport> clip() {
-            return raw("clip").flatMap(CdpObject::objectMap).map(Page.Viewport::fromMap);
+            return optional(CLIP);
         }
         /**
          * Capture the screenshot from the surface, rather than the view. Defaults to true.
@@ -3813,7 +3902,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> fromSurface() {
-            return raw("fromSurface").map(value -> (Boolean) value);
+            return optionalBoolean("fromSurface");
         }
         /**
          * Capture the screenshot beyond the viewport. Defaults to false.
@@ -3821,7 +3910,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> captureBeyondViewport() {
-            return raw("captureBeyondViewport").map(value -> (Boolean) value);
+            return optionalBoolean("captureBeyondViewport");
         }
         /**
          * Optimize image encoding for speed, not for resulting size (defaults to false)
@@ -3829,7 +3918,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> optimizeForSpeed() {
-            return raw("optimizeForSpeed").map(value -> (Boolean) value);
+            return optionalBoolean("optimizeForSpeed");
         }
         /**
          * Image compression format (defaults to png).
@@ -3905,7 +3994,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<CaptureSnapshotFormatValues> format() {
-            return raw("format").map(value -> CaptureSnapshotFormatValues.of((String) value));
+            return optional(FORMAT_2);
         }
         /**
          * Format (defaults to mhtml).
@@ -3922,13 +4011,6 @@ public final class Page {
      */
     public static final class CreateIsolatedWorldRequest extends CdpObject {
         public CreateIsolatedWorldRequest() {}
-        /**
-         * Creates an isolated world for the given frame.
-         * @param frameId protocol value
-         */
-        public CreateIsolatedWorldRequest(Page.FrameId frameId) {
-            frameId(frameId);
-        }
         public static CreateIsolatedWorldRequest fromMap(Map<String, Object> values) {
             final CreateIsolatedWorldRequest instance_ = new CreateIsolatedWorldRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3939,21 +4021,21 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * An optional name which is reported in the Execution Context.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> worldName() {
-            return raw("worldName").map(value -> (String) value);
+            return optionalString("worldName");
         }
         /**
          * Whether or not universal access should be granted to the isolated world. This is a powerful option, use with caution.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> grantUniveralAccess() {
-            return raw("grantUniveralAccess").map(value -> (Boolean) value);
+            return optionalBoolean("grantUniveralAccess");
         }
         /**
          * Id of the frame in which the isolated world should be created.
@@ -3991,17 +4073,6 @@ public final class Page {
     @Deprecated
     public static final class DeleteCookieRequest extends CdpObject {
         public DeleteCookieRequest() {}
-        /**
-         * Deletes browser cookie with given name, domain and path.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param cookieName protocol value
-         * @param url protocol value
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public DeleteCookieRequest(String cookieName, String url) {
-            cookieName(cookieName).url(url);
-        }
         public static DeleteCookieRequest fromMap(Map<String, Object> values) {
             final DeleteCookieRequest instance_ = new DeleteCookieRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4012,14 +4083,14 @@ public final class Page {
          * @return the protocol field value
          */
         public String cookieName() {
-            return (String) require("cookieName");
+            return requireString("cookieName");
         }
         /**
          * URL to match cooke domain and path.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Name of the cookie to remove.
@@ -4056,7 +4127,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> enableFileChooserOpenedEvent() {
-            return raw("enableFileChooserOpenedEvent").map(value -> (Boolean) value);
+            return optionalBoolean("enableFileChooserOpenedEvent");
         }
         /**
          * If true, the {@code Page.fileChooserOpened} event will be emitted regardless of the state set by {@code Page.setInterceptFileChooserDialog} command (default: false).
@@ -4084,7 +4155,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> manifestId() {
-            return raw("manifestId").map(value -> (String) value);
+            return optionalString("manifestId");
         }
         /**
          * Sets the manifestId field.
@@ -4102,14 +4173,6 @@ public final class Page {
      */
     public static final class GetAdScriptAncestryRequest extends CdpObject {
         public GetAdScriptAncestryRequest() {}
-        /**
-         * Creates a new GetAdScriptAncestryRequest with all required parameters.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param frameId protocol value
-         */
-        public GetAdScriptAncestryRequest(Page.FrameId frameId) {
-            frameId(frameId);
-        }
         public static GetAdScriptAncestryRequest fromMap(Map<String, Object> values) {
             final GetAdScriptAncestryRequest instance_ = new GetAdScriptAncestryRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4120,7 +4183,7 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Sets the frameId field.
@@ -4138,15 +4201,6 @@ public final class Page {
      */
     public static final class GetResourceContentRequest extends CdpObject {
         public GetResourceContentRequest() {}
-        /**
-         * Returns content of the given resource.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param frameId protocol value
-         * @param url protocol value
-         */
-        public GetResourceContentRequest(Page.FrameId frameId, String url) {
-            frameId(frameId).url(url);
-        }
         public static GetResourceContentRequest fromMap(Map<String, Object> values) {
             final GetResourceContentRequest instance_ = new GetResourceContentRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4157,14 +4211,14 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * URL of the resource to get content for.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Frame id to get resource for.
@@ -4190,13 +4244,6 @@ public final class Page {
      */
     public static final class HandleJavaScriptDialogRequest extends CdpObject {
         public HandleJavaScriptDialogRequest() {}
-        /**
-         * Accepts or dismisses a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload).
-         * @param accept protocol value
-         */
-        public HandleJavaScriptDialogRequest(boolean accept) {
-            accept(accept);
-        }
         public static HandleJavaScriptDialogRequest fromMap(Map<String, Object> values) {
             final HandleJavaScriptDialogRequest instance_ = new HandleJavaScriptDialogRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4207,14 +4254,14 @@ public final class Page {
          * @return the protocol field value
          */
         public boolean accept() {
-            return (Boolean) require("accept");
+            return requireBoolean("accept");
         }
         /**
          * The text to enter into the dialog prompt before accepting. Used only if this is a prompt dialog.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> promptText() {
-            return raw("promptText").map(value -> (String) value);
+            return optionalString("promptText");
         }
         /**
          * Whether to accept or dismiss the dialog.
@@ -4240,13 +4287,6 @@ public final class Page {
      */
     public static final class NavigateRequest extends CdpObject {
         public NavigateRequest() {}
-        /**
-         * Navigates current page to the given URL.
-         * @param url protocol value
-         */
-        public NavigateRequest(String url) {
-            url(url);
-        }
         public static NavigateRequest fromMap(Map<String, Object> values) {
             final NavigateRequest instance_ = new NavigateRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4257,28 +4297,28 @@ public final class Page {
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Referrer URL.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> referrer() {
-            return raw("referrer").map(value -> (String) value);
+            return optionalString("referrer");
         }
         /**
          * Intended transition type.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.TransitionType> transitionType() {
-            return raw("transitionType").map(value -> Page.TransitionType.of((String) value));
+            return optional(TRANSITION_TYPE);
         }
         /**
          * Frame id to navigate, if not specified navigates the top frame.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return raw("frameId").map(value -> new Page.FrameId((String) value));
+            return optional(FRAME_ID);
         }
         /**
          * Referrer-policy used for the navigation.
@@ -4286,7 +4326,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.ReferrerPolicy> referrerPolicy() {
-            return raw("referrerPolicy").map(value -> Page.ReferrerPolicy.of((String) value));
+            return optional(REFERRER_POLICY);
         }
         /**
          * URL to navigate the page to.
@@ -4340,13 +4380,6 @@ public final class Page {
      */
     public static final class NavigateToHistoryEntryRequest extends CdpObject {
         public NavigateToHistoryEntryRequest() {}
-        /**
-         * Navigates current page to the given history entry.
-         * @param entryId protocol value
-         */
-        public NavigateToHistoryEntryRequest(long entryId) {
-            entryId(entryId);
-        }
         public static NavigateToHistoryEntryRequest fromMap(Map<String, Object> values) {
             final NavigateToHistoryEntryRequest instance_ = new NavigateToHistoryEntryRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4357,7 +4390,7 @@ public final class Page {
          * @return the protocol field value
          */
         public long entryId() {
-            return ((Number) require("entryId")).longValue();
+            return requireLong("entryId");
         }
         /**
          * Unique id of the entry to navigate to.
@@ -4384,77 +4417,77 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> landscape() {
-            return raw("landscape").map(value -> (Boolean) value);
+            return optionalBoolean("landscape");
         }
         /**
          * Display header and footer. Defaults to false.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> displayHeaderFooter() {
-            return raw("displayHeaderFooter").map(value -> (Boolean) value);
+            return optionalBoolean("displayHeaderFooter");
         }
         /**
          * Print background graphics. Defaults to false.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> printBackground() {
-            return raw("printBackground").map(value -> (Boolean) value);
+            return optionalBoolean("printBackground");
         }
         /**
          * Scale of the webpage rendering. Defaults to 1.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble scale() {
-            return raw("scale").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("scale");
         }
         /**
          * Paper width in inches. Defaults to 8.5 inches.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble paperWidth() {
-            return raw("paperWidth").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("paperWidth");
         }
         /**
          * Paper height in inches. Defaults to 11 inches.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble paperHeight() {
-            return raw("paperHeight").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("paperHeight");
         }
         /**
          * Top margin in inches. Defaults to 1cm (~0.4 inches).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble marginTop() {
-            return raw("marginTop").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("marginTop");
         }
         /**
          * Bottom margin in inches. Defaults to 1cm (~0.4 inches).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble marginBottom() {
-            return raw("marginBottom").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("marginBottom");
         }
         /**
          * Left margin in inches. Defaults to 1cm (~0.4 inches).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble marginLeft() {
-            return raw("marginLeft").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("marginLeft");
         }
         /**
          * Right margin in inches. Defaults to 1cm (~0.4 inches).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble marginRight() {
-            return raw("marginRight").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("marginRight");
         }
         /**
          * Paper ranges to print, one based, e.g., &#x27;1-5, 8, 11-13&#x27;. Pages are printed in the document order, not in the order specified, and no more than once. Defaults to empty string, which implies the entire document is printed. The page numbers are quietly capped to actual page count of the document, and ranges beyond the end of the document are ignored. If this results in no pages to print, an error is reported. It is an error to specify a range with start greater than end.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> pageRanges() {
-            return raw("pageRanges").map(value -> (String) value);
+            return optionalString("pageRanges");
         }
         /**
          * HTML template for the print header. Should be valid HTML markup with following classes used to inject printing values into them: - {@code date}: formatted print date - {@code title}: document title - {@code url}: document location - {@code pageNumber}: current page number - {@code totalPages}: total pages in the document
@@ -4462,21 +4495,21 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> headerTemplate() {
-            return raw("headerTemplate").map(value -> (String) value);
+            return optionalString("headerTemplate");
         }
         /**
          * HTML template for the print footer. Should use the same format as the {@code headerTemplate}.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> footerTemplate() {
-            return raw("footerTemplate").map(value -> (String) value);
+            return optionalString("footerTemplate");
         }
         /**
          * Whether or not to prefer page size as defined by css. Defaults to false, in which case the content will be scaled to fit the paper size.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> preferCSSPageSize() {
-            return raw("preferCSSPageSize").map(value -> (Boolean) value);
+            return optionalBoolean("preferCSSPageSize");
         }
         /**
          * return as stream
@@ -4484,7 +4517,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<PrintToPDFTransferModeValues> transferMode() {
-            return raw("transferMode").map(value -> PrintToPDFTransferModeValues.of((String) value));
+            return optional(TRANSFER_MODE);
         }
         /**
          * Whether or not to generate tagged (accessible) PDF. Defaults to embedder choice.
@@ -4492,7 +4525,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> generateTaggedPDF() {
-            return raw("generateTaggedPDF").map(value -> (Boolean) value);
+            return optionalBoolean("generateTaggedPDF");
         }
         /**
          * Whether or not to embed the document outline into the PDF.
@@ -4500,7 +4533,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> generateDocumentOutline() {
-            return raw("generateDocumentOutline").map(value -> (Boolean) value);
+            return optionalBoolean("generateDocumentOutline");
         }
         /**
          * Paper orientation. Defaults to false.
@@ -4675,14 +4708,14 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> ignoreCache() {
-            return raw("ignoreCache").map(value -> (Boolean) value);
+            return optionalBoolean("ignoreCache");
         }
         /**
          * If set, the script will be injected into all frames of the inspected page after reload. Argument will be ignored if reloading dataURL origin.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> scriptToEvaluateOnLoad() {
-            return raw("scriptToEvaluateOnLoad").map(value -> (String) value);
+            return optionalString("scriptToEvaluateOnLoad");
         }
         /**
          * If set, an error will be thrown if the target page&#x27;s main frame&#x27;s loader id does not match the provided id. This prevents accidentally reloading an unintended target in case there&#x27;s a racing navigation.
@@ -4690,7 +4723,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.LoaderId> loaderId() {
-            return raw("loaderId").map(value -> new Network.LoaderId((String) value));
+            return optional(LOADER_ID);
         }
         /**
          * If true, browser cache is ignored (as if the user pressed Shift+refresh).
@@ -4729,16 +4762,6 @@ public final class Page {
     @Deprecated
     public static final class RemoveScriptToEvaluateOnLoadRequest extends CdpObject {
         public RemoveScriptToEvaluateOnLoadRequest() {}
-        /**
-         * Deprecated, please use removeScriptToEvaluateOnNewDocument instead.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param identifier protocol value
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public RemoveScriptToEvaluateOnLoadRequest(Page.ScriptIdentifier identifier) {
-            identifier(identifier);
-        }
         public static RemoveScriptToEvaluateOnLoadRequest fromMap(Map<String, Object> values) {
             final RemoveScriptToEvaluateOnLoadRequest instance_ = new RemoveScriptToEvaluateOnLoadRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4749,7 +4772,7 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.ScriptIdentifier identifier() {
-            return new Page.ScriptIdentifier((String) require("identifier"));
+            return require(IDENTIFIER);
         }
         /**
          * Sets the identifier field.
@@ -4766,13 +4789,6 @@ public final class Page {
      */
     public static final class RemoveScriptToEvaluateOnNewDocumentRequest extends CdpObject {
         public RemoveScriptToEvaluateOnNewDocumentRequest() {}
-        /**
-         * Removes given script from the list.
-         * @param identifier protocol value
-         */
-        public RemoveScriptToEvaluateOnNewDocumentRequest(Page.ScriptIdentifier identifier) {
-            identifier(identifier);
-        }
         public static RemoveScriptToEvaluateOnNewDocumentRequest fromMap(Map<String, Object> values) {
             final RemoveScriptToEvaluateOnNewDocumentRequest instance_ = new RemoveScriptToEvaluateOnNewDocumentRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4783,7 +4799,7 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.ScriptIdentifier identifier() {
-            return new Page.ScriptIdentifier((String) require("identifier"));
+            return require(IDENTIFIER);
         }
         /**
          * Sets the identifier field.
@@ -4801,14 +4817,6 @@ public final class Page {
      */
     public static final class ScreencastFrameAckRequest extends CdpObject {
         public ScreencastFrameAckRequest() {}
-        /**
-         * Acknowledges that a screencast frame has been received by the frontend.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param sessionId protocol value
-         */
-        public ScreencastFrameAckRequest(long sessionId) {
-            sessionId(sessionId);
-        }
         public static ScreencastFrameAckRequest fromMap(Map<String, Object> values) {
             final ScreencastFrameAckRequest instance_ = new ScreencastFrameAckRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4819,7 +4827,7 @@ public final class Page {
          * @return the protocol field value
          */
         public long sessionId() {
-            return ((Number) require("sessionId")).longValue();
+            return requireLong("sessionId");
         }
         /**
          * Frame number.
@@ -4837,16 +4845,6 @@ public final class Page {
      */
     public static final class SearchInResourceRequest extends CdpObject {
         public SearchInResourceRequest() {}
-        /**
-         * Searches for given string in resource content.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param frameId protocol value
-         * @param url protocol value
-         * @param query protocol value
-         */
-        public SearchInResourceRequest(Page.FrameId frameId, String url, String query) {
-            frameId(frameId).url(url).query(query);
-        }
         public static SearchInResourceRequest fromMap(Map<String, Object> values) {
             final SearchInResourceRequest instance_ = new SearchInResourceRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4857,35 +4855,35 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * URL of the resource to search in.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * String to search for.
          * @return the protocol field value
          */
         public String query() {
-            return (String) require("query");
+            return requireString("query");
         }
         /**
          * If true, search is case sensitive.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> caseSensitive() {
-            return raw("caseSensitive").map(value -> (Boolean) value);
+            return optionalBoolean("caseSensitive");
         }
         /**
          * If true, treats string parameter as regex.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isRegex() {
-            return raw("isRegex").map(value -> (Boolean) value);
+            return optionalBoolean("isRegex");
         }
         /**
          * Frame id for resource to search in.
@@ -4939,14 +4937,6 @@ public final class Page {
      */
     public static final class SetAdBlockingEnabledRequest extends CdpObject {
         public SetAdBlockingEnabledRequest() {}
-        /**
-         * Enable Chrome&#x27;s experimental ad filter on all sites.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param enabled protocol value
-         */
-        public SetAdBlockingEnabledRequest(boolean enabled) {
-            enabled(enabled);
-        }
         public static SetAdBlockingEnabledRequest fromMap(Map<String, Object> values) {
             final SetAdBlockingEnabledRequest instance_ = new SetAdBlockingEnabledRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4957,7 +4947,7 @@ public final class Page {
          * @return the protocol field value
          */
         public boolean enabled() {
-            return (Boolean) require("enabled");
+            return requireBoolean("enabled");
         }
         /**
          * Whether to block ads.
@@ -4974,13 +4964,6 @@ public final class Page {
      */
     public static final class SetBypassCSPRequest extends CdpObject {
         public SetBypassCSPRequest() {}
-        /**
-         * Enable page Content Security Policy by-passing.
-         * @param enabled protocol value
-         */
-        public SetBypassCSPRequest(boolean enabled) {
-            enabled(enabled);
-        }
         public static SetBypassCSPRequest fromMap(Map<String, Object> values) {
             final SetBypassCSPRequest instance_ = new SetBypassCSPRequest();
             if (values != null) instance_.values.putAll(values);
@@ -4991,7 +4974,7 @@ public final class Page {
          * @return the protocol field value
          */
         public boolean enabled() {
-            return (Boolean) require("enabled");
+            return requireBoolean("enabled");
         }
         /**
          * Whether to bypass page CSP.
@@ -5009,14 +4992,6 @@ public final class Page {
      */
     public static final class GetPermissionsPolicyStateRequest extends CdpObject {
         public GetPermissionsPolicyStateRequest() {}
-        /**
-         * Get Permissions Policy state on given frame.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param frameId protocol value
-         */
-        public GetPermissionsPolicyStateRequest(Page.FrameId frameId) {
-            frameId(frameId);
-        }
         public static GetPermissionsPolicyStateRequest fromMap(Map<String, Object> values) {
             final GetPermissionsPolicyStateRequest instance_ = new GetPermissionsPolicyStateRequest();
             if (values != null) instance_.values.putAll(values);
@@ -5027,7 +5002,7 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Sets the frameId field.
@@ -5045,14 +5020,6 @@ public final class Page {
      */
     public static final class GetOriginTrialsRequest extends CdpObject {
         public GetOriginTrialsRequest() {}
-        /**
-         * Get Origin Trials on given frame.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param frameId protocol value
-         */
-        public GetOriginTrialsRequest(Page.FrameId frameId) {
-            frameId(frameId);
-        }
         public static GetOriginTrialsRequest fromMap(Map<String, Object> values) {
             final GetOriginTrialsRequest instance_ = new GetOriginTrialsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -5063,7 +5030,7 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Sets the frameId field.
@@ -5083,19 +5050,6 @@ public final class Page {
     @Deprecated
     public static final class SetDeviceMetricsOverrideRequest extends CdpObject {
         public SetDeviceMetricsOverrideRequest() {}
-        /**
-         * Overrides the values of device screen dimensions (window.screen.width, window.screen.height, window.innerWidth, window.innerHeight, and &quot;device-width&quot;/&quot;device-height&quot;-related CSS media query results).
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param width protocol value
-         * @param height protocol value
-         * @param deviceScaleFactor protocol value
-         * @param mobile protocol value
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public SetDeviceMetricsOverrideRequest(long width, long height, double deviceScaleFactor, boolean mobile) {
-            width(width).height(height).deviceScaleFactor(deviceScaleFactor).mobile(mobile);
-        }
         public static SetDeviceMetricsOverrideRequest fromMap(Map<String, Object> values) {
             final SetDeviceMetricsOverrideRequest instance_ = new SetDeviceMetricsOverrideRequest();
             if (values != null) instance_.values.putAll(values);
@@ -5106,84 +5060,84 @@ public final class Page {
          * @return the protocol field value
          */
         public long width() {
-            return ((Number) require("width")).longValue();
+            return requireLong("width");
         }
         /**
          * Overriding height value in pixels (minimum 0, maximum 10000000). 0 disables the override.
          * @return the protocol field value
          */
         public long height() {
-            return ((Number) require("height")).longValue();
+            return requireLong("height");
         }
         /**
          * Overriding device scale factor value. 0 disables the override.
          * @return the protocol field value
          */
         public double deviceScaleFactor() {
-            return ((Number) require("deviceScaleFactor")).doubleValue();
+            return requireDouble("deviceScaleFactor");
         }
         /**
          * Whether to emulate mobile device. This includes viewport meta tag, overlay scrollbars, text autosizing and more.
          * @return the protocol field value
          */
         public boolean mobile() {
-            return (Boolean) require("mobile");
+            return requireBoolean("mobile");
         }
         /**
          * Scale to apply to resulting view image.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble scale() {
-            return raw("scale").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("scale");
         }
         /**
          * Overriding screen width value in pixels (minimum 0, maximum 10000000).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong screenWidth() {
-            return raw("screenWidth").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("screenWidth");
         }
         /**
          * Overriding screen height value in pixels (minimum 0, maximum 10000000).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong screenHeight() {
-            return raw("screenHeight").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("screenHeight");
         }
         /**
          * Overriding view X position on screen in pixels (minimum 0, maximum 10000000).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong positionX() {
-            return raw("positionX").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("positionX");
         }
         /**
          * Overriding view Y position on screen in pixels (minimum 0, maximum 10000000).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong positionY() {
-            return raw("positionY").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("positionY");
         }
         /**
          * Do not set visible view size, rely upon explicit setVisibleSize call.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> dontSetVisibleSize() {
-            return raw("dontSetVisibleSize").map(value -> (Boolean) value);
+            return optionalBoolean("dontSetVisibleSize");
         }
         /**
          * Screen orientation override.
          * @return the protocol field value, empty when absent
          */
         public Optional<Emulation.ScreenOrientation> screenOrientation() {
-            return raw("screenOrientation").flatMap(CdpObject::objectMap).map(Emulation.ScreenOrientation::fromMap);
+            return optional(SCREEN_ORIENTATION);
         }
         /**
          * The viewport dimensions and scale. If not set, the override is cleared.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.Viewport> viewport() {
-            return raw("viewport").flatMap(CdpObject::objectMap).map(Page.Viewport::fromMap);
+            return optional(VIEWPORT);
         }
         /**
          * Overriding width value in pixels (minimum 0, maximum 10000000). 0 disables the override.
@@ -5302,18 +5256,6 @@ public final class Page {
     @Deprecated
     public static final class SetDeviceOrientationOverrideRequest extends CdpObject {
         public SetDeviceOrientationOverrideRequest() {}
-        /**
-         * Overrides the Device Orientation.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param alpha protocol value
-         * @param beta protocol value
-         * @param gamma protocol value
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public SetDeviceOrientationOverrideRequest(double alpha, double beta, double gamma) {
-            alpha(alpha).beta(beta).gamma(gamma);
-        }
         public static SetDeviceOrientationOverrideRequest fromMap(Map<String, Object> values) {
             final SetDeviceOrientationOverrideRequest instance_ = new SetDeviceOrientationOverrideRequest();
             if (values != null) instance_.values.putAll(values);
@@ -5324,21 +5266,21 @@ public final class Page {
          * @return the protocol field value
          */
         public double alpha() {
-            return ((Number) require("alpha")).doubleValue();
+            return requireDouble("alpha");
         }
         /**
          * Mock beta
          * @return the protocol field value
          */
         public double beta() {
-            return ((Number) require("beta")).doubleValue();
+            return requireDouble("beta");
         }
         /**
          * Mock gamma
          * @return the protocol field value
          */
         public double gamma() {
-            return ((Number) require("gamma")).doubleValue();
+            return requireDouble("gamma");
         }
         /**
          * Mock alpha
@@ -5374,14 +5316,6 @@ public final class Page {
      */
     public static final class SetFontFamiliesRequest extends CdpObject {
         public SetFontFamiliesRequest() {}
-        /**
-         * Set generic font families.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param fontFamilies protocol value
-         */
-        public SetFontFamiliesRequest(Page.FontFamilies fontFamilies) {
-            fontFamilies(fontFamilies);
-        }
         public static SetFontFamiliesRequest fromMap(Map<String, Object> values) {
             final SetFontFamiliesRequest instance_ = new SetFontFamiliesRequest();
             if (values != null) instance_.values.putAll(values);
@@ -5392,14 +5326,14 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FontFamilies fontFamilies() {
-            return java.util.Objects.requireNonNull(Page.FontFamilies.fromMap(CdpObject.requireObjectMap(require("fontFamilies"))));
+            return require(FONT_FAMILIES);
         }
         /**
          * Specifies font families to set for individual scripts.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Page.ScriptFontFamilies>> forScripts() {
-            return raw("forScripts").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Page.ScriptFontFamilies.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(FOR_SCRIPTS);
         }
         /**
          * Specifies font families to set. If a font family is not specified, it won&#x27;t be changed.
@@ -5426,14 +5360,6 @@ public final class Page {
      */
     public static final class SetFontSizesRequest extends CdpObject {
         public SetFontSizesRequest() {}
-        /**
-         * Set default font sizes.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param fontSizes protocol value
-         */
-        public SetFontSizesRequest(Page.FontSizes fontSizes) {
-            fontSizes(fontSizes);
-        }
         public static SetFontSizesRequest fromMap(Map<String, Object> values) {
             final SetFontSizesRequest instance_ = new SetFontSizesRequest();
             if (values != null) instance_.values.putAll(values);
@@ -5444,7 +5370,7 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FontSizes fontSizes() {
-            return java.util.Objects.requireNonNull(Page.FontSizes.fromMap(CdpObject.requireObjectMap(require("fontSizes"))));
+            return require(FONT_SIZES);
         }
         /**
          * Specifies font sizes to set. If a font size is not specified, it won&#x27;t be changed.
@@ -5461,14 +5387,6 @@ public final class Page {
      */
     public static final class SetDocumentContentRequest extends CdpObject {
         public SetDocumentContentRequest() {}
-        /**
-         * Sets given markup as the document&#x27;s HTML.
-         * @param frameId protocol value
-         * @param html protocol value
-         */
-        public SetDocumentContentRequest(Page.FrameId frameId, String html) {
-            frameId(frameId).html(html);
-        }
         public static SetDocumentContentRequest fromMap(Map<String, Object> values) {
             final SetDocumentContentRequest instance_ = new SetDocumentContentRequest();
             if (values != null) instance_.values.putAll(values);
@@ -5479,14 +5397,14 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * HTML content to set.
          * @return the protocol field value
          */
         public String html() {
-            return (String) require("html");
+            return requireString("html");
         }
         /**
          * Frame id to set HTML for.
@@ -5515,16 +5433,6 @@ public final class Page {
     @Deprecated
     public static final class SetDownloadBehaviorRequest extends CdpObject {
         public SetDownloadBehaviorRequest() {}
-        /**
-         * Set the behavior when downloading a file.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param behavior protocol value
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public SetDownloadBehaviorRequest(SetDownloadBehaviorBehaviorValues behavior) {
-            behavior(behavior);
-        }
         public static SetDownloadBehaviorRequest fromMap(Map<String, Object> values) {
             final SetDownloadBehaviorRequest instance_ = new SetDownloadBehaviorRequest();
             if (values != null) instance_.values.putAll(values);
@@ -5535,14 +5443,14 @@ public final class Page {
          * @return the protocol field value
          */
         public SetDownloadBehaviorBehaviorValues behavior() {
-            return SetDownloadBehaviorBehaviorValues.of((String) require("behavior"));
+            return require(BEHAVIOR);
         }
         /**
          * The default path to save downloaded files to. This is required if behavior is set to &#x27;allow&#x27;
          * @return the protocol field value, empty when absent
          */
         public Optional<String> downloadPath() {
-            return raw("downloadPath").map(value -> (String) value);
+            return optionalString("downloadPath");
         }
         /**
          * Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny).
@@ -5580,21 +5488,21 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble latitude() {
-            return raw("latitude").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("latitude");
         }
         /**
          * Mock longitude
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble longitude() {
-            return raw("longitude").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("longitude");
         }
         /**
          * Mock accuracy
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble accuracy() {
-            return raw("accuracy").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("accuracy");
         }
         /**
          * Mock latitude
@@ -5629,13 +5537,6 @@ public final class Page {
      */
     public static final class SetLifecycleEventsEnabledRequest extends CdpObject {
         public SetLifecycleEventsEnabledRequest() {}
-        /**
-         * Controls whether page will emit lifecycle events.
-         * @param enabled protocol value
-         */
-        public SetLifecycleEventsEnabledRequest(boolean enabled) {
-            enabled(enabled);
-        }
         public static SetLifecycleEventsEnabledRequest fromMap(Map<String, Object> values) {
             final SetLifecycleEventsEnabledRequest instance_ = new SetLifecycleEventsEnabledRequest();
             if (values != null) instance_.values.putAll(values);
@@ -5646,7 +5547,7 @@ public final class Page {
          * @return the protocol field value
          */
         public boolean enabled() {
-            return (Boolean) require("enabled");
+            return requireBoolean("enabled");
         }
         /**
          * If true, starts emitting lifecycle events.
@@ -5666,16 +5567,6 @@ public final class Page {
     @Deprecated
     public static final class SetTouchEmulationEnabledRequest extends CdpObject {
         public SetTouchEmulationEnabledRequest() {}
-        /**
-         * Toggles mouse event-based touch event emulation.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param enabled protocol value
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public SetTouchEmulationEnabledRequest(boolean enabled) {
-            enabled(enabled);
-        }
         public static SetTouchEmulationEnabledRequest fromMap(Map<String, Object> values) {
             final SetTouchEmulationEnabledRequest instance_ = new SetTouchEmulationEnabledRequest();
             if (values != null) instance_.values.putAll(values);
@@ -5686,14 +5577,14 @@ public final class Page {
          * @return the protocol field value
          */
         public boolean enabled() {
-            return (Boolean) require("enabled");
+            return requireBoolean("enabled");
         }
         /**
          * Touch/gesture events configuration. Default: current platform.
          * @return the protocol field value, empty when absent
          */
         public Optional<SetTouchEmulationEnabledConfigurationValues> configuration() {
-            return raw("configuration").map(value -> SetTouchEmulationEnabledConfigurationValues.of((String) value));
+            return optional(CONFIGURATION);
         }
         /**
          * Whether the touch event emulation should be enabled.
@@ -5730,35 +5621,35 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<StartScreencastFormatValues> format() {
-            return raw("format").map(value -> StartScreencastFormatValues.of((String) value));
+            return optional(FORMAT_3);
         }
         /**
          * Compression quality from range [0..100].
          * @return the protocol field value, empty when absent
          */
         public OptionalLong quality() {
-            return raw("quality").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("quality");
         }
         /**
          * Maximum screenshot width.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong maxWidth() {
-            return raw("maxWidth").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("maxWidth");
         }
         /**
          * Maximum screenshot height.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong maxHeight() {
-            return raw("maxHeight").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("maxHeight");
         }
         /**
          * Send every n-th frame.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong everyNthFrame() {
-            return raw("everyNthFrame").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("everyNthFrame");
         }
         /**
          * Image compression format.
@@ -5812,14 +5703,6 @@ public final class Page {
      */
     public static final class SetWebLifecycleStateRequest extends CdpObject {
         public SetWebLifecycleStateRequest() {}
-        /**
-         * Tries to update the web lifecycle state of the page. It will transition the page to the given state according to: https://github.com/WICG/web-lifecycle/
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param state protocol value
-         */
-        public SetWebLifecycleStateRequest(SetWebLifecycleStateStateValues state) {
-            state(state);
-        }
         public static SetWebLifecycleStateRequest fromMap(Map<String, Object> values) {
             final SetWebLifecycleStateRequest instance_ = new SetWebLifecycleStateRequest();
             if (values != null) instance_.values.putAll(values);
@@ -5830,7 +5713,7 @@ public final class Page {
          * @return the protocol field value
          */
         public SetWebLifecycleStateStateValues state() {
-            return SetWebLifecycleStateStateValues.of((String) require("state"));
+            return require(STATE);
         }
         /**
          * Target lifecycle state
@@ -5848,14 +5731,6 @@ public final class Page {
      */
     public static final class ProduceCompilationCacheRequest extends CdpObject {
         public ProduceCompilationCacheRequest() {}
-        /**
-         * Requests backend to produce compilation cache for the specified scripts. {@code scripts} are appended to the list of scripts for which the cache would be produced. The list may be reset during page navigation. When script with a matching URL is encountered, the cache is optionally produced upon backend discretion, based on internal heuristics. See also: {@code Page.compilationCacheProduced}.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param scripts protocol value
-         */
-        public ProduceCompilationCacheRequest(java.util.List<Page.CompilationCacheParams> scripts) {
-            scripts(scripts);
-        }
         public static ProduceCompilationCacheRequest fromMap(Map<String, Object> values) {
             final ProduceCompilationCacheRequest instance_ = new ProduceCompilationCacheRequest();
             if (values != null) instance_.values.putAll(values);
@@ -5866,7 +5741,7 @@ public final class Page {
          * @return the protocol field value
          */
         public java.util.List<Page.CompilationCacheParams> scripts() {
-            return CdpObject.requireList(require("scripts"), element0 -> java.util.Objects.requireNonNull(Page.CompilationCacheParams.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(SCRIPTS);
         }
         /**
          * Sets the scripts field.
@@ -5884,15 +5759,6 @@ public final class Page {
      */
     public static final class AddCompilationCacheRequest extends CdpObject {
         public AddCompilationCacheRequest() {}
-        /**
-         * Seeds compilation cache for given url. Compilation cache does not survive cross-process navigation.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param url protocol value
-         * @param data protocol value
-         */
-        public AddCompilationCacheRequest(String url, String data) {
-            url(url).data(data);
-        }
         public static AddCompilationCacheRequest fromMap(Map<String, Object> values) {
             final AddCompilationCacheRequest instance_ = new AddCompilationCacheRequest();
             if (values != null) instance_.values.putAll(values);
@@ -5903,14 +5769,14 @@ public final class Page {
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Base64-encoded data (Encoded as a base64 string when passed over JSON)
          * @return the protocol field value
          */
         public String data() {
-            return (String) require("data");
+            return requireString("data");
         }
         /**
          * Sets the url field.
@@ -5937,14 +5803,6 @@ public final class Page {
      */
     public static final class SetSPCTransactionModeRequest extends CdpObject {
         public SetSPCTransactionModeRequest() {}
-        /**
-         * Sets the Secure Payment Confirmation transaction mode. https://w3c.github.io/secure-payment-confirmation/#sctn-automation-set-spc-transaction-mode
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param mode protocol value
-         */
-        public SetSPCTransactionModeRequest(SetSPCTransactionModeModeValues mode) {
-            mode(mode);
-        }
         public static SetSPCTransactionModeRequest fromMap(Map<String, Object> values) {
             final SetSPCTransactionModeRequest instance_ = new SetSPCTransactionModeRequest();
             if (values != null) instance_.values.putAll(values);
@@ -5955,7 +5813,7 @@ public final class Page {
          * @return the protocol field value
          */
         public SetSPCTransactionModeModeValues mode() {
-            return SetSPCTransactionModeModeValues.of((String) require("mode"));
+            return require(MODE);
         }
         /**
          * Sets the mode field.
@@ -5973,14 +5831,6 @@ public final class Page {
      */
     public static final class SetRPHRegistrationModeRequest extends CdpObject {
         public SetRPHRegistrationModeRequest() {}
-        /**
-         * Extensions for Custom Handlers API: https://html.spec.whatwg.org/multipage/system-state.html#rph-automation
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param mode protocol value
-         */
-        public SetRPHRegistrationModeRequest(SetRPHRegistrationModeModeValues mode) {
-            mode(mode);
-        }
         public static SetRPHRegistrationModeRequest fromMap(Map<String, Object> values) {
             final SetRPHRegistrationModeRequest instance_ = new SetRPHRegistrationModeRequest();
             if (values != null) instance_.values.putAll(values);
@@ -5991,7 +5841,7 @@ public final class Page {
          * @return the protocol field value
          */
         public SetRPHRegistrationModeModeValues mode() {
-            return SetRPHRegistrationModeModeValues.of((String) require("mode"));
+            return require(MODE_2);
         }
         /**
          * Sets the mode field.
@@ -6009,14 +5859,6 @@ public final class Page {
      */
     public static final class GenerateTestReportRequest extends CdpObject {
         public GenerateTestReportRequest() {}
-        /**
-         * Generates a report for testing.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param message protocol value
-         */
-        public GenerateTestReportRequest(String message) {
-            message(message);
-        }
         public static GenerateTestReportRequest fromMap(Map<String, Object> values) {
             final GenerateTestReportRequest instance_ = new GenerateTestReportRequest();
             if (values != null) instance_.values.putAll(values);
@@ -6027,14 +5869,14 @@ public final class Page {
          * @return the protocol field value
          */
         public String message() {
-            return (String) require("message");
+            return requireString("message");
         }
         /**
          * Specifies the endpoint group to deliver the report to.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> group() {
-            return raw("group").map(value -> (String) value);
+            return optionalString("group");
         }
         /**
          * Message to be displayed in the report.
@@ -6060,13 +5902,6 @@ public final class Page {
      */
     public static final class SetInterceptFileChooserDialogRequest extends CdpObject {
         public SetInterceptFileChooserDialogRequest() {}
-        /**
-         * Intercept file chooser requests and transfer control to protocol clients. When file chooser interception is enabled, native file chooser dialog is not shown. Instead, a protocol event {@code Page.fileChooserOpened} is emitted.
-         * @param enabled protocol value
-         */
-        public SetInterceptFileChooserDialogRequest(boolean enabled) {
-            enabled(enabled);
-        }
         public static SetInterceptFileChooserDialogRequest fromMap(Map<String, Object> values) {
             final SetInterceptFileChooserDialogRequest instance_ = new SetInterceptFileChooserDialogRequest();
             if (values != null) instance_.values.putAll(values);
@@ -6077,7 +5912,7 @@ public final class Page {
          * @return the protocol field value
          */
         public boolean enabled() {
-            return (Boolean) require("enabled");
+            return requireBoolean("enabled");
         }
         /**
          * If true, cancels the dialog by emitting relevant events (if any) in addition to not showing it if the interception is enabled (default: false).
@@ -6085,7 +5920,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> cancel() {
-            return raw("cancel").map(value -> (Boolean) value);
+            return optionalBoolean("cancel");
         }
         /**
          * Sets the enabled field.
@@ -6115,16 +5950,6 @@ public final class Page {
      */
     public static final class SetPrerenderingAllowedRequest extends CdpObject {
         public SetPrerenderingAllowedRequest() {}
-        /**
-         * Enable/disable prerendering manually.
-         * <p>This command is a short-term solution for https://crbug.com/1440085. See https://docs.google.com/document/d/12HVmFxYj5Jc-eJr5OmWsa2bqTJsbgGLKI6ZIyx0_wpA for more details.
-         * <p>TODO(https://crbug.com/1440085): Remove this once Puppeteer supports tab targets.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param isAllowed protocol value
-         */
-        public SetPrerenderingAllowedRequest(boolean isAllowed) {
-            isAllowed(isAllowed);
-        }
         public static SetPrerenderingAllowedRequest fromMap(Map<String, Object> values) {
             final SetPrerenderingAllowedRequest instance_ = new SetPrerenderingAllowedRequest();
             if (values != null) instance_.values.putAll(values);
@@ -6135,7 +5960,7 @@ public final class Page {
          * @return the protocol field value
          */
         public boolean isAllowed() {
-            return (Boolean) require("isAllowed");
+            return requireBoolean("isAllowed");
         }
         /**
          * Sets the isAllowed field.
@@ -6163,7 +5988,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeActionableInformation() {
-            return raw("includeActionableInformation").map(value -> (Boolean) value);
+            return optionalBoolean("includeActionableInformation");
         }
         /**
          * Whether to include actionable information. Defaults to true.
@@ -6189,21 +6014,21 @@ public final class Page {
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Returns the errors field.
          * @return the protocol field value
          */
         public java.util.List<Page.AppManifestError> errors() {
-            return CdpObject.requireList(require("errors"), element0 -> java.util.Objects.requireNonNull(Page.AppManifestError.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(ERRORS);
         }
         /**
          * Manifest content.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> data() {
-            return raw("data").map(value -> (String) value);
+            return optionalString("data");
         }
         /**
          * Parsed manifest properties. Deprecated, use manifest instead.
@@ -6213,7 +6038,7 @@ public final class Page {
          */
         @Deprecated
         public Optional<Page.AppManifestParsedProperties> parsed() {
-            return raw("parsed").flatMap(CdpObject::objectMap).map(Page.AppManifestParsedProperties::fromMap);
+            return optional(PARSED);
         }
         /**
          * Returns the manifest field.
@@ -6221,7 +6046,7 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.WebAppManifest manifest() {
-            return java.util.Objects.requireNonNull(Page.WebAppManifest.fromMap(CdpObject.requireObjectMap(require("manifest"))));
+            return require(MANIFEST);
         }
         /**
          * Manifest location.
@@ -6288,14 +6113,14 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> appId() {
-            return raw("appId").map(value -> (String) value);
+            return optionalString("appId");
         }
         /**
          * Recommendation for manifest&#x27;s id attribute to match current id computed from start_url
          * @return the protocol field value, empty when absent
          */
         public Optional<String> recommendedId() {
-            return raw("recommendedId").map(value -> (String) value);
+            return optionalString("recommendedId");
         }
         /**
          * App id, either from manifest&#x27;s id attribute or computed from start_url
@@ -6332,7 +6157,7 @@ public final class Page {
          */
         @Deprecated
         public Page.LayoutViewport layoutViewport() {
-            return java.util.Objects.requireNonNull(Page.LayoutViewport.fromMap(CdpObject.requireObjectMap(require("layoutViewport"))));
+            return require(LAYOUT_VIEWPORT);
         }
         /**
          * Deprecated metrics relating to the visual viewport. Is in device pixels. Use {@code cssVisualViewport} instead.
@@ -6341,7 +6166,7 @@ public final class Page {
          */
         @Deprecated
         public Page.VisualViewport visualViewport() {
-            return java.util.Objects.requireNonNull(Page.VisualViewport.fromMap(CdpObject.requireObjectMap(require("visualViewport"))));
+            return require(VISUAL_VIEWPORT);
         }
         /**
          * Deprecated size of scrollable area. Is in DP. Use {@code cssContentSize} instead.
@@ -6350,28 +6175,28 @@ public final class Page {
          */
         @Deprecated
         public DOM.Rect contentSize() {
-            return java.util.Objects.requireNonNull(DOM.Rect.fromMap(CdpObject.requireObjectMap(require("contentSize"))));
+            return require(CONTENT_SIZE);
         }
         /**
          * Metrics relating to the layout viewport in CSS pixels.
          * @return the protocol field value
          */
         public Page.LayoutViewport cssLayoutViewport() {
-            return java.util.Objects.requireNonNull(Page.LayoutViewport.fromMap(CdpObject.requireObjectMap(require("cssLayoutViewport"))));
+            return require(CSS_LAYOUT_VIEWPORT);
         }
         /**
          * Metrics relating to the visual viewport in CSS pixels.
          * @return the protocol field value
          */
         public Page.VisualViewport cssVisualViewport() {
-            return java.util.Objects.requireNonNull(Page.VisualViewport.fromMap(CdpObject.requireObjectMap(require("cssVisualViewport"))));
+            return require(CSS_VISUAL_VIEWPORT);
         }
         /**
          * Size of scrollable area in CSS pixels.
          * @return the protocol field value
          */
         public DOM.Rect cssContentSize() {
-            return java.util.Objects.requireNonNull(DOM.Rect.fromMap(CdpObject.requireObjectMap(require("cssContentSize"))));
+            return require(CSS_CONTENT_SIZE);
         }
         /**
          * Deprecated metrics relating to the layout viewport. Is in device pixels. Use {@code cssLayoutViewport} instead.
@@ -6448,14 +6273,14 @@ public final class Page {
          * @return the protocol field value
          */
         public long currentIndex() {
-            return ((Number) require("currentIndex")).longValue();
+            return requireLong("currentIndex");
         }
         /**
          * Array of navigation history entries.
          * @return the protocol field value
          */
         public java.util.List<Page.NavigationEntry> entries() {
-            return CdpObject.requireList(require("entries"), element0 -> java.util.Objects.requireNonNull(Page.NavigationEntry.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(ENTRIES);
         }
         /**
          * Index of the current navigation history entry.
@@ -6491,14 +6316,14 @@ public final class Page {
          * @return the protocol field value
          */
         public String content() {
-            return (String) require("content");
+            return requireString("content");
         }
         /**
          * True, if content was served as base64.
          * @return the protocol field value
          */
         public boolean base64Encoded() {
-            return (Boolean) require("base64Encoded");
+            return requireBoolean("base64Encoded");
         }
         /**
          * Resource content.
@@ -6533,21 +6358,21 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Loader identifier. This is omitted in case of same-document navigation, as the previously committed loaderId would not change.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.LoaderId> loaderId() {
-            return raw("loaderId").map(value -> new Network.LoaderId((String) value));
+            return optional(LOADER_ID);
         }
         /**
          * User friendly error message, present if and only if navigation has failed.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> errorText() {
-            return raw("errorText").map(value -> (String) value);
+            return optionalString("errorText");
         }
         /**
          * Whether the navigation resulted in a download.
@@ -6555,7 +6380,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isDownload() {
-            return raw("isDownload").map(value -> (Boolean) value);
+            return optionalBoolean("isDownload");
         }
         /**
          * Frame id that has navigated (or failed to navigate)
@@ -6609,7 +6434,7 @@ public final class Page {
          * @return the protocol field value
          */
         public String data() {
-            return (String) require("data");
+            return requireString("data");
         }
         /**
          * A handle of the stream that holds resulting PDF data.
@@ -6617,7 +6442,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<IO.StreamHandle> stream() {
-            return raw("stream").map(value -> new IO.StreamHandle((String) value));
+            return optional(STREAM);
         }
         /**
          * Base64-encoded pdf data. Empty if |returnAsStream| is specified. (Encoded as a base64 string when passed over JSON)
@@ -6653,7 +6478,7 @@ public final class Page {
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Sets the timestamp field.
@@ -6696,14 +6521,14 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Input mode.
          * @return the protocol field value
          */
         public FileChooserOpenedEvent.ModeValues mode() {
-            return FileChooserOpenedEvent.ModeValues.of((String) require("mode"));
+            return require(MODE_3);
         }
         /**
          * Input node id. Only present for file choosers opened via an {@code &lt;input type=&quot;file&quot;&gt;} element.
@@ -6711,7 +6536,7 @@ public final class Page {
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(BACKEND_NODE_ID);
         }
         /**
          * Id of the frame containing input node.
@@ -6757,21 +6582,21 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Parent frame identifier.
          * @return the protocol field value
          */
         public Page.FrameId parentFrameId() {
-            return new Page.FrameId((String) require("parentFrameId"));
+            return require(PARENT_FRAME_ID);
         }
         /**
          * JavaScript stack trace of when frame was attached, only set if frame initiated from script.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.StackTrace> stack() {
-            return raw("stack").flatMap(CdpObject::objectMap).map(Runtime.StackTrace::fromMap);
+            return optional(STACK);
         }
         /**
          * Id of the frame that has been attached.
@@ -6817,7 +6642,7 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Id of the frame that has cleared its scheduled navigation.
@@ -6860,7 +6685,7 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Returns the reason field.
@@ -6868,7 +6693,7 @@ public final class Page {
          * @return the protocol field value
          */
         public FrameDetachedEvent.ReasonValues reason() {
-            return FrameDetachedEvent.ReasonValues.of((String) require("reason"));
+            return require(REASON_2);
         }
         /**
          * Id of the frame that has been detached.
@@ -6905,7 +6730,7 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Id of the frame that is the root of the subtree that will be detached.
@@ -6931,7 +6756,7 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.Frame frame() {
-            return java.util.Objects.requireNonNull(Page.Frame.fromMap(CdpObject.requireObjectMap(require("frame"))));
+            return require(FRAME);
         }
         /**
          * Returns the type field.
@@ -6939,7 +6764,7 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.NavigationType type() {
-            return Page.NavigationType.of((String) require("type"));
+            return require(TYPE_3);
         }
         /**
          * Frame object.
@@ -6976,7 +6801,7 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.Frame frame() {
-            return java.util.Objects.requireNonNull(Page.Frame.fromMap(CdpObject.requireObjectMap(require("frame"))));
+            return require(FRAME);
         }
         /**
          * Frame object.
@@ -7036,28 +6861,28 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * The URL the navigation started with. The final URL can be different.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Loader identifier. Even though it is present in case of same-document navigation, the previously committed loaderId would not change unless the navigation changes from a same-document to a cross-document navigation.
          * @return the protocol field value
          */
         public Network.LoaderId loaderId() {
-            return new Network.LoaderId((String) require("loaderId"));
+            return require(LOADER_ID);
         }
         /**
          * Returns the navigationType field.
          * @return the protocol field value
          */
         public FrameStartedNavigatingEvent.NavigationTypeValues navigationType() {
-            return FrameStartedNavigatingEvent.NavigationTypeValues.of((String) require("navigationType"));
+            return require(NAVIGATION_TYPE);
         }
         /**
          * ID of the frame that is being navigated.
@@ -7111,28 +6936,28 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * The reason for the navigation.
          * @return the protocol field value
          */
         public Page.ClientNavigationReason reason() {
-            return Page.ClientNavigationReason.of((String) require("reason"));
+            return require(REASON_3);
         }
         /**
          * The destination URL for the requested navigation.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * The disposition for the navigation.
          * @return the protocol field value
          */
         public Page.ClientNavigationDisposition disposition() {
-            return Page.ClientNavigationDisposition.of((String) require("disposition"));
+            return require(DISPOSITION);
         }
         /**
          * Id of the frame that is being navigated.
@@ -7187,28 +7012,28 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Delay (in seconds) until the navigation is scheduled to begin. The navigation is not guaranteed to start.
          * @return the protocol field value
          */
         public double delay() {
-            return ((Number) require("delay")).doubleValue();
+            return requireDouble("delay");
         }
         /**
          * The reason for the navigation.
          * @return the protocol field value
          */
         public Page.ClientNavigationReason reason() {
-            return Page.ClientNavigationReason.of((String) require("reason"));
+            return require(REASON_3);
         }
         /**
          * The destination URL for the scheduled navigation.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Id of the frame that has scheduled a navigation.
@@ -7262,7 +7087,7 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Id of the frame that has started loading.
@@ -7289,7 +7114,7 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Id of the frame that has stopped loading.
@@ -7318,28 +7143,28 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Global unique identifier of the download.
          * @return the protocol field value
          */
         public String guid() {
-            return (String) require("guid");
+            return requireString("guid");
         }
         /**
          * URL of the resource being downloaded.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Suggested file name of the resource (the actual name of the file saved on disk may differ).
          * @return the protocol field value
          */
         public String suggestedFilename() {
-            return (String) require("suggestedFilename");
+            return requireString("suggestedFilename");
         }
         /**
          * Id of the frame that caused download to begin.
@@ -7412,28 +7237,28 @@ public final class Page {
          * @return the protocol field value
          */
         public String guid() {
-            return (String) require("guid");
+            return requireString("guid");
         }
         /**
          * Total expected bytes to download.
          * @return the protocol field value
          */
         public double totalBytes() {
-            return ((Number) require("totalBytes")).doubleValue();
+            return requireDouble("totalBytes");
         }
         /**
          * Total bytes received.
          * @return the protocol field value
          */
         public double receivedBytes() {
-            return ((Number) require("receivedBytes")).doubleValue();
+            return requireDouble("receivedBytes");
         }
         /**
          * Download status.
          * @return the protocol field value
          */
         public DownloadProgressEvent.StateValues state() {
-            return DownloadProgressEvent.StateValues.of((String) require("state"));
+            return require(STATE_2);
         }
         /**
          * Global unique identifier of the download.
@@ -7507,21 +7332,21 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Whether dialog was confirmed.
          * @return the protocol field value
          */
         public boolean result() {
-            return (Boolean) require("result");
+            return requireBoolean("result");
         }
         /**
          * User input in case of prompt.
          * @return the protocol field value
          */
         public String userInput() {
-            return (String) require("userInput");
+            return requireString("userInput");
         }
         /**
          * Frame id.
@@ -7566,7 +7391,7 @@ public final class Page {
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Frame id.
@@ -7574,35 +7399,35 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Message that will be displayed by the dialog.
          * @return the protocol field value
          */
         public String message() {
-            return (String) require("message");
+            return requireString("message");
         }
         /**
          * Dialog type.
          * @return the protocol field value
          */
         public Page.DialogType type() {
-            return Page.DialogType.of((String) require("type"));
+            return require(TYPE_4);
         }
         /**
          * True iff browser is capable showing or acting on the given dialog. When browser has no dialog handler for given target, calling alert while Page domain is engaged will stall the page execution. Execution can be resumed via calling Page.handleJavaScriptDialog.
          * @return the protocol field value
          */
         public boolean hasBrowserHandler() {
-            return (Boolean) require("hasBrowserHandler");
+            return requireBoolean("hasBrowserHandler");
         }
         /**
          * Default dialog prompt.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> defaultPrompt() {
-            return raw("defaultPrompt").map(value -> (String) value);
+            return optionalString("defaultPrompt");
         }
         /**
          * Frame url.
@@ -7674,28 +7499,28 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Loader identifier. Empty string if the request is fetched from worker.
          * @return the protocol field value
          */
         public Network.LoaderId loaderId() {
-            return new Network.LoaderId((String) require("loaderId"));
+            return require(LOADER_ID);
         }
         /**
          * Returns the name field.
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Returns the timestamp field.
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Id of the frame.
@@ -7749,28 +7574,28 @@ public final class Page {
          * @return the protocol field value
          */
         public Network.LoaderId loaderId() {
-            return new Network.LoaderId((String) require("loaderId"));
+            return require(LOADER_ID);
         }
         /**
          * The frame id of the associated frame.
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Array of reasons why the page could not be cached. This must not be empty.
          * @return the protocol field value
          */
         public java.util.List<Page.BackForwardCacheNotRestoredExplanation> notRestoredExplanations() {
-            return CdpObject.requireList(require("notRestoredExplanations"), element0 -> java.util.Objects.requireNonNull(Page.BackForwardCacheNotRestoredExplanation.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(NOT_RESTORED_EXPLANATIONS);
         }
         /**
          * Tree structure of reasons why the page could not be cached for each frame.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.BackForwardCacheNotRestoredExplanationTree> notRestoredExplanationsTree() {
-            return raw("notRestoredExplanationsTree").flatMap(CdpObject::objectMap).map(Page.BackForwardCacheNotRestoredExplanationTree::fromMap);
+            return optional(NOT_RESTORED_EXPLANATIONS_TREE);
         }
         /**
          * The loader id for the associated navigation.
@@ -7823,7 +7648,7 @@ public final class Page {
          * @return the protocol field value
          */
         public Network.MonotonicTime timestamp() {
-            return new Network.MonotonicTime(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP_2);
         }
         /**
          * Sets the timestamp field.
@@ -7867,21 +7692,21 @@ public final class Page {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Frame&#x27;s new url.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Navigation type
          * @return the protocol field value
          */
         public NavigatedWithinDocumentEvent.NavigationTypeValues navigationType() {
-            return NavigatedWithinDocumentEvent.NavigationTypeValues.of((String) require("navigationType"));
+            return require(NAVIGATION_TYPE_2);
         }
         /**
          * Id of the frame.
@@ -7926,21 +7751,21 @@ public final class Page {
          * @return the protocol field value
          */
         public String data() {
-            return (String) require("data");
+            return requireString("data");
         }
         /**
          * Screencast frame metadata.
          * @return the protocol field value
          */
         public Page.ScreencastFrameMetadata metadata() {
-            return java.util.Objects.requireNonNull(Page.ScreencastFrameMetadata.fromMap(CdpObject.requireObjectMap(require("metadata"))));
+            return require(METADATA);
         }
         /**
          * Frame number.
          * @return the protocol field value
          */
         public long sessionId() {
-            return ((Number) require("sessionId")).longValue();
+            return requireLong("sessionId");
         }
         /**
          * Base64-encoded compressed image. (Encoded as a base64 string when passed over JSON)
@@ -7985,7 +7810,7 @@ public final class Page {
          * @return the protocol field value
          */
         public boolean visible() {
-            return (Boolean) require("visible");
+            return requireBoolean("visible");
         }
         /**
          * True if the page is visible.
@@ -8011,28 +7836,28 @@ public final class Page {
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Window name.
          * @return the protocol field value
          */
         public String windowName() {
-            return (String) require("windowName");
+            return requireString("windowName");
         }
         /**
          * An array of enabled window features.
          * @return the protocol field value
          */
         public java.util.List<String> windowFeatures() {
-            return CdpObject.requireList(require("windowFeatures"), element0 -> (String) element0);
+            return require(WINDOW_FEATURES);
         }
         /**
          * Whether or not it was triggered by user gesture.
          * @return the protocol field value
          */
         public boolean userGesture() {
-            return (Boolean) require("userGesture");
+            return requireBoolean("userGesture");
         }
         /**
          * The URL for the new window.
@@ -8086,14 +7911,14 @@ public final class Page {
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Base64-encoded data (Encoded as a base64 string when passed over JSON)
          * @return the protocol field value
          */
         public String data() {
-            return (String) require("data");
+            return requireString("data");
         }
         /**
          * Sets the url field.
@@ -8264,9 +8089,8 @@ public final class Page {
             throw new IllegalArgumentException("Unknown SetRPHRegistrationModeModeValues value: " + value);
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Deprecated, please use addScriptToEvaluateOnNewDocument instead.
          * <p><b>Experimental:</b> this part of CDP may change without notice.
@@ -8276,9 +8100,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Page.ScriptIdentifier> addScriptToEvaluateOnLoad(String scriptSource) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("scriptSource", CdpObject.json(scriptSource));
-            return client.call("Page.addScriptToEvaluateOnLoad", params, result_ -> new Page.ScriptIdentifier((String) java.util.Objects.requireNonNull(result_.get("identifier"))));
+            return call("Page.addScriptToEvaluateOnLoad", params("scriptSource", scriptSource), IDENTIFIER::require);
         }
         /**
          * Deprecated, please use addScriptToEvaluateOnNewDocument instead.
@@ -8289,7 +8111,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Page.ScriptIdentifier> addScriptToEvaluateOnLoad(AddScriptToEvaluateOnLoadRequest request) {
-            return client.call("Page.addScriptToEvaluateOnLoad", request == null ? null : request.toMap(), result_ -> new Page.ScriptIdentifier((String) java.util.Objects.requireNonNull(result_.get("identifier"))));
+            return call("Page.addScriptToEvaluateOnLoad", request, IDENTIFIER::require);
         }
         /**
          * Evaluates given script in every frame upon creation (before loading frame&#x27;s scripts).
@@ -8300,12 +8122,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<Page.ScriptIdentifier> addScriptToEvaluateOnNewDocument(String source, @Nullable String worldName, @Nullable Boolean includeCommandLineAPI, @Nullable Boolean runImmediately) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("source", CdpObject.json(source));
-            if (worldName != null) params.put("worldName", CdpObject.json(worldName));
-            if (includeCommandLineAPI != null) params.put("includeCommandLineAPI", CdpObject.json(includeCommandLineAPI));
-            if (runImmediately != null) params.put("runImmediately", CdpObject.json(runImmediately));
-            return client.call("Page.addScriptToEvaluateOnNewDocument", params, result_ -> new Page.ScriptIdentifier((String) java.util.Objects.requireNonNull(result_.get("identifier"))));
+            return call("Page.addScriptToEvaluateOnNewDocument", params("source", source, "worldName", worldName, "includeCommandLineAPI", includeCommandLineAPI, "runImmediately", runImmediately), IDENTIFIER::require);
         }
         /**
          * Evaluates given script in every frame upon creation (before loading frame&#x27;s scripts).
@@ -8313,9 +8130,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<Page.ScriptIdentifier> addScriptToEvaluateOnNewDocument(String source) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("source", CdpObject.json(source));
-            return client.call("Page.addScriptToEvaluateOnNewDocument", params, result_ -> new Page.ScriptIdentifier((String) java.util.Objects.requireNonNull(result_.get("identifier"))));
+            return call("Page.addScriptToEvaluateOnNewDocument", params("source", source), IDENTIFIER::require);
         }
         /**
          * Evaluates given script in every frame upon creation (before loading frame&#x27;s scripts).
@@ -8323,14 +8138,14 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<Page.ScriptIdentifier> addScriptToEvaluateOnNewDocument(AddScriptToEvaluateOnNewDocumentRequest request) {
-            return client.call("Page.addScriptToEvaluateOnNewDocument", request == null ? null : request.toMap(), result_ -> new Page.ScriptIdentifier((String) java.util.Objects.requireNonNull(result_.get("identifier"))));
+            return call("Page.addScriptToEvaluateOnNewDocument", request, IDENTIFIER::require);
         }
         /**
          * Brings page to front (activates tab).
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> bringToFront() {
-            return client.call("Page.bringToFront", null);
+            return call("Page.bringToFront");
         }
         /**
          * Capture page screenshot.
@@ -8343,21 +8158,14 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> captureScreenshot(@Nullable CaptureScreenshotFormatValues format, @Nullable Long quality, Page.@Nullable Viewport clip, @Nullable Boolean fromSurface, @Nullable Boolean captureBeyondViewport, @Nullable Boolean optimizeForSpeed) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (format != null) params.put("format", CdpObject.json(format));
-            if (quality != null) params.put("quality", CdpObject.json(quality));
-            if (clip != null) params.put("clip", CdpObject.json(clip));
-            if (fromSurface != null) params.put("fromSurface", CdpObject.json(fromSurface));
-            if (captureBeyondViewport != null) params.put("captureBeyondViewport", CdpObject.json(captureBeyondViewport));
-            if (optimizeForSpeed != null) params.put("optimizeForSpeed", CdpObject.json(optimizeForSpeed));
-            return client.call("Page.captureScreenshot", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("data")));
+            return call("Page.captureScreenshot", params("format", format, "quality", quality, "clip", clip, "fromSurface", fromSurface, "captureBeyondViewport", captureBeyondViewport, "optimizeForSpeed", optimizeForSpeed), DATA::require);
         }
         /**
          * Capture page screenshot.
          * @return a stage completing with the command result
          */
         public CompletionStage<String> captureScreenshot() {
-            return client.call("Page.captureScreenshot", null, result_ -> (String) java.util.Objects.requireNonNull(result_.get("data")));
+            return call("Page.captureScreenshot", DATA::require);
         }
         /**
          * Capture page screenshot.
@@ -8365,7 +8173,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> captureScreenshot(CaptureScreenshotRequest request) {
-            return client.call("Page.captureScreenshot", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("data")));
+            return call("Page.captureScreenshot", request, DATA::require);
         }
         /**
          * Returns a snapshot of the page as a string. For MHTML format, the serialization includes iframes, shadow DOM, external resources, and element-inline styles.
@@ -8374,9 +8182,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> captureSnapshot(CaptureSnapshotFormatValues format) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("format", CdpObject.json(format));
-            return client.call("Page.captureSnapshot", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("data")));
+            return call("Page.captureSnapshot", params("format", format), DATA::require);
         }
         /**
          * Returns a snapshot of the page as a string. For MHTML format, the serialization includes iframes, shadow DOM, external resources, and element-inline styles.
@@ -8384,7 +8190,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> captureSnapshot() {
-            return client.call("Page.captureSnapshot", null, result_ -> (String) java.util.Objects.requireNonNull(result_.get("data")));
+            return call("Page.captureSnapshot", DATA::require);
         }
         /**
          * Returns a snapshot of the page as a string. For MHTML format, the serialization includes iframes, shadow DOM, external resources, and element-inline styles.
@@ -8393,7 +8199,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> captureSnapshot(CaptureSnapshotRequest request) {
-            return client.call("Page.captureSnapshot", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("data")));
+            return call("Page.captureSnapshot", request, DATA::require);
         }
         /**
          * Clears the overridden device metrics.
@@ -8403,7 +8209,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> clearDeviceMetricsOverride() {
-            return client.call("Page.clearDeviceMetricsOverride", null);
+            return call("Page.clearDeviceMetricsOverride");
         }
         /**
          * Clears the overridden Device Orientation.
@@ -8413,7 +8219,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> clearDeviceOrientationOverride() {
-            return client.call("Page.clearDeviceOrientationOverride", null);
+            return call("Page.clearDeviceOrientationOverride");
         }
         /**
          * Clears the overridden Geolocation Position and Error.
@@ -8422,7 +8228,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> clearGeolocationOverride() {
-            return client.call("Page.clearGeolocationOverride", null);
+            return call("Page.clearGeolocationOverride");
         }
         /**
          * Creates an isolated world for the given frame.
@@ -8432,11 +8238,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<Runtime.ExecutionContextId> createIsolatedWorld(Page.FrameId frameId, @Nullable String worldName, @Nullable Boolean grantUniveralAccess) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("frameId", CdpObject.json(frameId));
-            if (worldName != null) params.put("worldName", CdpObject.json(worldName));
-            if (grantUniveralAccess != null) params.put("grantUniveralAccess", CdpObject.json(grantUniveralAccess));
-            return client.call("Page.createIsolatedWorld", params, result_ -> new Runtime.ExecutionContextId(((Number) java.util.Objects.requireNonNull(result_.get("executionContextId"))).longValue()));
+            return call("Page.createIsolatedWorld", params("frameId", frameId, "worldName", worldName, "grantUniveralAccess", grantUniveralAccess), EXECUTION_CONTEXT_ID::require);
         }
         /**
          * Creates an isolated world for the given frame.
@@ -8444,9 +8246,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<Runtime.ExecutionContextId> createIsolatedWorld(Page.FrameId frameId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("frameId", CdpObject.json(frameId));
-            return client.call("Page.createIsolatedWorld", params, result_ -> new Runtime.ExecutionContextId(((Number) java.util.Objects.requireNonNull(result_.get("executionContextId"))).longValue()));
+            return call("Page.createIsolatedWorld", params("frameId", frameId), EXECUTION_CONTEXT_ID::require);
         }
         /**
          * Creates an isolated world for the given frame.
@@ -8454,7 +8254,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<Runtime.ExecutionContextId> createIsolatedWorld(CreateIsolatedWorldRequest request) {
-            return client.call("Page.createIsolatedWorld", request == null ? null : request.toMap(), result_ -> new Runtime.ExecutionContextId(((Number) java.util.Objects.requireNonNull(result_.get("executionContextId"))).longValue()));
+            return call("Page.createIsolatedWorld", request, EXECUTION_CONTEXT_ID::require);
         }
         /**
          * Deletes browser cookie with given name, domain and path.
@@ -8466,10 +8266,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> deleteCookie(String cookieName, String url) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("cookieName", CdpObject.json(cookieName));
-            params.put("url", CdpObject.json(url));
-            return client.call("Page.deleteCookie", params);
+            return call("Page.deleteCookie", params("cookieName", cookieName, "url", url));
         }
         /**
          * Deletes browser cookie with given name, domain and path.
@@ -8480,14 +8277,14 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> deleteCookie(DeleteCookieRequest request) {
-            return client.call("Page.deleteCookie", request == null ? null : request.toMap());
+            return call("Page.deleteCookie", request);
         }
         /**
          * Disables page domain notifications.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Page.disable", null);
+            return call("Page.disable");
         }
         /**
          * Enables page domain notifications.
@@ -8495,16 +8292,14 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable(boolean enableFileChooserOpenedEvent) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("enableFileChooserOpenedEvent", CdpObject.json(enableFileChooserOpenedEvent));
-            return client.call("Page.enable", params);
+            return call("Page.enable", params("enableFileChooserOpenedEvent", enableFileChooserOpenedEvent));
         }
         /**
          * Enables page domain notifications.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Page.enable", null);
+            return call("Page.enable");
         }
         /**
          * Enables page domain notifications.
@@ -8512,7 +8307,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable(EnableRequest request) {
-            return client.call("Page.enable", request == null ? null : request.toMap());
+            return call("Page.enable", request);
         }
         /**
          * Gets the processed manifest for this current document. This API always waits for the manifest to be loaded. If manifestId is provided, and it does not match the manifest of the current document, this API errors out. If there is not a loaded page, this API errors out immediately.
@@ -8520,16 +8315,14 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetAppManifestResult> getAppManifest(String manifestId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("manifestId", CdpObject.json(manifestId));
-            return client.call("Page.getAppManifest", params, result_ -> new GetAppManifestResult(result_));
+            return call("Page.getAppManifest", params("manifestId", manifestId), GetAppManifestResult::fromMap);
         }
         /**
          * Gets the processed manifest for this current document. This API always waits for the manifest to be loaded. If manifestId is provided, and it does not match the manifest of the current document, this API errors out. If there is not a loaded page, this API errors out immediately.
          * @return a stage completing with the command result
          */
         public CompletionStage<GetAppManifestResult> getAppManifest() {
-            return client.call("Page.getAppManifest", null, result_ -> new GetAppManifestResult(result_));
+            return call("Page.getAppManifest", GetAppManifestResult::fromMap);
         }
         /**
          * Gets the processed manifest for this current document. This API always waits for the manifest to be loaded. If manifestId is provided, and it does not match the manifest of the current document, this API errors out. If there is not a loaded page, this API errors out immediately.
@@ -8537,7 +8330,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetAppManifestResult> getAppManifest(GetAppManifestRequest request) {
-            return client.call("Page.getAppManifest", request == null ? null : request.toMap(), result_ -> new GetAppManifestResult(result_));
+            return call("Page.getAppManifest", request, GetAppManifestResult::fromMap);
         }
         /**
          * Invokes Page.getInstallabilityErrors.
@@ -8545,7 +8338,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Page.InstallabilityError>> getInstallabilityErrors() {
-            return client.call("Page.getInstallabilityErrors", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("installabilityErrors")), element0 -> java.util.Objects.requireNonNull(Page.InstallabilityError.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Page.getInstallabilityErrors", INSTALLABILITY_ERRORS::require);
         }
         /**
          * Deprecated because it&#x27;s not guaranteed that the returned icon is in fact the one used for PWA installation.
@@ -8555,7 +8348,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Optional<String>> getManifestIcons() {
-            return client.call("Page.getManifestIcons", null, result_ -> Optional.ofNullable(result_.get("primaryIcon")).map(value -> (String) value));
+            return call("Page.getManifestIcons", PRIMARY_ICON::optional);
         }
         /**
          * Returns the unique (PWA) app id. Only returns values if the feature flag &#x27;WebAppEnableManifestId&#x27; is enabled
@@ -8563,7 +8356,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetAppIdResult> getAppId() {
-            return client.call("Page.getAppId", null, result_ -> new GetAppIdResult(result_));
+            return call("Page.getAppId", GetAppIdResult::fromMap);
         }
         /**
          * Invokes Page.getAdScriptAncestry.
@@ -8572,9 +8365,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<Optional<Network.AdAncestry>> getAdScriptAncestry(Page.FrameId frameId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("frameId", CdpObject.json(frameId));
-            return client.call("Page.getAdScriptAncestry", params, result_ -> Optional.ofNullable(result_.get("adScriptAncestry")).flatMap(CdpObject::objectMap).map(Network.AdAncestry::fromMap));
+            return call("Page.getAdScriptAncestry", params("frameId", frameId), AD_SCRIPT_ANCESTRY::optional);
         }
         /**
          * Invokes Page.getAdScriptAncestry with a request object.
@@ -8583,35 +8374,35 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<Optional<Network.AdAncestry>> getAdScriptAncestry(GetAdScriptAncestryRequest request) {
-            return client.call("Page.getAdScriptAncestry", request == null ? null : request.toMap(), result_ -> Optional.ofNullable(result_.get("adScriptAncestry")).flatMap(CdpObject::objectMap).map(Network.AdAncestry::fromMap));
+            return call("Page.getAdScriptAncestry", request, AD_SCRIPT_ANCESTRY::optional);
         }
         /**
          * Returns present frame tree structure.
          * @return a stage completing with the command result
          */
         public CompletionStage<Page.FrameTree> getFrameTree() {
-            return client.call("Page.getFrameTree", null, result_ -> java.util.Objects.requireNonNull(Page.FrameTree.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("frameTree"))))));
+            return call("Page.getFrameTree", FRAME_TREE::require);
         }
         /**
          * Returns metrics relating to the layouting of the page, such as viewport bounds/scale.
          * @return a stage completing with the command result
          */
         public CompletionStage<GetLayoutMetricsResult> getLayoutMetrics() {
-            return client.call("Page.getLayoutMetrics", null, result_ -> new GetLayoutMetricsResult(result_));
+            return call("Page.getLayoutMetrics", GetLayoutMetricsResult::fromMap);
         }
         /**
          * Returns navigation history for the current page.
          * @return a stage completing with the command result
          */
         public CompletionStage<GetNavigationHistoryResult> getNavigationHistory() {
-            return client.call("Page.getNavigationHistory", null, result_ -> new GetNavigationHistoryResult(result_));
+            return call("Page.getNavigationHistory", GetNavigationHistoryResult::fromMap);
         }
         /**
          * Resets navigation history for the current page.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> resetNavigationHistory() {
-            return client.call("Page.resetNavigationHistory", null);
+            return call("Page.resetNavigationHistory");
         }
         /**
          * Returns content of the given resource.
@@ -8621,10 +8412,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetResourceContentResult> getResourceContent(Page.FrameId frameId, String url) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("frameId", CdpObject.json(frameId));
-            params.put("url", CdpObject.json(url));
-            return client.call("Page.getResourceContent", params, result_ -> new GetResourceContentResult(result_));
+            return call("Page.getResourceContent", params("frameId", frameId, "url", url), GetResourceContentResult::fromMap);
         }
         /**
          * Returns content of the given resource.
@@ -8633,7 +8421,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetResourceContentResult> getResourceContent(GetResourceContentRequest request) {
-            return client.call("Page.getResourceContent", request == null ? null : request.toMap(), result_ -> new GetResourceContentResult(result_));
+            return call("Page.getResourceContent", request, GetResourceContentResult::fromMap);
         }
         /**
          * Returns present frame / resource tree structure.
@@ -8641,7 +8429,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<Page.FrameResourceTree> getResourceTree() {
-            return client.call("Page.getResourceTree", null, result_ -> java.util.Objects.requireNonNull(Page.FrameResourceTree.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("frameTree"))))));
+            return call("Page.getResourceTree", FRAME_TREE_2::require);
         }
         /**
          * Accepts or dismisses a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload).
@@ -8650,10 +8438,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> handleJavaScriptDialog(boolean accept, String promptText) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("accept", CdpObject.json(accept));
-            params.put("promptText", CdpObject.json(promptText));
-            return client.call("Page.handleJavaScriptDialog", params);
+            return call("Page.handleJavaScriptDialog", params("accept", accept, "promptText", promptText));
         }
         /**
          * Accepts or dismisses a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload).
@@ -8661,9 +8446,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> handleJavaScriptDialog(boolean accept) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("accept", CdpObject.json(accept));
-            return client.call("Page.handleJavaScriptDialog", params);
+            return call("Page.handleJavaScriptDialog", params("accept", accept));
         }
         /**
          * Accepts or dismisses a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload).
@@ -8671,7 +8454,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> handleJavaScriptDialog(HandleJavaScriptDialogRequest request) {
-            return client.call("Page.handleJavaScriptDialog", request == null ? null : request.toMap());
+            return call("Page.handleJavaScriptDialog", request);
         }
         /**
          * Navigates current page to the given URL.
@@ -8683,13 +8466,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<NavigateResult> navigate(String url, @Nullable String referrer, Page.@Nullable TransitionType transitionType, Page.@Nullable FrameId frameId, Page.@Nullable ReferrerPolicy referrerPolicy) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("url", CdpObject.json(url));
-            if (referrer != null) params.put("referrer", CdpObject.json(referrer));
-            if (transitionType != null) params.put("transitionType", CdpObject.json(transitionType));
-            if (frameId != null) params.put("frameId", CdpObject.json(frameId));
-            if (referrerPolicy != null) params.put("referrerPolicy", CdpObject.json(referrerPolicy));
-            return client.call("Page.navigate", params, result_ -> new NavigateResult(result_));
+            return call("Page.navigate", params("url", url, "referrer", referrer, "transitionType", transitionType, "frameId", frameId, "referrerPolicy", referrerPolicy), NavigateResult::fromMap);
         }
         /**
          * Navigates current page to the given URL.
@@ -8697,9 +8474,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<NavigateResult> navigate(String url) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("url", CdpObject.json(url));
-            return client.call("Page.navigate", params, result_ -> new NavigateResult(result_));
+            return call("Page.navigate", params("url", url), NavigateResult::fromMap);
         }
         /**
          * Navigates current page to the given URL.
@@ -8707,7 +8482,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<NavigateResult> navigate(NavigateRequest request) {
-            return client.call("Page.navigate", request == null ? null : request.toMap(), result_ -> new NavigateResult(result_));
+            return call("Page.navigate", request, NavigateResult::fromMap);
         }
         /**
          * Navigates current page to the given history entry.
@@ -8715,9 +8490,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> navigateToHistoryEntry(long entryId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("entryId", CdpObject.json(entryId));
-            return client.call("Page.navigateToHistoryEntry", params);
+            return call("Page.navigateToHistoryEntry", params("entryId", entryId));
         }
         /**
          * Navigates current page to the given history entry.
@@ -8725,7 +8498,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> navigateToHistoryEntry(NavigateToHistoryEntryRequest request) {
-            return client.call("Page.navigateToHistoryEntry", request == null ? null : request.toMap());
+            return call("Page.navigateToHistoryEntry", request);
         }
         /**
          * Print page as PDF.
@@ -8749,32 +8522,14 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<PrintToPDFResult> printToPDF(@Nullable Boolean landscape, @Nullable Boolean displayHeaderFooter, @Nullable Boolean printBackground, @Nullable Double scale, @Nullable Double paperWidth, @Nullable Double paperHeight, @Nullable Double marginTop, @Nullable Double marginBottom, @Nullable Double marginLeft, @Nullable Double marginRight, @Nullable String pageRanges, @Nullable String headerTemplate, @Nullable String footerTemplate, @Nullable Boolean preferCSSPageSize, @Nullable PrintToPDFTransferModeValues transferMode, @Nullable Boolean generateTaggedPDF, @Nullable Boolean generateDocumentOutline) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (landscape != null) params.put("landscape", CdpObject.json(landscape));
-            if (displayHeaderFooter != null) params.put("displayHeaderFooter", CdpObject.json(displayHeaderFooter));
-            if (printBackground != null) params.put("printBackground", CdpObject.json(printBackground));
-            if (scale != null) params.put("scale", CdpObject.json(scale));
-            if (paperWidth != null) params.put("paperWidth", CdpObject.json(paperWidth));
-            if (paperHeight != null) params.put("paperHeight", CdpObject.json(paperHeight));
-            if (marginTop != null) params.put("marginTop", CdpObject.json(marginTop));
-            if (marginBottom != null) params.put("marginBottom", CdpObject.json(marginBottom));
-            if (marginLeft != null) params.put("marginLeft", CdpObject.json(marginLeft));
-            if (marginRight != null) params.put("marginRight", CdpObject.json(marginRight));
-            if (pageRanges != null) params.put("pageRanges", CdpObject.json(pageRanges));
-            if (headerTemplate != null) params.put("headerTemplate", CdpObject.json(headerTemplate));
-            if (footerTemplate != null) params.put("footerTemplate", CdpObject.json(footerTemplate));
-            if (preferCSSPageSize != null) params.put("preferCSSPageSize", CdpObject.json(preferCSSPageSize));
-            if (transferMode != null) params.put("transferMode", CdpObject.json(transferMode));
-            if (generateTaggedPDF != null) params.put("generateTaggedPDF", CdpObject.json(generateTaggedPDF));
-            if (generateDocumentOutline != null) params.put("generateDocumentOutline", CdpObject.json(generateDocumentOutline));
-            return client.call("Page.printToPDF", params, result_ -> new PrintToPDFResult(result_));
+            return call("Page.printToPDF", params("landscape", landscape, "displayHeaderFooter", displayHeaderFooter, "printBackground", printBackground, "scale", scale, "paperWidth", paperWidth, "paperHeight", paperHeight, "marginTop", marginTop, "marginBottom", marginBottom, "marginLeft", marginLeft, "marginRight", marginRight, "pageRanges", pageRanges, "headerTemplate", headerTemplate, "footerTemplate", footerTemplate, "preferCSSPageSize", preferCSSPageSize, "transferMode", transferMode, "generateTaggedPDF", generateTaggedPDF, "generateDocumentOutline", generateDocumentOutline), PrintToPDFResult::fromMap);
         }
         /**
          * Print page as PDF.
          * @return a stage completing with the command result
          */
         public CompletionStage<PrintToPDFResult> printToPDF() {
-            return client.call("Page.printToPDF", null, result_ -> new PrintToPDFResult(result_));
+            return call("Page.printToPDF", PrintToPDFResult::fromMap);
         }
         /**
          * Print page as PDF.
@@ -8782,7 +8537,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<PrintToPDFResult> printToPDF(PrintToPDFRequest request) {
-            return client.call("Page.printToPDF", request == null ? null : request.toMap(), result_ -> new PrintToPDFResult(result_));
+            return call("Page.printToPDF", request, PrintToPDFResult::fromMap);
         }
         /**
          * Reloads given page optionally ignoring the cache.
@@ -8792,18 +8547,14 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reload(@Nullable Boolean ignoreCache, @Nullable String scriptToEvaluateOnLoad, Network.@Nullable LoaderId loaderId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (ignoreCache != null) params.put("ignoreCache", CdpObject.json(ignoreCache));
-            if (scriptToEvaluateOnLoad != null) params.put("scriptToEvaluateOnLoad", CdpObject.json(scriptToEvaluateOnLoad));
-            if (loaderId != null) params.put("loaderId", CdpObject.json(loaderId));
-            return client.call("Page.reload", params);
+            return call("Page.reload", params("ignoreCache", ignoreCache, "scriptToEvaluateOnLoad", scriptToEvaluateOnLoad, "loaderId", loaderId));
         }
         /**
          * Reloads given page optionally ignoring the cache.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reload() {
-            return client.call("Page.reload", null);
+            return call("Page.reload");
         }
         /**
          * Reloads given page optionally ignoring the cache.
@@ -8811,7 +8562,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> reload(ReloadRequest request) {
-            return client.call("Page.reload", request == null ? null : request.toMap());
+            return call("Page.reload", request);
         }
         /**
          * Deprecated, please use removeScriptToEvaluateOnNewDocument instead.
@@ -8822,9 +8573,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> removeScriptToEvaluateOnLoad(Page.ScriptIdentifier identifier) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("identifier", CdpObject.json(identifier));
-            return client.call("Page.removeScriptToEvaluateOnLoad", params);
+            return call("Page.removeScriptToEvaluateOnLoad", params("identifier", identifier));
         }
         /**
          * Deprecated, please use removeScriptToEvaluateOnNewDocument instead.
@@ -8835,7 +8584,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> removeScriptToEvaluateOnLoad(RemoveScriptToEvaluateOnLoadRequest request) {
-            return client.call("Page.removeScriptToEvaluateOnLoad", request == null ? null : request.toMap());
+            return call("Page.removeScriptToEvaluateOnLoad", request);
         }
         /**
          * Removes given script from the list.
@@ -8843,9 +8592,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeScriptToEvaluateOnNewDocument(Page.ScriptIdentifier identifier) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("identifier", CdpObject.json(identifier));
-            return client.call("Page.removeScriptToEvaluateOnNewDocument", params);
+            return call("Page.removeScriptToEvaluateOnNewDocument", params("identifier", identifier));
         }
         /**
          * Removes given script from the list.
@@ -8853,7 +8600,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeScriptToEvaluateOnNewDocument(RemoveScriptToEvaluateOnNewDocumentRequest request) {
-            return client.call("Page.removeScriptToEvaluateOnNewDocument", request == null ? null : request.toMap());
+            return call("Page.removeScriptToEvaluateOnNewDocument", request);
         }
         /**
          * Acknowledges that a screencast frame has been received by the frontend.
@@ -8862,9 +8609,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> screencastFrameAck(long sessionId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("sessionId", CdpObject.json(sessionId));
-            return client.call("Page.screencastFrameAck", params);
+            return call("Page.screencastFrameAck", params("sessionId", sessionId));
         }
         /**
          * Acknowledges that a screencast frame has been received by the frontend.
@@ -8873,7 +8618,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> screencastFrameAck(ScreencastFrameAckRequest request) {
-            return client.call("Page.screencastFrameAck", request == null ? null : request.toMap());
+            return call("Page.screencastFrameAck", request);
         }
         /**
          * Searches for given string in resource content.
@@ -8886,13 +8631,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Debugger.SearchMatch>> searchInResource(Page.FrameId frameId, String url, String query, @Nullable Boolean caseSensitive, @Nullable Boolean isRegex) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("frameId", CdpObject.json(frameId));
-            params.put("url", CdpObject.json(url));
-            params.put("query", CdpObject.json(query));
-            if (caseSensitive != null) params.put("caseSensitive", CdpObject.json(caseSensitive));
-            if (isRegex != null) params.put("isRegex", CdpObject.json(isRegex));
-            return client.call("Page.searchInResource", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("result")), element0 -> java.util.Objects.requireNonNull(Debugger.SearchMatch.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Page.searchInResource", params("frameId", frameId, "url", url, "query", query, "caseSensitive", caseSensitive, "isRegex", isRegex), RESULT::require);
         }
         /**
          * Searches for given string in resource content.
@@ -8903,11 +8642,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Debugger.SearchMatch>> searchInResource(Page.FrameId frameId, String url, String query) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("frameId", CdpObject.json(frameId));
-            params.put("url", CdpObject.json(url));
-            params.put("query", CdpObject.json(query));
-            return client.call("Page.searchInResource", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("result")), element0 -> java.util.Objects.requireNonNull(Debugger.SearchMatch.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Page.searchInResource", params("frameId", frameId, "url", url, "query", query), RESULT::require);
         }
         /**
          * Searches for given string in resource content.
@@ -8916,7 +8651,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Debugger.SearchMatch>> searchInResource(SearchInResourceRequest request) {
-            return client.call("Page.searchInResource", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("result")), element0 -> java.util.Objects.requireNonNull(Debugger.SearchMatch.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Page.searchInResource", request, RESULT::require);
         }
         /**
          * Enable Chrome&#x27;s experimental ad filter on all sites.
@@ -8925,9 +8660,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAdBlockingEnabled(boolean enabled) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("enabled", CdpObject.json(enabled));
-            return client.call("Page.setAdBlockingEnabled", params);
+            return call("Page.setAdBlockingEnabled", params("enabled", enabled));
         }
         /**
          * Enable Chrome&#x27;s experimental ad filter on all sites.
@@ -8936,7 +8669,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAdBlockingEnabled(SetAdBlockingEnabledRequest request) {
-            return client.call("Page.setAdBlockingEnabled", request == null ? null : request.toMap());
+            return call("Page.setAdBlockingEnabled", request);
         }
         /**
          * Enable page Content Security Policy by-passing.
@@ -8944,9 +8677,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setBypassCSP(boolean enabled) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("enabled", CdpObject.json(enabled));
-            return client.call("Page.setBypassCSP", params);
+            return call("Page.setBypassCSP", params("enabled", enabled));
         }
         /**
          * Enable page Content Security Policy by-passing.
@@ -8954,7 +8685,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setBypassCSP(SetBypassCSPRequest request) {
-            return client.call("Page.setBypassCSP", request == null ? null : request.toMap());
+            return call("Page.setBypassCSP", request);
         }
         /**
          * Get Permissions Policy state on given frame.
@@ -8963,9 +8694,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Page.PermissionsPolicyFeatureState>> getPermissionsPolicyState(Page.FrameId frameId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("frameId", CdpObject.json(frameId));
-            return client.call("Page.getPermissionsPolicyState", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("states")), element0 -> java.util.Objects.requireNonNull(Page.PermissionsPolicyFeatureState.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Page.getPermissionsPolicyState", params("frameId", frameId), STATES::require);
         }
         /**
          * Get Permissions Policy state on given frame.
@@ -8974,7 +8703,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Page.PermissionsPolicyFeatureState>> getPermissionsPolicyState(GetPermissionsPolicyStateRequest request) {
-            return client.call("Page.getPermissionsPolicyState", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("states")), element0 -> java.util.Objects.requireNonNull(Page.PermissionsPolicyFeatureState.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Page.getPermissionsPolicyState", request, STATES::require);
         }
         /**
          * Get Origin Trials on given frame.
@@ -8983,9 +8712,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Page.OriginTrial>> getOriginTrials(Page.FrameId frameId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("frameId", CdpObject.json(frameId));
-            return client.call("Page.getOriginTrials", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("originTrials")), element0 -> java.util.Objects.requireNonNull(Page.OriginTrial.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Page.getOriginTrials", params("frameId", frameId), ORIGIN_TRIALS::require);
         }
         /**
          * Get Origin Trials on given frame.
@@ -8994,7 +8721,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Page.OriginTrial>> getOriginTrials(GetOriginTrialsRequest request) {
-            return client.call("Page.getOriginTrials", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("originTrials")), element0 -> java.util.Objects.requireNonNull(Page.OriginTrial.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Page.getOriginTrials", request, ORIGIN_TRIALS::require);
         }
         /**
          * Overrides the values of device screen dimensions (window.screen.width, window.screen.height, window.innerWidth, window.innerHeight, and &quot;device-width&quot;/&quot;device-height&quot;-related CSS media query results).
@@ -9016,20 +8743,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> setDeviceMetricsOverride(long width, long height, double deviceScaleFactor, boolean mobile, @Nullable Double scale, @Nullable Long screenWidth, @Nullable Long screenHeight, @Nullable Long positionX, @Nullable Long positionY, @Nullable Boolean dontSetVisibleSize, Emulation.@Nullable ScreenOrientation screenOrientation, Page.@Nullable Viewport viewport) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("width", CdpObject.json(width));
-            params.put("height", CdpObject.json(height));
-            params.put("deviceScaleFactor", CdpObject.json(deviceScaleFactor));
-            params.put("mobile", CdpObject.json(mobile));
-            if (scale != null) params.put("scale", CdpObject.json(scale));
-            if (screenWidth != null) params.put("screenWidth", CdpObject.json(screenWidth));
-            if (screenHeight != null) params.put("screenHeight", CdpObject.json(screenHeight));
-            if (positionX != null) params.put("positionX", CdpObject.json(positionX));
-            if (positionY != null) params.put("positionY", CdpObject.json(positionY));
-            if (dontSetVisibleSize != null) params.put("dontSetVisibleSize", CdpObject.json(dontSetVisibleSize));
-            if (screenOrientation != null) params.put("screenOrientation", CdpObject.json(screenOrientation));
-            if (viewport != null) params.put("viewport", CdpObject.json(viewport));
-            return client.call("Page.setDeviceMetricsOverride", params);
+            return call("Page.setDeviceMetricsOverride", params("width", width, "height", height, "deviceScaleFactor", deviceScaleFactor, "mobile", mobile, "scale", scale, "screenWidth", screenWidth, "screenHeight", screenHeight, "positionX", positionX, "positionY", positionY, "dontSetVisibleSize", dontSetVisibleSize, "screenOrientation", screenOrientation, "viewport", viewport));
         }
         /**
          * Overrides the values of device screen dimensions (window.screen.width, window.screen.height, window.innerWidth, window.innerHeight, and &quot;device-width&quot;/&quot;device-height&quot;-related CSS media query results).
@@ -9043,12 +8757,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> setDeviceMetricsOverride(long width, long height, double deviceScaleFactor, boolean mobile) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("width", CdpObject.json(width));
-            params.put("height", CdpObject.json(height));
-            params.put("deviceScaleFactor", CdpObject.json(deviceScaleFactor));
-            params.put("mobile", CdpObject.json(mobile));
-            return client.call("Page.setDeviceMetricsOverride", params);
+            return call("Page.setDeviceMetricsOverride", params("width", width, "height", height, "deviceScaleFactor", deviceScaleFactor, "mobile", mobile));
         }
         /**
          * Overrides the values of device screen dimensions (window.screen.width, window.screen.height, window.innerWidth, window.innerHeight, and &quot;device-width&quot;/&quot;device-height&quot;-related CSS media query results).
@@ -9059,7 +8768,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> setDeviceMetricsOverride(SetDeviceMetricsOverrideRequest request) {
-            return client.call("Page.setDeviceMetricsOverride", request == null ? null : request.toMap());
+            return call("Page.setDeviceMetricsOverride", request);
         }
         /**
          * Overrides the Device Orientation.
@@ -9072,11 +8781,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> setDeviceOrientationOverride(double alpha, double beta, double gamma) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("alpha", CdpObject.json(alpha));
-            params.put("beta", CdpObject.json(beta));
-            params.put("gamma", CdpObject.json(gamma));
-            return client.call("Page.setDeviceOrientationOverride", params);
+            return call("Page.setDeviceOrientationOverride", params("alpha", alpha, "beta", beta, "gamma", gamma));
         }
         /**
          * Overrides the Device Orientation.
@@ -9087,7 +8792,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> setDeviceOrientationOverride(SetDeviceOrientationOverrideRequest request) {
-            return client.call("Page.setDeviceOrientationOverride", request == null ? null : request.toMap());
+            return call("Page.setDeviceOrientationOverride", request);
         }
         /**
          * Set generic font families.
@@ -9097,10 +8802,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setFontFamilies(Page.FontFamilies fontFamilies, java.util.List<Page.ScriptFontFamilies> forScripts) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("fontFamilies", CdpObject.json(fontFamilies));
-            params.put("forScripts", CdpObject.json(forScripts));
-            return client.call("Page.setFontFamilies", params);
+            return call("Page.setFontFamilies", params("fontFamilies", fontFamilies, "forScripts", forScripts));
         }
         /**
          * Set generic font families.
@@ -9109,9 +8811,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setFontFamilies(Page.FontFamilies fontFamilies) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("fontFamilies", CdpObject.json(fontFamilies));
-            return client.call("Page.setFontFamilies", params);
+            return call("Page.setFontFamilies", params("fontFamilies", fontFamilies));
         }
         /**
          * Set generic font families.
@@ -9120,7 +8820,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setFontFamilies(SetFontFamiliesRequest request) {
-            return client.call("Page.setFontFamilies", request == null ? null : request.toMap());
+            return call("Page.setFontFamilies", request);
         }
         /**
          * Set default font sizes.
@@ -9129,9 +8829,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setFontSizes(Page.FontSizes fontSizes) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("fontSizes", CdpObject.json(fontSizes));
-            return client.call("Page.setFontSizes", params);
+            return call("Page.setFontSizes", params("fontSizes", fontSizes));
         }
         /**
          * Set default font sizes.
@@ -9140,7 +8838,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setFontSizes(SetFontSizesRequest request) {
-            return client.call("Page.setFontSizes", request == null ? null : request.toMap());
+            return call("Page.setFontSizes", request);
         }
         /**
          * Sets given markup as the document&#x27;s HTML.
@@ -9149,10 +8847,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDocumentContent(Page.FrameId frameId, String html) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("frameId", CdpObject.json(frameId));
-            params.put("html", CdpObject.json(html));
-            return client.call("Page.setDocumentContent", params);
+            return call("Page.setDocumentContent", params("frameId", frameId, "html", html));
         }
         /**
          * Sets given markup as the document&#x27;s HTML.
@@ -9160,7 +8855,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDocumentContent(SetDocumentContentRequest request) {
-            return client.call("Page.setDocumentContent", request == null ? null : request.toMap());
+            return call("Page.setDocumentContent", request);
         }
         /**
          * Set the behavior when downloading a file.
@@ -9172,10 +8867,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> setDownloadBehavior(SetDownloadBehaviorBehaviorValues behavior, String downloadPath) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("behavior", CdpObject.json(behavior));
-            params.put("downloadPath", CdpObject.json(downloadPath));
-            return client.call("Page.setDownloadBehavior", params);
+            return call("Page.setDownloadBehavior", params("behavior", behavior, "downloadPath", downloadPath));
         }
         /**
          * Set the behavior when downloading a file.
@@ -9186,9 +8878,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> setDownloadBehavior(SetDownloadBehaviorBehaviorValues behavior) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("behavior", CdpObject.json(behavior));
-            return client.call("Page.setDownloadBehavior", params);
+            return call("Page.setDownloadBehavior", params("behavior", behavior));
         }
         /**
          * Set the behavior when downloading a file.
@@ -9199,7 +8889,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> setDownloadBehavior(SetDownloadBehaviorRequest request) {
-            return client.call("Page.setDownloadBehavior", request == null ? null : request.toMap());
+            return call("Page.setDownloadBehavior", request);
         }
         /**
          * Overrides the Geolocation Position or Error. Omitting any of the parameters emulates position unavailable.
@@ -9211,11 +8901,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> setGeolocationOverride(@Nullable Double latitude, @Nullable Double longitude, @Nullable Double accuracy) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (latitude != null) params.put("latitude", CdpObject.json(latitude));
-            if (longitude != null) params.put("longitude", CdpObject.json(longitude));
-            if (accuracy != null) params.put("accuracy", CdpObject.json(accuracy));
-            return client.call("Page.setGeolocationOverride", params);
+            return call("Page.setGeolocationOverride", params("latitude", latitude, "longitude", longitude, "accuracy", accuracy));
         }
         /**
          * Overrides the Geolocation Position or Error. Omitting any of the parameters emulates position unavailable.
@@ -9224,7 +8910,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> setGeolocationOverride() {
-            return client.call("Page.setGeolocationOverride", null);
+            return call("Page.setGeolocationOverride");
         }
         /**
          * Overrides the Geolocation Position or Error. Omitting any of the parameters emulates position unavailable.
@@ -9234,7 +8920,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> setGeolocationOverride(SetGeolocationOverrideRequest request) {
-            return client.call("Page.setGeolocationOverride", request == null ? null : request.toMap());
+            return call("Page.setGeolocationOverride", request);
         }
         /**
          * Controls whether page will emit lifecycle events.
@@ -9242,9 +8928,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setLifecycleEventsEnabled(boolean enabled) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("enabled", CdpObject.json(enabled));
-            return client.call("Page.setLifecycleEventsEnabled", params);
+            return call("Page.setLifecycleEventsEnabled", params("enabled", enabled));
         }
         /**
          * Controls whether page will emit lifecycle events.
@@ -9252,7 +8936,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setLifecycleEventsEnabled(SetLifecycleEventsEnabledRequest request) {
-            return client.call("Page.setLifecycleEventsEnabled", request == null ? null : request.toMap());
+            return call("Page.setLifecycleEventsEnabled", request);
         }
         /**
          * Toggles mouse event-based touch event emulation.
@@ -9264,10 +8948,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> setTouchEmulationEnabled(boolean enabled, SetTouchEmulationEnabledConfigurationValues configuration) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("enabled", CdpObject.json(enabled));
-            params.put("configuration", CdpObject.json(configuration));
-            return client.call("Page.setTouchEmulationEnabled", params);
+            return call("Page.setTouchEmulationEnabled", params("enabled", enabled, "configuration", configuration));
         }
         /**
          * Toggles mouse event-based touch event emulation.
@@ -9278,9 +8959,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> setTouchEmulationEnabled(boolean enabled) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("enabled", CdpObject.json(enabled));
-            return client.call("Page.setTouchEmulationEnabled", params);
+            return call("Page.setTouchEmulationEnabled", params("enabled", enabled));
         }
         /**
          * Toggles mouse event-based touch event emulation.
@@ -9291,7 +8970,7 @@ public final class Page {
          */
         @Deprecated
         public CompletionStage<Void> setTouchEmulationEnabled(SetTouchEmulationEnabledRequest request) {
-            return client.call("Page.setTouchEmulationEnabled", request == null ? null : request.toMap());
+            return call("Page.setTouchEmulationEnabled", request);
         }
         /**
          * Starts sending each frame using the {@code screencastFrame} event.
@@ -9304,13 +8983,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startScreencast(@Nullable StartScreencastFormatValues format, @Nullable Long quality, @Nullable Long maxWidth, @Nullable Long maxHeight, @Nullable Long everyNthFrame) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (format != null) params.put("format", CdpObject.json(format));
-            if (quality != null) params.put("quality", CdpObject.json(quality));
-            if (maxWidth != null) params.put("maxWidth", CdpObject.json(maxWidth));
-            if (maxHeight != null) params.put("maxHeight", CdpObject.json(maxHeight));
-            if (everyNthFrame != null) params.put("everyNthFrame", CdpObject.json(everyNthFrame));
-            return client.call("Page.startScreencast", params);
+            return call("Page.startScreencast", params("format", format, "quality", quality, "maxWidth", maxWidth, "maxHeight", maxHeight, "everyNthFrame", everyNthFrame));
         }
         /**
          * Starts sending each frame using the {@code screencastFrame} event.
@@ -9318,7 +8991,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startScreencast() {
-            return client.call("Page.startScreencast", null);
+            return call("Page.startScreencast");
         }
         /**
          * Starts sending each frame using the {@code screencastFrame} event.
@@ -9327,14 +9000,14 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startScreencast(StartScreencastRequest request) {
-            return client.call("Page.startScreencast", request == null ? null : request.toMap());
+            return call("Page.startScreencast", request);
         }
         /**
          * Force the page stop all navigations and pending resource fetches.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopLoading() {
-            return client.call("Page.stopLoading", null);
+            return call("Page.stopLoading");
         }
         /**
          * Crashes renderer on the IO thread, generates minidumps.
@@ -9342,14 +9015,14 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> crash() {
-            return client.call("Page.crash", null);
+            return call("Page.crash");
         }
         /**
          * Tries to close page, running its beforeunload hooks, if any.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> close() {
-            return client.call("Page.close", null);
+            return call("Page.close");
         }
         /**
          * Tries to update the web lifecycle state of the page. It will transition the page to the given state according to: https://github.com/WICG/web-lifecycle/
@@ -9358,9 +9031,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setWebLifecycleState(SetWebLifecycleStateStateValues state) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("state", CdpObject.json(state));
-            return client.call("Page.setWebLifecycleState", params);
+            return call("Page.setWebLifecycleState", params("state", state));
         }
         /**
          * Tries to update the web lifecycle state of the page. It will transition the page to the given state according to: https://github.com/WICG/web-lifecycle/
@@ -9369,7 +9040,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setWebLifecycleState(SetWebLifecycleStateRequest request) {
-            return client.call("Page.setWebLifecycleState", request == null ? null : request.toMap());
+            return call("Page.setWebLifecycleState", request);
         }
         /**
          * Stops sending each frame in the {@code screencastFrame}.
@@ -9377,7 +9048,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopScreencast() {
-            return client.call("Page.stopScreencast", null);
+            return call("Page.stopScreencast");
         }
         /**
          * Requests backend to produce compilation cache for the specified scripts. {@code scripts} are appended to the list of scripts for which the cache would be produced. The list may be reset during page navigation. When script with a matching URL is encountered, the cache is optionally produced upon backend discretion, based on internal heuristics. See also: {@code Page.compilationCacheProduced}.
@@ -9386,9 +9057,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> produceCompilationCache(java.util.List<Page.CompilationCacheParams> scripts) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("scripts", CdpObject.json(scripts));
-            return client.call("Page.produceCompilationCache", params);
+            return call("Page.produceCompilationCache", params("scripts", scripts));
         }
         /**
          * Requests backend to produce compilation cache for the specified scripts. {@code scripts} are appended to the list of scripts for which the cache would be produced. The list may be reset during page navigation. When script with a matching URL is encountered, the cache is optionally produced upon backend discretion, based on internal heuristics. See also: {@code Page.compilationCacheProduced}.
@@ -9397,7 +9066,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> produceCompilationCache(ProduceCompilationCacheRequest request) {
-            return client.call("Page.produceCompilationCache", request == null ? null : request.toMap());
+            return call("Page.produceCompilationCache", request);
         }
         /**
          * Seeds compilation cache for given url. Compilation cache does not survive cross-process navigation.
@@ -9407,10 +9076,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> addCompilationCache(String url, String data) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("url", CdpObject.json(url));
-            params.put("data", CdpObject.json(data));
-            return client.call("Page.addCompilationCache", params);
+            return call("Page.addCompilationCache", params("url", url, "data", data));
         }
         /**
          * Seeds compilation cache for given url. Compilation cache does not survive cross-process navigation.
@@ -9419,7 +9085,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> addCompilationCache(AddCompilationCacheRequest request) {
-            return client.call("Page.addCompilationCache", request == null ? null : request.toMap());
+            return call("Page.addCompilationCache", request);
         }
         /**
          * Clears seeded compilation cache.
@@ -9427,7 +9093,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearCompilationCache() {
-            return client.call("Page.clearCompilationCache", null);
+            return call("Page.clearCompilationCache");
         }
         /**
          * Sets the Secure Payment Confirmation transaction mode. https://w3c.github.io/secure-payment-confirmation/#sctn-automation-set-spc-transaction-mode
@@ -9436,9 +9102,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSPCTransactionMode(SetSPCTransactionModeModeValues mode) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("mode", CdpObject.json(mode));
-            return client.call("Page.setSPCTransactionMode", params);
+            return call("Page.setSPCTransactionMode", params("mode", mode));
         }
         /**
          * Sets the Secure Payment Confirmation transaction mode. https://w3c.github.io/secure-payment-confirmation/#sctn-automation-set-spc-transaction-mode
@@ -9447,7 +9111,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSPCTransactionMode(SetSPCTransactionModeRequest request) {
-            return client.call("Page.setSPCTransactionMode", request == null ? null : request.toMap());
+            return call("Page.setSPCTransactionMode", request);
         }
         /**
          * Extensions for Custom Handlers API: https://html.spec.whatwg.org/multipage/system-state.html#rph-automation
@@ -9456,9 +9120,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setRPHRegistrationMode(SetRPHRegistrationModeModeValues mode) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("mode", CdpObject.json(mode));
-            return client.call("Page.setRPHRegistrationMode", params);
+            return call("Page.setRPHRegistrationMode", params("mode", mode));
         }
         /**
          * Extensions for Custom Handlers API: https://html.spec.whatwg.org/multipage/system-state.html#rph-automation
@@ -9467,7 +9129,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setRPHRegistrationMode(SetRPHRegistrationModeRequest request) {
-            return client.call("Page.setRPHRegistrationMode", request == null ? null : request.toMap());
+            return call("Page.setRPHRegistrationMode", request);
         }
         /**
          * Generates a report for testing.
@@ -9477,10 +9139,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> generateTestReport(String message, String group) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("message", CdpObject.json(message));
-            params.put("group", CdpObject.json(group));
-            return client.call("Page.generateTestReport", params);
+            return call("Page.generateTestReport", params("message", message, "group", group));
         }
         /**
          * Generates a report for testing.
@@ -9489,9 +9148,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> generateTestReport(String message) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("message", CdpObject.json(message));
-            return client.call("Page.generateTestReport", params);
+            return call("Page.generateTestReport", params("message", message));
         }
         /**
          * Generates a report for testing.
@@ -9500,7 +9157,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> generateTestReport(GenerateTestReportRequest request) {
-            return client.call("Page.generateTestReport", request == null ? null : request.toMap());
+            return call("Page.generateTestReport", request);
         }
         /**
          * Pauses page execution. Can be resumed using generic Runtime.runIfWaitingForDebugger.
@@ -9508,7 +9165,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> waitForDebugger() {
-            return client.call("Page.waitForDebugger", null);
+            return call("Page.waitForDebugger");
         }
         /**
          * Intercept file chooser requests and transfer control to protocol clients. When file chooser interception is enabled, native file chooser dialog is not shown. Instead, a protocol event {@code Page.fileChooserOpened} is emitted.
@@ -9517,10 +9174,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setInterceptFileChooserDialog(boolean enabled, boolean cancel) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("enabled", CdpObject.json(enabled));
-            params.put("cancel", CdpObject.json(cancel));
-            return client.call("Page.setInterceptFileChooserDialog", params);
+            return call("Page.setInterceptFileChooserDialog", params("enabled", enabled, "cancel", cancel));
         }
         /**
          * Intercept file chooser requests and transfer control to protocol clients. When file chooser interception is enabled, native file chooser dialog is not shown. Instead, a protocol event {@code Page.fileChooserOpened} is emitted.
@@ -9528,9 +9182,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setInterceptFileChooserDialog(boolean enabled) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("enabled", CdpObject.json(enabled));
-            return client.call("Page.setInterceptFileChooserDialog", params);
+            return call("Page.setInterceptFileChooserDialog", params("enabled", enabled));
         }
         /**
          * Intercept file chooser requests and transfer control to protocol clients. When file chooser interception is enabled, native file chooser dialog is not shown. Instead, a protocol event {@code Page.fileChooserOpened} is emitted.
@@ -9538,7 +9190,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setInterceptFileChooserDialog(SetInterceptFileChooserDialogRequest request) {
-            return client.call("Page.setInterceptFileChooserDialog", request == null ? null : request.toMap());
+            return call("Page.setInterceptFileChooserDialog", request);
         }
         /**
          * Enable/disable prerendering manually.
@@ -9549,9 +9201,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPrerenderingAllowed(boolean isAllowed) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("isAllowed", CdpObject.json(isAllowed));
-            return client.call("Page.setPrerenderingAllowed", params);
+            return call("Page.setPrerenderingAllowed", params("isAllowed", isAllowed));
         }
         /**
          * Enable/disable prerendering manually.
@@ -9562,7 +9212,7 @@ public final class Page {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPrerenderingAllowed(SetPrerenderingAllowedRequest request) {
-            return client.call("Page.setPrerenderingAllowed", request == null ? null : request.toMap());
+            return call("Page.setPrerenderingAllowed", request);
         }
         /**
          * Get the annotated page content for the main frame. This is an experimental command that is subject to change.
@@ -9571,9 +9221,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> getAnnotatedPageContent(boolean includeActionableInformation) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("includeActionableInformation", CdpObject.json(includeActionableInformation));
-            return client.call("Page.getAnnotatedPageContent", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("content")));
+            return call("Page.getAnnotatedPageContent", params("includeActionableInformation", includeActionableInformation), CONTENT::require);
         }
         /**
          * Get the annotated page content for the main frame. This is an experimental command that is subject to change.
@@ -9581,7 +9229,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> getAnnotatedPageContent() {
-            return client.call("Page.getAnnotatedPageContent", null, result_ -> (String) java.util.Objects.requireNonNull(result_.get("content")));
+            return call("Page.getAnnotatedPageContent", CONTENT::require);
         }
         /**
          * Get the annotated page content for the main frame. This is an experimental command that is subject to change.
@@ -9590,7 +9238,7 @@ public final class Page {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> getAnnotatedPageContent(GetAnnotatedPageContentRequest request) {
-            return client.call("Page.getAnnotatedPageContent", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("content")));
+            return call("Page.getAnnotatedPageContent", request, CONTENT::require);
         }
         /**
          * Subscribes to Page.domContentEventFired.
@@ -9598,7 +9246,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onDomContentEventFired(Consumer<DomContentEventFiredEvent> handler) {
-            return client.on("Page.domContentEventFired", DomContentEventFiredEvent::fromMap, handler);
+            return on("Page.domContentEventFired", DomContentEventFiredEvent::fromMap, handler);
         }
         /**
          * Emitted only when {@code page.interceptFileChooser} is enabled.
@@ -9606,7 +9254,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onFileChooserOpened(Consumer<FileChooserOpenedEvent> handler) {
-            return client.on("Page.fileChooserOpened", FileChooserOpenedEvent::fromMap, handler);
+            return on("Page.fileChooserOpened", FileChooserOpenedEvent::fromMap, handler);
         }
         /**
          * Fired when frame has been attached to its parent.
@@ -9614,7 +9262,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onFrameAttached(Consumer<FrameAttachedEvent> handler) {
-            return client.on("Page.frameAttached", FrameAttachedEvent::fromMap, handler);
+            return on("Page.frameAttached", FrameAttachedEvent::fromMap, handler);
         }
         /**
          * Fired when frame no longer has a scheduled navigation.
@@ -9624,7 +9272,7 @@ public final class Page {
          */
         @Deprecated
         public CdpSubscription onFrameClearedScheduledNavigation(Consumer<FrameClearedScheduledNavigationEvent> handler) {
-            return client.on("Page.frameClearedScheduledNavigation", FrameClearedScheduledNavigationEvent::fromMap, handler);
+            return on("Page.frameClearedScheduledNavigation", FrameClearedScheduledNavigationEvent::fromMap, handler);
         }
         /**
          * Fired when frame has been detached from its parent.
@@ -9632,7 +9280,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onFrameDetached(Consumer<FrameDetachedEvent> handler) {
-            return client.on("Page.frameDetached", FrameDetachedEvent::fromMap, handler);
+            return on("Page.frameDetached", FrameDetachedEvent::fromMap, handler);
         }
         /**
          * Fired before frame subtree is detached. Emitted before any frame of the subtree is actually detached.
@@ -9641,7 +9289,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onFrameSubtreeWillBeDetached(Consumer<FrameSubtreeWillBeDetachedEvent> handler) {
-            return client.on("Page.frameSubtreeWillBeDetached", FrameSubtreeWillBeDetachedEvent::fromMap, handler);
+            return on("Page.frameSubtreeWillBeDetached", FrameSubtreeWillBeDetachedEvent::fromMap, handler);
         }
         /**
          * Fired once navigation of the frame has completed. Frame is now associated with the new loader.
@@ -9649,7 +9297,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onFrameNavigated(Consumer<FrameNavigatedEvent> handler) {
-            return client.on("Page.frameNavigated", FrameNavigatedEvent::fromMap, handler);
+            return on("Page.frameNavigated", FrameNavigatedEvent::fromMap, handler);
         }
         /**
          * Fired when opening document to write to.
@@ -9658,7 +9306,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onDocumentOpened(Consumer<DocumentOpenedEvent> handler) {
-            return client.on("Page.documentOpened", DocumentOpenedEvent::fromMap, handler);
+            return on("Page.documentOpened", DocumentOpenedEvent::fromMap, handler);
         }
         /**
          * Subscribes to Page.frameResized.
@@ -9667,7 +9315,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onFrameResized(Consumer<FrameResizedEvent> handler) {
-            return client.on("Page.frameResized", FrameResizedEvent::fromMap, handler);
+            return on("Page.frameResized", FrameResizedEvent::fromMap, handler);
         }
         /**
          * Fired when a navigation starts. This event is fired for both renderer-initiated and browser-initiated navigations. For renderer-initiated navigations, the event is fired after {@code frameRequestedNavigation}. Navigation may still be cancelled after the event is issued. Multiple events can be fired for a single navigation, for example, when a same-document navigation becomes a cross-document navigation (such as in the case of a frameset).
@@ -9676,7 +9324,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onFrameStartedNavigating(Consumer<FrameStartedNavigatingEvent> handler) {
-            return client.on("Page.frameStartedNavigating", FrameStartedNavigatingEvent::fromMap, handler);
+            return on("Page.frameStartedNavigating", FrameStartedNavigatingEvent::fromMap, handler);
         }
         /**
          * Fired when a renderer-initiated navigation is requested. Navigation may still be cancelled after the event is issued.
@@ -9685,7 +9333,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onFrameRequestedNavigation(Consumer<FrameRequestedNavigationEvent> handler) {
-            return client.on("Page.frameRequestedNavigation", FrameRequestedNavigationEvent::fromMap, handler);
+            return on("Page.frameRequestedNavigation", FrameRequestedNavigationEvent::fromMap, handler);
         }
         /**
          * Fired when frame schedules a potential navigation.
@@ -9695,7 +9343,7 @@ public final class Page {
          */
         @Deprecated
         public CdpSubscription onFrameScheduledNavigation(Consumer<FrameScheduledNavigationEvent> handler) {
-            return client.on("Page.frameScheduledNavigation", FrameScheduledNavigationEvent::fromMap, handler);
+            return on("Page.frameScheduledNavigation", FrameScheduledNavigationEvent::fromMap, handler);
         }
         /**
          * Fired when frame has started loading.
@@ -9704,7 +9352,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onFrameStartedLoading(Consumer<FrameStartedLoadingEvent> handler) {
-            return client.on("Page.frameStartedLoading", FrameStartedLoadingEvent::fromMap, handler);
+            return on("Page.frameStartedLoading", FrameStartedLoadingEvent::fromMap, handler);
         }
         /**
          * Fired when frame has stopped loading.
@@ -9713,7 +9361,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onFrameStoppedLoading(Consumer<FrameStoppedLoadingEvent> handler) {
-            return client.on("Page.frameStoppedLoading", FrameStoppedLoadingEvent::fromMap, handler);
+            return on("Page.frameStoppedLoading", FrameStoppedLoadingEvent::fromMap, handler);
         }
         /**
          * Fired when page is about to start a download. Deprecated. Use Browser.downloadWillBegin instead.
@@ -9724,7 +9372,7 @@ public final class Page {
          */
         @Deprecated
         public CdpSubscription onDownloadWillBegin(Consumer<DownloadWillBeginEvent> handler) {
-            return client.on("Page.downloadWillBegin", DownloadWillBeginEvent::fromMap, handler);
+            return on("Page.downloadWillBegin", DownloadWillBeginEvent::fromMap, handler);
         }
         /**
          * Fired when download makes progress. Last call has |done| == true. Deprecated. Use Browser.downloadProgress instead.
@@ -9735,7 +9383,7 @@ public final class Page {
          */
         @Deprecated
         public CdpSubscription onDownloadProgress(Consumer<DownloadProgressEvent> handler) {
-            return client.on("Page.downloadProgress", DownloadProgressEvent::fromMap, handler);
+            return on("Page.downloadProgress", DownloadProgressEvent::fromMap, handler);
         }
         /**
          * Fired when interstitial page was hidden
@@ -9743,7 +9391,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onInterstitialHidden(Consumer<InterstitialHiddenEvent> handler) {
-            return client.on("Page.interstitialHidden", InterstitialHiddenEvent::fromMap, handler);
+            return on("Page.interstitialHidden", InterstitialHiddenEvent::fromMap, handler);
         }
         /**
          * Fired when interstitial page was shown
@@ -9751,7 +9399,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onInterstitialShown(Consumer<InterstitialShownEvent> handler) {
-            return client.on("Page.interstitialShown", InterstitialShownEvent::fromMap, handler);
+            return on("Page.interstitialShown", InterstitialShownEvent::fromMap, handler);
         }
         /**
          * Fired when a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload) has been closed.
@@ -9759,7 +9407,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onJavascriptDialogClosed(Consumer<JavascriptDialogClosedEvent> handler) {
-            return client.on("Page.javascriptDialogClosed", JavascriptDialogClosedEvent::fromMap, handler);
+            return on("Page.javascriptDialogClosed", JavascriptDialogClosedEvent::fromMap, handler);
         }
         /**
          * Fired when a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload) is about to open.
@@ -9767,7 +9415,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onJavascriptDialogOpening(Consumer<JavascriptDialogOpeningEvent> handler) {
-            return client.on("Page.javascriptDialogOpening", JavascriptDialogOpeningEvent::fromMap, handler);
+            return on("Page.javascriptDialogOpening", JavascriptDialogOpeningEvent::fromMap, handler);
         }
         /**
          * Fired for lifecycle events (navigation, load, paint, etc) in the current target (including local frames).
@@ -9775,7 +9423,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onLifecycleEvent(Consumer<LifecycleEventEvent> handler) {
-            return client.on("Page.lifecycleEvent", LifecycleEventEvent::fromMap, handler);
+            return on("Page.lifecycleEvent", LifecycleEventEvent::fromMap, handler);
         }
         /**
          * Fired for failed bfcache history navigations if BackForwardCache feature is enabled. Do not assume any ordering with the Page.frameNavigated event. This event is fired only for main-frame history navigation where the document changes (non-same-document navigations), when bfcache navigation fails.
@@ -9784,7 +9432,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onBackForwardCacheNotUsed(Consumer<BackForwardCacheNotUsedEvent> handler) {
-            return client.on("Page.backForwardCacheNotUsed", BackForwardCacheNotUsedEvent::fromMap, handler);
+            return on("Page.backForwardCacheNotUsed", BackForwardCacheNotUsedEvent::fromMap, handler);
         }
         /**
          * Subscribes to Page.loadEventFired.
@@ -9792,7 +9440,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onLoadEventFired(Consumer<LoadEventFiredEvent> handler) {
-            return client.on("Page.loadEventFired", LoadEventFiredEvent::fromMap, handler);
+            return on("Page.loadEventFired", LoadEventFiredEvent::fromMap, handler);
         }
         /**
          * Fired when same-document navigation happens, e.g. due to history API usage or anchor navigation.
@@ -9801,7 +9449,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onNavigatedWithinDocument(Consumer<NavigatedWithinDocumentEvent> handler) {
-            return client.on("Page.navigatedWithinDocument", NavigatedWithinDocumentEvent::fromMap, handler);
+            return on("Page.navigatedWithinDocument", NavigatedWithinDocumentEvent::fromMap, handler);
         }
         /**
          * Compressed image data requested by the {@code startScreencast}.
@@ -9810,7 +9458,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onScreencastFrame(Consumer<ScreencastFrameEvent> handler) {
-            return client.on("Page.screencastFrame", ScreencastFrameEvent::fromMap, handler);
+            return on("Page.screencastFrame", ScreencastFrameEvent::fromMap, handler);
         }
         /**
          * Fired when the page with currently enabled screencast was shown or hidden `.
@@ -9819,7 +9467,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onScreencastVisibilityChanged(Consumer<ScreencastVisibilityChangedEvent> handler) {
-            return client.on("Page.screencastVisibilityChanged", ScreencastVisibilityChangedEvent::fromMap, handler);
+            return on("Page.screencastVisibilityChanged", ScreencastVisibilityChangedEvent::fromMap, handler);
         }
         /**
          * Fired when a new window is going to be opened, via window.open(), link click, form submission, etc.
@@ -9827,7 +9475,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onWindowOpen(Consumer<WindowOpenEvent> handler) {
-            return client.on("Page.windowOpen", WindowOpenEvent::fromMap, handler);
+            return on("Page.windowOpen", WindowOpenEvent::fromMap, handler);
         }
         /**
          * Issued for every compilation cache generated.
@@ -9836,7 +9484,7 @@ public final class Page {
          * @return a removable subscription
          */
         public CdpSubscription onCompilationCacheProduced(Consumer<CompilationCacheProducedEvent> handler) {
-            return client.on("Page.compilationCacheProduced", CompilationCacheProducedEvent::fromMap, handler);
+            return on("Page.compilationCacheProduced", CompilationCacheProducedEvent::fromMap, handler);
         }
     }
 }

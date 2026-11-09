@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class MenuModel implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class MenuModel extends BrowserFacade {
 
     public MenuModel(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_menu_model_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_menu_model_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> isSubMenu() {
         return CefFutures.map(
-            session.request(new MenuModelIsSubMenuRequest(handle), MenuModelIsSubMenuResponse.DECODER),
-            MenuModelIsSubMenuResponse::result);
+            session.request(MessageIds.MENU_MODEL_IS_SUB_MENU_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> clear() {
         return CefFutures.map(
-            session.request(new MenuModelClearRequest(handle), MenuModelClearResponse.DECODER),
-            MenuModelClearResponse::result);
+            session.request(MessageIds.MENU_MODEL_CLEAR_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -82,8 +51,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Long> getCount() {
         return CefFutures.map(
-            session.request(new MenuModelGetCountRequest(handle), MenuModelGetCountResponse.DECODER),
-            MenuModelGetCountResponse::result);
+            session.request(MessageIds.MENU_MODEL_GET_COUNT_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -94,8 +63,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> addSeparator() {
         return CefFutures.map(
-            session.request(new MenuModelAddSeparatorRequest(handle), MenuModelAddSeparatorResponse.DECODER),
-            MenuModelAddSeparatorResponse::result);
+            session.request(MessageIds.MENU_MODEL_ADD_SEPARATOR_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -106,8 +75,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> addItem(int commandId, String label) {
         return CefFutures.map(
-            session.request(new MenuModelAddItemRequest(handle, commandId, label), MenuModelAddItemResponse.DECODER),
-            MenuModelAddItemResponse::result);
+            session.request(MessageIds.MENU_MODEL_ADD_ITEM_REQUEST, new SelfHandleCommandIdIntLabelStringMessage(handle, commandId, label), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -118,8 +87,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> addCheckItem(int commandId, String label) {
         return CefFutures.map(
-            session.request(new MenuModelAddCheckItemRequest(handle, commandId, label), MenuModelAddCheckItemResponse.DECODER),
-            MenuModelAddCheckItemResponse::result);
+            session.request(MessageIds.MENU_MODEL_ADD_CHECK_ITEM_REQUEST, new SelfHandleCommandIdIntLabelStringMessage(handle, commandId, label), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -130,8 +99,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> addRadioItem(int commandId, String label, int groupId) {
         return CefFutures.map(
-            session.request(new MenuModelAddRadioItemRequest(handle, commandId, label, groupId), MenuModelAddRadioItemResponse.DECODER),
-            MenuModelAddRadioItemResponse::result);
+            session.request(MessageIds.MENU_MODEL_ADD_RADIO_ITEM_REQUEST, new MenuModelAddRadioItemRequest(handle, commandId, label, groupId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -142,7 +111,7 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<MenuModel> addSubMenu(int commandId, String label) {
         return CefFutures.map(
-            session.request(new MenuModelAddSubMenuRequest(handle, commandId, label), MenuModelAddSubMenuResponse.DECODER),
+            session.request(MessageIds.MENU_MODEL_ADD_SUB_MENU_REQUEST, new SelfHandleCommandIdIntLabelStringMessage(handle, commandId, label), ResultHandleMessage.DECODER),
             __r -> new MenuModel(session, __r.result()));
     }
 
@@ -154,8 +123,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> insertSeparatorAt(long index) {
         return CefFutures.map(
-            session.request(new MenuModelInsertSeparatorAtRequest(handle, index), MenuModelInsertSeparatorAtResponse.DECODER),
-            MenuModelInsertSeparatorAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_INSERT_SEPARATOR_AT_REQUEST, new SelfHandleIndexLongMessage(handle, index), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -166,8 +135,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> insertItemAt(long index, int commandId, String label) {
         return CefFutures.map(
-            session.request(new MenuModelInsertItemAtRequest(handle, index, commandId, label), MenuModelInsertItemAtResponse.DECODER),
-            MenuModelInsertItemAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_INSERT_ITEM_AT_REQUEST, new SelfHandleIndexLongCommandIdIntLabelStringMessage(handle, index, commandId, label), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -178,8 +147,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> insertCheckItemAt(long index, int commandId, String label) {
         return CefFutures.map(
-            session.request(new MenuModelInsertCheckItemAtRequest(handle, index, commandId, label), MenuModelInsertCheckItemAtResponse.DECODER),
-            MenuModelInsertCheckItemAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_INSERT_CHECK_ITEM_AT_REQUEST, new SelfHandleIndexLongCommandIdIntLabelStringMessage(handle, index, commandId, label), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -190,8 +159,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> insertRadioItemAt(long index, int commandId, String label, int groupId) {
         return CefFutures.map(
-            session.request(new MenuModelInsertRadioItemAtRequest(handle, index, commandId, label, groupId), MenuModelInsertRadioItemAtResponse.DECODER),
-            MenuModelInsertRadioItemAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_INSERT_RADIO_ITEM_AT_REQUEST, new MenuModelInsertRadioItemAtRequest(handle, index, commandId, label, groupId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -202,7 +171,7 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<MenuModel> insertSubMenuAt(long index, int commandId, String label) {
         return CefFutures.map(
-            session.request(new MenuModelInsertSubMenuAtRequest(handle, index, commandId, label), MenuModelInsertSubMenuAtResponse.DECODER),
+            session.request(MessageIds.MENU_MODEL_INSERT_SUB_MENU_AT_REQUEST, new SelfHandleIndexLongCommandIdIntLabelStringMessage(handle, index, commandId, label), ResultHandleMessage.DECODER),
             __r -> new MenuModel(session, __r.result()));
     }
 
@@ -214,8 +183,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> remove(int commandId) {
         return CefFutures.map(
-            session.request(new MenuModelRemoveRequest(handle, commandId), MenuModelRemoveResponse.DECODER),
-            MenuModelRemoveResponse::result);
+            session.request(MessageIds.MENU_MODEL_REMOVE_REQUEST, new SelfHandleCommandIdIntMessage(handle, commandId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -226,8 +195,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> removeAt(long index) {
         return CefFutures.map(
-            session.request(new MenuModelRemoveAtRequest(handle, index), MenuModelRemoveAtResponse.DECODER),
-            MenuModelRemoveAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_REMOVE_AT_REQUEST, new SelfHandleIndexLongMessage(handle, index), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -238,8 +207,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> getIndexOf(int commandId) {
         return CefFutures.map(
-            session.request(new MenuModelGetIndexOfRequest(handle, commandId), MenuModelGetIndexOfResponse.DECODER),
-            MenuModelGetIndexOfResponse::result);
+            session.request(MessageIds.MENU_MODEL_GET_INDEX_OF_REQUEST, new SelfHandleCommandIdIntMessage(handle, commandId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -250,8 +219,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> getCommandIdAt(long index) {
         return CefFutures.map(
-            session.request(new MenuModelGetCommandIdAtRequest(handle, index), MenuModelGetCommandIdAtResponse.DECODER),
-            MenuModelGetCommandIdAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_GET_COMMAND_ID_AT_REQUEST, new SelfHandleIndexLongMessage(handle, index), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -262,8 +231,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> setCommandIdAt(long index, int commandId) {
         return CefFutures.map(
-            session.request(new MenuModelSetCommandIdAtRequest(handle, index, commandId), MenuModelSetCommandIdAtResponse.DECODER),
-            MenuModelSetCommandIdAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_SET_COMMAND_ID_AT_REQUEST, new MenuModelSetCommandIdAtRequest(handle, index, commandId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -274,8 +243,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<String> getLabel(int commandId) {
         return CefFutures.map(
-            session.request(new MenuModelGetLabelRequest(handle, commandId), MenuModelGetLabelResponse.DECODER),
-            MenuModelGetLabelResponse::result);
+            session.request(MessageIds.MENU_MODEL_GET_LABEL_REQUEST, new SelfHandleCommandIdIntMessage(handle, commandId), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -286,8 +255,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> setLabel(int commandId, String label) {
         return CefFutures.map(
-            session.request(new MenuModelSetLabelRequest(handle, commandId, label), MenuModelSetLabelResponse.DECODER),
-            MenuModelSetLabelResponse::result);
+            session.request(MessageIds.MENU_MODEL_SET_LABEL_REQUEST, new SelfHandleCommandIdIntLabelStringMessage(handle, commandId, label), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -298,8 +267,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> setLabelAt(long index, String label) {
         return CefFutures.map(
-            session.request(new MenuModelSetLabelAtRequest(handle, index, label), MenuModelSetLabelAtResponse.DECODER),
-            MenuModelSetLabelAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_SET_LABEL_AT_REQUEST, new MenuModelSetLabelAtRequest(handle, index, label), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -310,8 +279,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> getType(int commandId) {
         return CefFutures.map(
-            session.request(new MenuModelGetTypeRequest(handle, commandId), MenuModelGetTypeResponse.DECODER),
-            MenuModelGetTypeResponse::result);
+            session.request(MessageIds.MENU_MODEL_GET_TYPE_REQUEST, new SelfHandleCommandIdIntMessage(handle, commandId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -322,8 +291,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> getGroupId(int commandId) {
         return CefFutures.map(
-            session.request(new MenuModelGetGroupIdRequest(handle, commandId), MenuModelGetGroupIdResponse.DECODER),
-            MenuModelGetGroupIdResponse::result);
+            session.request(MessageIds.MENU_MODEL_GET_GROUP_ID_REQUEST, new SelfHandleCommandIdIntMessage(handle, commandId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -334,8 +303,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> getGroupIdAt(long index) {
         return CefFutures.map(
-            session.request(new MenuModelGetGroupIdAtRequest(handle, index), MenuModelGetGroupIdAtResponse.DECODER),
-            MenuModelGetGroupIdAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_GET_GROUP_ID_AT_REQUEST, new SelfHandleIndexLongMessage(handle, index), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -346,8 +315,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> setGroupId(int commandId, int groupId) {
         return CefFutures.map(
-            session.request(new MenuModelSetGroupIdRequest(handle, commandId, groupId), MenuModelSetGroupIdResponse.DECODER),
-            MenuModelSetGroupIdResponse::result);
+            session.request(MessageIds.MENU_MODEL_SET_GROUP_ID_REQUEST, new MenuModelSetGroupIdRequest(handle, commandId, groupId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -358,8 +327,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> setGroupIdAt(long index, int groupId) {
         return CefFutures.map(
-            session.request(new MenuModelSetGroupIdAtRequest(handle, index, groupId), MenuModelSetGroupIdAtResponse.DECODER),
-            MenuModelSetGroupIdAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_SET_GROUP_ID_AT_REQUEST, new MenuModelSetGroupIdAtRequest(handle, index, groupId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -370,7 +339,7 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<MenuModel> getSubMenu(int commandId) {
         return CefFutures.map(
-            session.request(new MenuModelGetSubMenuRequest(handle, commandId), MenuModelGetSubMenuResponse.DECODER),
+            session.request(MessageIds.MENU_MODEL_GET_SUB_MENU_REQUEST, new SelfHandleCommandIdIntMessage(handle, commandId), ResultHandleMessage.DECODER),
             __r -> new MenuModel(session, __r.result()));
     }
 
@@ -382,7 +351,7 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<MenuModel> getSubMenuAt(long index) {
         return CefFutures.map(
-            session.request(new MenuModelGetSubMenuAtRequest(handle, index), MenuModelGetSubMenuAtResponse.DECODER),
+            session.request(MessageIds.MENU_MODEL_GET_SUB_MENU_AT_REQUEST, new SelfHandleIndexLongMessage(handle, index), ResultHandleMessage.DECODER),
             __r -> new MenuModel(session, __r.result()));
     }
 
@@ -394,8 +363,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> isVisible(int commandId) {
         return CefFutures.map(
-            session.request(new MenuModelIsVisibleRequest(handle, commandId), MenuModelIsVisibleResponse.DECODER),
-            MenuModelIsVisibleResponse::result);
+            session.request(MessageIds.MENU_MODEL_IS_VISIBLE_REQUEST, new SelfHandleCommandIdIntMessage(handle, commandId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -406,8 +375,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> isVisibleAt(long index) {
         return CefFutures.map(
-            session.request(new MenuModelIsVisibleAtRequest(handle, index), MenuModelIsVisibleAtResponse.DECODER),
-            MenuModelIsVisibleAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_IS_VISIBLE_AT_REQUEST, new SelfHandleIndexLongMessage(handle, index), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -418,8 +387,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> setVisible(int commandId, int visible) {
         return CefFutures.map(
-            session.request(new MenuModelSetVisibleRequest(handle, commandId, visible), MenuModelSetVisibleResponse.DECODER),
-            MenuModelSetVisibleResponse::result);
+            session.request(MessageIds.MENU_MODEL_SET_VISIBLE_REQUEST, new MenuModelSetVisibleRequest(handle, commandId, visible), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -430,8 +399,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> setVisibleAt(long index, int visible) {
         return CefFutures.map(
-            session.request(new MenuModelSetVisibleAtRequest(handle, index, visible), MenuModelSetVisibleAtResponse.DECODER),
-            MenuModelSetVisibleAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_SET_VISIBLE_AT_REQUEST, new MenuModelSetVisibleAtRequest(handle, index, visible), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -442,8 +411,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> isEnabled(int commandId) {
         return CefFutures.map(
-            session.request(new MenuModelIsEnabledRequest(handle, commandId), MenuModelIsEnabledResponse.DECODER),
-            MenuModelIsEnabledResponse::result);
+            session.request(MessageIds.MENU_MODEL_IS_ENABLED_REQUEST, new SelfHandleCommandIdIntMessage(handle, commandId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -454,8 +423,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> isEnabledAt(long index) {
         return CefFutures.map(
-            session.request(new MenuModelIsEnabledAtRequest(handle, index), MenuModelIsEnabledAtResponse.DECODER),
-            MenuModelIsEnabledAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_IS_ENABLED_AT_REQUEST, new SelfHandleIndexLongMessage(handle, index), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -466,8 +435,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> setEnabled(int commandId, int enabled) {
         return CefFutures.map(
-            session.request(new MenuModelSetEnabledRequest(handle, commandId, enabled), MenuModelSetEnabledResponse.DECODER),
-            MenuModelSetEnabledResponse::result);
+            session.request(MessageIds.MENU_MODEL_SET_ENABLED_REQUEST, new MenuModelSetEnabledRequest(handle, commandId, enabled), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -478,8 +447,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> setEnabledAt(long index, int enabled) {
         return CefFutures.map(
-            session.request(new MenuModelSetEnabledAtRequest(handle, index, enabled), MenuModelSetEnabledAtResponse.DECODER),
-            MenuModelSetEnabledAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_SET_ENABLED_AT_REQUEST, new MenuModelSetEnabledAtRequest(handle, index, enabled), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -490,8 +459,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> isChecked(int commandId) {
         return CefFutures.map(
-            session.request(new MenuModelIsCheckedRequest(handle, commandId), MenuModelIsCheckedResponse.DECODER),
-            MenuModelIsCheckedResponse::result);
+            session.request(MessageIds.MENU_MODEL_IS_CHECKED_REQUEST, new SelfHandleCommandIdIntMessage(handle, commandId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -502,8 +471,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> isCheckedAt(long index) {
         return CefFutures.map(
-            session.request(new MenuModelIsCheckedAtRequest(handle, index), MenuModelIsCheckedAtResponse.DECODER),
-            MenuModelIsCheckedAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_IS_CHECKED_AT_REQUEST, new SelfHandleIndexLongMessage(handle, index), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -514,8 +483,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> setChecked(int commandId, int checked) {
         return CefFutures.map(
-            session.request(new MenuModelSetCheckedRequest(handle, commandId, checked), MenuModelSetCheckedResponse.DECODER),
-            MenuModelSetCheckedResponse::result);
+            session.request(MessageIds.MENU_MODEL_SET_CHECKED_REQUEST, new MenuModelSetCheckedRequest(handle, commandId, checked), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -526,8 +495,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> setCheckedAt(long index, int checked) {
         return CefFutures.map(
-            session.request(new MenuModelSetCheckedAtRequest(handle, index, checked), MenuModelSetCheckedAtResponse.DECODER),
-            MenuModelSetCheckedAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_SET_CHECKED_AT_REQUEST, new MenuModelSetCheckedAtRequest(handle, index, checked), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -538,8 +507,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasAccelerator(int commandId) {
         return CefFutures.map(
-            session.request(new MenuModelHasAcceleratorRequest(handle, commandId), MenuModelHasAcceleratorResponse.DECODER),
-            MenuModelHasAcceleratorResponse::result);
+            session.request(MessageIds.MENU_MODEL_HAS_ACCELERATOR_REQUEST, new SelfHandleCommandIdIntMessage(handle, commandId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -550,8 +519,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasAcceleratorAt(long index) {
         return CefFutures.map(
-            session.request(new MenuModelHasAcceleratorAtRequest(handle, index), MenuModelHasAcceleratorAtResponse.DECODER),
-            MenuModelHasAcceleratorAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_HAS_ACCELERATOR_AT_REQUEST, new SelfHandleIndexLongMessage(handle, index), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -562,8 +531,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> setAccelerator(int commandId, int keyCode, int shiftPressed, int ctrlPressed, int altPressed) {
         return CefFutures.map(
-            session.request(new MenuModelSetAcceleratorRequest(handle, commandId, keyCode, shiftPressed, ctrlPressed, altPressed), MenuModelSetAcceleratorResponse.DECODER),
-            MenuModelSetAcceleratorResponse::result);
+            session.request(MessageIds.MENU_MODEL_SET_ACCELERATOR_REQUEST, new MenuModelSetAcceleratorRequest(handle, commandId, keyCode, shiftPressed, ctrlPressed, altPressed), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -574,8 +543,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> setAcceleratorAt(long index, int keyCode, int shiftPressed, int ctrlPressed, int altPressed) {
         return CefFutures.map(
-            session.request(new MenuModelSetAcceleratorAtRequest(handle, index, keyCode, shiftPressed, ctrlPressed, altPressed), MenuModelSetAcceleratorAtResponse.DECODER),
-            MenuModelSetAcceleratorAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_SET_ACCELERATOR_AT_REQUEST, new MenuModelSetAcceleratorAtRequest(handle, index, keyCode, shiftPressed, ctrlPressed, altPressed), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -586,8 +555,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> removeAccelerator(int commandId) {
         return CefFutures.map(
-            session.request(new MenuModelRemoveAcceleratorRequest(handle, commandId), MenuModelRemoveAcceleratorResponse.DECODER),
-            MenuModelRemoveAcceleratorResponse::result);
+            session.request(MessageIds.MENU_MODEL_REMOVE_ACCELERATOR_REQUEST, new SelfHandleCommandIdIntMessage(handle, commandId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -598,8 +567,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> removeAcceleratorAt(long index) {
         return CefFutures.map(
-            session.request(new MenuModelRemoveAcceleratorAtRequest(handle, index), MenuModelRemoveAcceleratorAtResponse.DECODER),
-            MenuModelRemoveAcceleratorAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_REMOVE_ACCELERATOR_AT_REQUEST, new SelfHandleIndexLongMessage(handle, index), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -610,8 +579,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> setColor(int commandId, int colorType, int color) {
         return CefFutures.map(
-            session.request(new MenuModelSetColorRequest(handle, commandId, colorType, color), MenuModelSetColorResponse.DECODER),
-            MenuModelSetColorResponse::result);
+            session.request(MessageIds.MENU_MODEL_SET_COLOR_REQUEST, new MenuModelSetColorRequest(handle, commandId, colorType, color), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -622,8 +591,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> setColorAt(int index, int colorType, int color) {
         return CefFutures.map(
-            session.request(new MenuModelSetColorAtRequest(handle, index, colorType, color), MenuModelSetColorAtResponse.DECODER),
-            MenuModelSetColorAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_SET_COLOR_AT_REQUEST, new MenuModelSetColorAtRequest(handle, index, colorType, color), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -634,8 +603,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> getColor(int commandId, int colorType, RemoteHandle color) {
         return CefFutures.map(
-            session.request(new MenuModelGetColorRequest(handle, commandId, colorType, color), MenuModelGetColorResponse.DECODER),
-            MenuModelGetColorResponse::result);
+            session.request(MessageIds.MENU_MODEL_GET_COLOR_REQUEST, new MenuModelGetColorRequest(handle, commandId, colorType, color), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -646,8 +615,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> getColorAt(int index, int colorType, RemoteHandle color) {
         return CefFutures.map(
-            session.request(new MenuModelGetColorAtRequest(handle, index, colorType, color), MenuModelGetColorAtResponse.DECODER),
-            MenuModelGetColorAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_GET_COLOR_AT_REQUEST, new MenuModelGetColorAtRequest(handle, index, colorType, color), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -674,8 +643,8 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> setFontList(int commandId, String fontList) {
         return CefFutures.map(
-            session.request(new MenuModelSetFontListRequest(handle, commandId, fontList), MenuModelSetFontListResponse.DECODER),
-            MenuModelSetFontListResponse::result);
+            session.request(MessageIds.MENU_MODEL_SET_FONT_LIST_REQUEST, new MenuModelSetFontListRequest(handle, commandId, fontList), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -702,7 +671,7 @@ public final class MenuModel implements AutoCloseable {
      */
     public CompletableFuture<Integer> setFontListAt(int index, String fontList) {
         return CefFutures.map(
-            session.request(new MenuModelSetFontListAtRequest(handle, index, fontList), MenuModelSetFontListAtResponse.DECODER),
-            MenuModelSetFontListAtResponse::result);
+            session.request(MessageIds.MENU_MODEL_SET_FONT_LIST_AT_REQUEST, new MenuModelSetFontListAtRequest(handle, index, fontList), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

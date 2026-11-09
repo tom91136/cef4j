@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class CommandLine implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class CommandLine extends BrowserFacade {
 
     public CommandLine(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_command_line_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_command_line_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class CommandLine implements AutoCloseable {
      */
     public CompletableFuture<Integer> isValid() {
         return CefFutures.map(
-            session.request(new CommandLineIsValidRequest(handle), CommandLineIsValidResponse.DECODER),
-            CommandLineIsValidResponse::result);
+            session.request(MessageIds.COMMAND_LINE_IS_VALID_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class CommandLine implements AutoCloseable {
      */
     public CompletableFuture<Integer> isReadOnly() {
         return CefFutures.map(
-            session.request(new CommandLineIsReadOnlyRequest(handle), CommandLineIsReadOnlyResponse.DECODER),
-            CommandLineIsReadOnlyResponse::result);
+            session.request(MessageIds.COMMAND_LINE_IS_READ_ONLY_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -82,7 +51,7 @@ public final class CommandLine implements AutoCloseable {
      */
     public CompletableFuture<CommandLine> copy() {
         return CefFutures.map(
-            session.request(new CommandLineCopyRequest(handle), CommandLineCopyResponse.DECODER),
+            session.request(MessageIds.COMMAND_LINE_COPY_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new CommandLine(session, __r.result()));
     }
 
@@ -93,7 +62,7 @@ public final class CommandLine implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:104</a>
      */
     public CompletableFuture<Void> initFromString(String commandLine) {
-        return CefFutures.discard(session.request(new CommandLineInitFromStringRequest(handle, commandLine), CommandLineInitFromStringResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.COMMAND_LINE_INIT_FROM_STRING_REQUEST, new CommandLineInitFromStringRequest(handle, commandLine), EmptyMessage.DECODER));
     }
 
     /**
@@ -103,7 +72,7 @@ public final class CommandLine implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:111</a>
      */
     public CompletableFuture<Void> reset() {
-        return CefFutures.discard(session.request(new CommandLineResetRequest(handle), CommandLineResetResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.COMMAND_LINE_RESET_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -113,7 +82,7 @@ public final class CommandLine implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:118</a>
      */
     public CompletableFuture<Void> getArgv(String[] argv) {
-        return CefFutures.discard(session.request(new CommandLineGetArgvRequest(handle, argv), CommandLineGetArgvResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.COMMAND_LINE_GET_ARGV_REQUEST, new CommandLineGetArgvRequest(handle, argv), EmptyMessage.DECODER));
     }
 
     /**
@@ -124,8 +93,8 @@ public final class CommandLine implements AutoCloseable {
      */
     public CompletableFuture<String> getCommandLineString() {
         return CefFutures.map(
-            session.request(new CommandLineGetCommandLineStringRequest(handle), CommandLineGetCommandLineStringResponse.DECODER),
-            CommandLineGetCommandLineStringResponse::result);
+            session.request(MessageIds.COMMAND_LINE_GET_COMMAND_LINE_STRING_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -136,8 +105,8 @@ public final class CommandLine implements AutoCloseable {
      */
     public CompletableFuture<String> getProgram() {
         return CefFutures.map(
-            session.request(new CommandLineGetProgramRequest(handle), CommandLineGetProgramResponse.DECODER),
-            CommandLineGetProgramResponse::result);
+            session.request(MessageIds.COMMAND_LINE_GET_PROGRAM_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -147,7 +116,7 @@ public final class CommandLine implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:139</a>
      */
     public CompletableFuture<Void> setProgram(String program) {
-        return CefFutures.discard(session.request(new CommandLineSetProgramRequest(handle, program), CommandLineSetProgramResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.COMMAND_LINE_SET_PROGRAM_REQUEST, new CommandLineSetProgramRequest(handle, program), EmptyMessage.DECODER));
     }
 
     /**
@@ -158,8 +127,8 @@ public final class CommandLine implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasSwitches() {
         return CefFutures.map(
-            session.request(new CommandLineHasSwitchesRequest(handle), CommandLineHasSwitchesResponse.DECODER),
-            CommandLineHasSwitchesResponse::result);
+            session.request(MessageIds.COMMAND_LINE_HAS_SWITCHES_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -170,8 +139,8 @@ public final class CommandLine implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasSwitch(String name) {
         return CefFutures.map(
-            session.request(new CommandLineHasSwitchRequest(handle, name), CommandLineHasSwitchResponse.DECODER),
-            CommandLineHasSwitchResponse::result);
+            session.request(MessageIds.COMMAND_LINE_HAS_SWITCH_REQUEST, new SelfHandleNameStringMessage(handle, name), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -182,8 +151,8 @@ public final class CommandLine implements AutoCloseable {
      */
     public CompletableFuture<String> getSwitchValue(String name) {
         return CefFutures.map(
-            session.request(new CommandLineGetSwitchValueRequest(handle, name), CommandLineGetSwitchValueResponse.DECODER),
-            CommandLineGetSwitchValueResponse::result);
+            session.request(MessageIds.COMMAND_LINE_GET_SWITCH_VALUE_REQUEST, new SelfHandleNameStringMessage(handle, name), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -193,7 +162,7 @@ public final class CommandLine implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:171</a>
      */
     public CompletableFuture<Void> appendSwitch(String name) {
-        return CefFutures.discard(session.request(new CommandLineAppendSwitchRequest(handle, name), CommandLineAppendSwitchResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.COMMAND_LINE_APPEND_SWITCH_REQUEST, new SelfHandleNameStringMessage(handle, name), EmptyMessage.DECODER));
     }
 
     /**
@@ -203,7 +172,7 @@ public final class CommandLine implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:177</a>
      */
     public CompletableFuture<Void> appendSwitchWithValue(String name, String value) {
-        return CefFutures.discard(session.request(new CommandLineAppendSwitchWithValueRequest(handle, name, value), CommandLineAppendSwitchWithValueResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.COMMAND_LINE_APPEND_SWITCH_WITH_VALUE_REQUEST, new CommandLineAppendSwitchWithValueRequest(handle, name, value), EmptyMessage.DECODER));
     }
 
     /**
@@ -214,8 +183,8 @@ public final class CommandLine implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasArguments() {
         return CefFutures.map(
-            session.request(new CommandLineHasArgumentsRequest(handle), CommandLineHasArgumentsResponse.DECODER),
-            CommandLineHasArgumentsResponse::result);
+            session.request(MessageIds.COMMAND_LINE_HAS_ARGUMENTS_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -225,7 +194,7 @@ public final class CommandLine implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:200</a>
      */
     public CompletableFuture<Void> getArguments(String[] arguments) {
-        return CefFutures.discard(session.request(new CommandLineGetArgumentsRequest(handle, arguments), CommandLineGetArgumentsResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.COMMAND_LINE_GET_ARGUMENTS_REQUEST, new CommandLineGetArgumentsRequest(handle, arguments), EmptyMessage.DECODER));
     }
 
     /**
@@ -235,7 +204,7 @@ public final class CommandLine implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:206</a>
      */
     public CompletableFuture<Void> appendArgument(String argument) {
-        return CefFutures.discard(session.request(new CommandLineAppendArgumentRequest(handle, argument), CommandLineAppendArgumentResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.COMMAND_LINE_APPEND_ARGUMENT_REQUEST, new CommandLineAppendArgumentRequest(handle, argument), EmptyMessage.DECODER));
     }
 
     /**
@@ -245,7 +214,7 @@ public final class CommandLine implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:212</a>
      */
     public CompletableFuture<Void> prependWrapper(String wrapper) {
-        return CefFutures.discard(session.request(new CommandLinePrependWrapperRequest(handle, wrapper), CommandLinePrependWrapperResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.COMMAND_LINE_PREPEND_WRAPPER_REQUEST, new CommandLinePrependWrapperRequest(handle, wrapper), EmptyMessage.DECODER));
     }
 
     /**
@@ -256,6 +225,6 @@ public final class CommandLine implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__line_8h.html">cef_command_line.h:186</a>
      */
     public CompletableFuture<Void> removeSwitch(String name) {
-        return CefFutures.discard(session.request(new CommandLineRemoveSwitchRequest(handle, name), CommandLineRemoveSwitchResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.COMMAND_LINE_REMOVE_SWITCH_REQUEST, new SelfHandleNameStringMessage(handle, name), EmptyMessage.DECODER));
     }
 }

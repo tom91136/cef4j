@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,49 +13,19 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class ButtonDelegate implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class ButtonDelegate extends BrowserFacade {
 
     public ButtonDelegate(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_button_delegate_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_button_delegate_t");
     }
 
     /** Dispatches {@code on_button_pressed} to the runtime server. */
     public CompletableFuture<Void> onButtonPressed(RemoteHandle button) {
-        return CefFutures.discard(session.request(new ButtonDelegateOnButtonPressedRequest(handle, button), ButtonDelegateOnButtonPressedResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BUTTON_DELEGATE_ON_BUTTON_PRESSED_REQUEST, new SelfHandleButtonHandleMessage(handle, button), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code on_button_state_changed} to the runtime server. */
     public CompletableFuture<Void> onButtonStateChanged(RemoteHandle button) {
-        return CefFutures.discard(session.request(new ButtonDelegateOnButtonStateChangedRequest(handle, button), ButtonDelegateOnButtonStateChangedResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BUTTON_DELEGATE_ON_BUTTON_STATE_CHANGED_REQUEST, new SelfHandleButtonHandleMessage(handle, button), EmptyMessage.DECODER));
     }
 }

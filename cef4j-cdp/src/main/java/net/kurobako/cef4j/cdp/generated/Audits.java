@@ -1,7 +1,6 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -9,6 +8,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -25,6 +26,96 @@ import org.jspecify.annotations.Nullable;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Audits {
     private Audits() {}
+    private static final CdpField<Network.AdAncestry> AD_ANCESTRY = CdpField.of("adAncestry", value -> java.util.Objects.requireNonNull(Network.AdAncestry.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.AffectedFrame> AFFECTED_FRAME = CdpField.of("affectedFrame", value -> java.util.Objects.requireNonNull(Audits.AffectedFrame.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<String>> ALLOWED_SITES = CdpField.of("allowedSites", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Audits.AttributionReportingIssueDetails> ATTRIBUTION_REPORTING_ISSUE_DETAILS = CdpField.of("attributionReportingIssueDetails", value -> java.util.Objects.requireNonNull(Audits.AttributionReportingIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.BlockedByResponseIssueDetails> BLOCKED_BY_RESPONSE_ISSUE_DETAILS = CdpField.of("blockedByResponseIssueDetails", value -> java.util.Objects.requireNonNull(Audits.BlockedByResponseIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.AffectedFrame> BLOCKED_FRAME = CdpField.of("blockedFrame", value -> java.util.Objects.requireNonNull(Audits.AffectedFrame.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.BounceTrackingIssueDetails> BOUNCE_TRACKING_ISSUE_DETAILS = CdpField.of("bounceTrackingIssueDetails", value -> java.util.Objects.requireNonNull(Audits.BounceTrackingIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.ClientHintIssueDetails> CLIENT_HINT_ISSUE_DETAILS = CdpField.of("clientHintIssueDetails", value -> java.util.Objects.requireNonNull(Audits.ClientHintIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.ClientHintIssueReason> CLIENT_HINT_ISSUE_REASON = CdpField.of("clientHintIssueReason", value -> Audits.ClientHintIssueReason.of((String) value));
+    private static final CdpField<Network.ClientSecurityState> CLIENT_SECURITY_STATE = CdpField.of("clientSecurityState", value -> java.util.Objects.requireNonNull(Network.ClientSecurityState.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.InspectorIssueCode> CODE = CdpField.of("code", value -> Audits.InspectorIssueCode.of((String) value));
+    private static final CdpField<Audits.ConnectionAllowlistIssueDetails> CONNECTION_ALLOWLIST_ISSUE_DETAILS = CdpField.of("connectionAllowlistIssueDetails", value -> java.util.Objects.requireNonNull(Audits.ConnectionAllowlistIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.ContentSecurityPolicyIssueDetails> CONTENT_SECURITY_POLICY_ISSUE_DETAILS = CdpField.of("contentSecurityPolicyIssueDetails", value -> java.util.Objects.requireNonNull(Audits.ContentSecurityPolicyIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.ContentSecurityPolicyViolationType> CONTENT_SECURITY_POLICY_VIOLATION_TYPE = CdpField.of("contentSecurityPolicyViolationType", value -> Audits.ContentSecurityPolicyViolationType.of((String) value));
+    private static final CdpField<Audits.AffectedCookie> COOKIE = CdpField.of("cookie", value -> java.util.Objects.requireNonNull(Audits.AffectedCookie.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.CookieDeprecationMetadataIssueDetails> COOKIE_DEPRECATION_METADATA_ISSUE_DETAILS = CdpField.of("cookieDeprecationMetadataIssueDetails", value -> java.util.Objects.requireNonNull(Audits.CookieDeprecationMetadataIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Audits.CookieExclusionReason>> COOKIE_EXCLUSION_REASONS = CdpField.of("cookieExclusionReasons", value -> CdpObject.requireList(value, element0 -> Audits.CookieExclusionReason.of((String) element0)));
+    private static final CdpField<Audits.CookieIssueDetails> COOKIE_ISSUE_DETAILS = CdpField.of("cookieIssueDetails", value -> java.util.Objects.requireNonNull(Audits.CookieIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Audits.CookieWarningReason>> COOKIE_WARNING_REASONS = CdpField.of("cookieWarningReasons", value -> CdpObject.requireList(value, element0 -> Audits.CookieWarningReason.of((String) element0)));
+    private static final CdpField<Network.CorsErrorStatus> CORS_ERROR_STATUS = CdpField.of("corsErrorStatus", value -> java.util.Objects.requireNonNull(Network.CorsErrorStatus.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.CorsIssueDetails> CORS_ISSUE_DETAILS = CdpField.of("corsIssueDetails", value -> java.util.Objects.requireNonNull(Audits.CorsIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.DeprecationIssueDetails> DEPRECATION_ISSUE_DETAILS = CdpField.of("deprecationIssueDetails", value -> java.util.Objects.requireNonNull(Audits.DeprecationIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.InspectorIssueDetails> DETAILS = CdpField.of("details", value -> java.util.Objects.requireNonNull(Audits.InspectorIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<DOM.BackendNodeId> DOCUMENT_NODE_ID = CdpField.of("documentNodeId", value -> new DOM.BackendNodeId(((Number) value).longValue()));
+    private static final CdpField<Audits.ElementAccessibilityIssueDetails> ELEMENT_ACCESSIBILITY_ISSUE_DETAILS = CdpField.of("elementAccessibilityIssueDetails", value -> java.util.Objects.requireNonNull(Audits.ElementAccessibilityIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.ElementAccessibilityIssueReason> ELEMENT_ACCESSIBILITY_ISSUE_REASON = CdpField.of("elementAccessibilityIssueReason", value -> Audits.ElementAccessibilityIssueReason.of((String) value));
+    private static final CdpField<Audits.EmailVerificationRequestIssueDetails> EMAIL_VERIFICATION_REQUEST_ISSUE_DETAILS = CdpField.of("emailVerificationRequestIssueDetails", value -> java.util.Objects.requireNonNull(Audits.EmailVerificationRequestIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.EmailVerificationRequestIssueReason> EMAIL_VERIFICATION_REQUEST_ISSUE_REASON = CdpField.of("emailVerificationRequestIssueReason", value -> Audits.EmailVerificationRequestIssueReason.of((String) value));
+    private static final CdpField<GetEncodedResponseEncodingValues> ENCODING = CdpField.of("encoding", value -> GetEncodedResponseEncodingValues.of((String) value));
+    private static final CdpField<Audits.SRIMessageSignatureError> ERROR = CdpField.of("error", value -> Audits.SRIMessageSignatureError.of((String) value));
+    private static final CdpField<Audits.UnencodedDigestError> ERROR_2 = CdpField.of("error", value -> Audits.UnencodedDigestError.of((String) value));
+    private static final CdpField<Audits.ConnectionAllowlistError> ERROR_3 = CdpField.of("error", value -> Audits.ConnectionAllowlistError.of((String) value));
+    private static final CdpField<Audits.GenericIssueErrorType> ERROR_TYPE = CdpField.of("errorType", value -> Audits.GenericIssueErrorType.of((String) value));
+    private static final CdpField<Audits.FailedRequestInfo> FAILED_REQUEST_INFO = CdpField.of("failedRequestInfo", value -> java.util.Objects.requireNonNull(Audits.FailedRequestInfo.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.FederatedAuthRequestIssueDetails> FEDERATED_AUTH_REQUEST_ISSUE_DETAILS = CdpField.of("federatedAuthRequestIssueDetails", value -> java.util.Objects.requireNonNull(Audits.FederatedAuthRequestIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.FederatedAuthRequestIssueReason> FEDERATED_AUTH_REQUEST_ISSUE_REASON = CdpField.of("federatedAuthRequestIssueReason", value -> Audits.FederatedAuthRequestIssueReason.of((String) value));
+    private static final CdpField<Audits.FederatedAuthUserInfoRequestIssueDetails> FEDERATED_AUTH_USER_INFO_REQUEST_ISSUE_DETAILS = CdpField.of("federatedAuthUserInfoRequestIssueDetails", value -> java.util.Objects.requireNonNull(Audits.FederatedAuthUserInfoRequestIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.FederatedAuthUserInfoRequestIssueReason> FEDERATED_AUTH_USER_INFO_REQUEST_ISSUE_REASON = CdpField.of("federatedAuthUserInfoRequestIssueReason", value -> Audits.FederatedAuthUserInfoRequestIssueReason.of((String) value));
+    private static final CdpField<java.util.List<Audits.GenericIssueDetails>> FORM_ISSUES = CdpField.of("formIssues", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Audits.GenericIssueDetails.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Audits.AffectedFrame> FRAME = CdpField.of("frame", value -> java.util.Objects.requireNonNull(Audits.AffectedFrame.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.AffectedFrame> FRAME_ANCESTOR = CdpField.of("frameAncestor", value -> java.util.Objects.requireNonNull(Audits.AffectedFrame.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Page.FrameId> FRAME_ID = CdpField.of("frameId", value -> new Page.FrameId((String) value));
+    private static final CdpField<Audits.GenericIssueDetails> GENERIC_ISSUE_DETAILS = CdpField.of("genericIssueDetails", value -> java.util.Objects.requireNonNull(Audits.GenericIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.HeavyAdIssueDetails> HEAVY_AD_ISSUE_DETAILS = CdpField.of("heavyAdIssueDetails", value -> java.util.Objects.requireNonNull(Audits.HeavyAdIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.CookieIssueInsight> INSIGHT = CdpField.of("insight", value -> java.util.Objects.requireNonNull(Audits.CookieIssueInsight.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<String>> INTEGRITY_ASSERTIONS = CdpField.of("integrityAssertions", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Audits.InspectorIssue> ISSUE = CdpField.of("issue", value -> java.util.Objects.requireNonNull(Audits.InspectorIssue.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.IssueId> ISSUE_ID = CdpField.of("issueId", value -> new Audits.IssueId((String) value));
+    private static final CdpField<Audits.PermissionElementIssueType> ISSUE_TYPE = CdpField.of("issueType", value -> Audits.PermissionElementIssueType.of((String) value));
+    private static final CdpField<Network.LoaderId> LOADER_ID = CdpField.of("loaderId", value -> new Network.LoaderId((String) value));
+    private static final CdpField<Audits.SourceCodeLocation> LOCATION = CdpField.of("location", value -> java.util.Objects.requireNonNull(Audits.SourceCodeLocation.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.MixedContentIssueDetails> MIXED_CONTENT_ISSUE_DETAILS = CdpField.of("mixedContentIssueDetails", value -> java.util.Objects.requireNonNull(Audits.MixedContentIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.NavigatorUserAgentIssueDetails> NAVIGATOR_USER_AGENT_ISSUE_DETAILS = CdpField.of("navigatorUserAgentIssueDetails", value -> java.util.Objects.requireNonNull(Audits.NavigatorUserAgentIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<DOM.BackendNodeId> NODE_ID = CdpField.of("nodeId", value -> new DOM.BackendNodeId(((Number) value).longValue()));
+    private static final CdpField<Audits.CookieOperation> OPERATION = CdpField.of("operation", value -> Audits.CookieOperation.of((String) value));
+    private static final CdpField<Audits.AffectedFrame> PARENT_FRAME = CdpField.of("parentFrame", value -> java.util.Objects.requireNonNull(Audits.AffectedFrame.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.PartitioningBlobURLInfo> PARTITIONING_BLOB_URLINFO = CdpField.of("partitioningBlobURLInfo", value -> Audits.PartitioningBlobURLInfo.of((String) value));
+    private static final CdpField<Audits.PartitioningBlobURLIssueDetails> PARTITIONING_BLOB_URLISSUE_DETAILS = CdpField.of("partitioningBlobURLIssueDetails", value -> java.util.Objects.requireNonNull(Audits.PartitioningBlobURLIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.PerformanceIssueDetails> PERFORMANCE_ISSUE_DETAILS = CdpField.of("performanceIssueDetails", value -> java.util.Objects.requireNonNull(Audits.PerformanceIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.PerformanceIssueType> PERFORMANCE_ISSUE_TYPE = CdpField.of("performanceIssueType", value -> Audits.PerformanceIssueType.of((String) value));
+    private static final CdpField<Audits.PermissionElementIssueDetails> PERMISSION_ELEMENT_ISSUE_DETAILS = CdpField.of("permissionElementIssueDetails", value -> java.util.Objects.requireNonNull(Audits.PermissionElementIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.PropertyRuleIssueDetails> PROPERTY_RULE_ISSUE_DETAILS = CdpField.of("propertyRuleIssueDetails", value -> java.util.Objects.requireNonNull(Audits.PropertyRuleIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.PropertyRuleIssueReason> PROPERTY_RULE_ISSUE_REASON = CdpField.of("propertyRuleIssueReason", value -> Audits.PropertyRuleIssueReason.of((String) value));
+    private static final CdpField<Audits.QuirksModeIssueDetails> QUIRKS_MODE_ISSUE_DETAILS = CdpField.of("quirksModeIssueDetails", value -> java.util.Objects.requireNonNull(Audits.QuirksModeIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.BlockedByResponseReason> REASON = CdpField.of("reason", value -> Audits.BlockedByResponseReason.of((String) value));
+    private static final CdpField<Audits.HeavyAdReason> REASON_2 = CdpField.of("reason", value -> Audits.HeavyAdReason.of((String) value));
+    private static final CdpField<Audits.AffectedRequest> REQUEST = CdpField.of("request", value -> java.util.Objects.requireNonNull(Audits.AffectedRequest.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Network.RequestId> REQUEST_ID = CdpField.of("requestId", value -> new Network.RequestId((String) value));
+    private static final CdpField<Audits.HeavyAdResolutionStatus> RESOLUTION = CdpField.of("resolution", value -> Audits.HeavyAdResolutionStatus.of((String) value));
+    private static final CdpField<Audits.MixedContentResolutionStatus> RESOLUTION_STATUS = CdpField.of("resolutionStatus", value -> Audits.MixedContentResolutionStatus.of((String) value));
+    private static final CdpField<Network.IPAddressSpace> RESOURCE_IPADDRESS_SPACE = CdpField.of("resourceIPAddressSpace", value -> Network.IPAddressSpace.of((String) value));
+    private static final CdpField<Audits.MixedContentResourceType> RESOURCE_TYPE = CdpField.of("resourceType", value -> Audits.MixedContentResourceType.of((String) value));
+    private static final CdpField<Runtime.ScriptId> SCRIPT_ID = CdpField.of("scriptId", value -> new Runtime.ScriptId((String) value));
+    private static final CdpField<Audits.SelectivePermissionsInterventionIssueDetails> SELECTIVE_PERMISSIONS_INTERVENTION_ISSUE_DETAILS = CdpField.of("selectivePermissionsInterventionIssueDetails", value -> java.util.Objects.requireNonNull(Audits.SelectivePermissionsInterventionIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.SharedArrayBufferIssueDetails> SHARED_ARRAY_BUFFER_ISSUE_DETAILS = CdpField.of("sharedArrayBufferIssueDetails", value -> java.util.Objects.requireNonNull(Audits.SharedArrayBufferIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.SharedDictionaryError> SHARED_DICTIONARY_ERROR = CdpField.of("sharedDictionaryError", value -> Audits.SharedDictionaryError.of((String) value));
+    private static final CdpField<Audits.SharedDictionaryIssueDetails> SHARED_DICTIONARY_ISSUE_DETAILS = CdpField.of("sharedDictionaryIssueDetails", value -> java.util.Objects.requireNonNull(Audits.SharedDictionaryIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.SourceCodeLocation> SOURCE_CODE_LOCATION = CdpField.of("sourceCodeLocation", value -> java.util.Objects.requireNonNull(Audits.SourceCodeLocation.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.SRIMessageSignatureIssueDetails> SRI_MESSAGE_SIGNATURE_ISSUE_DETAILS = CdpField.of("sriMessageSignatureIssueDetails", value -> java.util.Objects.requireNonNull(Audits.SRIMessageSignatureIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Runtime.StackTrace> STACK_TRACE = CdpField.of("stackTrace", value -> java.util.Objects.requireNonNull(Runtime.StackTrace.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.StylesheetLoadingIssueDetails> STYLESHEET_LOADING_ISSUE_DETAILS = CdpField.of("stylesheetLoadingIssueDetails", value -> java.util.Objects.requireNonNull(Audits.StylesheetLoadingIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.StyleSheetLoadingIssueReason> STYLE_SHEET_LOADING_ISSUE_REASON = CdpField.of("styleSheetLoadingIssueReason", value -> Audits.StyleSheetLoadingIssueReason.of((String) value));
+    private static final CdpField<java.util.List<String>> TRACKING_SITES = CdpField.of("trackingSites", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Audits.InsightType> TYPE = CdpField.of("type", value -> Audits.InsightType.of((String) value));
+    private static final CdpField<Audits.SharedArrayBufferIssueType> TYPE_2 = CdpField.of("type", value -> Audits.SharedArrayBufferIssueType.of((String) value));
+    private static final CdpField<Audits.UserReidentificationIssueType> TYPE_3 = CdpField.of("type", value -> Audits.UserReidentificationIssueType.of((String) value));
+    private static final CdpField<Audits.UnencodedDigestIssueDetails> UNENCODED_DIGEST_ISSUE_DETAILS = CdpField.of("unencodedDigestIssueDetails", value -> java.util.Objects.requireNonNull(Audits.UnencodedDigestIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Audits.UserReidentificationIssueDetails> USER_REIDENTIFICATION_ISSUE_DETAILS = CdpField.of("userReidentificationIssueDetails", value -> java.util.Objects.requireNonNull(Audits.UserReidentificationIssueDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<DOM.BackendNodeId> VIOLATING_NODE_ID = CdpField.of("violatingNodeId", value -> new DOM.BackendNodeId(((Number) value).longValue()));
+    private static final CdpField<Audits.AttributionReportingIssueType> VIOLATION_TYPE = CdpField.of("violationType", value -> Audits.AttributionReportingIssueType.of((String) value));
     /**
      * Information about a cookie that is affected by an inspector issue.
      */
@@ -39,21 +130,21 @@ public final class Audits {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Returns the path field.
          * @return the protocol field value
          */
         public String path() {
-            return (String) require("path");
+            return requireString("path");
         }
         /**
          * Returns the domain field.
          * @return the protocol field value
          */
         public String domain() {
-            return (String) require("domain");
+            return requireString("domain");
         }
         /**
          * The following three properties uniquely identify a cookie
@@ -97,14 +188,14 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.RequestId> requestId() {
-            return raw("requestId").map(value -> new Network.RequestId((String) value));
+            return optional(REQUEST_ID);
         }
         /**
          * Returns the url field.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * The unique request id.
@@ -139,7 +230,7 @@ public final class Audits {
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Sets the frameId field.
@@ -249,14 +340,14 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.InsightType type() {
-            return Audits.InsightType.of((String) require("type"));
+            return require(TYPE);
         }
         /**
          * Link to table entry in third-party cookie migration readiness list.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> tableEntryUrl() {
-            return raw("tableEntryUrl").map(value -> (String) value);
+            return optionalString("tableEntryUrl");
         }
         /**
          * Sets the type field.
@@ -291,63 +382,63 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedCookie> cookie() {
-            return raw("cookie").flatMap(CdpObject::objectMap).map(Audits.AffectedCookie::fromMap);
+            return optional(COOKIE);
         }
         /**
          * Returns the rawCookieLine field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> rawCookieLine() {
-            return raw("rawCookieLine").map(value -> (String) value);
+            return optionalString("rawCookieLine");
         }
         /**
          * Returns the cookieWarningReasons field.
          * @return the protocol field value
          */
         public java.util.List<Audits.CookieWarningReason> cookieWarningReasons() {
-            return CdpObject.requireList(require("cookieWarningReasons"), element0 -> Audits.CookieWarningReason.of((String) element0));
+            return require(COOKIE_WARNING_REASONS);
         }
         /**
          * Returns the cookieExclusionReasons field.
          * @return the protocol field value
          */
         public java.util.List<Audits.CookieExclusionReason> cookieExclusionReasons() {
-            return CdpObject.requireList(require("cookieExclusionReasons"), element0 -> Audits.CookieExclusionReason.of((String) element0));
+            return require(COOKIE_EXCLUSION_REASONS);
         }
         /**
          * Optionally identifies the site-for-cookies and the cookie url, which may be used by the front-end as additional context.
          * @return the protocol field value
          */
         public Audits.CookieOperation operation() {
-            return Audits.CookieOperation.of((String) require("operation"));
+            return require(OPERATION);
         }
         /**
          * Returns the siteForCookies field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> siteForCookies() {
-            return raw("siteForCookies").map(value -> (String) value);
+            return optionalString("siteForCookies");
         }
         /**
          * Returns the cookieUrl field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> cookieUrl() {
-            return raw("cookieUrl").map(value -> (String) value);
+            return optionalString("cookieUrl");
         }
         /**
          * Returns the request field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedRequest> request() {
-            return raw("request").flatMap(CdpObject::objectMap).map(Audits.AffectedRequest::fromMap);
+            return optional(REQUEST);
         }
         /**
          * The recommended solution to the issue.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.CookieIssueInsight> insight() {
-            return raw("insight").flatMap(CdpObject::objectMap).map(Audits.CookieIssueInsight::fromMap);
+            return optional(INSIGHT);
         }
         /**
          * If AffectedCookie is not set then rawCookieLine contains the raw Set-Cookie header string. This hints at a problem where the cookie line is syntactically or semantically malformed in a way that no valid cookie could be created.
@@ -460,14 +551,14 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.PerformanceIssueType performanceIssueType() {
-            return Audits.PerformanceIssueType.of((String) require("performanceIssueType"));
+            return require(PERFORMANCE_ISSUE_TYPE);
         }
         /**
          * Returns the sourceCodeLocation field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SourceCodeLocation> sourceCodeLocation() {
-            return raw("sourceCodeLocation").flatMap(CdpObject::objectMap).map(Audits.SourceCodeLocation::fromMap);
+            return optional(SOURCE_CODE_LOCATION);
         }
         /**
          * Sets the performanceIssueType field.
@@ -561,42 +652,42 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.MixedContentResourceType> resourceType() {
-            return raw("resourceType").map(value -> Audits.MixedContentResourceType.of((String) value));
+            return optional(RESOURCE_TYPE);
         }
         /**
          * The way the mixed content issue is being resolved.
          * @return the protocol field value
          */
         public Audits.MixedContentResolutionStatus resolutionStatus() {
-            return Audits.MixedContentResolutionStatus.of((String) require("resolutionStatus"));
+            return require(RESOLUTION_STATUS);
         }
         /**
          * The unsafe http url causing the mixed content issue.
          * @return the protocol field value
          */
         public String insecureURL() {
-            return (String) require("insecureURL");
+            return requireString("insecureURL");
         }
         /**
          * The url responsible for the call to an unsafe url.
          * @return the protocol field value
          */
         public String mainResourceURL() {
-            return (String) require("mainResourceURL");
+            return requireString("mainResourceURL");
         }
         /**
          * The mixed content request. Does not always exist (e.g. for unsafe form submission urls).
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedRequest> request() {
-            return raw("request").flatMap(CdpObject::objectMap).map(Audits.AffectedRequest::fromMap);
+            return optional(REQUEST);
         }
         /**
          * Optional because not every mixed content issue is necessarily linked to a frame.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedFrame> frame() {
-            return raw("frame").flatMap(CdpObject::objectMap).map(Audits.AffectedFrame::fromMap);
+            return optional(FRAME);
         }
         /**
          * The type of resource causing the mixed content issue (css, js, iframe, form,...). Marked as optional because it is mapped to from blink::mojom::RequestContextType, which will be replaced by network::mojom::RequestDestination
@@ -689,28 +780,28 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.AffectedRequest request() {
-            return java.util.Objects.requireNonNull(Audits.AffectedRequest.fromMap(CdpObject.requireObjectMap(require("request"))));
+            return require(REQUEST);
         }
         /**
          * Returns the parentFrame field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedFrame> parentFrame() {
-            return raw("parentFrame").flatMap(CdpObject::objectMap).map(Audits.AffectedFrame::fromMap);
+            return optional(PARENT_FRAME);
         }
         /**
          * Returns the blockedFrame field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedFrame> blockedFrame() {
-            return raw("blockedFrame").flatMap(CdpObject::objectMap).map(Audits.AffectedFrame::fromMap);
+            return optional(BLOCKED_FRAME);
         }
         /**
          * Returns the reason field.
          * @return the protocol field value
          */
         public Audits.BlockedByResponseReason reason() {
-            return Audits.BlockedByResponseReason.of((String) require("reason"));
+            return require(REASON);
         }
         /**
          * Sets the request field.
@@ -795,21 +886,21 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.HeavyAdResolutionStatus resolution() {
-            return Audits.HeavyAdResolutionStatus.of((String) require("resolution"));
+            return require(RESOLUTION);
         }
         /**
          * The reason the ad was blocked, total network or cpu or peak cpu.
          * @return the protocol field value
          */
         public Audits.HeavyAdReason reason() {
-            return Audits.HeavyAdReason.of((String) require("reason"));
+            return require(REASON_2);
         }
         /**
          * The frame that was blocked.
          * @return the protocol field value
          */
         public Audits.AffectedFrame frame() {
-            return java.util.Objects.requireNonNull(Audits.AffectedFrame.fromMap(CdpObject.requireObjectMap(require("frame"))));
+            return require(FRAME);
         }
         /**
          * The resolution status, either blocking the content or warning.
@@ -873,28 +964,28 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ScriptId> scriptId() {
-            return raw("scriptId").map(value -> new Runtime.ScriptId((String) value));
+            return optional(SCRIPT_ID);
         }
         /**
          * Returns the url field.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Returns the lineNumber field.
          * @return the protocol field value
          */
         public long lineNumber() {
-            return ((Number) require("lineNumber")).longValue();
+            return requireLong("lineNumber");
         }
         /**
          * Returns the columnNumber field.
          * @return the protocol field value
          */
         public long columnNumber() {
-            return ((Number) require("columnNumber")).longValue();
+            return requireLong("columnNumber");
         }
         /**
          * Sets the scriptId field.
@@ -946,49 +1037,49 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> blockedURL() {
-            return raw("blockedURL").map(value -> (String) value);
+            return optionalString("blockedURL");
         }
         /**
          * Specific directive that is violated, causing the CSP issue.
          * @return the protocol field value
          */
         public String violatedDirective() {
-            return (String) require("violatedDirective");
+            return requireString("violatedDirective");
         }
         /**
          * Returns the isReportOnly field.
          * @return the protocol field value
          */
         public boolean isReportOnly() {
-            return (Boolean) require("isReportOnly");
+            return requireBoolean("isReportOnly");
         }
         /**
          * Returns the contentSecurityPolicyViolationType field.
          * @return the protocol field value
          */
         public Audits.ContentSecurityPolicyViolationType contentSecurityPolicyViolationType() {
-            return Audits.ContentSecurityPolicyViolationType.of((String) require("contentSecurityPolicyViolationType"));
+            return require(CONTENT_SECURITY_POLICY_VIOLATION_TYPE);
         }
         /**
          * Returns the frameAncestor field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedFrame> frameAncestor() {
-            return raw("frameAncestor").flatMap(CdpObject::objectMap).map(Audits.AffectedFrame::fromMap);
+            return optional(FRAME_ANCESTOR);
         }
         /**
          * Returns the sourceCodeLocation field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SourceCodeLocation> sourceCodeLocation() {
-            return raw("sourceCodeLocation").flatMap(CdpObject::objectMap).map(Audits.SourceCodeLocation::fromMap);
+            return optional(SOURCE_CODE_LOCATION);
         }
         /**
          * Returns the violatingNodeId field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> violatingNodeId() {
-            return raw("violatingNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(VIOLATING_NODE_ID);
         }
         /**
          * The url not included in allowed sources.
@@ -1084,21 +1175,21 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.SourceCodeLocation sourceCodeLocation() {
-            return java.util.Objects.requireNonNull(Audits.SourceCodeLocation.fromMap(CdpObject.requireObjectMap(require("sourceCodeLocation"))));
+            return require(SOURCE_CODE_LOCATION);
         }
         /**
          * Returns the isWarning field.
          * @return the protocol field value
          */
         public boolean isWarning() {
-            return (Boolean) require("isWarning");
+            return requireBoolean("isWarning");
         }
         /**
          * Returns the type field.
          * @return the protocol field value
          */
         public Audits.SharedArrayBufferIssueType type() {
-            return Audits.SharedArrayBufferIssueType.of((String) require("type"));
+            return require(TYPE_2);
         }
         /**
          * Sets the sourceCodeLocation field.
@@ -1142,49 +1233,49 @@ public final class Audits {
          * @return the protocol field value
          */
         public Network.CorsErrorStatus corsErrorStatus() {
-            return java.util.Objects.requireNonNull(Network.CorsErrorStatus.fromMap(CdpObject.requireObjectMap(require("corsErrorStatus"))));
+            return require(CORS_ERROR_STATUS);
         }
         /**
          * Returns the isWarning field.
          * @return the protocol field value
          */
         public boolean isWarning() {
-            return (Boolean) require("isWarning");
+            return requireBoolean("isWarning");
         }
         /**
          * Returns the request field.
          * @return the protocol field value
          */
         public Audits.AffectedRequest request() {
-            return java.util.Objects.requireNonNull(Audits.AffectedRequest.fromMap(CdpObject.requireObjectMap(require("request"))));
+            return require(REQUEST);
         }
         /**
          * Returns the location field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SourceCodeLocation> location() {
-            return raw("location").flatMap(CdpObject::objectMap).map(Audits.SourceCodeLocation::fromMap);
+            return optional(LOCATION);
         }
         /**
          * Returns the initiatorOrigin field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> initiatorOrigin() {
-            return raw("initiatorOrigin").map(value -> (String) value);
+            return optionalString("initiatorOrigin");
         }
         /**
          * Returns the resourceIPAddressSpace field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.IPAddressSpace> resourceIPAddressSpace() {
-            return raw("resourceIPAddressSpace").map(value -> Network.IPAddressSpace.of((String) value));
+            return optional(RESOURCE_IPADDRESS_SPACE);
         }
         /**
          * Returns the clientSecurityState field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.ClientSecurityState> clientSecurityState() {
-            return raw("clientSecurityState").flatMap(CdpObject::objectMap).map(Network.ClientSecurityState::fromMap);
+            return optional(CLIENT_SECURITY_STATE);
         }
         /**
          * Sets the corsErrorStatus field.
@@ -1416,28 +1507,28 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.AttributionReportingIssueType violationType() {
-            return Audits.AttributionReportingIssueType.of((String) require("violationType"));
+            return require(VIOLATION_TYPE);
         }
         /**
          * Returns the request field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedRequest> request() {
-            return raw("request").flatMap(CdpObject::objectMap).map(Audits.AffectedRequest::fromMap);
+            return optional(REQUEST);
         }
         /**
          * Returns the violatingNodeId field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> violatingNodeId() {
-            return raw("violatingNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(VIOLATING_NODE_ID);
         }
         /**
          * Returns the invalidParameter field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> invalidParameter() {
-            return raw("invalidParameter").map(value -> (String) value);
+            return optionalString("invalidParameter");
         }
         /**
          * Sets the violationType field.
@@ -1490,35 +1581,35 @@ public final class Audits {
          * @return the protocol field value
          */
         public boolean isLimitedQuirksMode() {
-            return (Boolean) require("isLimitedQuirksMode");
+            return requireBoolean("isLimitedQuirksMode");
         }
         /**
          * Returns the documentNodeId field.
          * @return the protocol field value
          */
         public DOM.BackendNodeId documentNodeId() {
-            return new DOM.BackendNodeId(((Number) require("documentNodeId")).longValue());
+            return require(DOCUMENT_NODE_ID);
         }
         /**
          * Returns the url field.
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Returns the frameId field.
          * @return the protocol field value
          */
         public Page.FrameId frameId() {
-            return new Page.FrameId((String) require("frameId"));
+            return require(FRAME_ID);
         }
         /**
          * Returns the loaderId field.
          * @return the protocol field value
          */
         public Network.LoaderId loaderId() {
-            return new Network.LoaderId((String) require("loaderId"));
+            return require(LOADER_ID);
         }
         /**
          * If false, it means the document&#x27;s mode is &quot;quirks&quot; instead of &quot;limited-quirks&quot;.
@@ -1581,14 +1672,14 @@ public final class Audits {
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Returns the location field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SourceCodeLocation> location() {
-            return raw("location").flatMap(CdpObject::objectMap).map(Audits.SourceCodeLocation::fromMap);
+            return optional(LOCATION);
         }
         /**
          * Sets the url field.
@@ -1622,14 +1713,14 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.SharedDictionaryError sharedDictionaryError() {
-            return Audits.SharedDictionaryError.of((String) require("sharedDictionaryError"));
+            return require(SHARED_DICTIONARY_ERROR);
         }
         /**
          * Returns the request field.
          * @return the protocol field value
          */
         public Audits.AffectedRequest request() {
-            return java.util.Objects.requireNonNull(Audits.AffectedRequest.fromMap(CdpObject.requireObjectMap(require("request"))));
+            return require(REQUEST);
         }
         /**
          * Sets the sharedDictionaryError field.
@@ -1663,28 +1754,28 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.SRIMessageSignatureError error() {
-            return Audits.SRIMessageSignatureError.of((String) require("error"));
+            return require(ERROR);
         }
         /**
          * Returns the signatureBase field.
          * @return the protocol field value
          */
         public String signatureBase() {
-            return (String) require("signatureBase");
+            return requireString("signatureBase");
         }
         /**
          * Returns the integrityAssertions field.
          * @return the protocol field value
          */
         public java.util.List<String> integrityAssertions() {
-            return CdpObject.requireList(require("integrityAssertions"), element0 -> (String) element0);
+            return require(INTEGRITY_ASSERTIONS);
         }
         /**
          * Returns the request field.
          * @return the protocol field value
          */
         public Audits.AffectedRequest request() {
-            return java.util.Objects.requireNonNull(Audits.AffectedRequest.fromMap(CdpObject.requireObjectMap(require("request"))));
+            return require(REQUEST);
         }
         /**
          * Sets the error field.
@@ -1736,14 +1827,14 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.UnencodedDigestError error() {
-            return Audits.UnencodedDigestError.of((String) require("error"));
+            return require(ERROR_2);
         }
         /**
          * Returns the request field.
          * @return the protocol field value
          */
         public Audits.AffectedRequest request() {
-            return java.util.Objects.requireNonNull(Audits.AffectedRequest.fromMap(CdpObject.requireObjectMap(require("request"))));
+            return require(REQUEST);
         }
         /**
          * Sets the error field.
@@ -1777,14 +1868,14 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.ConnectionAllowlistError error() {
-            return Audits.ConnectionAllowlistError.of((String) require("error"));
+            return require(ERROR_3);
         }
         /**
          * Returns the request field.
          * @return the protocol field value
          */
         public Audits.AffectedRequest request() {
-            return java.util.Objects.requireNonNull(Audits.AffectedRequest.fromMap(CdpObject.requireObjectMap(require("request"))));
+            return require(REQUEST);
         }
         /**
          * Sets the error field.
@@ -1854,35 +1945,35 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.GenericIssueErrorType errorType() {
-            return Audits.GenericIssueErrorType.of((String) require("errorType"));
+            return require(ERROR_TYPE);
         }
         /**
          * Returns the frameId field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Page.FrameId> frameId() {
-            return raw("frameId").map(value -> new Page.FrameId((String) value));
+            return optional(FRAME_ID);
         }
         /**
          * Returns the violatingNodeId field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> violatingNodeId() {
-            return raw("violatingNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(VIOLATING_NODE_ID);
         }
         /**
          * Returns the violatingNodeAttribute field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> violatingNodeAttribute() {
-            return raw("violatingNodeAttribute").map(value -> (String) value);
+            return optionalString("violatingNodeAttribute");
         }
         /**
          * Returns the request field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedRequest> request() {
-            return raw("request").flatMap(CdpObject::objectMap).map(Audits.AffectedRequest::fromMap);
+            return optional(REQUEST);
         }
         /**
          * Issues with the same errorType are aggregated in the frontend.
@@ -1944,21 +2035,21 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedFrame> affectedFrame() {
-            return raw("affectedFrame").flatMap(CdpObject::objectMap).map(Audits.AffectedFrame::fromMap);
+            return optional(AFFECTED_FRAME);
         }
         /**
          * Returns the sourceCodeLocation field.
          * @return the protocol field value
          */
         public Audits.SourceCodeLocation sourceCodeLocation() {
-            return java.util.Objects.requireNonNull(Audits.SourceCodeLocation.fromMap(CdpObject.requireObjectMap(require("sourceCodeLocation"))));
+            return require(SOURCE_CODE_LOCATION);
         }
         /**
          * One of the deprecation names from third_party/blink/renderer/core/frame/deprecation/deprecation.json5
          * @return the protocol field value
          */
         public String type() {
-            return (String) require("type");
+            return requireString("type");
         }
         /**
          * Sets the affectedFrame field.
@@ -2002,7 +2093,7 @@ public final class Audits {
          * @return the protocol field value
          */
         public java.util.List<String> trackingSites() {
-            return CdpObject.requireList(require("trackingSites"), element0 -> (String) element0);
+            return require(TRACKING_SITES);
         }
         /**
          * Sets the trackingSites field.
@@ -2028,28 +2119,28 @@ public final class Audits {
          * @return the protocol field value
          */
         public java.util.List<String> allowedSites() {
-            return CdpObject.requireList(require("allowedSites"), element0 -> (String) element0);
+            return require(ALLOWED_SITES);
         }
         /**
          * Returns the optOutPercentage field.
          * @return the protocol field value
          */
         public double optOutPercentage() {
-            return ((Number) require("optOutPercentage")).doubleValue();
+            return requireDouble("optOutPercentage");
         }
         /**
          * Returns the isOptOutTopLevel field.
          * @return the protocol field value
          */
         public boolean isOptOutTopLevel() {
-            return (Boolean) require("isOptOutTopLevel");
+            return requireBoolean("isOptOutTopLevel");
         }
         /**
          * Returns the operation field.
          * @return the protocol field value
          */
         public Audits.CookieOperation operation() {
-            return Audits.CookieOperation.of((String) require("operation"));
+            return require(OPERATION);
         }
         /**
          * Sets the allowedSites field.
@@ -2117,7 +2208,7 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.FederatedAuthRequestIssueReason federatedAuthRequestIssueReason() {
-            return Audits.FederatedAuthRequestIssueReason.of((String) require("federatedAuthRequestIssueReason"));
+            return require(FEDERATED_AUTH_REQUEST_ISSUE_REASON);
         }
         /**
          * Sets the federatedAuthRequestIssueReason field.
@@ -2198,7 +2289,7 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.FederatedAuthUserInfoRequestIssueReason federatedAuthUserInfoRequestIssueReason() {
-            return Audits.FederatedAuthUserInfoRequestIssueReason.of((String) require("federatedAuthUserInfoRequestIssueReason"));
+            return require(FEDERATED_AUTH_USER_INFO_REQUEST_ISSUE_REASON);
         }
         /**
          * Sets the federatedAuthUserInfoRequestIssueReason field.
@@ -2246,7 +2337,7 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.EmailVerificationRequestIssueReason emailVerificationRequestIssueReason() {
-            return Audits.EmailVerificationRequestIssueReason.of((String) require("emailVerificationRequestIssueReason"));
+            return require(EMAIL_VERIFICATION_REQUEST_ISSUE_REASON);
         }
         /**
          * Sets the emailVerificationRequestIssueReason field.
@@ -2342,14 +2433,14 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.SourceCodeLocation sourceCodeLocation() {
-            return java.util.Objects.requireNonNull(Audits.SourceCodeLocation.fromMap(CdpObject.requireObjectMap(require("sourceCodeLocation"))));
+            return require(SOURCE_CODE_LOCATION);
         }
         /**
          * Returns the clientHintIssueReason field.
          * @return the protocol field value
          */
         public Audits.ClientHintIssueReason clientHintIssueReason() {
-            return Audits.ClientHintIssueReason.of((String) require("clientHintIssueReason"));
+            return require(CLIENT_HINT_ISSUE_REASON);
         }
         /**
          * Sets the sourceCodeLocation field.
@@ -2383,21 +2474,21 @@ public final class Audits {
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * The failure message for the failed request.
          * @return the protocol field value
          */
         public String failureMessage() {
-            return (String) require("failureMessage");
+            return requireString("failureMessage");
         }
         /**
          * Returns the requestId field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Network.RequestId> requestId() {
-            return raw("requestId").map(value -> new Network.RequestId((String) value));
+            return optional(REQUEST_ID);
         }
         /**
          * The URL that failed to load.
@@ -2456,14 +2547,14 @@ public final class Audits {
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Additional information about the Partitioning Blob URL issue.
          * @return the protocol field value
          */
         public Audits.PartitioningBlobURLInfo partitioningBlobURLInfo() {
-            return Audits.PartitioningBlobURLInfo.of((String) require("partitioningBlobURLInfo"));
+            return require(PARTITIONING_BLOB_URLINFO);
         }
         /**
          * The BlobURL that failed to load.
@@ -2518,21 +2609,21 @@ public final class Audits {
          * @return the protocol field value
          */
         public DOM.BackendNodeId nodeId() {
-            return new DOM.BackendNodeId(((Number) require("nodeId")).longValue());
+            return require(NODE_ID);
         }
         /**
          * Returns the elementAccessibilityIssueReason field.
          * @return the protocol field value
          */
         public Audits.ElementAccessibilityIssueReason elementAccessibilityIssueReason() {
-            return Audits.ElementAccessibilityIssueReason.of((String) require("elementAccessibilityIssueReason"));
+            return require(ELEMENT_ACCESSIBILITY_ISSUE_REASON);
         }
         /**
          * Returns the hasDisallowedAttributes field.
          * @return the protocol field value
          */
         public boolean hasDisallowedAttributes() {
-            return (Boolean) require("hasDisallowedAttributes");
+            return requireBoolean("hasDisallowedAttributes");
         }
         /**
          * Sets the nodeId field.
@@ -2592,21 +2683,21 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.SourceCodeLocation sourceCodeLocation() {
-            return java.util.Objects.requireNonNull(Audits.SourceCodeLocation.fromMap(CdpObject.requireObjectMap(require("sourceCodeLocation"))));
+            return require(SOURCE_CODE_LOCATION);
         }
         /**
          * Reason why the stylesheet couldn&#x27;t be loaded.
          * @return the protocol field value
          */
         public Audits.StyleSheetLoadingIssueReason styleSheetLoadingIssueReason() {
-            return Audits.StyleSheetLoadingIssueReason.of((String) require("styleSheetLoadingIssueReason"));
+            return require(STYLE_SHEET_LOADING_ISSUE_REASON);
         }
         /**
          * Contains additional info when the failure was due to a request.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.FailedRequestInfo> failedRequestInfo() {
-            return raw("failedRequestInfo").flatMap(CdpObject::objectMap).map(Audits.FailedRequestInfo::fromMap);
+            return optional(FAILED_REQUEST_INFO);
         }
         /**
          * Source code position that referenced the failing stylesheet.
@@ -2668,21 +2759,21 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.SourceCodeLocation sourceCodeLocation() {
-            return java.util.Objects.requireNonNull(Audits.SourceCodeLocation.fromMap(CdpObject.requireObjectMap(require("sourceCodeLocation"))));
+            return require(SOURCE_CODE_LOCATION);
         }
         /**
          * Reason why the property rule was discarded.
          * @return the protocol field value
          */
         public Audits.PropertyRuleIssueReason propertyRuleIssueReason() {
-            return Audits.PropertyRuleIssueReason.of((String) require("propertyRuleIssueReason"));
+            return require(PROPERTY_RULE_ISSUE_REASON);
         }
         /**
          * The value of the property rule property that failed to parse
          * @return the protocol field value, empty when absent
          */
         public Optional<String> propertyValue() {
-            return raw("propertyValue").map(value -> (String) value);
+            return optionalString("propertyValue");
         }
         /**
          * Source code position of the property rule.
@@ -2743,21 +2834,21 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.UserReidentificationIssueType type() {
-            return Audits.UserReidentificationIssueType.of((String) require("type"));
+            return require(TYPE_3);
         }
         /**
          * Applies to BlockedFrameNavigation and BlockedSubresource issue types.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AffectedRequest> request() {
-            return raw("request").flatMap(CdpObject::objectMap).map(Audits.AffectedRequest::fromMap);
+            return optional(REQUEST);
         }
         /**
          * Applies to NoisedCanvasReadback issue type.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SourceCodeLocation> sourceCodeLocation() {
-            return raw("sourceCodeLocation").flatMap(CdpObject::objectMap).map(Audits.SourceCodeLocation::fromMap);
+            return optional(SOURCE_CODE_LOCATION);
         }
         /**
          * Sets the type field.
@@ -2836,56 +2927,56 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.PermissionElementIssueType issueType() {
-            return Audits.PermissionElementIssueType.of((String) require("issueType"));
+            return require(ISSUE_TYPE);
         }
         /**
          * The value of the type attribute.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> type() {
-            return raw("type").map(value -> (String) value);
+            return optionalString("type");
         }
         /**
          * The node ID of the &lt;permission&gt; element.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> nodeId() {
-            return raw("nodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(NODE_ID);
         }
         /**
          * True if the issue is a warning, false if it is an error.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isWarning() {
-            return raw("isWarning").map(value -> (Boolean) value);
+            return optionalBoolean("isWarning");
         }
         /**
          * Fields for message construction: Used for messages that reference a specific permission name
          * @return the protocol field value, empty when absent
          */
         public Optional<String> permissionName() {
-            return raw("permissionName").map(value -> (String) value);
+            return optionalString("permissionName");
         }
         /**
          * Used for messages about occlusion
          * @return the protocol field value, empty when absent
          */
         public Optional<String> occluderNodeInfo() {
-            return raw("occluderNodeInfo").map(value -> (String) value);
+            return optionalString("occluderNodeInfo");
         }
         /**
          * Used for messages about occluder&#x27;s parent
          * @return the protocol field value, empty when absent
          */
         public Optional<String> occluderParentNodeInfo() {
-            return raw("occluderParentNodeInfo").map(value -> (String) value);
+            return optionalString("occluderParentNodeInfo");
         }
         /**
          * Used for messages about activation disabled reason
          * @return the protocol field value, empty when absent
          */
         public Optional<String> disableReason() {
-            return raw("disableReason").map(value -> (String) value);
+            return optionalString("disableReason");
         }
         /**
          * Sets the issueType field.
@@ -2974,21 +3065,21 @@ public final class Audits {
          * @return the protocol field value
          */
         public String apiName() {
-            return (String) require("apiName");
+            return requireString("apiName");
         }
         /**
          * Why the ad script using the API is considered an ad.
          * @return the protocol field value
          */
         public Network.AdAncestry adAncestry() {
-            return java.util.Objects.requireNonNull(Network.AdAncestry.fromMap(CdpObject.requireObjectMap(require("adAncestry"))));
+            return require(AD_ANCESTRY);
         }
         /**
          * The stack trace at the time of the intervention.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.StackTrace> stackTrace() {
-            return raw("stackTrace").flatMap(CdpObject::objectMap).map(Runtime.StackTrace::fromMap);
+            return optional(STACK_TRACE);
         }
         /**
          * Which API was intervened on.
@@ -3076,70 +3167,70 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.CookieIssueDetails> cookieIssueDetails() {
-            return raw("cookieIssueDetails").flatMap(CdpObject::objectMap).map(Audits.CookieIssueDetails::fromMap);
+            return optional(COOKIE_ISSUE_DETAILS);
         }
         /**
          * Returns the mixedContentIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.MixedContentIssueDetails> mixedContentIssueDetails() {
-            return raw("mixedContentIssueDetails").flatMap(CdpObject::objectMap).map(Audits.MixedContentIssueDetails::fromMap);
+            return optional(MIXED_CONTENT_ISSUE_DETAILS);
         }
         /**
          * Returns the blockedByResponseIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.BlockedByResponseIssueDetails> blockedByResponseIssueDetails() {
-            return raw("blockedByResponseIssueDetails").flatMap(CdpObject::objectMap).map(Audits.BlockedByResponseIssueDetails::fromMap);
+            return optional(BLOCKED_BY_RESPONSE_ISSUE_DETAILS);
         }
         /**
          * Returns the heavyAdIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.HeavyAdIssueDetails> heavyAdIssueDetails() {
-            return raw("heavyAdIssueDetails").flatMap(CdpObject::objectMap).map(Audits.HeavyAdIssueDetails::fromMap);
+            return optional(HEAVY_AD_ISSUE_DETAILS);
         }
         /**
          * Returns the contentSecurityPolicyIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.ContentSecurityPolicyIssueDetails> contentSecurityPolicyIssueDetails() {
-            return raw("contentSecurityPolicyIssueDetails").flatMap(CdpObject::objectMap).map(Audits.ContentSecurityPolicyIssueDetails::fromMap);
+            return optional(CONTENT_SECURITY_POLICY_ISSUE_DETAILS);
         }
         /**
          * Returns the sharedArrayBufferIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SharedArrayBufferIssueDetails> sharedArrayBufferIssueDetails() {
-            return raw("sharedArrayBufferIssueDetails").flatMap(CdpObject::objectMap).map(Audits.SharedArrayBufferIssueDetails::fromMap);
+            return optional(SHARED_ARRAY_BUFFER_ISSUE_DETAILS);
         }
         /**
          * Returns the corsIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.CorsIssueDetails> corsIssueDetails() {
-            return raw("corsIssueDetails").flatMap(CdpObject::objectMap).map(Audits.CorsIssueDetails::fromMap);
+            return optional(CORS_ISSUE_DETAILS);
         }
         /**
          * Returns the attributionReportingIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.AttributionReportingIssueDetails> attributionReportingIssueDetails() {
-            return raw("attributionReportingIssueDetails").flatMap(CdpObject::objectMap).map(Audits.AttributionReportingIssueDetails::fromMap);
+            return optional(ATTRIBUTION_REPORTING_ISSUE_DETAILS);
         }
         /**
          * Returns the quirksModeIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.QuirksModeIssueDetails> quirksModeIssueDetails() {
-            return raw("quirksModeIssueDetails").flatMap(CdpObject::objectMap).map(Audits.QuirksModeIssueDetails::fromMap);
+            return optional(QUIRKS_MODE_ISSUE_DETAILS);
         }
         /**
          * Returns the partitioningBlobURLIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.PartitioningBlobURLIssueDetails> partitioningBlobURLIssueDetails() {
-            return raw("partitioningBlobURLIssueDetails").flatMap(CdpObject::objectMap).map(Audits.PartitioningBlobURLIssueDetails::fromMap);
+            return optional(PARTITIONING_BLOB_URLISSUE_DETAILS);
         }
         /**
          * Returns the navigatorUserAgentIssueDetails field.
@@ -3148,140 +3239,140 @@ public final class Audits {
          */
         @Deprecated
         public Optional<Audits.NavigatorUserAgentIssueDetails> navigatorUserAgentIssueDetails() {
-            return raw("navigatorUserAgentIssueDetails").flatMap(CdpObject::objectMap).map(Audits.NavigatorUserAgentIssueDetails::fromMap);
+            return optional(NAVIGATOR_USER_AGENT_ISSUE_DETAILS);
         }
         /**
          * Returns the genericIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.GenericIssueDetails> genericIssueDetails() {
-            return raw("genericIssueDetails").flatMap(CdpObject::objectMap).map(Audits.GenericIssueDetails::fromMap);
+            return optional(GENERIC_ISSUE_DETAILS);
         }
         /**
          * Returns the deprecationIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.DeprecationIssueDetails> deprecationIssueDetails() {
-            return raw("deprecationIssueDetails").flatMap(CdpObject::objectMap).map(Audits.DeprecationIssueDetails::fromMap);
+            return optional(DEPRECATION_ISSUE_DETAILS);
         }
         /**
          * Returns the clientHintIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.ClientHintIssueDetails> clientHintIssueDetails() {
-            return raw("clientHintIssueDetails").flatMap(CdpObject::objectMap).map(Audits.ClientHintIssueDetails::fromMap);
+            return optional(CLIENT_HINT_ISSUE_DETAILS);
         }
         /**
          * Returns the federatedAuthRequestIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.FederatedAuthRequestIssueDetails> federatedAuthRequestIssueDetails() {
-            return raw("federatedAuthRequestIssueDetails").flatMap(CdpObject::objectMap).map(Audits.FederatedAuthRequestIssueDetails::fromMap);
+            return optional(FEDERATED_AUTH_REQUEST_ISSUE_DETAILS);
         }
         /**
          * Returns the bounceTrackingIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.BounceTrackingIssueDetails> bounceTrackingIssueDetails() {
-            return raw("bounceTrackingIssueDetails").flatMap(CdpObject::objectMap).map(Audits.BounceTrackingIssueDetails::fromMap);
+            return optional(BOUNCE_TRACKING_ISSUE_DETAILS);
         }
         /**
          * Returns the cookieDeprecationMetadataIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.CookieDeprecationMetadataIssueDetails> cookieDeprecationMetadataIssueDetails() {
-            return raw("cookieDeprecationMetadataIssueDetails").flatMap(CdpObject::objectMap).map(Audits.CookieDeprecationMetadataIssueDetails::fromMap);
+            return optional(COOKIE_DEPRECATION_METADATA_ISSUE_DETAILS);
         }
         /**
          * Returns the stylesheetLoadingIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.StylesheetLoadingIssueDetails> stylesheetLoadingIssueDetails() {
-            return raw("stylesheetLoadingIssueDetails").flatMap(CdpObject::objectMap).map(Audits.StylesheetLoadingIssueDetails::fromMap);
+            return optional(STYLESHEET_LOADING_ISSUE_DETAILS);
         }
         /**
          * Returns the propertyRuleIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.PropertyRuleIssueDetails> propertyRuleIssueDetails() {
-            return raw("propertyRuleIssueDetails").flatMap(CdpObject::objectMap).map(Audits.PropertyRuleIssueDetails::fromMap);
+            return optional(PROPERTY_RULE_ISSUE_DETAILS);
         }
         /**
          * Returns the federatedAuthUserInfoRequestIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.FederatedAuthUserInfoRequestIssueDetails> federatedAuthUserInfoRequestIssueDetails() {
-            return raw("federatedAuthUserInfoRequestIssueDetails").flatMap(CdpObject::objectMap).map(Audits.FederatedAuthUserInfoRequestIssueDetails::fromMap);
+            return optional(FEDERATED_AUTH_USER_INFO_REQUEST_ISSUE_DETAILS);
         }
         /**
          * Returns the sharedDictionaryIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SharedDictionaryIssueDetails> sharedDictionaryIssueDetails() {
-            return raw("sharedDictionaryIssueDetails").flatMap(CdpObject::objectMap).map(Audits.SharedDictionaryIssueDetails::fromMap);
+            return optional(SHARED_DICTIONARY_ISSUE_DETAILS);
         }
         /**
          * Returns the elementAccessibilityIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.ElementAccessibilityIssueDetails> elementAccessibilityIssueDetails() {
-            return raw("elementAccessibilityIssueDetails").flatMap(CdpObject::objectMap).map(Audits.ElementAccessibilityIssueDetails::fromMap);
+            return optional(ELEMENT_ACCESSIBILITY_ISSUE_DETAILS);
         }
         /**
          * Returns the sriMessageSignatureIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SRIMessageSignatureIssueDetails> sriMessageSignatureIssueDetails() {
-            return raw("sriMessageSignatureIssueDetails").flatMap(CdpObject::objectMap).map(Audits.SRIMessageSignatureIssueDetails::fromMap);
+            return optional(SRI_MESSAGE_SIGNATURE_ISSUE_DETAILS);
         }
         /**
          * Returns the unencodedDigestIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.UnencodedDigestIssueDetails> unencodedDigestIssueDetails() {
-            return raw("unencodedDigestIssueDetails").flatMap(CdpObject::objectMap).map(Audits.UnencodedDigestIssueDetails::fromMap);
+            return optional(UNENCODED_DIGEST_ISSUE_DETAILS);
         }
         /**
          * Returns the connectionAllowlistIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.ConnectionAllowlistIssueDetails> connectionAllowlistIssueDetails() {
-            return raw("connectionAllowlistIssueDetails").flatMap(CdpObject::objectMap).map(Audits.ConnectionAllowlistIssueDetails::fromMap);
+            return optional(CONNECTION_ALLOWLIST_ISSUE_DETAILS);
         }
         /**
          * Returns the userReidentificationIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.UserReidentificationIssueDetails> userReidentificationIssueDetails() {
-            return raw("userReidentificationIssueDetails").flatMap(CdpObject::objectMap).map(Audits.UserReidentificationIssueDetails::fromMap);
+            return optional(USER_REIDENTIFICATION_ISSUE_DETAILS);
         }
         /**
          * Returns the permissionElementIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.PermissionElementIssueDetails> permissionElementIssueDetails() {
-            return raw("permissionElementIssueDetails").flatMap(CdpObject::objectMap).map(Audits.PermissionElementIssueDetails::fromMap);
+            return optional(PERMISSION_ELEMENT_ISSUE_DETAILS);
         }
         /**
          * Returns the performanceIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.PerformanceIssueDetails> performanceIssueDetails() {
-            return raw("performanceIssueDetails").flatMap(CdpObject::objectMap).map(Audits.PerformanceIssueDetails::fromMap);
+            return optional(PERFORMANCE_ISSUE_DETAILS);
         }
         /**
          * Returns the selectivePermissionsInterventionIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.SelectivePermissionsInterventionIssueDetails> selectivePermissionsInterventionIssueDetails() {
-            return raw("selectivePermissionsInterventionIssueDetails").flatMap(CdpObject::objectMap).map(Audits.SelectivePermissionsInterventionIssueDetails::fromMap);
+            return optional(SELECTIVE_PERMISSIONS_INTERVENTION_ISSUE_DETAILS);
         }
         /**
          * Returns the emailVerificationRequestIssueDetails field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.EmailVerificationRequestIssueDetails> emailVerificationRequestIssueDetails() {
-            return raw("emailVerificationRequestIssueDetails").flatMap(CdpObject::objectMap).map(Audits.EmailVerificationRequestIssueDetails::fromMap);
+            return optional(EMAIL_VERIFICATION_REQUEST_ISSUE_DETAILS);
         }
         /**
          * Sets the cookieIssueDetails field.
@@ -3585,21 +3676,21 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.InspectorIssueCode code() {
-            return Audits.InspectorIssueCode.of((String) require("code"));
+            return require(CODE);
         }
         /**
          * Returns the details field.
          * @return the protocol field value
          */
         public Audits.InspectorIssueDetails details() {
-            return java.util.Objects.requireNonNull(Audits.InspectorIssueDetails.fromMap(CdpObject.requireObjectMap(require("details"))));
+            return require(DETAILS);
         }
         /**
          * A unique id for this issue. May be omitted if no other entity (e.g. exception, CDP message, etc.) is referencing this issue.
          * @return the protocol field value, empty when absent
          */
         public Optional<Audits.IssueId> issueId() {
-            return raw("issueId").map(value -> new Audits.IssueId((String) value));
+            return optional(ISSUE_ID);
         }
         /**
          * Sets the code field.
@@ -3634,14 +3725,6 @@ public final class Audits {
      */
     public static final class GetEncodedResponseRequest extends CdpObject {
         public GetEncodedResponseRequest() {}
-        /**
-         * Returns the response body and size if it were re-encoded with the specified settings. Only applies to images.
-         * @param requestId protocol value
-         * @param encoding protocol value
-         */
-        public GetEncodedResponseRequest(Network.RequestId requestId, GetEncodedResponseEncodingValues encoding) {
-            requestId(requestId).encoding(encoding);
-        }
         public static GetEncodedResponseRequest fromMap(Map<String, Object> values) {
             final GetEncodedResponseRequest instance_ = new GetEncodedResponseRequest();
             if (values != null) instance_.values.putAll(values);
@@ -3652,28 +3735,28 @@ public final class Audits {
          * @return the protocol field value
          */
         public Network.RequestId requestId() {
-            return new Network.RequestId((String) require("requestId"));
+            return require(REQUEST_ID);
         }
         /**
          * The encoding to use.
          * @return the protocol field value
          */
         public GetEncodedResponseEncodingValues encoding() {
-            return GetEncodedResponseEncodingValues.of((String) require("encoding"));
+            return require(ENCODING);
         }
         /**
          * The quality of the encoding (0-1). (defaults to 1)
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble quality() {
-            return raw("quality").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("quality");
         }
         /**
          * Whether to only return the size information (defaults to false).
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> sizeOnly() {
-            return raw("sizeOnly").map(value -> (Boolean) value);
+            return optionalBoolean("sizeOnly");
         }
         /**
          * Identifier of the network request to get content for.
@@ -3726,21 +3809,21 @@ public final class Audits {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> body() {
-            return raw("body").map(value -> (String) value);
+            return optionalString("body");
         }
         /**
          * Size before re-encoding.
          * @return the protocol field value
          */
         public long originalSize() {
-            return ((Number) require("originalSize")).longValue();
+            return requireLong("originalSize");
         }
         /**
          * Size after re-encoding.
          * @return the protocol field value
          */
         public long encodedSize() {
-            return ((Number) require("encodedSize")).longValue();
+            return requireLong("encodedSize");
         }
         /**
          * The encoded body as a base64 string. Omitted if sizeOnly is true. (Encoded as a base64 string when passed over JSON)
@@ -3784,7 +3867,7 @@ public final class Audits {
          * @return the protocol field value
          */
         public Audits.InspectorIssue issue() {
-            return java.util.Objects.requireNonNull(Audits.InspectorIssue.fromMap(CdpObject.requireObjectMap(require("issue"))));
+            return require(ISSUE);
         }
         /**
          * Sets the issue field.
@@ -3813,9 +3896,8 @@ public final class Audits {
             throw new IllegalArgumentException("Unknown GetEncodedResponseEncodingValues value: " + value);
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Returns the response body and size if it were re-encoded with the specified settings. Only applies to images.
          * @param requestId protocol value
@@ -3825,12 +3907,7 @@ public final class Audits {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetEncodedResponseResult> getEncodedResponse(Network.RequestId requestId, GetEncodedResponseEncodingValues encoding, @Nullable Double quality, @Nullable Boolean sizeOnly) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("requestId", CdpObject.json(requestId));
-            params.put("encoding", CdpObject.json(encoding));
-            if (quality != null) params.put("quality", CdpObject.json(quality));
-            if (sizeOnly != null) params.put("sizeOnly", CdpObject.json(sizeOnly));
-            return client.call("Audits.getEncodedResponse", params, result_ -> new GetEncodedResponseResult(result_));
+            return call("Audits.getEncodedResponse", params("requestId", requestId, "encoding", encoding, "quality", quality, "sizeOnly", sizeOnly), GetEncodedResponseResult::fromMap);
         }
         /**
          * Returns the response body and size if it were re-encoded with the specified settings. Only applies to images.
@@ -3839,10 +3916,7 @@ public final class Audits {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetEncodedResponseResult> getEncodedResponse(Network.RequestId requestId, GetEncodedResponseEncodingValues encoding) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("requestId", CdpObject.json(requestId));
-            params.put("encoding", CdpObject.json(encoding));
-            return client.call("Audits.getEncodedResponse", params, result_ -> new GetEncodedResponseResult(result_));
+            return call("Audits.getEncodedResponse", params("requestId", requestId, "encoding", encoding), GetEncodedResponseResult::fromMap);
         }
         /**
          * Returns the response body and size if it were re-encoded with the specified settings. Only applies to images.
@@ -3850,28 +3924,28 @@ public final class Audits {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetEncodedResponseResult> getEncodedResponse(GetEncodedResponseRequest request) {
-            return client.call("Audits.getEncodedResponse", request == null ? null : request.toMap(), result_ -> new GetEncodedResponseResult(result_));
+            return call("Audits.getEncodedResponse", request, GetEncodedResponseResult::fromMap);
         }
         /**
          * Disables issues domain, prevents further issues from being reported to the client.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Audits.disable", null);
+            return call("Audits.disable");
         }
         /**
          * Enables issues domain, sends the issues collected so far to the client by means of the {@code issueAdded} event.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Audits.enable", null);
+            return call("Audits.enable");
         }
         /**
          * Runs the form issues check for the target page. Found issues are reported using Audits.issueAdded event.
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Audits.GenericIssueDetails>> checkFormsIssues() {
-            return client.call("Audits.checkFormsIssues", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("formIssues")), element0 -> java.util.Objects.requireNonNull(Audits.GenericIssueDetails.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Audits.checkFormsIssues", FORM_ISSUES::require);
         }
         /**
          * Subscribes to Audits.issueAdded.
@@ -3879,7 +3953,7 @@ public final class Audits {
          * @return a removable subscription
          */
         public CdpSubscription onIssueAdded(Consumer<IssueAddedEvent> handler) {
-            return client.on("Audits.issueAdded", IssueAddedEvent::fromMap, handler);
+            return on("Audits.issueAdded", IssueAddedEvent::fromMap, handler);
         }
     }
 }

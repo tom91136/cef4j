@@ -37,9 +37,9 @@ public interface CefAccessibilityHandler {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefAccessibilityHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(AccessibilityHandlerOnAccessibilityTreeChangeEvent.MESSAGE_ID, AccessibilityHandlerOnAccessibilityTreeChangeEvent.DECODER,
+                session.on(MessageIds.ACCESSIBILITY_HANDLER_ON_ACCESSIBILITY_TREE_CHANGE_EVENT, ValueHandleMessage.DECODER,
                         ev -> handler.onAccessibilityTreeChange(ev.value())),
-                session.on(AccessibilityHandlerOnAccessibilityLocationChangeEvent.MESSAGE_ID, AccessibilityHandlerOnAccessibilityLocationChangeEvent.DECODER,
+                session.on(MessageIds.ACCESSIBILITY_HANDLER_ON_ACCESSIBILITY_LOCATION_CHANGE_EVENT, ValueHandleMessage.DECODER,
                         ev -> handler.onAccessibilityLocationChange(ev.value())));
     }
 }

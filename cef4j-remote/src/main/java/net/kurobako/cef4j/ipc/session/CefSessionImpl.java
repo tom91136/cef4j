@@ -148,7 +148,8 @@ public final class CefSessionImpl implements CefSession {
     }
 
     @Override
-    public <R extends CefMessageView> CompletableFuture<R> request(CefMessageEncoder enc, CefMessageDecoder<R> dec) {
+    public <R extends CefMessageView> CompletableFuture<R> request(
+            int messageId, CefMessageEncoder enc, CefMessageDecoder<R> dec) {
         final RequestFuture<R> future = new RequestFuture<>();
         if (closed) {
             future.completeExceptionally(new CefTransportException("session closed"));
@@ -159,7 +160,7 @@ public final class CefSessionImpl implements CefSession {
                     new CefTransportException("pending request limit reached (max " + maxPendingRequests + ")"));
             return future;
         }
-        final Pending<R> p = new Pending<>(future, dec, enc.messageId());
+        final Pending<R> p = new Pending<>(future, dec, messageId);
         int corrId;
         try {
             corrId = correlationIds.allocate(candidate -> pending.putIfAbsent(candidate, p) == null);
@@ -178,7 +179,7 @@ public final class CefSessionImpl implements CefSession {
             timeoutTask = timer.schedule(
                     () -> {
                         if (removePending(corrId, p)) {
-                            p.future.completeExceptionally(new TimeoutException("request msgId=" + enc.messageId()
+                            p.future.completeExceptionally(new TimeoutException("request msgId=" + messageId
                                     + " corrId=" + corrId + " timed out after " + defaultTimeout));
                         }
                     },
@@ -205,8 +206,7 @@ public final class CefSessionImpl implements CefSession {
             final int payloadLength = enc.encodedSize();
             final ByteBuffer buf =
                     ByteBuffer.allocate(Envelope.HEADER_SIZE + payloadLength).order(ByteOrder.LITTLE_ENDIAN);
-            Envelope.writeHeader(
-                    buf, new Envelope.Header(payloadLength, Envelope.Kind.REQUEST, 0, corrId, enc.messageId()));
+            Envelope.writeHeader(buf, new Envelope.Header(payloadLength, Envelope.Kind.REQUEST, 0, corrId, messageId));
 
             enc.encodeInto(buf);
             buf.flip();
@@ -437,26 +437,28 @@ public final class CefSessionImpl implements CefSession {
 
     private void handleIntercept(Envelope.Header h, ByteBuffer payload) {
         final InterceptBinding<?> binding = interceptHandlers.get(h.messageId);
-        Optional<? extends CefMessageEncoder> responseEnc = Optional.empty();
+        Optional<Reply> reply = Optional.empty();
         if (binding != null) {
             try {
-                responseEnc = binding.invoke(payload);
+                reply = binding.invoke(payload);
             } catch (RuntimeException e) {
                 LOG.warn("intercept handler for messageId={} threw; sending empty response", h.messageId, e);
             }
         } else {
             LOG.debug("no intercept handler for messageId={}; sending empty response", h.messageId);
         }
-        sendInterceptResponse(h.corrId, h.messageId, responseEnc.orElse(null));
+        sendInterceptResponse(
+                h.corrId,
+                reply.map(Reply::messageId).orElse(h.messageId),
+                reply.map(Reply::payload).orElse(null));
     }
 
-    private void sendInterceptResponse(int corrId, int incomingMessageId, @Nullable CefMessageEncoder enc) {
+    private void sendInterceptResponse(int corrId, int messageId, @Nullable CefMessageEncoder enc) {
         if (closed) {
             LOG.debug("session closed before intercept response could be sent");
             return;
         }
         final int payloadLen = (enc == null) ? 0 : enc.encodedSize();
-        final int messageId = (enc == null) ? incomingMessageId : enc.messageId();
         final ByteBuffer buf =
                 ByteBuffer.allocate(Envelope.HEADER_SIZE + payloadLen).order(ByteOrder.LITTLE_ENDIAN);
         Envelope.writeHeader(
@@ -579,7 +581,7 @@ public final class CefSessionImpl implements CefSession {
             this.handler = handler;
         }
 
-        Optional<? extends CefMessageEncoder> invoke(ByteBuffer payload) {
+        Optional<Reply> invoke(ByteBuffer payload) {
             final E view = decoder.decode(payload);
             return handler.onIntercept(view);
         }

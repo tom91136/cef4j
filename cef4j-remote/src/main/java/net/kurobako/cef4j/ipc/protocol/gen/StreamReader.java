@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class StreamReader implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class StreamReader extends BrowserFacade {
 
     public StreamReader(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_stream_reader_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_stream_reader_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class StreamReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> seek(long offset, int whence) {
         return CefFutures.map(
-            session.request(new StreamReaderSeekRequest(handle, offset, whence), StreamReaderSeekResponse.DECODER),
-            StreamReaderSeekResponse::result);
+            session.request(MessageIds.STREAM_READER_SEEK_REQUEST, new SelfHandleOffsetLongWhenceIntMessage(handle, offset, whence), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class StreamReader implements AutoCloseable {
      */
     public CompletableFuture<Long> tell() {
         return CefFutures.map(
-            session.request(new StreamReaderTellRequest(handle), StreamReaderTellResponse.DECODER),
-            StreamReaderTellResponse::result);
+            session.request(MessageIds.STREAM_READER_TELL_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -82,8 +51,8 @@ public final class StreamReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> eof() {
         return CefFutures.map(
-            session.request(new StreamReaderEofRequest(handle), StreamReaderEofResponse.DECODER),
-            StreamReaderEofResponse::result);
+            session.request(MessageIds.STREAM_READER_EOF_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -94,7 +63,7 @@ public final class StreamReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> mayBlock() {
         return CefFutures.map(
-            session.request(new StreamReaderMayBlockRequest(handle), StreamReaderMayBlockResponse.DECODER),
-            StreamReaderMayBlockResponse::result);
+            session.request(MessageIds.STREAM_READER_MAY_BLOCK_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

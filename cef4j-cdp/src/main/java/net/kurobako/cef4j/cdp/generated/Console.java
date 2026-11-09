@@ -8,6 +8,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -24,6 +26,9 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Console {
     private Console() {}
+    private static final CdpField<ConsoleMessage.LevelValues> LEVEL = CdpField.of("level", value -> ConsoleMessage.LevelValues.of((String) value));
+    private static final CdpField<Console.ConsoleMessage> MESSAGE = CdpField.of("message", value -> java.util.Objects.requireNonNull(Console.ConsoleMessage.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<ConsoleMessage.SourceValues> SOURCE = CdpField.of("source", value -> ConsoleMessage.SourceValues.of((String) value));
     /**
      * Console message.
      */
@@ -82,42 +87,42 @@ public final class Console {
          * @return the protocol field value
          */
         public ConsoleMessage.SourceValues source() {
-            return ConsoleMessage.SourceValues.of((String) require("source"));
+            return require(SOURCE);
         }
         /**
          * Message severity.
          * @return the protocol field value
          */
         public ConsoleMessage.LevelValues level() {
-            return ConsoleMessage.LevelValues.of((String) require("level"));
+            return require(LEVEL);
         }
         /**
          * Message text.
          * @return the protocol field value
          */
         public String text() {
-            return (String) require("text");
+            return requireString("text");
         }
         /**
          * URL of the message origin.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return raw("url").map(value -> (String) value);
+            return optionalString("url");
         }
         /**
          * Line number in the resource that generated this message (1-based).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong line() {
-            return raw("line").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("line");
         }
         /**
          * Column number in the resource that generated this message (1-based).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong column() {
-            return raw("column").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("column");
         }
         /**
          * Message source.
@@ -188,7 +193,7 @@ public final class Console {
          * @return the protocol field value
          */
         public Console.ConsoleMessage message() {
-            return java.util.Objects.requireNonNull(Console.ConsoleMessage.fromMap(CdpObject.requireObjectMap(require("message"))));
+            return require(MESSAGE);
         }
         /**
          * Console message that has been added.
@@ -200,29 +205,28 @@ public final class Console {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Does nothing.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearMessages() {
-            return client.call("Console.clearMessages", null);
+            return call("Console.clearMessages");
         }
         /**
          * Disables console domain, prevents further console messages from being reported to the client.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Console.disable", null);
+            return call("Console.disable");
         }
         /**
          * Enables console domain, sends the messages collected so far to the client by means of the {@code messageAdded} notification.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Console.enable", null);
+            return call("Console.enable");
         }
         /**
          * Issued when new console message is added.
@@ -230,7 +234,7 @@ public final class Console {
          * @return a removable subscription
          */
         public CdpSubscription onMessageAdded(Consumer<MessageAddedEvent> handler) {
-            return client.on("Console.messageAdded", MessageAddedEvent::fromMap, handler);
+            return on("Console.messageAdded", MessageAddedEvent::fromMap, handler);
         }
     }
 }

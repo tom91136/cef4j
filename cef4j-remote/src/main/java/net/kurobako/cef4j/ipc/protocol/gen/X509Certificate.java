@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class X509Certificate implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class X509Certificate extends BrowserFacade {
 
     public X509Certificate(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_x509_certificate_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_x509_certificate_t");
     }
 
     /**
@@ -58,7 +27,7 @@ public final class X509Certificate implements AutoCloseable {
      */
     public CompletableFuture<X509CertPrincipal> getSubject() {
         return CefFutures.map(
-            session.request(new X509CertificateGetSubjectRequest(handle), X509CertificateGetSubjectResponse.DECODER),
+            session.request(MessageIds.X509_CERTIFICATE_GET_SUBJECT_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new X509CertPrincipal(session, __r.result()));
     }
 
@@ -70,7 +39,7 @@ public final class X509Certificate implements AutoCloseable {
      */
     public CompletableFuture<X509CertPrincipal> getIssuer() {
         return CefFutures.map(
-            session.request(new X509CertificateGetIssuerRequest(handle), X509CertificateGetIssuerResponse.DECODER),
+            session.request(MessageIds.X509_CERTIFICATE_GET_ISSUER_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new X509CertPrincipal(session, __r.result()));
     }
 
@@ -82,7 +51,7 @@ public final class X509Certificate implements AutoCloseable {
      */
     public CompletableFuture<BinaryValue> getSerialNumber() {
         return CefFutures.map(
-            session.request(new X509CertificateGetSerialNumberRequest(handle), X509CertificateGetSerialNumberResponse.DECODER),
+            session.request(MessageIds.X509_CERTIFICATE_GET_SERIAL_NUMBER_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new BinaryValue(session, __r.result()));
     }
 
@@ -92,10 +61,10 @@ public final class X509Certificate implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:126</a>
      */
-    public CompletableFuture<BaseTime> getValidStart() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefBaseTime> getValidStart() {
         return CefFutures.map(
-            session.request(new X509CertificateGetValidStartRequest(handle), X509CertificateGetValidStartResponse.DECODER),
-            X509CertificateGetValidStartResponse::result);
+            session.request(MessageIds.X509_CERTIFICATE_GET_VALID_START_REQUEST, new SelfHandleMessage(handle), ResultCefBaseTimeMessage.DECODER),
+            ResultCefBaseTimeMessage::result);
     }
 
     /**
@@ -104,10 +73,10 @@ public final class X509Certificate implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__x509__certificate_8h.html">cef_x509_certificate.h:133</a>
      */
-    public CompletableFuture<BaseTime> getValidExpiry() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefBaseTime> getValidExpiry() {
         return CefFutures.map(
-            session.request(new X509CertificateGetValidExpiryRequest(handle), X509CertificateGetValidExpiryResponse.DECODER),
-            X509CertificateGetValidExpiryResponse::result);
+            session.request(MessageIds.X509_CERTIFICATE_GET_VALID_EXPIRY_REQUEST, new SelfHandleMessage(handle), ResultCefBaseTimeMessage.DECODER),
+            ResultCefBaseTimeMessage::result);
     }
 
     /**
@@ -118,7 +87,7 @@ public final class X509Certificate implements AutoCloseable {
      */
     public CompletableFuture<BinaryValue> getDerencoded() {
         return CefFutures.map(
-            session.request(new X509CertificateGetDerencodedRequest(handle), X509CertificateGetDerencodedResponse.DECODER),
+            session.request(MessageIds.X509_CERTIFICATE_GET_DERENCODED_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new BinaryValue(session, __r.result()));
     }
 
@@ -130,7 +99,7 @@ public final class X509Certificate implements AutoCloseable {
      */
     public CompletableFuture<BinaryValue> getPemencoded() {
         return CefFutures.map(
-            session.request(new X509CertificateGetPemencodedRequest(handle), X509CertificateGetPemencodedResponse.DECODER),
+            session.request(MessageIds.X509_CERTIFICATE_GET_PEMENCODED_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new BinaryValue(session, __r.result()));
     }
 
@@ -142,7 +111,7 @@ public final class X509Certificate implements AutoCloseable {
      */
     public CompletableFuture<Long> getIssuerChainSize() {
         return CefFutures.map(
-            session.request(new X509CertificateGetIssuerChainSizeRequest(handle), X509CertificateGetIssuerChainSizeResponse.DECODER),
-            X509CertificateGetIssuerChainSizeResponse::result);
+            session.request(MessageIds.X509_CERTIFICATE_GET_ISSUER_CHAIN_SIZE_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 }

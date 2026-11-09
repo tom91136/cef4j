@@ -1,0 +1,146 @@
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-types
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+package net.kurobako.cef4j.gen;
+
+import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
+
+/**
+ * Supported event bit flags.
+ *
+ * <p>Definition generated from cef_types.h
+ *
+ * <pre>typedef enum {
+ *   EVENTFLAG_NONE = 0,
+ *   EVENTFLAG_CAPS_LOCK_ON = 1 &lt;&lt; 0,
+ *   EVENTFLAG_SHIFT_DOWN = 1 &lt;&lt; 1,
+ *   EVENTFLAG_CONTROL_DOWN = 1 &lt;&lt; 2,
+ *   EVENTFLAG_ALT_DOWN = 1 &lt;&lt; 3,
+ *   ...
+ * } cef_event_flags_t;</pre>
+ *
+ * <p>Possible values: {@link Kind#NONE}, {@link Kind#CAPS_LOCK_ON}, {@link Kind#SHIFT_DOWN}, {@link Kind#CONTROL_DOWN},
+ * {@link Kind#ALT_DOWN}, {@link Kind#LEFT_MOUSE_BUTTON}, {@link Kind#MIDDLE_MOUSE_BUTTON},
+ * {@link Kind#RIGHT_MOUSE_BUTTON}, {@link Kind#COMMAND_DOWN}, {@link Kind#NUM_LOCK_ON}, {@link Kind#IS_KEY_PAD},
+ * {@link Kind#IS_LEFT}, {@link Kind#IS_RIGHT}, {@link Kind#ALTGR_DOWN}, {@link Kind#IS_REPEAT},
+ * {@link Kind#PRECISION_SCROLLING_DELTA}, {@link Kind#SCROLL_BY_PAGE}
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__types_8h.html">cef_types.h</a>
+ */
+@Generated("./mvnw generate-sources -pl cef4j-types -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@NullableBoundary("generated external ABI")
+public final class CefEventFlags implements CefEnum<CefEventFlags> {
+
+    /** Known constants for {@link CefEventFlags}. */
+    public enum Kind {
+        NONE(new EnumConstant(0, "0", "EVENTFLAG_NONE")),
+        CAPS_LOCK_ON(new EnumConstant(1 << 0, "1 << 0", "EVENTFLAG_CAPS_LOCK_ON")),
+        SHIFT_DOWN(new EnumConstant(1 << 1, "1 << 1", "EVENTFLAG_SHIFT_DOWN")),
+        CONTROL_DOWN(new EnumConstant(1 << 2, "1 << 2", "EVENTFLAG_CONTROL_DOWN")),
+        ALT_DOWN(new EnumConstant(1 << 3, "1 << 3", "EVENTFLAG_ALT_DOWN")),
+        LEFT_MOUSE_BUTTON(new EnumConstant(1 << 4, "1 << 4", "EVENTFLAG_LEFT_MOUSE_BUTTON")),
+        MIDDLE_MOUSE_BUTTON(new EnumConstant(1 << 5, "1 << 5", "EVENTFLAG_MIDDLE_MOUSE_BUTTON")),
+        RIGHT_MOUSE_BUTTON(new EnumConstant(1 << 6, "1 << 6", "EVENTFLAG_RIGHT_MOUSE_BUTTON")),
+        /** Mac OS-X command key. */
+        COMMAND_DOWN(new EnumConstant(1 << 7, "1 << 7", "EVENTFLAG_COMMAND_DOWN")),
+        NUM_LOCK_ON(new EnumConstant(1 << 8, "1 << 8", "EVENTFLAG_NUM_LOCK_ON")),
+        IS_KEY_PAD(new EnumConstant(1 << 9, "1 << 9", "EVENTFLAG_IS_KEY_PAD")),
+        IS_LEFT(new EnumConstant(1 << 10, "1 << 10", "EVENTFLAG_IS_LEFT")),
+        IS_RIGHT(new EnumConstant(1 << 11, "1 << 11", "EVENTFLAG_IS_RIGHT")),
+        ALTGR_DOWN(new EnumConstant(1 << 12, "1 << 12", "EVENTFLAG_ALTGR_DOWN")),
+        IS_REPEAT(new EnumConstant(1 << 13, "1 << 13", "EVENTFLAG_IS_REPEAT")),
+        PRECISION_SCROLLING_DELTA(new EnumConstant(1 << 14, "1 << 14", "EVENTFLAG_PRECISION_SCROLLING_DELTA")),
+        SCROLL_BY_PAGE(new EnumConstant(1 << 15, "1 << 15", "EVENTFLAG_SCROLL_BY_PAGE"));
+
+        private static final Kind[] VALUES = Kind.values();
+
+        private final EnumConstant constant;
+
+        Kind(EnumConstant constant) {
+            this.constant = constant;
+        }
+
+        /** The underlying C enum numeric value. */
+        public long value() {
+            return constant.value();
+        }
+
+        /** The original C expression/literal (e.g. {@code "1 << 3"}), or the numeric string. */
+        public String expr() {
+            return constant.expr();
+        }
+
+        /** The C constant name (e.g., {@code "cef_event_flags_t"}). */
+        public String cName() {
+            return constant.name();
+        }
+
+        @Override
+        public String toString() {
+            return cName() + "(expr=" + expr() + ", value=" + value() + ")";
+        }
+    }
+
+    /** The underlying C enum numeric value. This may not correspond to any known {@link Kind}. */
+    public final long value;
+
+    private CefEventFlags(long value) {
+        this.value = value;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long value() {
+        return value;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String expr() {
+        return kind().map(Kind::expr).orElse(String.valueOf(value));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String name() {
+        return kind().map(Kind::cName).orElse("UNKNOWN(" + value + ")");
+    }
+
+    /**
+     * Returns the {@link Kind} matching this value, or empty for unknown/composite values. Use this for exhaustive
+     * switch over known constants.
+     */
+    public java.util.Optional<Kind> kind() {
+        for (Kind k : Kind.VALUES) {
+            if (k.value() == value) return java.util.Optional.of(k);
+        }
+        return java.util.Optional.empty();
+    }
+
+    /** Returns an instance for the given raw value, use {@link #kind} to resolve to a concrete enum. */
+    public static CefEventFlags of(long v) {
+        return new CefEventFlags(v);
+    }
+
+    /** Returns an instance for the given known constant. */
+    public static CefEventFlags of(Kind k) {
+        return new CefEventFlags(k.value());
+    }
+
+    @Override
+    public boolean equals(@org.jspecify.annotations.Nullable Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof CefEventFlags)) return false;
+        return this.value == ((CefEventFlags) obj).value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(value);
+    }
+
+    @Override
+    public String toString() {
+        return kind().map(Kind::toString).orElse("UNKNOWN(value=" + value + ")");
+    }
+}

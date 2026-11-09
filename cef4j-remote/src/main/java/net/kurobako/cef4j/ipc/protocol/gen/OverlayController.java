@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class OverlayController implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class OverlayController extends BrowserFacade {
 
     public OverlayController(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_overlay_controller_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_overlay_controller_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class OverlayController implements AutoCloseable {
      */
     public CompletableFuture<Integer> isValid() {
         return CefFutures.map(
-            session.request(new OverlayControllerIsValidRequest(handle), OverlayControllerIsValidResponse.DECODER),
-            OverlayControllerIsValidResponse::result);
+            session.request(MessageIds.OVERLAY_CONTROLLER_IS_VALID_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,53 +39,53 @@ public final class OverlayController implements AutoCloseable {
      */
     public CompletableFuture<Integer> isSame(RemoteHandle that) {
         return CefFutures.map(
-            session.request(new OverlayControllerIsSameRequest(handle, that), OverlayControllerIsSameResponse.DECODER),
-            OverlayControllerIsSameResponse::result);
+            session.request(MessageIds.OVERLAY_CONTROLLER_IS_SAME_REQUEST, new SelfHandleThatHandleMessage(handle, that), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code get_contents_view} to the runtime server. */
     public CompletableFuture<View> getContentsView() {
         return CefFutures.map(
-            session.request(new OverlayControllerGetContentsViewRequest(handle), OverlayControllerGetContentsViewResponse.DECODER),
+            session.request(MessageIds.OVERLAY_CONTROLLER_GET_CONTENTS_VIEW_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new View(session, __r.result()));
     }
 
     /** Dispatches {@code get_window} to the runtime server. */
     public CompletableFuture<Window> getWindow() {
         return CefFutures.map(
-            session.request(new OverlayControllerGetWindowRequest(handle), OverlayControllerGetWindowResponse.DECODER),
+            session.request(MessageIds.OVERLAY_CONTROLLER_GET_WINDOW_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new Window(session, __r.result()));
     }
 
     /** Dispatches {@code get_docking_mode} to the runtime server. */
     public CompletableFuture<Integer> getDockingMode() {
         return CefFutures.map(
-            session.request(new OverlayControllerGetDockingModeRequest(handle), OverlayControllerGetDockingModeResponse.DECODER),
-            OverlayControllerGetDockingModeResponse::result);
+            session.request(MessageIds.OVERLAY_CONTROLLER_GET_DOCKING_MODE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code destroy} to the runtime server. */
     public CompletableFuture<Void> destroy() {
-        return CefFutures.discard(session.request(new OverlayControllerDestroyRequest(handle), OverlayControllerDestroyResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.OVERLAY_CONTROLLER_DESTROY_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code set_bounds} to the runtime server. */
-    public CompletableFuture<Void> setBounds(Rect bounds) {
-        return CefFutures.discard(session.request(new OverlayControllerSetBoundsRequest(handle, bounds), OverlayControllerSetBoundsResponse.DECODER));
+    public CompletableFuture<Void> setBounds(net.kurobako.cef4j.gen.CefRect bounds) {
+        return CefFutures.discard(session.request(MessageIds.OVERLAY_CONTROLLER_SET_BOUNDS_REQUEST, new SelfHandleBoundsCefRectMessage(handle, bounds), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code get_bounds} to the runtime server. */
-    public CompletableFuture<Rect> getBounds() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefRect> getBounds() {
         return CefFutures.map(
-            session.request(new OverlayControllerGetBoundsRequest(handle), OverlayControllerGetBoundsResponse.DECODER),
-            OverlayControllerGetBoundsResponse::result);
+            session.request(MessageIds.OVERLAY_CONTROLLER_GET_BOUNDS_REQUEST, new SelfHandleMessage(handle), ResultCefRectMessage.DECODER),
+            ResultCefRectMessage::result);
     }
 
     /** Dispatches {@code get_bounds_in_screen} to the runtime server. */
-    public CompletableFuture<Rect> getBoundsInScreen() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefRect> getBoundsInScreen() {
         return CefFutures.map(
-            session.request(new OverlayControllerGetBoundsInScreenRequest(handle), OverlayControllerGetBoundsInScreenResponse.DECODER),
-            OverlayControllerGetBoundsInScreenResponse::result);
+            session.request(MessageIds.OVERLAY_CONTROLLER_GET_BOUNDS_IN_SCREEN_REQUEST, new SelfHandleMessage(handle), ResultCefRectMessage.DECODER),
+            ResultCefRectMessage::result);
     }
 
     /**
@@ -125,8 +94,8 @@ public final class OverlayController implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:592</a>
      */
-    public CompletableFuture<Void> setSize(Size size) {
-        return CefFutures.discard(session.request(new OverlayControllerSetSizeRequest(handle, size), OverlayControllerSetSizeResponse.DECODER));
+    public CompletableFuture<Void> setSize(net.kurobako.cef4j.gen.CefSize size) {
+        return CefFutures.discard(session.request(MessageIds.OVERLAY_CONTROLLER_SET_SIZE_REQUEST, new SelfHandleSizeCefSizeMessage(handle, size), EmptyMessage.DECODER));
     }
 
     /**
@@ -135,39 +104,39 @@ public final class OverlayController implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__values_8h.html">cef_values.h:599</a>
      */
-    public CompletableFuture<Size> getSize() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefSize> getSize() {
         return CefFutures.map(
-            session.request(new OverlayControllerGetSizeRequest(handle), OverlayControllerGetSizeResponse.DECODER),
-            OverlayControllerGetSizeResponse::result);
+            session.request(MessageIds.OVERLAY_CONTROLLER_GET_SIZE_REQUEST, new SelfHandleMessage(handle), ResultCefSizeMessage.DECODER),
+            ResultCefSizeMessage::result);
     }
 
     /** Dispatches {@code set_position} to the runtime server. */
-    public CompletableFuture<Void> setPosition(Point position) {
-        return CefFutures.discard(session.request(new OverlayControllerSetPositionRequest(handle, position), OverlayControllerSetPositionResponse.DECODER));
+    public CompletableFuture<Void> setPosition(net.kurobako.cef4j.gen.CefPoint position) {
+        return CefFutures.discard(session.request(MessageIds.OVERLAY_CONTROLLER_SET_POSITION_REQUEST, new SelfHandlePositionCefPointMessage(handle, position), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code get_position} to the runtime server. */
-    public CompletableFuture<Point> getPosition() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefPoint> getPosition() {
         return CefFutures.map(
-            session.request(new OverlayControllerGetPositionRequest(handle), OverlayControllerGetPositionResponse.DECODER),
-            OverlayControllerGetPositionResponse::result);
+            session.request(MessageIds.OVERLAY_CONTROLLER_GET_POSITION_REQUEST, new SelfHandleMessage(handle), ResultCefPointMessage.DECODER),
+            ResultCefPointMessage::result);
     }
 
     /** Dispatches {@code set_insets} to the runtime server. */
-    public CompletableFuture<Void> setInsets(Insets insets) {
-        return CefFutures.discard(session.request(new OverlayControllerSetInsetsRequest(handle, insets), OverlayControllerSetInsetsResponse.DECODER));
+    public CompletableFuture<Void> setInsets(net.kurobako.cef4j.gen.CefInsets insets) {
+        return CefFutures.discard(session.request(MessageIds.OVERLAY_CONTROLLER_SET_INSETS_REQUEST, new SelfHandleInsetsCefInsetsMessage(handle, insets), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code get_insets} to the runtime server. */
-    public CompletableFuture<Insets> getInsets() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefInsets> getInsets() {
         return CefFutures.map(
-            session.request(new OverlayControllerGetInsetsRequest(handle), OverlayControllerGetInsetsResponse.DECODER),
-            OverlayControllerGetInsetsResponse::result);
+            session.request(MessageIds.OVERLAY_CONTROLLER_GET_INSETS_REQUEST, new SelfHandleMessage(handle), ResultCefInsetsMessage.DECODER),
+            ResultCefInsetsMessage::result);
     }
 
     /** Dispatches {@code size_to_preferred_size} to the runtime server. */
     public CompletableFuture<Void> sizeToPreferredSize() {
-        return CefFutures.discard(session.request(new OverlayControllerSizeToPreferredSizeRequest(handle), OverlayControllerSizeToPreferredSizeResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.OVERLAY_CONTROLLER_SIZE_TO_PREFERRED_SIZE_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -177,7 +146,7 @@ public final class OverlayController implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model_8h.html">cef_menu_model.h:275</a>
      */
     public CompletableFuture<Void> setVisible(int visible) {
-        return CefFutures.discard(session.request(new OverlayControllerSetVisibleRequest(handle, visible), OverlayControllerSetVisibleResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.OVERLAY_CONTROLLER_SET_VISIBLE_REQUEST, new SelfHandleVisibleIntMessage(handle, visible), EmptyMessage.DECODER));
     }
 
     /**
@@ -188,14 +157,14 @@ public final class OverlayController implements AutoCloseable {
      */
     public CompletableFuture<Integer> isVisible() {
         return CefFutures.map(
-            session.request(new OverlayControllerIsVisibleRequest(handle), OverlayControllerIsVisibleResponse.DECODER),
-            OverlayControllerIsVisibleResponse::result);
+            session.request(MessageIds.OVERLAY_CONTROLLER_IS_VISIBLE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code is_drawn} to the runtime server. */
     public CompletableFuture<Integer> isDrawn() {
         return CefFutures.map(
-            session.request(new OverlayControllerIsDrawnRequest(handle), OverlayControllerIsDrawnResponse.DECODER),
-            OverlayControllerIsDrawnResponse::result);
+            session.request(MessageIds.OVERLAY_CONTROLLER_IS_DRAWN_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

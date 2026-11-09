@@ -1,11 +1,11 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
@@ -24,15 +24,6 @@ public final class DeviceOrientation {
      */
     public static final class SetDeviceOrientationOverrideRequest extends CdpObject {
         public SetDeviceOrientationOverrideRequest() {}
-        /**
-         * Overrides the Device Orientation.
-         * @param alpha protocol value
-         * @param beta protocol value
-         * @param gamma protocol value
-         */
-        public SetDeviceOrientationOverrideRequest(double alpha, double beta, double gamma) {
-            alpha(alpha).beta(beta).gamma(gamma);
-        }
         public static SetDeviceOrientationOverrideRequest fromMap(Map<String, Object> values) {
             final SetDeviceOrientationOverrideRequest instance_ = new SetDeviceOrientationOverrideRequest();
             if (values != null) instance_.values.putAll(values);
@@ -43,21 +34,21 @@ public final class DeviceOrientation {
          * @return the protocol field value
          */
         public double alpha() {
-            return ((Number) require("alpha")).doubleValue();
+            return requireDouble("alpha");
         }
         /**
          * Mock beta
          * @return the protocol field value
          */
         public double beta() {
-            return ((Number) require("beta")).doubleValue();
+            return requireDouble("beta");
         }
         /**
          * Mock gamma
          * @return the protocol field value
          */
         public double gamma() {
-            return ((Number) require("gamma")).doubleValue();
+            return requireDouble("gamma");
         }
         /**
          * Mock alpha
@@ -87,15 +78,14 @@ public final class DeviceOrientation {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Clears the overridden Device Orientation.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> clearDeviceOrientationOverride() {
-            return client.call("DeviceOrientation.clearDeviceOrientationOverride", null);
+            return call("DeviceOrientation.clearDeviceOrientationOverride");
         }
         /**
          * Overrides the Device Orientation.
@@ -105,11 +95,7 @@ public final class DeviceOrientation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDeviceOrientationOverride(double alpha, double beta, double gamma) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("alpha", CdpObject.json(alpha));
-            params.put("beta", CdpObject.json(beta));
-            params.put("gamma", CdpObject.json(gamma));
-            return client.call("DeviceOrientation.setDeviceOrientationOverride", params);
+            return call("DeviceOrientation.setDeviceOrientationOverride", params("alpha", alpha, "beta", beta, "gamma", gamma));
         }
         /**
          * Overrides the Device Orientation.
@@ -117,7 +103,7 @@ public final class DeviceOrientation {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setDeviceOrientationOverride(SetDeviceOrientationOverrideRequest request) {
-            return client.call("DeviceOrientation.setDeviceOrientationOverride", request == null ? null : request.toMap());
+            return call("DeviceOrientation.setDeviceOrientationOverride", request);
         }
     }
 }

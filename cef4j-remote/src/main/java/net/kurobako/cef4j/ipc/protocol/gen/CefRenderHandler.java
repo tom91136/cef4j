@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -32,7 +33,7 @@ public interface CefRenderHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:124</a>
      */
     @SuppressWarnings("EmptyMethod")
-    default void onPopupSize(net.kurobako.cef4j.ipc.session.RemoteHandle browser, Rect rect) {}
+    default void onPopupSize(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.gen.CefRect rect) {}
 
     /**
      * Called when the user starts dragging content in the web view. Contextual information about the dragged content is supplied by {@code drag_data}. ({@code y}, {@code x}) is the drag start location in screen coordinates. OS APIs that run a system message loop may be used within the StartDragging call.
@@ -45,7 +46,7 @@ public interface CefRenderHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:192</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> startDragging(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle dragData, int allowedOps, int x, int y) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> startDragging(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle dragData, int allowedOps, int x, int y) { return Unhandled.bool(); }
 
     /**
      * Called when the web view wants to update the mouse cursor during a drag &amp; drop operation. {@code operation} describes the allowed operation (none, move, copy, link).
@@ -66,7 +67,7 @@ public interface CefRenderHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__handler_8h.html">cef_render_handler.h:243</a>
      */
     @SuppressWarnings("EmptyMethod")
-    default void onTextSelectionChanged(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String selectedText, Range selectedRange) {}
+    default void onTextSelectionChanged(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String selectedText, net.kurobako.cef4j.gen.CefRange selectedRange) {}
 
     /**
      * Called when an on-screen keyboard should be shown or hidden for the specified {@code browser}. {@code input_mode} specifies what kind of keyboard should be opened. If {@code input_mode} is {@code CEF_TEXT_INPUT_MODE_NONE}, any existing keyboard for this browser should be hidden.
@@ -80,19 +81,19 @@ public interface CefRenderHandler {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefRenderHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(RenderHandlerOnPopupShowEvent.MESSAGE_ID, RenderHandlerOnPopupShowEvent.DECODER,
+                session.on(MessageIds.RENDER_HANDLER_ON_POPUP_SHOW_EVENT, RenderHandlerOnPopupShowEvent.DECODER,
                         ev -> handler.onPopupShow(ev.browser(), ev.show())),
-                session.on(RenderHandlerOnPopupSizeEvent.MESSAGE_ID, RenderHandlerOnPopupSizeEvent.DECODER,
+                session.on(MessageIds.RENDER_HANDLER_ON_POPUP_SIZE_EVENT, RenderHandlerOnPopupSizeEvent.DECODER,
                         ev -> handler.onPopupSize(ev.browser(), ev.rect())),
-                session.intercept(RenderHandlerStartDraggingEvent.MESSAGE_ID, RenderHandlerStartDraggingEvent.DECODER, ev -> {
+                session.intercept(MessageIds.RENDER_HANDLER_START_DRAGGING_EVENT, RenderHandlerStartDraggingEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.startDragging(ev.browser(), ev.dragData(), ev.allowedOps(), ev.x(), ev.y());
-                    return java.util.Optional.of(new RenderHandlerStartDraggingResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.RENDER_HANDLER_START_DRAGGING_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.on(RenderHandlerUpdateDragCursorEvent.MESSAGE_ID, RenderHandlerUpdateDragCursorEvent.DECODER,
+                session.on(MessageIds.RENDER_HANDLER_UPDATE_DRAG_CURSOR_EVENT, RenderHandlerUpdateDragCursorEvent.DECODER,
                         ev -> handler.updateDragCursor(ev.browser(), ev.operation())),
-                session.on(RenderHandlerOnTextSelectionChangedEvent.MESSAGE_ID, RenderHandlerOnTextSelectionChangedEvent.DECODER,
+                session.on(MessageIds.RENDER_HANDLER_ON_TEXT_SELECTION_CHANGED_EVENT, RenderHandlerOnTextSelectionChangedEvent.DECODER,
                         ev -> handler.onTextSelectionChanged(ev.browser(), ev.selectedText(), ev.selectedRange())),
-                session.on(RenderHandlerOnVirtualKeyboardRequestedEvent.MESSAGE_ID, RenderHandlerOnVirtualKeyboardRequestedEvent.DECODER,
+                session.on(MessageIds.RENDER_HANDLER_ON_VIRTUAL_KEYBOARD_REQUESTED_EVENT, RenderHandlerOnVirtualKeyboardRequestedEvent.DECODER,
                         ev -> handler.onVirtualKeyboardRequested(ev.browser(), ev.inputMode())));
     }
 }

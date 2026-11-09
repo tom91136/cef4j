@@ -1,0 +1,51 @@
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-types
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+package net.kurobako.cef4j.gen.views;
+
+import java.util.Optional;
+import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
+
+/**
+ * A simple Layout that causes the associated Panel's one child to be sized to match the bounds of its parent. Methods
+ * must be called on the browser process UI thread unless otherwise indicated.
+ *
+ * <p>Definition generated from views/cef_fill_layout_capi.h
+ *
+ * <pre>typedef struct _cef_fill_layout_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_fill_layout_t;</pre>
+ *
+ * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__fill__layout_8h.html">views/cef_fill_layout.h:43</a>
+ */
+@Generated("./mvnw generate-sources -pl cef4j-types -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@NullableBoundary("generated external ABI")
+public interface CefFillLayout extends CefLayout {
+
+    final class NativePeer extends net.kurobako.cef4j.peer.NativeObject implements CefFillLayout {
+        NativePeer(long ptr) {
+            super("CefFillLayout", ptr, NativePeer::release0);
+        }
+
+        private static native void release0(long ptr);
+
+        @Override
+        public Optional<CefBoxLayout> asBoxLayout() {
+            checkNotClosed();
+            return Optional.ofNullable(CefLayout.NativePeer.asBoxLayout0(nativePtr));
+        }
+
+        @Override
+        public Optional<CefFillLayout> asFillLayout() {
+            checkNotClosed();
+            return Optional.ofNullable(CefLayout.NativePeer.asFillLayout0(nativePtr));
+        }
+
+        @Override
+        public boolean isValid() {
+            checkNotClosed();
+            return CefLayout.NativePeer.isValid0(nativePtr);
+        }
+    }
+}

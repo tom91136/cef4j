@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -23,7 +24,7 @@ public interface CefCommandHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__handler_8h.html">cef_command_handler.h:51</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onChromeCommand(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int commandId, int disposition) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onChromeCommand(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int commandId, int disposition) { return Unhandled.bool(); }
 
     /**
      * Called to check if a Chrome app menu item should be visible. Use the cef_id_for_command_id_name() function for version-safe mapping of command IDC names from cef_command_ids.h to version-specific numerical {@code command_id} values. Only called for menu items that would be visible by default. Only used with Chrome style.
@@ -32,7 +33,7 @@ public interface CefCommandHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__handler_8h.html">cef_command_handler.h:68</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> isChromeAppMenuItemVisible(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int commandId) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> isChromeAppMenuItemVisible(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int commandId) { return Unhandled.bool(); }
 
     /**
      * Called to check if a Chrome app menu item should be enabled. Use the cef_id_for_command_id_name() function for version-safe mapping of command IDC names from cef_command_ids.h to version-specific numerical {@code command_id} values. Only called for menu items that would be enabled by default. Only used with Chrome style.
@@ -41,7 +42,7 @@ public interface CefCommandHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__handler_8h.html">cef_command_handler.h:81</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> isChromeAppMenuItemEnabled(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int commandId) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> isChromeAppMenuItemEnabled(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int commandId) { return Unhandled.bool(); }
 
     /**
      * Called during browser creation to check if a Chrome page action icon should be visible. Only called for icons that would be visible by default. Only used with Chrome style.
@@ -50,7 +51,7 @@ public interface CefCommandHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__handler_8h.html">cef_command_handler.h:94</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> isChromePageActionIconVisible(int iconType) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> isChromePageActionIconVisible(int iconType) { return Unhandled.bool(); }
 
     /**
      * Called during browser creation to check if a Chrome toolbar button should be visible. Only called for buttons that would be visible by default. Only used with Chrome style.
@@ -59,30 +60,30 @@ public interface CefCommandHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__command__handler_8h.html">cef_command_handler.h:105</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> isChromeToolbarButtonVisible(int buttonType) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> isChromeToolbarButtonVisible(int buttonType) { return Unhandled.bool(); }
 
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefCommandHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.intercept(CommandHandlerOnChromeCommandEvent.MESSAGE_ID, CommandHandlerOnChromeCommandEvent.DECODER, ev -> {
+                session.intercept(MessageIds.COMMAND_HANDLER_ON_CHROME_COMMAND_EVENT, CommandHandlerOnChromeCommandEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onChromeCommand(ev.browser(), ev.commandId(), ev.disposition());
-                    return java.util.Optional.of(new CommandHandlerOnChromeCommandResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.COMMAND_HANDLER_ON_CHROME_COMMAND_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.intercept(CommandHandlerIsChromeAppMenuItemVisibleEvent.MESSAGE_ID, CommandHandlerIsChromeAppMenuItemVisibleEvent.DECODER, ev -> {
+                session.intercept(MessageIds.COMMAND_HANDLER_IS_CHROME_APP_MENU_ITEM_VISIBLE_EVENT, BrowserHandleCommandIdIntMessage.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.isChromeAppMenuItemVisible(ev.browser(), ev.commandId());
-                    return java.util.Optional.of(new CommandHandlerIsChromeAppMenuItemVisibleResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.COMMAND_HANDLER_IS_CHROME_APP_MENU_ITEM_VISIBLE_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.intercept(CommandHandlerIsChromeAppMenuItemEnabledEvent.MESSAGE_ID, CommandHandlerIsChromeAppMenuItemEnabledEvent.DECODER, ev -> {
+                session.intercept(MessageIds.COMMAND_HANDLER_IS_CHROME_APP_MENU_ITEM_ENABLED_EVENT, BrowserHandleCommandIdIntMessage.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.isChromeAppMenuItemEnabled(ev.browser(), ev.commandId());
-                    return java.util.Optional.of(new CommandHandlerIsChromeAppMenuItemEnabledResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.COMMAND_HANDLER_IS_CHROME_APP_MENU_ITEM_ENABLED_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.intercept(CommandHandlerIsChromePageActionIconVisibleEvent.MESSAGE_ID, CommandHandlerIsChromePageActionIconVisibleEvent.DECODER, ev -> {
+                session.intercept(MessageIds.COMMAND_HANDLER_IS_CHROME_PAGE_ACTION_ICON_VISIBLE_EVENT, CommandHandlerIsChromePageActionIconVisibleEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.isChromePageActionIconVisible(ev.iconType());
-                    return java.util.Optional.of(new CommandHandlerIsChromePageActionIconVisibleResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.COMMAND_HANDLER_IS_CHROME_PAGE_ACTION_ICON_VISIBLE_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.intercept(CommandHandlerIsChromeToolbarButtonVisibleEvent.MESSAGE_ID, CommandHandlerIsChromeToolbarButtonVisibleEvent.DECODER, ev -> {
+                session.intercept(MessageIds.COMMAND_HANDLER_IS_CHROME_TOOLBAR_BUTTON_VISIBLE_EVENT, CommandHandlerIsChromeToolbarButtonVisibleEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.isChromeToolbarButtonVisible(ev.buttonType());
-                    return java.util.Optional.of(new CommandHandlerIsChromeToolbarButtonVisibleResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.COMMAND_HANDLER_IS_CHROME_TOOLBAR_BUTTON_VISIBLE_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }));
     }
 }

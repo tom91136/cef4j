@@ -26,11 +26,11 @@ public interface CefPdfPrintCallback {
     void onPdfPrintFinished(String path, int ok);
 
     /**
-     * Wires inbound {@link PdfPrintCallbackOnPdfPrintFinishedCallbackEvent} frames into the supplied {@code table} so each visitor invocation
+     * Wires inbound {@code PdfPrintCallbackOnPdfPrintFinishedCallbackEvent} frames into the supplied {@code table} so each visitor invocation
      * dispatches to the {@code CefPdfPrintCallback} registered under that callbackId. Call once per session.
      */
     static CefSession.HandlerRegistration route(CefSession session, JvmCallbackTable<CefPdfPrintCallback> table) {
-        return session.on(PdfPrintCallbackOnPdfPrintFinishedCallbackEvent.MESSAGE_ID, PdfPrintCallbackOnPdfPrintFinishedCallbackEvent.DECODER, ev ->
+        return session.on(MessageIds.PDF_PRINT_CALLBACK_ON_PDF_PRINT_FINISHED_CALLBACK_EVENT, PdfPrintCallbackOnPdfPrintFinishedCallbackEvent.DECODER, ev ->
                 table.lookup(ev.callbackId()).ifPresent(v -> v.onPdfPrintFinished(ev.path(), ev.ok())));
     }
 }

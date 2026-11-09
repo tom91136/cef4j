@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class MediaSink implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class MediaSink extends BrowserFacade {
 
     public MediaSink(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_media_sink_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_media_sink_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class MediaSink implements AutoCloseable {
      */
     public CompletableFuture<String> getId() {
         return CefFutures.map(
-            session.request(new MediaSinkGetIdRequest(handle), MediaSinkGetIdResponse.DECODER),
-            MediaSinkGetIdResponse::result);
+            session.request(MessageIds.MEDIA_SINK_GET_ID_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class MediaSink implements AutoCloseable {
      */
     public CompletableFuture<String> getName() {
         return CefFutures.map(
-            session.request(new MediaSinkGetNameRequest(handle), MediaSinkGetNameResponse.DECODER),
-            MediaSinkGetNameResponse::result);
+            session.request(MessageIds.MEDIA_SINK_GET_NAME_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -82,8 +51,8 @@ public final class MediaSink implements AutoCloseable {
      */
     public CompletableFuture<Integer> getIconType() {
         return CefFutures.map(
-            session.request(new MediaSinkGetIconTypeRequest(handle), MediaSinkGetIconTypeResponse.DECODER),
-            MediaSinkGetIconTypeResponse::result);
+            session.request(MessageIds.MEDIA_SINK_GET_ICON_TYPE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -93,7 +62,7 @@ public final class MediaSink implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__media__router_8h.html">cef_media_router.h:249</a>
      */
     public CompletableFuture<Void> getDeviceInfo(RemoteHandle callback) {
-        return CefFutures.discard(session.request(new MediaSinkGetDeviceInfoRequest(handle, callback), MediaSinkGetDeviceInfoResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.MEDIA_SINK_GET_DEVICE_INFO_REQUEST, new SelfHandleCallbackHandleMessage(handle, callback), EmptyMessage.DECODER));
     }
 
     /**
@@ -104,8 +73,8 @@ public final class MediaSink implements AutoCloseable {
      */
     public CompletableFuture<Integer> isCastSink() {
         return CefFutures.map(
-            session.request(new MediaSinkIsCastSinkRequest(handle), MediaSinkIsCastSinkResponse.DECODER),
-            MediaSinkIsCastSinkResponse::result);
+            session.request(MessageIds.MEDIA_SINK_IS_CAST_SINK_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -116,8 +85,8 @@ public final class MediaSink implements AutoCloseable {
      */
     public CompletableFuture<Integer> isDialSink() {
         return CefFutures.map(
-            session.request(new MediaSinkIsDialSinkRequest(handle), MediaSinkIsDialSinkResponse.DECODER),
-            MediaSinkIsDialSinkResponse::result);
+            session.request(MessageIds.MEDIA_SINK_IS_DIAL_SINK_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -128,7 +97,7 @@ public final class MediaSink implements AutoCloseable {
      */
     public CompletableFuture<Integer> isCompatibleWith(RemoteHandle source) {
         return CefFutures.map(
-            session.request(new MediaSinkIsCompatibleWithRequest(handle, source), MediaSinkIsCompatibleWithResponse.DECODER),
-            MediaSinkIsCompatibleWithResponse::result);
+            session.request(MessageIds.MEDIA_SINK_IS_COMPATIBLE_WITH_REQUEST, new MediaSinkIsCompatibleWithRequest(handle, source), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

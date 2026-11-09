@@ -30,7 +30,7 @@ public interface CefDownloadImageCallback {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefDownloadImageCallback handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(DownloadImageCallbackOnDownloadImageFinishedEvent.MESSAGE_ID, DownloadImageCallbackOnDownloadImageFinishedEvent.DECODER,
+                session.on(MessageIds.DOWNLOAD_IMAGE_CALLBACK_ON_DOWNLOAD_IMAGE_FINISHED_EVENT, DownloadImageCallbackOnDownloadImageFinishedEvent.DECODER,
                         ev -> handler.onDownloadImageFinished(ev.imageUrl(), ev.httpStatusCode(), ev.image())));
     }
 }

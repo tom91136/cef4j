@@ -112,17 +112,17 @@ public final class ReplayCefSession implements CefSession {
 
     @Override
     public <R extends CefMessageView> CompletableFuture<R> request(
-            CefMessageEncoder request, CefMessageDecoder<R> decoder) {
+            int messageId, CefMessageEncoder request, CefMessageDecoder<R> decoder) {
         Objects.requireNonNull(request, "request");
         Objects.requireNonNull(decoder, "decoder");
         synchronized (lock) {
             try {
                 requireOpen();
                 prepareForActionLocked();
-                final SessionTrace.Entry entry = expectActionLocked(SessionTrace.Kind.REQUEST, request.messageId());
-                comparePayload(entry, MessagePayloads.encode(request), "request");
+                final SessionTrace.Entry entry = expectActionLocked(SessionTrace.Kind.REQUEST, messageId);
+                comparePayload(entry, MessagePayloads.encode(messageId, request), "request");
                 final CompletableFuture<R> result = new CompletableFuture<>();
-                pending.put(entry.operationId, new Pending<>(result, decoder, request.messageId()));
+                pending.put(entry.operationId, new Pending<>(result, decoder, messageId));
                 continuePlaybackLocked();
                 return result;
             } catch (RuntimeException failure) {
@@ -331,7 +331,7 @@ public final class ReplayCefSession implements CefSession {
         final InterceptBinding<CefMessageView> binding =
                 (InterceptBinding<CefMessageView>) intercepts.get(incoming.messageId);
         if (binding == null) throw mismatch(incoming, "intercept has no active handler");
-        Optional<? extends CefMessageEncoder> actual;
+        Optional<Reply> actual;
         try {
             actual = binding.invoke(requiredPayload(incoming));
         } catch (RuntimeException failure) {
@@ -362,7 +362,10 @@ public final class ReplayCefSession implements CefSession {
                         throw mismatch(
                                 expected, "intercept response messageId=" + response.messageId() + " does not match");
                     }
-                    comparePayload(expected, MessagePayloads.encode(response), "intercept response");
+                    comparePayload(
+                            expected,
+                            MessagePayloads.encode(response.messageId(), response.payload()),
+                            "intercept response");
                 },
                 () -> {
                     if (expected.payload().isPresent())
@@ -468,7 +471,7 @@ public final class ReplayCefSession implements CefSession {
             this.handler = handler;
         }
 
-        Optional<? extends CefMessageEncoder> invoke(byte[] payload) {
+        Optional<Reply> invoke(byte[] payload) {
             final E event = decoder.decode(ByteBuffer.wrap(payload).order(ByteOrder.LITTLE_ENDIAN));
             return handler.onIntercept(event);
         }

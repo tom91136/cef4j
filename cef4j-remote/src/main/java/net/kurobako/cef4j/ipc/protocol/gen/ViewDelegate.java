@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,102 +13,72 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class ViewDelegate implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class ViewDelegate extends BrowserFacade {
 
     public ViewDelegate(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_view_delegate_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_view_delegate_t");
     }
 
     /** Dispatches {@code get_preferred_size} to the runtime server. */
-    public CompletableFuture<Size> getPreferredSize(RemoteHandle view) {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefSize> getPreferredSize(RemoteHandle view) {
         return CefFutures.map(
-            session.request(new ViewDelegateGetPreferredSizeRequest(handle, view), ViewDelegateGetPreferredSizeResponse.DECODER),
-            ViewDelegateGetPreferredSizeResponse::result);
+            session.request(MessageIds.VIEW_DELEGATE_GET_PREFERRED_SIZE_REQUEST, new SelfHandleViewHandleMessage(handle, view), ResultCefSizeMessage.DECODER),
+            ResultCefSizeMessage::result);
     }
 
     /** Dispatches {@code get_minimum_size} to the runtime server. */
-    public CompletableFuture<Size> getMinimumSize(RemoteHandle view) {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefSize> getMinimumSize(RemoteHandle view) {
         return CefFutures.map(
-            session.request(new ViewDelegateGetMinimumSizeRequest(handle, view), ViewDelegateGetMinimumSizeResponse.DECODER),
-            ViewDelegateGetMinimumSizeResponse::result);
+            session.request(MessageIds.VIEW_DELEGATE_GET_MINIMUM_SIZE_REQUEST, new SelfHandleViewHandleMessage(handle, view), ResultCefSizeMessage.DECODER),
+            ResultCefSizeMessage::result);
     }
 
     /** Dispatches {@code get_maximum_size} to the runtime server. */
-    public CompletableFuture<Size> getMaximumSize(RemoteHandle view) {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefSize> getMaximumSize(RemoteHandle view) {
         return CefFutures.map(
-            session.request(new ViewDelegateGetMaximumSizeRequest(handle, view), ViewDelegateGetMaximumSizeResponse.DECODER),
-            ViewDelegateGetMaximumSizeResponse::result);
+            session.request(MessageIds.VIEW_DELEGATE_GET_MAXIMUM_SIZE_REQUEST, new SelfHandleViewHandleMessage(handle, view), ResultCefSizeMessage.DECODER),
+            ResultCefSizeMessage::result);
     }
 
     /** Dispatches {@code get_height_for_width} to the runtime server. */
     public CompletableFuture<Integer> getHeightForWidth(RemoteHandle view, int width) {
         return CefFutures.map(
-            session.request(new ViewDelegateGetHeightForWidthRequest(handle, view, width), ViewDelegateGetHeightForWidthResponse.DECODER),
-            ViewDelegateGetHeightForWidthResponse::result);
+            session.request(MessageIds.VIEW_DELEGATE_GET_HEIGHT_FOR_WIDTH_REQUEST, new ViewDelegateGetHeightForWidthRequest(handle, view, width), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code on_parent_view_changed} to the runtime server. */
     public CompletableFuture<Void> onParentViewChanged(RemoteHandle view, int added, RemoteHandle parent) {
-        return CefFutures.discard(session.request(new ViewDelegateOnParentViewChangedRequest(handle, view, added, parent), ViewDelegateOnParentViewChangedResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.VIEW_DELEGATE_ON_PARENT_VIEW_CHANGED_REQUEST, new ViewDelegateOnParentViewChangedRequest(handle, view, added, parent), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code on_child_view_changed} to the runtime server. */
     public CompletableFuture<Void> onChildViewChanged(RemoteHandle view, int added, RemoteHandle child) {
-        return CefFutures.discard(session.request(new ViewDelegateOnChildViewChangedRequest(handle, view, added, child), ViewDelegateOnChildViewChangedResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.VIEW_DELEGATE_ON_CHILD_VIEW_CHANGED_REQUEST, new ViewDelegateOnChildViewChangedRequest(handle, view, added, child), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code on_window_changed} to the runtime server. */
     public CompletableFuture<Void> onWindowChanged(RemoteHandle view, int added) {
-        return CefFutures.discard(session.request(new ViewDelegateOnWindowChangedRequest(handle, view, added), ViewDelegateOnWindowChangedResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.VIEW_DELEGATE_ON_WINDOW_CHANGED_REQUEST, new ViewDelegateOnWindowChangedRequest(handle, view, added), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code on_layout_changed} to the runtime server. */
-    public CompletableFuture<Void> onLayoutChanged(RemoteHandle view, Rect newBounds) {
-        return CefFutures.discard(session.request(new ViewDelegateOnLayoutChangedRequest(handle, view, newBounds), ViewDelegateOnLayoutChangedResponse.DECODER));
+    public CompletableFuture<Void> onLayoutChanged(RemoteHandle view, net.kurobako.cef4j.gen.CefRect newBounds) {
+        return CefFutures.discard(session.request(MessageIds.VIEW_DELEGATE_ON_LAYOUT_CHANGED_REQUEST, new ViewDelegateOnLayoutChangedRequest(handle, view, newBounds), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code on_focus} to the runtime server. */
     public CompletableFuture<Void> onFocus(RemoteHandle view) {
-        return CefFutures.discard(session.request(new ViewDelegateOnFocusRequest(handle, view), ViewDelegateOnFocusResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.VIEW_DELEGATE_ON_FOCUS_REQUEST, new SelfHandleViewHandleMessage(handle, view), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code on_blur} to the runtime server. */
     public CompletableFuture<Void> onBlur(RemoteHandle view) {
-        return CefFutures.discard(session.request(new ViewDelegateOnBlurRequest(handle, view), ViewDelegateOnBlurResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.VIEW_DELEGATE_ON_BLUR_REQUEST, new SelfHandleViewHandleMessage(handle, view), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code on_theme_changed} to the runtime server. */
     public CompletableFuture<Void> onThemeChanged(RemoteHandle view) {
-        return CefFutures.discard(session.request(new ViewDelegateOnThemeChangedRequest(handle, view), ViewDelegateOnThemeChangedResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.VIEW_DELEGATE_ON_THEME_CHANGED_REQUEST, new SelfHandleViewHandleMessage(handle, view), EmptyMessage.DECODER));
     }
 }

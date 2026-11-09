@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class Response implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class Response extends BrowserFacade {
 
     public Response(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_response_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_response_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class Response implements AutoCloseable {
      */
     public CompletableFuture<Integer> isReadOnly() {
         return CefFutures.map(
-            session.request(new ResponseIsReadOnlyRequest(handle), ResponseIsReadOnlyResponse.DECODER),
-            ResponseIsReadOnlyResponse::result);
+            session.request(MessageIds.RESPONSE_IS_READ_ONLY_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class Response implements AutoCloseable {
      */
     public CompletableFuture<Integer> getError() {
         return CefFutures.map(
-            session.request(new ResponseGetErrorRequest(handle), ResponseGetErrorResponse.DECODER),
-            ResponseGetErrorResponse::result);
+            session.request(MessageIds.RESPONSE_GET_ERROR_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -81,7 +50,7 @@ public final class Response implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:72</a>
      */
     public CompletableFuture<Void> setError(int error) {
-        return CefFutures.discard(session.request(new ResponseSetErrorRequest(handle, error), ResponseSetErrorResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.RESPONSE_SET_ERROR_REQUEST, new ResponseSetErrorRequest(handle, error), EmptyMessage.DECODER));
     }
 
     /**
@@ -92,8 +61,8 @@ public final class Response implements AutoCloseable {
      */
     public CompletableFuture<Integer> getStatus() {
         return CefFutures.map(
-            session.request(new ResponseGetStatusRequest(handle), ResponseGetStatusResponse.DECODER),
-            ResponseGetStatusResponse::result);
+            session.request(MessageIds.RESPONSE_GET_STATUS_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -103,7 +72,7 @@ public final class Response implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:85</a>
      */
     public CompletableFuture<Void> setStatus(int status) {
-        return CefFutures.discard(session.request(new ResponseSetStatusRequest(handle, status), ResponseSetStatusResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.RESPONSE_SET_STATUS_REQUEST, new ResponseSetStatusRequest(handle, status), EmptyMessage.DECODER));
     }
 
     /**
@@ -114,8 +83,8 @@ public final class Response implements AutoCloseable {
      */
     public CompletableFuture<String> getStatusText() {
         return CefFutures.map(
-            session.request(new ResponseGetStatusTextRequest(handle), ResponseGetStatusTextResponse.DECODER),
-            ResponseGetStatusTextResponse::result);
+            session.request(MessageIds.RESPONSE_GET_STATUS_TEXT_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -127,7 +96,7 @@ public final class Response implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:97</a>
      */
     public CompletableFuture<Void> setStatusText(String statusText) {
-        return CefFutures.discard(session.request(new ResponseSetStatusTextRequest(handle, statusText), ResponseSetStatusTextResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.RESPONSE_SET_STATUS_TEXT_REQUEST, new ResponseSetStatusTextRequest(handle, statusText), EmptyMessage.DECODER));
     }
 
     /**
@@ -138,8 +107,8 @@ public final class Response implements AutoCloseable {
      */
     public CompletableFuture<String> getMimeType() {
         return CefFutures.map(
-            session.request(new ResponseGetMimeTypeRequest(handle), ResponseGetMimeTypeResponse.DECODER),
-            ResponseGetMimeTypeResponse::result);
+            session.request(MessageIds.RESPONSE_GET_MIME_TYPE_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -151,7 +120,7 @@ public final class Response implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:109</a>
      */
     public CompletableFuture<Void> setMimeType(String mimeType) {
-        return CefFutures.discard(session.request(new ResponseSetMimeTypeRequest(handle, mimeType), ResponseSetMimeTypeResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.RESPONSE_SET_MIME_TYPE_REQUEST, new ResponseSetMimeTypeRequest(handle, mimeType), EmptyMessage.DECODER));
     }
 
     /**
@@ -162,8 +131,8 @@ public final class Response implements AutoCloseable {
      */
     public CompletableFuture<String> getCharset() {
         return CefFutures.map(
-            session.request(new ResponseGetCharsetRequest(handle), ResponseGetCharsetResponse.DECODER),
-            ResponseGetCharsetResponse::result);
+            session.request(MessageIds.RESPONSE_GET_CHARSET_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -175,7 +144,7 @@ public final class Response implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:121</a>
      */
     public CompletableFuture<Void> setCharset(String charset) {
-        return CefFutures.discard(session.request(new ResponseSetCharsetRequest(handle, charset), ResponseSetCharsetResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.RESPONSE_SET_CHARSET_REQUEST, new ResponseSetCharsetRequest(handle, charset), EmptyMessage.DECODER));
     }
 
     /**
@@ -186,8 +155,8 @@ public final class Response implements AutoCloseable {
      */
     public CompletableFuture<String> getHeaderByName(String name) {
         return CefFutures.map(
-            session.request(new ResponseGetHeaderByNameRequest(handle, name), ResponseGetHeaderByNameResponse.DECODER),
-            ResponseGetHeaderByNameResponse::result);
+            session.request(MessageIds.RESPONSE_GET_HEADER_BY_NAME_REQUEST, new SelfHandleNameStringMessage(handle, name), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -199,7 +168,7 @@ public final class Response implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:133</a>
      */
     public CompletableFuture<Void> setHeaderByName(String name, String value, int overwrite) {
-        return CefFutures.discard(session.request(new ResponseSetHeaderByNameRequest(handle, name, value, overwrite), ResponseSetHeaderByNameResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.RESPONSE_SET_HEADER_BY_NAME_REQUEST, new SelfHandleNameStringValueStringOverwriteIntMessage(handle, name, value, overwrite), EmptyMessage.DECODER));
     }
 
     /**
@@ -210,8 +179,8 @@ public final class Response implements AutoCloseable {
      */
     public CompletableFuture<String> getUrl() {
         return CefFutures.map(
-            session.request(new ResponseGetUrlRequest(handle), ResponseGetUrlResponse.DECODER),
-            ResponseGetUrlResponse::result);
+            session.request(MessageIds.RESPONSE_GET_URL_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -223,6 +192,6 @@ public final class Response implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__response_8h.html">cef_response.h:161</a>
      */
     public CompletableFuture<Void> setUrl(String url) {
-        return CefFutures.discard(session.request(new ResponseSetUrlRequest(handle, url), ResponseSetUrlResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.RESPONSE_SET_URL_REQUEST, new SelfHandleUrlStringMessage(handle, url), EmptyMessage.DECODER));
     }
 }

@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -41,7 +42,7 @@ public interface CefPrintHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__handler_8h.html">cef_print_handler.h:104</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onPrintDialog(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int hasSelection, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onPrintDialog(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int hasSelection, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return Unhandled.bool(); }
 
     /**
      * Send the print job to the printer. Execute {@code callback} once the job is completed. Return {@code true} if the job will proceed or {@code false} to cancel the job immediately.
@@ -50,7 +51,7 @@ public interface CefPrintHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__print__handler_8h.html">cef_print_handler.h:114</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onPrintJob(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String documentName, String pdfFilePath, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onPrintJob(net.kurobako.cef4j.ipc.session.RemoteHandle browser, String documentName, String pdfFilePath, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return Unhandled.bool(); }
 
     /**
      * Reset client state related to printing.
@@ -64,19 +65,19 @@ public interface CefPrintHandler {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefPrintHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(PrintHandlerOnPrintStartEvent.MESSAGE_ID, PrintHandlerOnPrintStartEvent.DECODER,
+                session.on(MessageIds.PRINT_HANDLER_ON_PRINT_START_EVENT, BrowserHandleMessage.DECODER,
                         ev -> handler.onPrintStart(ev.browser())),
-                session.on(PrintHandlerOnPrintSettingsEvent.MESSAGE_ID, PrintHandlerOnPrintSettingsEvent.DECODER,
+                session.on(MessageIds.PRINT_HANDLER_ON_PRINT_SETTINGS_EVENT, PrintHandlerOnPrintSettingsEvent.DECODER,
                         ev -> handler.onPrintSettings(ev.browser(), ev.settings(), ev.getDefaults())),
-                session.intercept(PrintHandlerOnPrintDialogEvent.MESSAGE_ID, PrintHandlerOnPrintDialogEvent.DECODER, ev -> {
+                session.intercept(MessageIds.PRINT_HANDLER_ON_PRINT_DIALOG_EVENT, PrintHandlerOnPrintDialogEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onPrintDialog(ev.browser(), ev.hasSelection(), ev.callback());
-                    return java.util.Optional.of(new PrintHandlerOnPrintDialogResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.PRINT_HANDLER_ON_PRINT_DIALOG_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.intercept(PrintHandlerOnPrintJobEvent.MESSAGE_ID, PrintHandlerOnPrintJobEvent.DECODER, ev -> {
+                session.intercept(MessageIds.PRINT_HANDLER_ON_PRINT_JOB_EVENT, PrintHandlerOnPrintJobEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onPrintJob(ev.browser(), ev.documentName(), ev.pdfFilePath(), ev.callback());
-                    return java.util.Optional.of(new PrintHandlerOnPrintJobResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.PRINT_HANDLER_ON_PRINT_JOB_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.on(PrintHandlerOnPrintResetEvent.MESSAGE_ID, PrintHandlerOnPrintResetEvent.DECODER,
+                session.on(MessageIds.PRINT_HANDLER_ON_PRINT_RESET_EVENT, BrowserHandleMessage.DECODER,
                         ev -> handler.onPrintReset(ev.browser())));
     }
 }

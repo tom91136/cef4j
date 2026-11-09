@@ -7,6 +7,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -22,6 +24,17 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Media {
     private Media() {}
+    private static final CdpField<java.util.List<Media.PlayerError>> CAUSE = CdpField.of("cause", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Media.PlayerError.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<DOM.BackendNodeId> DOM_NODE_ID = CdpField.of("domNodeId", value -> new DOM.BackendNodeId(((Number) value).longValue()));
+    private static final CdpField<java.util.List<Media.PlayerError>> ERRORS = CdpField.of("errors", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Media.PlayerError.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Media.PlayerEvent>> EVENTS = CdpField.of("events", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Media.PlayerEvent.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<PlayerMessage.LevelValues> LEVEL = CdpField.of("level", value -> PlayerMessage.LevelValues.of((String) value));
+    private static final CdpField<java.util.List<Media.PlayerMessage>> MESSAGES = CdpField.of("messages", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Media.PlayerMessage.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Media.Player> PLAYER = CdpField.of("player", value -> java.util.Objects.requireNonNull(Media.Player.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Media.PlayerId> PLAYER_ID = CdpField.of("playerId", value -> new Media.PlayerId((String) value));
+    private static final CdpField<java.util.List<Media.PlayerProperty>> PROPERTIES = CdpField.of("properties", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Media.PlayerProperty.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Media.PlayerErrorSourceLocation>> STACK = CdpField.of("stack", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Media.PlayerErrorSourceLocation.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Media.Timestamp> TIMESTAMP = CdpField.of("timestamp", value -> new Media.Timestamp(((Number) value).doubleValue()));
     /**
      * Players will get an ID that is unique within the agent context.
      */
@@ -84,14 +97,14 @@ public final class Media {
          * @return the protocol field value
          */
         public PlayerMessage.LevelValues level() {
-            return PlayerMessage.LevelValues.of((String) require("level"));
+            return require(LEVEL);
         }
         /**
          * Returns the message field.
          * @return the protocol field value
          */
         public String message() {
-            return (String) require("message");
+            return requireString("message");
         }
         /**
          * Keep in sync with MediaLogMessageLevel We are currently keeping the message level &#x27;error&#x27; separate from the PlayerError type because right now they represent different things, this one being a DVLOG(ERROR) style log message that gets printed based on what log level is selected in the UI, and the other is a representation of a media::PipelineStatus object. Soon however we&#x27;re going to be moving away from using PipelineStatus for errors and introducing a new error type which should hopefully let us integrate the error log level into the PlayerError type.
@@ -126,14 +139,14 @@ public final class Media {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Returns the value field.
          * @return the protocol field value
          */
         public String value() {
-            return (String) require("value");
+            return requireString("value");
         }
         /**
          * Sets the name field.
@@ -168,14 +181,14 @@ public final class Media {
          * @return the protocol field value
          */
         public Media.Timestamp timestamp() {
-            return new Media.Timestamp(((Number) require("timestamp")).doubleValue());
+            return require(TIMESTAMP);
         }
         /**
          * Returns the value field.
          * @return the protocol field value
          */
         public String value() {
-            return (String) require("value");
+            return requireString("value");
         }
         /**
          * Sets the timestamp field.
@@ -210,14 +223,14 @@ public final class Media {
          * @return the protocol field value
          */
         public String file() {
-            return (String) require("file");
+            return requireString("file");
         }
         /**
          * Returns the line field.
          * @return the protocol field value
          */
         public long line() {
-            return ((Number) require("line")).longValue();
+            return requireLong("line");
         }
         /**
          * Sets the file field.
@@ -252,35 +265,35 @@ public final class Media {
          * @return the protocol field value
          */
         public String errorType() {
-            return (String) require("errorType");
+            return requireString("errorType");
         }
         /**
          * Code is the numeric enum entry for a specific set of error codes, such as PipelineStatusCodes in media/base/pipeline_status.h
          * @return the protocol field value
          */
         public long code() {
-            return ((Number) require("code")).longValue();
+            return requireLong("code");
         }
         /**
          * A trace of where this error was caused / where it passed through.
          * @return the protocol field value
          */
         public java.util.List<Media.PlayerErrorSourceLocation> stack() {
-            return CdpObject.requireList(require("stack"), element0 -> java.util.Objects.requireNonNull(Media.PlayerErrorSourceLocation.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(STACK);
         }
         /**
          * Errors potentially have a root cause error, ie, a DecoderError might be caused by an WindowsError
          * @return the protocol field value
          */
         public java.util.List<Media.PlayerError> cause() {
-            return CdpObject.requireList(require("cause"), element0 -> java.util.Objects.requireNonNull(Media.PlayerError.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(CAUSE);
         }
         /**
          * Extra data attached to an error, such as an HRESULT, Video Codec, etc.
          * @return the protocol field value
          */
         public java.util.Map<String, Object> data() {
-            return CdpObject.requireObjectMap(require("data"));
+            return requireObject("data");
         }
         /**
          * Sets the errorType field.
@@ -341,14 +354,14 @@ public final class Media {
          * @return the protocol field value
          */
         public Media.PlayerId playerId() {
-            return new Media.PlayerId((String) require("playerId"));
+            return require(PLAYER_ID);
         }
         /**
          * Returns the domNodeId field.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> domNodeId() {
-            return raw("domNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(DOM_NODE_ID);
         }
         /**
          * Sets the playerId field.
@@ -383,14 +396,14 @@ public final class Media {
          * @return the protocol field value
          */
         public Media.PlayerId playerId() {
-            return new Media.PlayerId((String) require("playerId"));
+            return require(PLAYER_ID);
         }
         /**
          * Returns the properties field.
          * @return the protocol field value
          */
         public java.util.List<Media.PlayerProperty> properties() {
-            return CdpObject.requireList(require("properties"), element0 -> java.util.Objects.requireNonNull(Media.PlayerProperty.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(PROPERTIES);
         }
         /**
          * Sets the playerId field.
@@ -425,14 +438,14 @@ public final class Media {
          * @return the protocol field value
          */
         public Media.PlayerId playerId() {
-            return new Media.PlayerId((String) require("playerId"));
+            return require(PLAYER_ID);
         }
         /**
          * Returns the events field.
          * @return the protocol field value
          */
         public java.util.List<Media.PlayerEvent> events() {
-            return CdpObject.requireList(require("events"), element0 -> java.util.Objects.requireNonNull(Media.PlayerEvent.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(EVENTS);
         }
         /**
          * Sets the playerId field.
@@ -467,14 +480,14 @@ public final class Media {
          * @return the protocol field value
          */
         public Media.PlayerId playerId() {
-            return new Media.PlayerId((String) require("playerId"));
+            return require(PLAYER_ID);
         }
         /**
          * Returns the messages field.
          * @return the protocol field value
          */
         public java.util.List<Media.PlayerMessage> messages() {
-            return CdpObject.requireList(require("messages"), element0 -> java.util.Objects.requireNonNull(Media.PlayerMessage.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(MESSAGES);
         }
         /**
          * Sets the playerId field.
@@ -509,14 +522,14 @@ public final class Media {
          * @return the protocol field value
          */
         public Media.PlayerId playerId() {
-            return new Media.PlayerId((String) require("playerId"));
+            return require(PLAYER_ID);
         }
         /**
          * Returns the errors field.
          * @return the protocol field value
          */
         public java.util.List<Media.PlayerError> errors() {
-            return CdpObject.requireList(require("errors"), element0 -> java.util.Objects.requireNonNull(Media.PlayerError.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(ERRORS);
         }
         /**
          * Sets the playerId field.
@@ -551,7 +564,7 @@ public final class Media {
          * @return the protocol field value
          */
         public Media.Player player() {
-            return java.util.Objects.requireNonNull(Media.Player.fromMap(CdpObject.requireObjectMap(require("player"))));
+            return require(PLAYER);
         }
         /**
          * Sets the player field.
@@ -563,22 +576,21 @@ public final class Media {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Enables the Media domain
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("Media.enable", null);
+            return call("Media.enable");
         }
         /**
          * Disables the Media domain.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Media.disable", null);
+            return call("Media.disable");
         }
         /**
          * This can be called multiple times, and can be used to set / override / remove player properties. A null propValue indicates removal.
@@ -586,7 +598,7 @@ public final class Media {
          * @return a removable subscription
          */
         public CdpSubscription onPlayerPropertiesChanged(Consumer<PlayerPropertiesChangedEvent> handler) {
-            return client.on("Media.playerPropertiesChanged", PlayerPropertiesChangedEvent::fromMap, handler);
+            return on("Media.playerPropertiesChanged", PlayerPropertiesChangedEvent::fromMap, handler);
         }
         /**
          * Send events as a list, allowing them to be batched on the browser for less congestion. If batched, events must ALWAYS be in chronological order.
@@ -594,7 +606,7 @@ public final class Media {
          * @return a removable subscription
          */
         public CdpSubscription onPlayerEventsAdded(Consumer<PlayerEventsAddedEvent> handler) {
-            return client.on("Media.playerEventsAdded", PlayerEventsAddedEvent::fromMap, handler);
+            return on("Media.playerEventsAdded", PlayerEventsAddedEvent::fromMap, handler);
         }
         /**
          * Send a list of any messages that need to be delivered.
@@ -602,7 +614,7 @@ public final class Media {
          * @return a removable subscription
          */
         public CdpSubscription onPlayerMessagesLogged(Consumer<PlayerMessagesLoggedEvent> handler) {
-            return client.on("Media.playerMessagesLogged", PlayerMessagesLoggedEvent::fromMap, handler);
+            return on("Media.playerMessagesLogged", PlayerMessagesLoggedEvent::fromMap, handler);
         }
         /**
          * Send a list of any errors that need to be delivered.
@@ -610,7 +622,7 @@ public final class Media {
          * @return a removable subscription
          */
         public CdpSubscription onPlayerErrorsRaised(Consumer<PlayerErrorsRaisedEvent> handler) {
-            return client.on("Media.playerErrorsRaised", PlayerErrorsRaisedEvent::fromMap, handler);
+            return on("Media.playerErrorsRaised", PlayerErrorsRaisedEvent::fromMap, handler);
         }
         /**
          * Called whenever a player is created, or when a new agent joins and receives a list of active players. If an agent is restored, it will receive one event for each active player.
@@ -618,7 +630,7 @@ public final class Media {
          * @return a removable subscription
          */
         public CdpSubscription onPlayerCreated(Consumer<PlayerCreatedEvent> handler) {
-            return client.on("Media.playerCreated", PlayerCreatedEvent::fromMap, handler);
+            return on("Media.playerCreated", PlayerCreatedEvent::fromMap, handler);
         }
     }
 }

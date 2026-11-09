@@ -14,8 +14,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
+import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessage;
 import net.kurobako.cef4j.ipc.protocol.gen.Frame;
-import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.protocol.gen.OsrPaintEvent;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
@@ -39,13 +40,12 @@ class OsrPaintIntegrationTest {
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             LinkedBlockingQueue<OsrPaintEvent> events = new LinkedBlockingQueue<>();
-            session.on(OsrPaintEvent.MESSAGE_ID, OsrPaintEvent.DECODER, events::offer);
+            session.on(MessageIds.OSR_PAINT_EVENT, OsrPaintEvent.DECODER, events::offer);
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
-            session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, e -> {
-                        if (!handleFuture.isDone()) handleFuture.complete(e.browser());
-                    });
+            session.onLatest(MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, BrowserHandleMessage.DECODER, e -> {
+                if (!handleFuture.isDone()) handleFuture.complete(e.browser());
+            });
             RemoteHandle browserHandle = handleFuture.get(20, TimeUnit.SECONDS);
             Browser browser = new Browser(session, browserHandle);
             Frame frame = browser.getMainFrame().get(5, TimeUnit.SECONDS);

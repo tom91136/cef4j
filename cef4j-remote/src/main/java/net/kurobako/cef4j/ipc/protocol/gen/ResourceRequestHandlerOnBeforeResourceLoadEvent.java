@@ -2,18 +2,16 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class ResourceRequestHandlerOnBeforeResourceLoadEvent implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 932560306;
 
     private final RemoteHandle browser;
     private final RemoteHandle frame;
@@ -44,37 +42,25 @@ public final class ResourceRequestHandlerOnBeforeResourceLoadEvent implements Ce
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 16;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(browser.id());
-            __dst.putInt(frame.id());
-            __dst.putInt(request.id());
-            __dst.putInt(callback.id());
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(browser.id());
+            __out.putInt(frame.id());
+            __out.putInt(request.id());
+            __out.putInt(callback.id());
+        });
     }
 
-    public static final CefMessageDecoder<ResourceRequestHandlerOnBeforeResourceLoadEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<ResourceRequestHandlerOnBeforeResourceLoadEvent> DECODER = WireDecoder.message("ResourceRequestHandlerOnBeforeResourceLoadEvent", __buf -> {
         final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
         final RemoteHandle frame = WireDecoder.handle(__buf, "frame");
         final RemoteHandle request = WireDecoder.handle(__buf, "request");
         final RemoteHandle callback = WireDecoder.handle(__buf, "callback");
-        WireDecoder.requireFullyConsumed(__buf, "ResourceRequestHandlerOnBeforeResourceLoadEvent");
         return new ResourceRequestHandlerOnBeforeResourceLoadEvent(browser, frame, request, callback);
-    };
+    });
 }

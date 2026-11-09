@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
@@ -19,6 +21,7 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Schema {
     private Schema() {}
+    private static final CdpField<java.util.List<Schema.Domain>> DOMAINS = CdpField.of("domains", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Schema.Domain.fromMap(CdpObject.requireObjectMap(element0)))));
     /**
      * Description of the protocol domain.
      */
@@ -33,14 +36,14 @@ public final class Schema {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Domain version.
          * @return the protocol field value
          */
         public String version() {
-            return (String) require("version");
+            return requireString("version");
         }
         /**
          * Domain name.
@@ -61,15 +64,14 @@ public final class Schema {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Returns supported domains.
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Schema.Domain>> getDomains() {
-            return client.call("Schema.getDomains", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("domains")), element0 -> java.util.Objects.requireNonNull(Schema.Domain.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Schema.getDomains", DOMAINS::require);
         }
     }
 }

@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -59,7 +60,7 @@ public interface CefLifeSpanHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__life__span__handler_8h.html">cef_life_span_handler.h:171</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> doClose(net.kurobako.cef4j.ipc.session.RemoteHandle browser) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> doClose(net.kurobako.cef4j.ipc.session.RemoteHandle browser) { return Unhandled.bool(); }
 
     /**
      * Called just before a browser is destroyed. Release all references to the browser object and do not attempt to execute any methods on the browser object (other than IsValid, GetIdentifier or IsSame) after this callback returns. CefFrameHandler callbacks related to final main frame destruction, and OnBeforePopupAborted callbacks for any pending popups, will arrive after this callback and {@code CefBrowser.isValid()} will return {@code false} at that time. Any in-progress network requests associated with {@code browser} will be aborted when the browser is destroyed, and CefResourceRequestHandler callbacks related to those requests may still arrive on the IO thread after this callback. See CefFrameHandler and DoClose() documentation for additional usage information.
@@ -73,15 +74,15 @@ public interface CefLifeSpanHandler {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefLifeSpanHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(LifeSpanHandlerOnBeforePopupAbortedEvent.MESSAGE_ID, LifeSpanHandlerOnBeforePopupAbortedEvent.DECODER,
+                session.on(MessageIds.LIFE_SPAN_HANDLER_ON_BEFORE_POPUP_ABORTED_EVENT, LifeSpanHandlerOnBeforePopupAbortedEvent.DECODER,
                         ev -> handler.onBeforePopupAborted(ev.browser(), ev.popupId())),
-                session.onLatest(LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER,
+                session.onLatest(MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, BrowserHandleMessage.DECODER,
                         ev -> handler.onAfterCreated(ev.browser())),
-                session.intercept(LifeSpanHandlerDoCloseEvent.MESSAGE_ID, LifeSpanHandlerDoCloseEvent.DECODER, ev -> {
+                session.intercept(MessageIds.LIFE_SPAN_HANDLER_DO_CLOSE_EVENT, BrowserHandleMessage.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.doClose(ev.browser());
-                    return java.util.Optional.of(new LifeSpanHandlerDoCloseResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.LIFE_SPAN_HANDLER_DO_CLOSE_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.on(LifeSpanHandlerOnBeforeCloseEvent.MESSAGE_ID, LifeSpanHandlerOnBeforeCloseEvent.DECODER,
+                session.on(MessageIds.LIFE_SPAN_HANDLER_ON_BEFORE_CLOSE_EVENT, BrowserHandleMessage.DECODER,
                         ev -> handler.onBeforeClose(ev.browser())));
     }
 }

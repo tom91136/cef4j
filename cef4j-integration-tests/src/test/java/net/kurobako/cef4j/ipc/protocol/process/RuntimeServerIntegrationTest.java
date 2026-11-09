@@ -18,15 +18,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import net.kurobako.cef4j.gen.CefBrowserSettings;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
-import net.kurobako.cef4j.ipc.protocol.gen.BrowserSettings;
+import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessage;
 import net.kurobako.cef4j.ipc.protocol.gen.CefDisplayHandler;
 import net.kurobako.cef4j.ipc.protocol.gen.CefLoadHandler;
 import net.kurobako.cef4j.ipc.protocol.gen.CreateBrowserRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.CreateBrowserResponse;
+import net.kurobako.cef4j.ipc.protocol.gen.EmptyMessage;
 import net.kurobako.cef4j.ipc.protocol.gen.Frame;
-import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
-import net.kurobako.cef4j.ipc.protocol.gen.ReleaseHandleResponse;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.Envelope;
@@ -98,10 +98,10 @@ class RuntimeServerIntegrationTest {
         try (RuntimeServerProcess server = startServerWithEnv("uds", "unix://" + socket);
                 CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
-            CreateBrowserResponse response = session.request(
-                            new CreateBrowserRequest(
-                                    "about:blank", BrowserSettings.builder().build()),
-                            CreateBrowserResponse.DECODER)
+            EmptyMessage response = session.request(
+                            MessageIds.CREATE_BROWSER_REQUEST,
+                            new CreateBrowserRequest("about:blank", new CefBrowserSettings.Mutable().toImmutable()),
+                            EmptyMessage.DECODER)
                     .get(20, TimeUnit.SECONDS);
             assertThat(response).isNotNull();
             assertThat(server.transport()).isEqualTo("uds");
@@ -123,10 +123,10 @@ class RuntimeServerIntegrationTest {
         try (RuntimeServerProcess server = startServerWithEnv("local", endpoint);
                 CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
-            CreateBrowserResponse response = session.request(
-                            new CreateBrowserRequest(
-                                    "about:blank", BrowserSettings.builder().build()),
-                            CreateBrowserResponse.DECODER)
+            EmptyMessage response = session.request(
+                            MessageIds.CREATE_BROWSER_REQUEST,
+                            new CreateBrowserRequest("about:blank", new CefBrowserSettings.Mutable().toImmutable()),
+                            EmptyMessage.DECODER)
                     .get(20, TimeUnit.SECONDS);
             assertThat(response).isNotNull();
             assertThat(server.transport()).isEqualTo("local");
@@ -154,10 +154,10 @@ class RuntimeServerIntegrationTest {
         try (RuntimeServerProcess server = startServerWithEnv("websocket", "ws://127.0.0.1:0/cef4j");
                 CefTransport transport = server.connect();
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
-            CreateBrowserResponse response = session.request(
-                            new CreateBrowserRequest(
-                                    "about:blank", BrowserSettings.builder().build()),
-                            CreateBrowserResponse.DECODER)
+            EmptyMessage response = session.request(
+                            MessageIds.CREATE_BROWSER_REQUEST,
+                            new CreateBrowserRequest("about:blank", new CefBrowserSettings.Mutable().toImmutable()),
+                            EmptyMessage.DECODER)
                     .get(20, TimeUnit.SECONDS);
             assertThat(response).isNotNull();
             assertThat(server.transport()).isEqualTo("websocket");
@@ -181,10 +181,10 @@ class RuntimeServerIntegrationTest {
             assertThat(secondPeer.recv(0)).isNull();
 
             assertThat(session.request(
+                                    MessageIds.CREATE_BROWSER_REQUEST,
                                     new CreateBrowserRequest(
-                                            "about:blank",
-                                            BrowserSettings.builder().build()),
-                                    CreateBrowserResponse.DECODER)
+                                            "about:blank", new CefBrowserSettings.Mutable().toImmutable()),
+                                    EmptyMessage.DECODER)
                             .get(20, TimeUnit.SECONDS))
                     .isNotNull();
         }
@@ -199,10 +199,9 @@ class RuntimeServerIntegrationTest {
             String url = "http://127.0.0.1:" + fixture.getAddress().getPort() + "/hello";
 
             CompletableFuture<RemoteHandle> browserHandle = new CompletableFuture<>();
-            session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, ev -> {
-                        if (!browserHandle.isDone()) browserHandle.complete(ev.browser());
-                    });
+            session.onLatest(MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, BrowserHandleMessage.DECODER, ev -> {
+                if (!browserHandle.isDone()) browserHandle.complete(ev.browser());
+            });
 
             CountDownLatch sawOurUrl = new CountDownLatch(1);
             int[] capturedStatus = {-1};
@@ -244,10 +243,9 @@ class RuntimeServerIntegrationTest {
             String url = "http://127.0.0.1:" + fixture.getAddress().getPort() + "/hello";
 
             CompletableFuture<RemoteHandle> browserHandle = new CompletableFuture<>();
-            session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, ev -> {
-                        if (!browserHandle.isDone()) browserHandle.complete(ev.browser());
-                    });
+            session.onLatest(MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, BrowserHandleMessage.DECODER, ev -> {
+                if (!browserHandle.isDone()) browserHandle.complete(ev.browser());
+            });
 
             CountDownLatch sawOurUrl = new CountDownLatch(1);
             CefDisplayHandler.register(session, new CefDisplayHandler() {
@@ -278,13 +276,9 @@ class RuntimeServerIntegrationTest {
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(60))) {
 
             int unhandledMessageId = 9999;
-            CompletableFuture<ReleaseHandleResponse> fut = session.request(
+            CompletableFuture<EmptyMessage> fut = session.request(
+                    unhandledMessageId,
                     new net.kurobako.cef4j.ipc.session.CefMessageEncoder() {
-                        @Override
-                        public int messageId() {
-                            return unhandledMessageId;
-                        }
-
                         @Override
                         public int encodedSize() {
                             return 0;
@@ -293,7 +287,7 @@ class RuntimeServerIntegrationTest {
                         @Override
                         public void encodeInto(java.nio.ByteBuffer dst) {}
                     },
-                    ReleaseHandleResponse.DECODER);
+                    EmptyMessage.DECODER);
 
             server.kill();
 

@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.protocol.gen.OsrPaintEvent;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
@@ -132,8 +133,8 @@ public final class SharedFileFrameTransport implements FrameTransport {
     private void subscribe(CefSession session) {
         this.session = session;
         this.registration = browser == null
-                ? session.onLatest(OsrPaintEvent.MESSAGE_ID, OsrPaintEvent.DECODER, this::onPaint)
-                : session.on(OsrPaintEvent.MESSAGE_ID, OsrPaintEvent.DECODER, this::onPaint);
+                ? session.onLatest(MessageIds.OSR_PAINT_EVENT, OsrPaintEvent.DECODER, this::onPaint)
+                : session.on(MessageIds.OSR_PAINT_EVENT, OsrPaintEvent.DECODER, this::onPaint);
     }
 
     private String browserIdForLog() {

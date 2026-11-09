@@ -1,13 +1,14 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpValue;
 import net.kurobako.cef4j.policy.NullableBoundary;
@@ -23,6 +24,12 @@ import org.jspecify.annotations.Nullable;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Memory {
     private Memory() {}
+    private static final CdpField<java.util.List<Memory.DOMCounter>> COUNTERS = CdpField.of("counters", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Memory.DOMCounter.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Memory.PressureLevel> LEVEL = CdpField.of("level", value -> Memory.PressureLevel.of((String) value));
+    private static final CdpField<java.util.List<Memory.Module>> MODULES = CdpField.of("modules", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Memory.Module.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Memory.SamplingProfile> PROFILE = CdpField.of("profile", value -> java.util.Objects.requireNonNull(Memory.SamplingProfile.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Memory.SamplingProfileNode>> SAMPLES = CdpField.of("samples", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Memory.SamplingProfileNode.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<String>> STACK = CdpField.of("stack", value -> CdpObject.requireList(value, element0 -> (String) element0));
     /**
      * Memory pressure level.
      */
@@ -53,21 +60,21 @@ public final class Memory {
          * @return the protocol field value
          */
         public double size() {
-            return ((Number) require("size")).doubleValue();
+            return requireDouble("size");
         }
         /**
          * Total bytes attributed to this sample.
          * @return the protocol field value
          */
         public double total() {
-            return ((Number) require("total")).doubleValue();
+            return requireDouble("total");
         }
         /**
          * Execution stack at the point of allocation.
          * @return the protocol field value
          */
         public java.util.List<String> stack() {
-            return CdpObject.requireList(require("stack"), element0 -> (String) element0);
+            return require(STACK);
         }
         /**
          * Size of the sampled allocation.
@@ -111,14 +118,14 @@ public final class Memory {
          * @return the protocol field value
          */
         public java.util.List<Memory.SamplingProfileNode> samples() {
-            return CdpObject.requireList(require("samples"), element0 -> java.util.Objects.requireNonNull(Memory.SamplingProfileNode.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(SAMPLES);
         }
         /**
          * Returns the modules field.
          * @return the protocol field value
          */
         public java.util.List<Memory.Module> modules() {
-            return CdpObject.requireList(require("modules"), element0 -> java.util.Objects.requireNonNull(Memory.Module.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(MODULES);
         }
         /**
          * Sets the samples field.
@@ -153,28 +160,28 @@ public final class Memory {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * UUID of the module.
          * @return the protocol field value
          */
         public String uuid() {
-            return (String) require("uuid");
+            return requireString("uuid");
         }
         /**
          * Base address where the module is loaded into memory. Encoded as a decimal or hexadecimal (0x prefixed) string.
          * @return the protocol field value
          */
         public String baseAddress() {
-            return (String) require("baseAddress");
+            return requireString("baseAddress");
         }
         /**
          * Size of the module in bytes.
          * @return the protocol field value
          */
         public double size() {
-            return ((Number) require("size")).doubleValue();
+            return requireDouble("size");
         }
         /**
          * Name of the module.
@@ -227,14 +234,14 @@ public final class Memory {
          * @return the protocol field value
          */
         public String name() {
-            return (String) require("name");
+            return requireString("name");
         }
         /**
          * Object count.
          * @return the protocol field value
          */
         public long count() {
-            return ((Number) require("count")).longValue();
+            return requireLong("count");
         }
         /**
          * Object name. Note: object names should be presumed volatile and clients should not expect the returned names to be consistent across runs.
@@ -260,13 +267,6 @@ public final class Memory {
      */
     public static final class SetPressureNotificationsSuppressedRequest extends CdpObject {
         public SetPressureNotificationsSuppressedRequest() {}
-        /**
-         * Enable/disable suppressing memory pressure notifications in all processes.
-         * @param suppressed protocol value
-         */
-        public SetPressureNotificationsSuppressedRequest(boolean suppressed) {
-            suppressed(suppressed);
-        }
         public static SetPressureNotificationsSuppressedRequest fromMap(Map<String, Object> values) {
             final SetPressureNotificationsSuppressedRequest instance_ = new SetPressureNotificationsSuppressedRequest();
             if (values != null) instance_.values.putAll(values);
@@ -277,7 +277,7 @@ public final class Memory {
          * @return the protocol field value
          */
         public boolean suppressed() {
-            return (Boolean) require("suppressed");
+            return requireBoolean("suppressed");
         }
         /**
          * If true, memory pressure notifications will be suppressed.
@@ -294,13 +294,6 @@ public final class Memory {
      */
     public static final class SimulatePressureNotificationRequest extends CdpObject {
         public SimulatePressureNotificationRequest() {}
-        /**
-         * Simulate a memory pressure notification in all processes.
-         * @param level protocol value
-         */
-        public SimulatePressureNotificationRequest(Memory.PressureLevel level) {
-            level(level);
-        }
         public static SimulatePressureNotificationRequest fromMap(Map<String, Object> values) {
             final SimulatePressureNotificationRequest instance_ = new SimulatePressureNotificationRequest();
             if (values != null) instance_.values.putAll(values);
@@ -311,7 +304,7 @@ public final class Memory {
          * @return the protocol field value
          */
         public Memory.PressureLevel level() {
-            return Memory.PressureLevel.of((String) require("level"));
+            return require(LEVEL);
         }
         /**
          * Memory pressure level of the notification.
@@ -338,14 +331,14 @@ public final class Memory {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong samplingInterval() {
-            return raw("samplingInterval").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("samplingInterval");
         }
         /**
          * Do not randomize intervals between samples.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> suppressRandomness() {
-            return raw("suppressRandomness").map(value -> (Boolean) value);
+            return optionalBoolean("suppressRandomness");
         }
         /**
          * Average number of bytes between samples.
@@ -380,21 +373,21 @@ public final class Memory {
          * @return the protocol field value
          */
         public long documents() {
-            return ((Number) require("documents")).longValue();
+            return requireLong("documents");
         }
         /**
          * Returns the nodes field.
          * @return the protocol field value
          */
         public long nodes() {
-            return ((Number) require("nodes")).longValue();
+            return requireLong("nodes");
         }
         /**
          * Returns the jsEventListeners field.
          * @return the protocol field value
          */
         public long jsEventListeners() {
-            return ((Number) require("jsEventListeners")).longValue();
+            return requireLong("jsEventListeners");
         }
         /**
          * Sets the documents field.
@@ -424,36 +417,35 @@ public final class Memory {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Retruns current DOM object counters.
          * @return a stage completing with the command result
          */
         public CompletionStage<GetDOMCountersResult> getDOMCounters() {
-            return client.call("Memory.getDOMCounters", null, result_ -> new GetDOMCountersResult(result_));
+            return call("Memory.getDOMCounters", GetDOMCountersResult::fromMap);
         }
         /**
          * Retruns DOM object counters after preparing renderer for leak detection.
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Memory.DOMCounter>> getDOMCountersForLeakDetection() {
-            return client.call("Memory.getDOMCountersForLeakDetection", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("counters")), element0 -> java.util.Objects.requireNonNull(Memory.DOMCounter.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Memory.getDOMCountersForLeakDetection", COUNTERS::require);
         }
         /**
          * Prepares for leak detection by terminating workers, stopping spellcheckers, dropping non-essential internal caches, running garbage collections, etc.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> prepareForLeakDetection() {
-            return client.call("Memory.prepareForLeakDetection", null);
+            return call("Memory.prepareForLeakDetection");
         }
         /**
          * Simulate OomIntervention by purging V8 memory.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> forciblyPurgeJavaScriptMemory() {
-            return client.call("Memory.forciblyPurgeJavaScriptMemory", null);
+            return call("Memory.forciblyPurgeJavaScriptMemory");
         }
         /**
          * Enable/disable suppressing memory pressure notifications in all processes.
@@ -461,9 +453,7 @@ public final class Memory {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPressureNotificationsSuppressed(boolean suppressed) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("suppressed", CdpObject.json(suppressed));
-            return client.call("Memory.setPressureNotificationsSuppressed", params);
+            return call("Memory.setPressureNotificationsSuppressed", params("suppressed", suppressed));
         }
         /**
          * Enable/disable suppressing memory pressure notifications in all processes.
@@ -471,7 +461,7 @@ public final class Memory {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPressureNotificationsSuppressed(SetPressureNotificationsSuppressedRequest request) {
-            return client.call("Memory.setPressureNotificationsSuppressed", request == null ? null : request.toMap());
+            return call("Memory.setPressureNotificationsSuppressed", request);
         }
         /**
          * Simulate a memory pressure notification in all processes.
@@ -479,9 +469,7 @@ public final class Memory {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> simulatePressureNotification(Memory.PressureLevel level) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("level", CdpObject.json(level));
-            return client.call("Memory.simulatePressureNotification", params);
+            return call("Memory.simulatePressureNotification", params("level", level));
         }
         /**
          * Simulate a memory pressure notification in all processes.
@@ -489,7 +477,7 @@ public final class Memory {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> simulatePressureNotification(SimulatePressureNotificationRequest request) {
-            return client.call("Memory.simulatePressureNotification", request == null ? null : request.toMap());
+            return call("Memory.simulatePressureNotification", request);
         }
         /**
          * Start collecting native memory profile.
@@ -498,17 +486,14 @@ public final class Memory {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startSampling(@Nullable Long samplingInterval, @Nullable Boolean suppressRandomness) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (samplingInterval != null) params.put("samplingInterval", CdpObject.json(samplingInterval));
-            if (suppressRandomness != null) params.put("suppressRandomness", CdpObject.json(suppressRandomness));
-            return client.call("Memory.startSampling", params);
+            return call("Memory.startSampling", params("samplingInterval", samplingInterval, "suppressRandomness", suppressRandomness));
         }
         /**
          * Start collecting native memory profile.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startSampling() {
-            return client.call("Memory.startSampling", null);
+            return call("Memory.startSampling");
         }
         /**
          * Start collecting native memory profile.
@@ -516,35 +501,35 @@ public final class Memory {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startSampling(StartSamplingRequest request) {
-            return client.call("Memory.startSampling", request == null ? null : request.toMap());
+            return call("Memory.startSampling", request);
         }
         /**
          * Stop collecting native memory profile.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopSampling() {
-            return client.call("Memory.stopSampling", null);
+            return call("Memory.stopSampling");
         }
         /**
          * Retrieve native memory allocations profile collected since renderer process startup.
          * @return a stage completing with the command result
          */
         public CompletionStage<Memory.SamplingProfile> getAllTimeSamplingProfile() {
-            return client.call("Memory.getAllTimeSamplingProfile", null, result_ -> java.util.Objects.requireNonNull(Memory.SamplingProfile.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("profile"))))));
+            return call("Memory.getAllTimeSamplingProfile", PROFILE::require);
         }
         /**
          * Retrieve native memory allocations profile collected since browser process startup.
          * @return a stage completing with the command result
          */
         public CompletionStage<Memory.SamplingProfile> getBrowserSamplingProfile() {
-            return client.call("Memory.getBrowserSamplingProfile", null, result_ -> java.util.Objects.requireNonNull(Memory.SamplingProfile.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("profile"))))));
+            return call("Memory.getBrowserSamplingProfile", PROFILE::require);
         }
         /**
          * Retrieve native memory allocations profile collected since last {@code startSampling} call.
          * @return a stage completing with the command result
          */
         public CompletionStage<Memory.SamplingProfile> getSamplingProfile() {
-            return client.call("Memory.getSamplingProfile", null, result_ -> java.util.Objects.requireNonNull(Memory.SamplingProfile.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("profile"))))));
+            return call("Memory.getSamplingProfile", PROFILE::require);
         }
     }
 }

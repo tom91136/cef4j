@@ -1,7 +1,6 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -10,6 +9,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -25,6 +26,61 @@ import org.jspecify.annotations.Nullable;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class Debugger {
     private Debugger() {}
+    private static final CdpField<Debugger.Location> ACTUAL_LOCATION = CdpField.of("actualLocation", value -> java.util.Objects.requireNonNull(Debugger.Location.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Runtime.StackTraceId> ASYNC_CALL_STACK_TRACE_ID = CdpField.of("asyncCallStackTraceId", value -> java.util.Objects.requireNonNull(Runtime.StackTraceId.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Runtime.StackTrace> ASYNC_STACK_TRACE = CdpField.of("asyncStackTrace", value -> java.util.Objects.requireNonNull(Runtime.StackTrace.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Runtime.StackTraceId> ASYNC_STACK_TRACE_ID = CdpField.of("asyncStackTraceId", value -> java.util.Objects.requireNonNull(Runtime.StackTraceId.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Debugger.BreakpointId> BREAKPOINT_ID = CdpField.of("breakpointId", value -> new Debugger.BreakpointId((String) value));
+    private static final CdpField<String> BYTECODE = CdpField.of("bytecode", value -> (String) value);
+    private static final CdpField<java.util.List<Long>> BYTECODE_OFFSETS = CdpField.of("bytecodeOffsets", value -> CdpObject.requireList(value, element0 -> ((Number) element0).longValue()));
+    private static final CdpField<java.util.List<Debugger.CallFrame>> CALL_FRAMES = CdpField.of("callFrames", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Debugger.CallFrame.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Debugger.CallFrameId> CALL_FRAME_ID = CdpField.of("callFrameId", value -> new Debugger.CallFrameId((String) value));
+    private static final CdpField<Debugger.WasmDisassemblyChunk> CHUNK = CdpField.of("chunk", value -> java.util.Objects.requireNonNull(Debugger.WasmDisassemblyChunk.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Runtime.UniqueDebuggerId> DEBUGGER_ID = CdpField.of("debuggerId", value -> new Runtime.UniqueDebuggerId((String) value));
+    private static final CdpField<java.util.List<Debugger.DebugSymbols>> DEBUG_SYMBOLS = CdpField.of("debugSymbols", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Debugger.DebugSymbols.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Debugger.ScriptPosition> END = CdpField.of("end", value -> java.util.Objects.requireNonNull(Debugger.ScriptPosition.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Debugger.Location> END_2 = CdpField.of("end", value -> java.util.Objects.requireNonNull(Debugger.Location.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Debugger.Location> END_LOCATION = CdpField.of("endLocation", value -> java.util.Objects.requireNonNull(Debugger.Location.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Runtime.ExceptionDetails> EXCEPTION_DETAILS = CdpField.of("exceptionDetails", value -> java.util.Objects.requireNonNull(Runtime.ExceptionDetails.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Runtime.ExecutionContextId> EXECUTION_CONTEXT_ID = CdpField.of("executionContextId", value -> new Runtime.ExecutionContextId(((Number) value).longValue()));
+    private static final CdpField<java.util.List<Long>> FUNCTION_BODY_OFFSETS = CdpField.of("functionBodyOffsets", value -> CdpObject.requireList(value, element0 -> ((Number) element0).longValue()));
+    private static final CdpField<Debugger.Location> FUNCTION_LOCATION = CdpField.of("functionLocation", value -> java.util.Objects.requireNonNull(Debugger.Location.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<String>> HIT_BREAKPOINTS = CdpField.of("hitBreakpoints", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<SetInstrumentationBreakpointInstrumentationValues> INSTRUMENTATION = CdpField.of("instrumentation", value -> SetInstrumentationBreakpointInstrumentationValues.of((String) value));
+    private static final CdpField<java.util.List<String>> LINES = CdpField.of("lines", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Debugger.Location> LOCATION = CdpField.of("location", value -> java.util.Objects.requireNonNull(Debugger.Location.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Debugger.Location>> LOCATIONS = CdpField.of("locations", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Debugger.Location.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<Debugger.BreakLocation>> LOCATIONS_2 = CdpField.of("locations", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Debugger.BreakLocation.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<RestartFrameModeValues> MODE = CdpField.of("mode", value -> RestartFrameModeValues.of((String) value));
+    private static final CdpField<Runtime.CallArgument> NEW_VALUE = CdpField.of("newValue", value -> java.util.Objects.requireNonNull(Runtime.CallArgument.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Runtime.RemoteObject> OBJECT = CdpField.of("object", value -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Runtime.RemoteObjectId> OBJECT_ID = CdpField.of("objectId", value -> new Runtime.RemoteObjectId((String) value));
+    private static final CdpField<Runtime.StackTraceId> PARENT_STACK_TRACE_ID = CdpField.of("parentStackTraceId", value -> java.util.Objects.requireNonNull(Runtime.StackTraceId.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<String>> PATTERNS = CdpField.of("patterns", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<java.util.List<Debugger.ScriptPosition>> POSITIONS = CdpField.of("positions", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Debugger.ScriptPosition.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<PausedEvent.ReasonValues> REASON = CdpField.of("reason", value -> PausedEvent.ReasonValues.of((String) value));
+    private static final CdpField<java.util.List<Debugger.ResolvedBreakpoint>> RESOLVED_BREAKPOINTS = CdpField.of("resolvedBreakpoints", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Debugger.ResolvedBreakpoint.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Runtime.RemoteObject> RESULT = CdpField.of("result", value -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Debugger.SearchMatch>> RESULT_2 = CdpField.of("result", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Debugger.SearchMatch.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Runtime.RemoteObject> RETURN_VALUE = CdpField.of("returnValue", value -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<Debugger.Scope>> SCOPE_CHAIN = CdpField.of("scopeChain", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Debugger.Scope.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Runtime.ScriptId> SCRIPT_ID = CdpField.of("scriptId", value -> new Runtime.ScriptId((String) value));
+    private static final CdpField<Debugger.ScriptLanguage> SCRIPT_LANGUAGE = CdpField.of("scriptLanguage", value -> Debugger.ScriptLanguage.of((String) value));
+    private static final CdpField<java.util.List<Debugger.LocationRange>> SKIP_LIST = CdpField.of("skipList", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(Debugger.LocationRange.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<Runtime.StackTrace> STACK_TRACE = CdpField.of("stackTrace", value -> java.util.Objects.requireNonNull(Runtime.StackTrace.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Runtime.StackTraceId> STACK_TRACE_ID = CdpField.of("stackTraceId", value -> java.util.Objects.requireNonNull(Runtime.StackTraceId.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Debugger.ScriptPosition> START = CdpField.of("start", value -> java.util.Objects.requireNonNull(Debugger.ScriptPosition.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Debugger.Location> START_2 = CdpField.of("start", value -> java.util.Objects.requireNonNull(Debugger.Location.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Debugger.Location> START_LOCATION = CdpField.of("startLocation", value -> java.util.Objects.requireNonNull(Debugger.Location.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<SetPauseOnExceptionsStateValues> STATE = CdpField.of("state", value -> SetPauseOnExceptionsStateValues.of((String) value));
+    private static final CdpField<SetScriptSourceResult.StatusValues> STATUS = CdpField.of("status", value -> SetScriptSourceResult.StatusValues.of((String) value));
+    private static final CdpField<ContinueToLocationTargetCallFramesValues> TARGET_CALL_FRAMES = CdpField.of("targetCallFrames", value -> ContinueToLocationTargetCallFramesValues.of((String) value));
+    private static final CdpField<Runtime.RemoteObject> THIS = CdpField.of("this", value -> java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<Runtime.TimeDelta> TIMEOUT = CdpField.of("timeout", value -> new Runtime.TimeDelta(((Number) value).doubleValue()));
+    private static final CdpField<Scope.TypeValues> TYPE = CdpField.of("type", value -> Scope.TypeValues.of((String) value));
+    private static final CdpField<BreakLocation.TypeValues> TYPE_2 = CdpField.of("type", value -> BreakLocation.TypeValues.of((String) value));
+    private static final CdpField<DebugSymbols.TypeValues> TYPE_3 = CdpField.of("type", value -> DebugSymbols.TypeValues.of((String) value));
+    private static final CdpField<java.util.List<String>> UNIQUE_IDS = CdpField.of("uniqueIds", value -> CdpObject.requireList(value, element0 -> (String) element0));
     /**
      * Breakpoint identifier.
      */
@@ -69,21 +125,21 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Runtime.ScriptId scriptId() {
-            return new Runtime.ScriptId((String) require("scriptId"));
+            return require(SCRIPT_ID);
         }
         /**
          * Line number in the script (0-based).
          * @return the protocol field value
          */
         public long lineNumber() {
-            return ((Number) require("lineNumber")).longValue();
+            return requireLong("lineNumber");
         }
         /**
          * Column number in the script (0-based).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong columnNumber() {
-            return raw("columnNumber").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("columnNumber");
         }
         /**
          * Script identifier as reported in the {@code Debugger.scriptParsed}.
@@ -128,14 +184,14 @@ public final class Debugger {
          * @return the protocol field value
          */
         public long lineNumber() {
-            return ((Number) require("lineNumber")).longValue();
+            return requireLong("lineNumber");
         }
         /**
          * Returns the columnNumber field.
          * @return the protocol field value
          */
         public long columnNumber() {
-            return ((Number) require("columnNumber")).longValue();
+            return requireLong("columnNumber");
         }
         /**
          * Sets the lineNumber field.
@@ -171,21 +227,21 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Runtime.ScriptId scriptId() {
-            return new Runtime.ScriptId((String) require("scriptId"));
+            return require(SCRIPT_ID);
         }
         /**
          * Returns the start field.
          * @return the protocol field value
          */
         public Debugger.ScriptPosition start() {
-            return java.util.Objects.requireNonNull(Debugger.ScriptPosition.fromMap(CdpObject.requireObjectMap(require("start"))));
+            return require(START);
         }
         /**
          * Returns the end field.
          * @return the protocol field value
          */
         public Debugger.ScriptPosition end() {
-            return java.util.Objects.requireNonNull(Debugger.ScriptPosition.fromMap(CdpObject.requireObjectMap(require("end"))));
+            return require(END);
         }
         /**
          * Sets the scriptId field.
@@ -229,28 +285,28 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Debugger.CallFrameId callFrameId() {
-            return new Debugger.CallFrameId((String) require("callFrameId"));
+            return require(CALL_FRAME_ID);
         }
         /**
          * Name of the JavaScript function called on this call frame.
          * @return the protocol field value
          */
         public String functionName() {
-            return (String) require("functionName");
+            return requireString("functionName");
         }
         /**
          * Location in the source code.
          * @return the protocol field value, empty when absent
          */
         public Optional<Debugger.Location> functionLocation() {
-            return raw("functionLocation").flatMap(CdpObject::objectMap).map(Debugger.Location::fromMap);
+            return optional(FUNCTION_LOCATION);
         }
         /**
          * Location in the source code.
          * @return the protocol field value
          */
         public Debugger.Location location() {
-            return java.util.Objects.requireNonNull(Debugger.Location.fromMap(CdpObject.requireObjectMap(require("location"))));
+            return require(LOCATION);
         }
         /**
          * JavaScript script name or url. Deprecated in favor of using the {@code location.scriptId} to resolve the URL via a previously sent {@code Debugger.scriptParsed} event.
@@ -259,28 +315,28 @@ public final class Debugger {
          */
         @Deprecated
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Scope chain for this call frame.
          * @return the protocol field value
          */
         public java.util.List<Debugger.Scope> scopeChain() {
-            return CdpObject.requireList(require("scopeChain"), element0 -> java.util.Objects.requireNonNull(Debugger.Scope.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(SCOPE_CHAIN);
         }
         /**
          * {@code this} object for this call frame.
          * @return the protocol field value
          */
         public Runtime.RemoteObject thisValue() {
-            return java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(require("this"))));
+            return require(THIS);
         }
         /**
          * The value being returned, if the function is at return point.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.RemoteObject> returnValue() {
-            return raw("returnValue").flatMap(CdpObject::objectMap).map(Runtime.RemoteObject::fromMap);
+            return optional(RETURN_VALUE);
         }
         /**
          * Valid only while the VM is paused and indicates whether this frame can be restarted or not. Note that a {@code true} value here does not guarantee that Debugger#restartFrame with this CallFrameId will be successful, but it is very likely.
@@ -288,7 +344,7 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> canBeRestarted() {
-            return raw("canBeRestarted").map(value -> (Boolean) value);
+            return optionalBoolean("canBeRestarted");
         }
         /**
          * Call frame identifier. This identifier is only valid while the virtual machine is paused.
@@ -413,35 +469,35 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Scope.TypeValues type() {
-            return Scope.TypeValues.of((String) require("type"));
+            return require(TYPE);
         }
         /**
          * Object representing the scope. For {@code global} and {@code with} scopes it represents the actual object; for the rest of the scopes, it is artificial transient object enumerating scope variables as its properties.
          * @return the protocol field value
          */
         public Runtime.RemoteObject object() {
-            return java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(require("object"))));
+            return require(OBJECT);
         }
         /**
          * Returns the name field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> name() {
-            return raw("name").map(value -> (String) value);
+            return optionalString("name");
         }
         /**
          * Location in the source code where scope starts
          * @return the protocol field value, empty when absent
          */
         public Optional<Debugger.Location> startLocation() {
-            return raw("startLocation").flatMap(CdpObject::objectMap).map(Debugger.Location::fromMap);
+            return optional(START_LOCATION);
         }
         /**
          * Location in the source code where scope ends
          * @return the protocol field value, empty when absent
          */
         public Optional<Debugger.Location> endLocation() {
-            return raw("endLocation").flatMap(CdpObject::objectMap).map(Debugger.Location::fromMap);
+            return optional(END_LOCATION);
         }
         /**
          * Scope type.
@@ -503,14 +559,14 @@ public final class Debugger {
          * @return the protocol field value
          */
         public double lineNumber() {
-            return ((Number) require("lineNumber")).doubleValue();
+            return requireDouble("lineNumber");
         }
         /**
          * Line with match content.
          * @return the protocol field value
          */
         public String lineContent() {
-            return (String) require("lineContent");
+            return requireString("lineContent");
         }
         /**
          * Line number in resource content.
@@ -561,28 +617,28 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Runtime.ScriptId scriptId() {
-            return new Runtime.ScriptId((String) require("scriptId"));
+            return require(SCRIPT_ID);
         }
         /**
          * Line number in the script (0-based).
          * @return the protocol field value
          */
         public long lineNumber() {
-            return ((Number) require("lineNumber")).longValue();
+            return requireLong("lineNumber");
         }
         /**
          * Column number in the script (0-based).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong columnNumber() {
-            return raw("columnNumber").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("columnNumber");
         }
         /**
          * Returns the type field.
          * @return the protocol field value, empty when absent
          */
         public Optional<BreakLocation.TypeValues> type() {
-            return raw("type").map(value -> BreakLocation.TypeValues.of((String) value));
+            return optional(TYPE_2);
         }
         /**
          * Script identifier as reported in the {@code Debugger.scriptParsed}.
@@ -635,14 +691,14 @@ public final class Debugger {
          * @return the protocol field value
          */
         public java.util.List<String> lines() {
-            return CdpObject.requireList(require("lines"), element0 -> (String) element0);
+            return require(LINES);
         }
         /**
          * The bytecode offsets describing the start of each line.
          * @return the protocol field value
          */
         public java.util.List<Long> bytecodeOffsets() {
-            return CdpObject.requireList(require("bytecodeOffsets"), element0 -> ((Number) element0).longValue());
+            return require(BYTECODE_OFFSETS);
         }
         /**
          * The next chunk of disassembled lines.
@@ -710,14 +766,14 @@ public final class Debugger {
          * @return the protocol field value
          */
         public DebugSymbols.TypeValues type() {
-            return DebugSymbols.TypeValues.of((String) require("type"));
+            return require(TYPE_3);
         }
         /**
          * URL of the external symbol source.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> externalURL() {
-            return raw("externalURL").map(value -> (String) value);
+            return optionalString("externalURL");
         }
         /**
          * Type of the debug symbols.
@@ -751,14 +807,14 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Debugger.BreakpointId breakpointId() {
-            return new Debugger.BreakpointId((String) require("breakpointId"));
+            return require(BREAKPOINT_ID);
         }
         /**
          * Actual breakpoint location.
          * @return the protocol field value
          */
         public Debugger.Location location() {
-            return java.util.Objects.requireNonNull(Debugger.Location.fromMap(CdpObject.requireObjectMap(require("location"))));
+            return require(LOCATION);
         }
         /**
          * Breakpoint unique identifier.
@@ -784,13 +840,6 @@ public final class Debugger {
      */
     public static final class ContinueToLocationRequest extends CdpObject {
         public ContinueToLocationRequest() {}
-        /**
-         * Continues execution until specific location is reached.
-         * @param location protocol value
-         */
-        public ContinueToLocationRequest(Debugger.Location location) {
-            location(location);
-        }
         public static ContinueToLocationRequest fromMap(Map<String, Object> values) {
             final ContinueToLocationRequest instance_ = new ContinueToLocationRequest();
             if (values != null) instance_.values.putAll(values);
@@ -801,14 +850,14 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Debugger.Location location() {
-            return java.util.Objects.requireNonNull(Debugger.Location.fromMap(CdpObject.requireObjectMap(require("location"))));
+            return require(LOCATION);
         }
         /**
          * Returns the targetCallFrames field.
          * @return the protocol field value, empty when absent
          */
         public Optional<ContinueToLocationTargetCallFramesValues> targetCallFrames() {
-            return raw("targetCallFrames").map(value -> ContinueToLocationTargetCallFramesValues.of((String) value));
+            return optional(TARGET_CALL_FRAMES);
         }
         /**
          * Location to continue to.
@@ -845,7 +894,7 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble maxScriptsCacheSize() {
-            return raw("maxScriptsCacheSize").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("maxScriptsCacheSize");
         }
         /**
          * The maximum size in bytes of collected scripts (not referenced by other heap objects) the debugger can hold. Puts no limit if parameter is omitted.
@@ -863,14 +912,6 @@ public final class Debugger {
      */
     public static final class EvaluateOnCallFrameRequest extends CdpObject {
         public EvaluateOnCallFrameRequest() {}
-        /**
-         * Evaluates expression on a given call frame.
-         * @param callFrameId protocol value
-         * @param expression protocol value
-         */
-        public EvaluateOnCallFrameRequest(Debugger.CallFrameId callFrameId, String expression) {
-            callFrameId(callFrameId).expression(expression);
-        }
         public static EvaluateOnCallFrameRequest fromMap(Map<String, Object> values) {
             final EvaluateOnCallFrameRequest instance_ = new EvaluateOnCallFrameRequest();
             if (values != null) instance_.values.putAll(values);
@@ -881,42 +922,42 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Debugger.CallFrameId callFrameId() {
-            return new Debugger.CallFrameId((String) require("callFrameId"));
+            return require(CALL_FRAME_ID);
         }
         /**
          * Expression to evaluate.
          * @return the protocol field value
          */
         public String expression() {
-            return (String) require("expression");
+            return requireString("expression");
         }
         /**
          * String object group name to put result into (allows rapid releasing resulting object handles using {@code releaseObjectGroup}).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> objectGroup() {
-            return raw("objectGroup").map(value -> (String) value);
+            return optionalString("objectGroup");
         }
         /**
          * Specifies whether command line API should be available to the evaluated expression, defaults to false.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> includeCommandLineAPI() {
-            return raw("includeCommandLineAPI").map(value -> (Boolean) value);
+            return optionalBoolean("includeCommandLineAPI");
         }
         /**
          * In silent mode exceptions thrown during evaluation are not reported and do not pause execution. Overrides {@code setPauseOnException} state.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> silent() {
-            return raw("silent").map(value -> (Boolean) value);
+            return optionalBoolean("silent");
         }
         /**
          * Whether the result is expected to be a JSON object that should be sent by value.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> returnByValue() {
-            return raw("returnByValue").map(value -> (Boolean) value);
+            return optionalBoolean("returnByValue");
         }
         /**
          * Whether preview should be generated for the result.
@@ -924,14 +965,14 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> generatePreview() {
-            return raw("generatePreview").map(value -> (Boolean) value);
+            return optionalBoolean("generatePreview");
         }
         /**
          * Whether to throw an exception if side effect cannot be ruled out during evaluation.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> throwOnSideEffect() {
-            return raw("throwOnSideEffect").map(value -> (Boolean) value);
+            return optionalBoolean("throwOnSideEffect");
         }
         /**
          * Terminate execution after timing out (number of milliseconds).
@@ -939,7 +980,7 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.TimeDelta> timeout() {
-            return raw("timeout").map(value -> new Runtime.TimeDelta(((Number) value).doubleValue()));
+            return optional(TIMEOUT);
         }
         /**
          * Call frame identifier to evaluate on.
@@ -1030,13 +1071,6 @@ public final class Debugger {
      */
     public static final class GetPossibleBreakpointsRequest extends CdpObject {
         public GetPossibleBreakpointsRequest() {}
-        /**
-         * Returns possible locations for breakpoint. scriptId in start and end range locations should be the same.
-         * @param start protocol value
-         */
-        public GetPossibleBreakpointsRequest(Debugger.Location start) {
-            start(start);
-        }
         public static GetPossibleBreakpointsRequest fromMap(Map<String, Object> values) {
             final GetPossibleBreakpointsRequest instance_ = new GetPossibleBreakpointsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1047,21 +1081,21 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Debugger.Location start() {
-            return java.util.Objects.requireNonNull(Debugger.Location.fromMap(CdpObject.requireObjectMap(require("start"))));
+            return require(START_2);
         }
         /**
          * End of range to search possible breakpoint locations in (excluding). When not specified, end of scripts is used as end of range.
          * @return the protocol field value, empty when absent
          */
         public Optional<Debugger.Location> end() {
-            return raw("end").flatMap(CdpObject::objectMap).map(Debugger.Location::fromMap);
+            return optional(END_2);
         }
         /**
          * Only consider locations which are in the same (non-nested) function as start.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> restrictToFunction() {
-            return raw("restrictToFunction").map(value -> (Boolean) value);
+            return optionalBoolean("restrictToFunction");
         }
         /**
          * Start of range to search possible breakpoint locations in.
@@ -1096,13 +1130,6 @@ public final class Debugger {
      */
     public static final class GetScriptSourceRequest extends CdpObject {
         public GetScriptSourceRequest() {}
-        /**
-         * Returns source for the script with given id.
-         * @param scriptId protocol value
-         */
-        public GetScriptSourceRequest(Runtime.ScriptId scriptId) {
-            scriptId(scriptId);
-        }
         public static GetScriptSourceRequest fromMap(Map<String, Object> values) {
             final GetScriptSourceRequest instance_ = new GetScriptSourceRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1113,7 +1140,7 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Runtime.ScriptId scriptId() {
-            return new Runtime.ScriptId((String) require("scriptId"));
+            return require(SCRIPT_ID);
         }
         /**
          * Id of the script to get source for.
@@ -1131,14 +1158,6 @@ public final class Debugger {
      */
     public static final class DisassembleWasmModuleRequest extends CdpObject {
         public DisassembleWasmModuleRequest() {}
-        /**
-         * Creates a new DisassembleWasmModuleRequest with all required parameters.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param scriptId protocol value
-         */
-        public DisassembleWasmModuleRequest(Runtime.ScriptId scriptId) {
-            scriptId(scriptId);
-        }
         public static DisassembleWasmModuleRequest fromMap(Map<String, Object> values) {
             final DisassembleWasmModuleRequest instance_ = new DisassembleWasmModuleRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1149,7 +1168,7 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Runtime.ScriptId scriptId() {
-            return new Runtime.ScriptId((String) require("scriptId"));
+            return require(SCRIPT_ID);
         }
         /**
          * Id of the script to disassemble
@@ -1167,14 +1186,6 @@ public final class Debugger {
      */
     public static final class NextWasmDisassemblyChunkRequest extends CdpObject {
         public NextWasmDisassemblyChunkRequest() {}
-        /**
-         * Disassemble the next chunk of lines for the module corresponding to the stream. If disassembly is complete, this API will invalidate the streamId and return an empty chunk. Any subsequent calls for the now invalid stream will return errors.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param streamId protocol value
-         */
-        public NextWasmDisassemblyChunkRequest(String streamId) {
-            streamId(streamId);
-        }
         public static NextWasmDisassemblyChunkRequest fromMap(Map<String, Object> values) {
             final NextWasmDisassemblyChunkRequest instance_ = new NextWasmDisassemblyChunkRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1185,7 +1196,7 @@ public final class Debugger {
          * @return the protocol field value
          */
         public String streamId() {
-            return (String) require("streamId");
+            return requireString("streamId");
         }
         /**
          * Sets the streamId field.
@@ -1204,15 +1215,6 @@ public final class Debugger {
     @Deprecated
     public static final class GetWasmBytecodeRequest extends CdpObject {
         public GetWasmBytecodeRequest() {}
-        /**
-         * This command is deprecated. Use getScriptSource instead.
-         * @param scriptId protocol value
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public GetWasmBytecodeRequest(Runtime.ScriptId scriptId) {
-            scriptId(scriptId);
-        }
         public static GetWasmBytecodeRequest fromMap(Map<String, Object> values) {
             final GetWasmBytecodeRequest instance_ = new GetWasmBytecodeRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1223,7 +1225,7 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Runtime.ScriptId scriptId() {
-            return new Runtime.ScriptId((String) require("scriptId"));
+            return require(SCRIPT_ID);
         }
         /**
          * Id of the Wasm script to get source for.
@@ -1241,14 +1243,6 @@ public final class Debugger {
      */
     public static final class GetStackTraceRequest extends CdpObject {
         public GetStackTraceRequest() {}
-        /**
-         * Returns stack trace with given {@code stackTraceId}.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param stackTraceId protocol value
-         */
-        public GetStackTraceRequest(Runtime.StackTraceId stackTraceId) {
-            stackTraceId(stackTraceId);
-        }
         public static GetStackTraceRequest fromMap(Map<String, Object> values) {
             final GetStackTraceRequest instance_ = new GetStackTraceRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1259,7 +1253,7 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Runtime.StackTraceId stackTraceId() {
-            return java.util.Objects.requireNonNull(Runtime.StackTraceId.fromMap(CdpObject.requireObjectMap(require("stackTraceId"))));
+            return require(STACK_TRACE_ID);
         }
         /**
          * Sets the stackTraceId field.
@@ -1279,16 +1273,6 @@ public final class Debugger {
     @Deprecated
     public static final class PauseOnAsyncCallRequest extends CdpObject {
         public PauseOnAsyncCallRequest() {}
-        /**
-         * Creates a new PauseOnAsyncCallRequest with all required parameters.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param parentStackTraceId protocol value
-         * @deprecated Deprecated by the Chromium DevTools Protocol.
-         */
-        @Deprecated
-        public PauseOnAsyncCallRequest(Runtime.StackTraceId parentStackTraceId) {
-            parentStackTraceId(parentStackTraceId);
-        }
         public static PauseOnAsyncCallRequest fromMap(Map<String, Object> values) {
             final PauseOnAsyncCallRequest instance_ = new PauseOnAsyncCallRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1299,7 +1283,7 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Runtime.StackTraceId parentStackTraceId() {
-            return java.util.Objects.requireNonNull(Runtime.StackTraceId.fromMap(CdpObject.requireObjectMap(require("parentStackTraceId"))));
+            return require(PARENT_STACK_TRACE_ID);
         }
         /**
          * Debugger will pause when async call with given stack trace is started.
@@ -1316,13 +1300,6 @@ public final class Debugger {
      */
     public static final class RemoveBreakpointRequest extends CdpObject {
         public RemoveBreakpointRequest() {}
-        /**
-         * Removes JavaScript breakpoint.
-         * @param breakpointId protocol value
-         */
-        public RemoveBreakpointRequest(Debugger.BreakpointId breakpointId) {
-            breakpointId(breakpointId);
-        }
         public static RemoveBreakpointRequest fromMap(Map<String, Object> values) {
             final RemoveBreakpointRequest instance_ = new RemoveBreakpointRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1333,7 +1310,7 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Debugger.BreakpointId breakpointId() {
-            return new Debugger.BreakpointId((String) require("breakpointId"));
+            return require(BREAKPOINT_ID);
         }
         /**
          * Sets the breakpointId field.
@@ -1352,15 +1329,6 @@ public final class Debugger {
      */
     public static final class RestartFrameRequest extends CdpObject {
         public RestartFrameRequest() {}
-        /**
-         * Restarts particular call frame from the beginning. The old, deprecated behavior of {@code restartFrame} is to stay paused and allow further CDP commands after a restart was scheduled. This can cause problems with restarting, so we now continue execution immediatly after it has been scheduled until we reach the beginning of the restarted frame.
-         * <p>To stay back-wards compatible, {@code restartFrame} now expects a {@code mode} parameter to be present. If the {@code mode} parameter is missing, {@code restartFrame} errors out.
-         * <p>The various return values are deprecated and {@code callFrames} is always empty. Use the call frames from the {@code Debugger#paused} events instead, that fires once V8 pauses at the beginning of the restarted function.
-         * @param callFrameId protocol value
-         */
-        public RestartFrameRequest(Debugger.CallFrameId callFrameId) {
-            callFrameId(callFrameId);
-        }
         public static RestartFrameRequest fromMap(Map<String, Object> values) {
             final RestartFrameRequest instance_ = new RestartFrameRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1371,7 +1339,7 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Debugger.CallFrameId callFrameId() {
-            return new Debugger.CallFrameId((String) require("callFrameId"));
+            return require(CALL_FRAME_ID);
         }
         /**
          * The {@code mode} parameter must be present and set to &#x27;StepInto&#x27;, otherwise {@code restartFrame} will error out.
@@ -1379,7 +1347,7 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<RestartFrameModeValues> mode() {
-            return raw("mode").map(value -> RestartFrameModeValues.of((String) value));
+            return optional(MODE);
         }
         /**
          * Call frame identifier to evaluate on.
@@ -1416,7 +1384,7 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> terminateOnResume() {
-            return raw("terminateOnResume").map(value -> (Boolean) value);
+            return optionalBoolean("terminateOnResume");
         }
         /**
          * Set to true to terminate execution upon resuming execution. In contrast to Runtime.terminateExecution, this will allows to execute further JavaScript (i.e. via evaluation) until execution of the paused code is actually resumed, at which point termination is triggered. If execution is currently not paused, this parameter has no effect.
@@ -1433,14 +1401,6 @@ public final class Debugger {
      */
     public static final class SearchInContentRequest extends CdpObject {
         public SearchInContentRequest() {}
-        /**
-         * Searches for given string in script content.
-         * @param scriptId protocol value
-         * @param query protocol value
-         */
-        public SearchInContentRequest(Runtime.ScriptId scriptId, String query) {
-            scriptId(scriptId).query(query);
-        }
         public static SearchInContentRequest fromMap(Map<String, Object> values) {
             final SearchInContentRequest instance_ = new SearchInContentRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1451,28 +1411,28 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Runtime.ScriptId scriptId() {
-            return new Runtime.ScriptId((String) require("scriptId"));
+            return require(SCRIPT_ID);
         }
         /**
          * String to search for.
          * @return the protocol field value
          */
         public String query() {
-            return (String) require("query");
+            return requireString("query");
         }
         /**
          * If true, search is case sensitive.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> caseSensitive() {
-            return raw("caseSensitive").map(value -> (Boolean) value);
+            return optionalBoolean("caseSensitive");
         }
         /**
          * If true, treats string parameter as regex.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isRegex() {
-            return raw("isRegex").map(value -> (Boolean) value);
+            return optionalBoolean("isRegex");
         }
         /**
          * Id of the script to search in.
@@ -1516,13 +1476,6 @@ public final class Debugger {
      */
     public static final class SetAsyncCallStackDepthRequest extends CdpObject {
         public SetAsyncCallStackDepthRequest() {}
-        /**
-         * Enables or disables async call stacks tracking.
-         * @param maxDepth protocol value
-         */
-        public SetAsyncCallStackDepthRequest(long maxDepth) {
-            maxDepth(maxDepth);
-        }
         public static SetAsyncCallStackDepthRequest fromMap(Map<String, Object> values) {
             final SetAsyncCallStackDepthRequest instance_ = new SetAsyncCallStackDepthRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1533,7 +1486,7 @@ public final class Debugger {
          * @return the protocol field value
          */
         public long maxDepth() {
-            return ((Number) require("maxDepth")).longValue();
+            return requireLong("maxDepth");
         }
         /**
          * Maximum depth of async call stacks. Setting to {@code 0} will effectively disable collecting async call stacks (default).
@@ -1551,14 +1504,6 @@ public final class Debugger {
      */
     public static final class SetBlackboxExecutionContextsRequest extends CdpObject {
         public SetBlackboxExecutionContextsRequest() {}
-        /**
-         * Replace previous blackbox execution contexts with passed ones. Forces backend to skip stepping/pausing in scripts in these execution contexts. VM will try to leave blackboxed script by performing &#x27;step in&#x27; several times, finally resorting to &#x27;step out&#x27; if unsuccessful.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param uniqueIds protocol value
-         */
-        public SetBlackboxExecutionContextsRequest(java.util.List<String> uniqueIds) {
-            uniqueIds(uniqueIds);
-        }
         public static SetBlackboxExecutionContextsRequest fromMap(Map<String, Object> values) {
             final SetBlackboxExecutionContextsRequest instance_ = new SetBlackboxExecutionContextsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1569,7 +1514,7 @@ public final class Debugger {
          * @return the protocol field value
          */
         public java.util.List<String> uniqueIds() {
-            return CdpObject.requireList(require("uniqueIds"), element0 -> (String) element0);
+            return require(UNIQUE_IDS);
         }
         /**
          * Array of execution context unique ids for the debugger to ignore.
@@ -1587,14 +1532,6 @@ public final class Debugger {
      */
     public static final class SetBlackboxPatternsRequest extends CdpObject {
         public SetBlackboxPatternsRequest() {}
-        /**
-         * Replace previous blackbox patterns with passed ones. Forces backend to skip stepping/pausing in scripts with url matching one of the patterns. VM will try to leave blackboxed script by performing &#x27;step in&#x27; several times, finally resorting to &#x27;step out&#x27; if unsuccessful.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param patterns protocol value
-         */
-        public SetBlackboxPatternsRequest(java.util.List<String> patterns) {
-            patterns(patterns);
-        }
         public static SetBlackboxPatternsRequest fromMap(Map<String, Object> values) {
             final SetBlackboxPatternsRequest instance_ = new SetBlackboxPatternsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1605,14 +1542,14 @@ public final class Debugger {
          * @return the protocol field value
          */
         public java.util.List<String> patterns() {
-            return CdpObject.requireList(require("patterns"), element0 -> (String) element0);
+            return require(PATTERNS);
         }
         /**
          * If true, also ignore scripts with no source url.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> skipAnonymous() {
-            return raw("skipAnonymous").map(value -> (Boolean) value);
+            return optionalBoolean("skipAnonymous");
         }
         /**
          * Array of regexps that will be used to check script url for blackbox state.
@@ -1639,15 +1576,6 @@ public final class Debugger {
      */
     public static final class SetBlackboxedRangesRequest extends CdpObject {
         public SetBlackboxedRangesRequest() {}
-        /**
-         * Makes backend skip steps in the script in blackboxed ranges. VM will try leave blacklisted scripts by performing &#x27;step in&#x27; several times, finally resorting to &#x27;step out&#x27; if unsuccessful. Positions array contains positions where blackbox state is changed. First interval isn&#x27;t blackboxed. Array should be sorted.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param scriptId protocol value
-         * @param positions protocol value
-         */
-        public SetBlackboxedRangesRequest(Runtime.ScriptId scriptId, java.util.List<Debugger.ScriptPosition> positions) {
-            scriptId(scriptId).positions(positions);
-        }
         public static SetBlackboxedRangesRequest fromMap(Map<String, Object> values) {
             final SetBlackboxedRangesRequest instance_ = new SetBlackboxedRangesRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1658,14 +1586,14 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Runtime.ScriptId scriptId() {
-            return new Runtime.ScriptId((String) require("scriptId"));
+            return require(SCRIPT_ID);
         }
         /**
          * Returns the positions field.
          * @return the protocol field value
          */
         public java.util.List<Debugger.ScriptPosition> positions() {
-            return CdpObject.requireList(require("positions"), element0 -> java.util.Objects.requireNonNull(Debugger.ScriptPosition.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(POSITIONS);
         }
         /**
          * Id of the script.
@@ -1691,13 +1619,6 @@ public final class Debugger {
      */
     public static final class SetBreakpointRequest extends CdpObject {
         public SetBreakpointRequest() {}
-        /**
-         * Sets JavaScript breakpoint at a given location.
-         * @param location protocol value
-         */
-        public SetBreakpointRequest(Debugger.Location location) {
-            location(location);
-        }
         public static SetBreakpointRequest fromMap(Map<String, Object> values) {
             final SetBreakpointRequest instance_ = new SetBreakpointRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1708,14 +1629,14 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Debugger.Location location() {
-            return java.util.Objects.requireNonNull(Debugger.Location.fromMap(CdpObject.requireObjectMap(require("location"))));
+            return require(LOCATION);
         }
         /**
          * Expression to use as a breakpoint condition. When specified, debugger will only stop on the breakpoint if this expression evaluates to true.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> condition() {
-            return raw("condition").map(value -> (String) value);
+            return optionalString("condition");
         }
         /**
          * Location to set breakpoint in.
@@ -1741,13 +1662,6 @@ public final class Debugger {
      */
     public static final class SetInstrumentationBreakpointRequest extends CdpObject {
         public SetInstrumentationBreakpointRequest() {}
-        /**
-         * Sets instrumentation breakpoint.
-         * @param instrumentation protocol value
-         */
-        public SetInstrumentationBreakpointRequest(SetInstrumentationBreakpointInstrumentationValues instrumentation) {
-            instrumentation(instrumentation);
-        }
         public static SetInstrumentationBreakpointRequest fromMap(Map<String, Object> values) {
             final SetInstrumentationBreakpointRequest instance_ = new SetInstrumentationBreakpointRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1758,7 +1672,7 @@ public final class Debugger {
          * @return the protocol field value
          */
         public SetInstrumentationBreakpointInstrumentationValues instrumentation() {
-            return SetInstrumentationBreakpointInstrumentationValues.of((String) require("instrumentation"));
+            return require(INSTRUMENTATION);
         }
         /**
          * Instrumentation name.
@@ -1775,13 +1689,6 @@ public final class Debugger {
      */
     public static final class SetBreakpointByUrlRequest extends CdpObject {
         public SetBreakpointByUrlRequest() {}
-        /**
-         * Sets JavaScript breakpoint at given location specified either by URL or URL regex. Once this command is issued, all existing parsed scripts will have breakpoints resolved and returned in {@code locations} property. Further matching script parsing will result in subsequent {@code breakpointResolved} events issued. This logical breakpoint will survive page reloads.
-         * @param lineNumber protocol value
-         */
-        public SetBreakpointByUrlRequest(long lineNumber) {
-            lineNumber(lineNumber);
-        }
         public static SetBreakpointByUrlRequest fromMap(Map<String, Object> values) {
             final SetBreakpointByUrlRequest instance_ = new SetBreakpointByUrlRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1792,42 +1699,42 @@ public final class Debugger {
          * @return the protocol field value
          */
         public long lineNumber() {
-            return ((Number) require("lineNumber")).longValue();
+            return requireLong("lineNumber");
         }
         /**
          * URL of the resources to set breakpoint on.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> url() {
-            return raw("url").map(value -> (String) value);
+            return optionalString("url");
         }
         /**
          * Regex pattern for the URLs of the resources to set breakpoints on. Either {@code url} or {@code urlRegex} must be specified.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> urlRegex() {
-            return raw("urlRegex").map(value -> (String) value);
+            return optionalString("urlRegex");
         }
         /**
          * Script hash of the resources to set breakpoint on.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> scriptHash() {
-            return raw("scriptHash").map(value -> (String) value);
+            return optionalString("scriptHash");
         }
         /**
          * Offset in the line to set breakpoint at.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong columnNumber() {
-            return raw("columnNumber").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("columnNumber");
         }
         /**
          * Expression to use as a breakpoint condition. When specified, debugger will only stop on the breakpoint if this expression evaluates to true.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> condition() {
-            return raw("condition").map(value -> (String) value);
+            return optionalString("condition");
         }
         /**
          * Line number to set breakpoint at.
@@ -1890,14 +1797,6 @@ public final class Debugger {
      */
     public static final class SetBreakpointOnFunctionCallRequest extends CdpObject {
         public SetBreakpointOnFunctionCallRequest() {}
-        /**
-         * Sets JavaScript breakpoint before each call to the given function. If another function was created from the same source as a given one, calling it will also trigger the breakpoint.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param objectId protocol value
-         */
-        public SetBreakpointOnFunctionCallRequest(Runtime.RemoteObjectId objectId) {
-            objectId(objectId);
-        }
         public static SetBreakpointOnFunctionCallRequest fromMap(Map<String, Object> values) {
             final SetBreakpointOnFunctionCallRequest instance_ = new SetBreakpointOnFunctionCallRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1908,14 +1807,14 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Runtime.RemoteObjectId objectId() {
-            return new Runtime.RemoteObjectId((String) require("objectId"));
+            return require(OBJECT_ID);
         }
         /**
          * Expression to use as a breakpoint condition. When specified, debugger will stop on the breakpoint if this expression evaluates to true.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> condition() {
-            return raw("condition").map(value -> (String) value);
+            return optionalString("condition");
         }
         /**
          * Function object id.
@@ -1941,13 +1840,6 @@ public final class Debugger {
      */
     public static final class SetBreakpointsActiveRequest extends CdpObject {
         public SetBreakpointsActiveRequest() {}
-        /**
-         * Activates / deactivates all breakpoints on the page.
-         * @param active protocol value
-         */
-        public SetBreakpointsActiveRequest(boolean active) {
-            active(active);
-        }
         public static SetBreakpointsActiveRequest fromMap(Map<String, Object> values) {
             final SetBreakpointsActiveRequest instance_ = new SetBreakpointsActiveRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1958,7 +1850,7 @@ public final class Debugger {
          * @return the protocol field value
          */
         public boolean active() {
-            return (Boolean) require("active");
+            return requireBoolean("active");
         }
         /**
          * New value for breakpoints active state.
@@ -1975,13 +1867,6 @@ public final class Debugger {
      */
     public static final class SetPauseOnExceptionsRequest extends CdpObject {
         public SetPauseOnExceptionsRequest() {}
-        /**
-         * Defines pause on exceptions state. Can be set to stop on all exceptions, uncaught exceptions, or caught exceptions, no exceptions. Initial pause on exceptions state is {@code none}.
-         * @param state protocol value
-         */
-        public SetPauseOnExceptionsRequest(SetPauseOnExceptionsStateValues state) {
-            state(state);
-        }
         public static SetPauseOnExceptionsRequest fromMap(Map<String, Object> values) {
             final SetPauseOnExceptionsRequest instance_ = new SetPauseOnExceptionsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -1992,7 +1877,7 @@ public final class Debugger {
          * @return the protocol field value
          */
         public SetPauseOnExceptionsStateValues state() {
-            return SetPauseOnExceptionsStateValues.of((String) require("state"));
+            return require(STATE);
         }
         /**
          * Pause on exceptions mode.
@@ -2010,14 +1895,6 @@ public final class Debugger {
      */
     public static final class SetReturnValueRequest extends CdpObject {
         public SetReturnValueRequest() {}
-        /**
-         * Changes return value in top frame. Available only at return break position.
-         * <p><b>Experimental:</b> this part of CDP may change without notice.
-         * @param newValue protocol value
-         */
-        public SetReturnValueRequest(Runtime.CallArgument newValue) {
-            newValue(newValue);
-        }
         public static SetReturnValueRequest fromMap(Map<String, Object> values) {
             final SetReturnValueRequest instance_ = new SetReturnValueRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2028,7 +1905,7 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Runtime.CallArgument newValue() {
-            return java.util.Objects.requireNonNull(Runtime.CallArgument.fromMap(CdpObject.requireObjectMap(require("newValue"))));
+            return require(NEW_VALUE);
         }
         /**
          * New return value.
@@ -2046,15 +1923,6 @@ public final class Debugger {
      */
     public static final class SetScriptSourceRequest extends CdpObject {
         public SetScriptSourceRequest() {}
-        /**
-         * Edits JavaScript source live.
-         * <p>In general, functions that are currently on the stack can not be edited with a single exception: If the edited function is the top-most stack frame and that is the only activation of that function on the stack. In this case the live edit will be successful and a {@code Debugger.restartFrame} for the top-most function is automatically triggered.
-         * @param scriptId protocol value
-         * @param scriptSource protocol value
-         */
-        public SetScriptSourceRequest(Runtime.ScriptId scriptId, String scriptSource) {
-            scriptId(scriptId).scriptSource(scriptSource);
-        }
         public static SetScriptSourceRequest fromMap(Map<String, Object> values) {
             final SetScriptSourceRequest instance_ = new SetScriptSourceRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2065,21 +1933,21 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Runtime.ScriptId scriptId() {
-            return new Runtime.ScriptId((String) require("scriptId"));
+            return require(SCRIPT_ID);
         }
         /**
          * New content of the script.
          * @return the protocol field value
          */
         public String scriptSource() {
-            return (String) require("scriptSource");
+            return requireString("scriptSource");
         }
         /**
          * If true the change will not actually be applied. Dry run may be used to get result description without actually modifying the code.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> dryRun() {
-            return raw("dryRun").map(value -> (Boolean) value);
+            return optionalBoolean("dryRun");
         }
         /**
          * If true, then {@code scriptSource} is allowed to change the function on top of the stack as long as the top-most stack frame is the only activation of that function.
@@ -2087,7 +1955,7 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> allowTopFrameEditing() {
-            return raw("allowTopFrameEditing").map(value -> (Boolean) value);
+            return optionalBoolean("allowTopFrameEditing");
         }
         /**
          * Id of the script to edit.
@@ -2132,13 +2000,6 @@ public final class Debugger {
      */
     public static final class SetSkipAllPausesRequest extends CdpObject {
         public SetSkipAllPausesRequest() {}
-        /**
-         * Makes page not interrupt on any pauses (breakpoint, exception, dom exception etc).
-         * @param skip protocol value
-         */
-        public SetSkipAllPausesRequest(boolean skip) {
-            skip(skip);
-        }
         public static SetSkipAllPausesRequest fromMap(Map<String, Object> values) {
             final SetSkipAllPausesRequest instance_ = new SetSkipAllPausesRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2149,7 +2010,7 @@ public final class Debugger {
          * @return the protocol field value
          */
         public boolean skip() {
-            return (Boolean) require("skip");
+            return requireBoolean("skip");
         }
         /**
          * New value for skip pauses state.
@@ -2166,16 +2027,6 @@ public final class Debugger {
      */
     public static final class SetVariableValueRequest extends CdpObject {
         public SetVariableValueRequest() {}
-        /**
-         * Changes value of variable in a callframe. Object-based scopes are not supported and must be mutated manually.
-         * @param scopeNumber protocol value
-         * @param variableName protocol value
-         * @param newValue protocol value
-         * @param callFrameId protocol value
-         */
-        public SetVariableValueRequest(long scopeNumber, String variableName, Runtime.CallArgument newValue, Debugger.CallFrameId callFrameId) {
-            scopeNumber(scopeNumber).variableName(variableName).newValue(newValue).callFrameId(callFrameId);
-        }
         public static SetVariableValueRequest fromMap(Map<String, Object> values) {
             final SetVariableValueRequest instance_ = new SetVariableValueRequest();
             if (values != null) instance_.values.putAll(values);
@@ -2186,28 +2037,28 @@ public final class Debugger {
          * @return the protocol field value
          */
         public long scopeNumber() {
-            return ((Number) require("scopeNumber")).longValue();
+            return requireLong("scopeNumber");
         }
         /**
          * Variable name.
          * @return the protocol field value
          */
         public String variableName() {
-            return (String) require("variableName");
+            return requireString("variableName");
         }
         /**
          * New variable value.
          * @return the protocol field value
          */
         public Runtime.CallArgument newValue() {
-            return java.util.Objects.requireNonNull(Runtime.CallArgument.fromMap(CdpObject.requireObjectMap(require("newValue"))));
+            return require(NEW_VALUE);
         }
         /**
          * Id of callframe that holds variable.
          * @return the protocol field value
          */
         public Debugger.CallFrameId callFrameId() {
-            return new Debugger.CallFrameId((String) require("callFrameId"));
+            return require(CALL_FRAME_ID);
         }
         /**
          * 0-based number of scope as was listed in scope chain. Only &#x27;local&#x27;, &#x27;closure&#x27; and &#x27;catch&#x27; scope types are allowed. Other scopes could be manipulated manually.
@@ -2262,7 +2113,7 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> breakOnAsyncCall() {
-            return raw("breakOnAsyncCall").map(value -> (Boolean) value);
+            return optionalBoolean("breakOnAsyncCall");
         }
         /**
          * The skipList specifies location ranges that should be skipped on step into.
@@ -2270,7 +2121,7 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Debugger.LocationRange>> skipList() {
-            return raw("skipList").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Debugger.LocationRange.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(SKIP_LIST);
         }
         /**
          * Debugger will pause on the execution of the first async task which was scheduled before next pause.
@@ -2309,7 +2160,7 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Debugger.LocationRange>> skipList() {
-            return raw("skipList").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Debugger.LocationRange.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(SKIP_LIST);
         }
         /**
          * The skipList specifies location ranges that should be skipped on step over.
@@ -2336,14 +2187,14 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Runtime.RemoteObject result() {
-            return java.util.Objects.requireNonNull(Runtime.RemoteObject.fromMap(CdpObject.requireObjectMap(require("result"))));
+            return require(RESULT);
         }
         /**
          * Exception details.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ExceptionDetails> exceptionDetails() {
-            return raw("exceptionDetails").flatMap(CdpObject::objectMap).map(Runtime.ExceptionDetails::fromMap);
+            return optional(EXCEPTION_DETAILS);
         }
         /**
          * Object wrapper for the evaluation result.
@@ -2378,14 +2229,14 @@ public final class Debugger {
          * @return the protocol field value
          */
         public String scriptSource() {
-            return (String) require("scriptSource");
+            return requireString("scriptSource");
         }
         /**
          * Wasm bytecode. (Encoded as a base64 string when passed over JSON)
          * @return the protocol field value, empty when absent
          */
         public Optional<String> bytecode() {
-            return raw("bytecode").map(value -> (String) value);
+            return optionalString("bytecode");
         }
         /**
          * Script source (empty in case of Wasm bytecode).
@@ -2421,28 +2272,28 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> streamId() {
-            return raw("streamId").map(value -> (String) value);
+            return optionalString("streamId");
         }
         /**
          * The total number of lines in the disassembly text.
          * @return the protocol field value
          */
         public long totalNumberOfLines() {
-            return ((Number) require("totalNumberOfLines")).longValue();
+            return requireLong("totalNumberOfLines");
         }
         /**
          * The offsets of all function bodies, in the format [start1, end1, start2, end2, ...] where all ends are exclusive.
          * @return the protocol field value
          */
         public java.util.List<Long> functionBodyOffsets() {
-            return CdpObject.requireList(require("functionBodyOffsets"), element0 -> ((Number) element0).longValue());
+            return require(FUNCTION_BODY_OFFSETS);
         }
         /**
          * The first chunk of disassembly.
          * @return the protocol field value
          */
         public Debugger.WasmDisassemblyChunk chunk() {
-            return java.util.Objects.requireNonNull(Debugger.WasmDisassemblyChunk.fromMap(CdpObject.requireObjectMap(require("chunk"))));
+            return require(CHUNK);
         }
         /**
          * For large modules, return a stream from which additional chunks of disassembly can be read successively.
@@ -2499,7 +2350,7 @@ public final class Debugger {
          */
         @Deprecated
         public java.util.List<Debugger.CallFrame> callFrames() {
-            return CdpObject.requireList(require("callFrames"), element0 -> java.util.Objects.requireNonNull(Debugger.CallFrame.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(CALL_FRAMES);
         }
         /**
          * Async stack trace, if any.
@@ -2508,7 +2359,7 @@ public final class Debugger {
          */
         @Deprecated
         public Optional<Runtime.StackTrace> asyncStackTrace() {
-            return raw("asyncStackTrace").flatMap(CdpObject::objectMap).map(Runtime.StackTrace::fromMap);
+            return optional(ASYNC_STACK_TRACE);
         }
         /**
          * Async stack trace, if any.
@@ -2517,7 +2368,7 @@ public final class Debugger {
          */
         @Deprecated
         public Optional<Runtime.StackTraceId> asyncStackTraceId() {
-            return raw("asyncStackTraceId").flatMap(CdpObject::objectMap).map(Runtime.StackTraceId::fromMap);
+            return optional(ASYNC_STACK_TRACE_ID);
         }
         /**
          * New stack trace.
@@ -2567,14 +2418,14 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Debugger.BreakpointId breakpointId() {
-            return new Debugger.BreakpointId((String) require("breakpointId"));
+            return require(BREAKPOINT_ID);
         }
         /**
          * Location this breakpoint resolved into.
          * @return the protocol field value
          */
         public Debugger.Location actualLocation() {
-            return java.util.Objects.requireNonNull(Debugger.Location.fromMap(CdpObject.requireObjectMap(require("actualLocation"))));
+            return require(ACTUAL_LOCATION);
         }
         /**
          * Id of the created breakpoint for further reference.
@@ -2609,14 +2460,14 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Debugger.BreakpointId breakpointId() {
-            return new Debugger.BreakpointId((String) require("breakpointId"));
+            return require(BREAKPOINT_ID);
         }
         /**
          * List of the locations this breakpoint resolved into upon addition.
          * @return the protocol field value
          */
         public java.util.List<Debugger.Location> locations() {
-            return CdpObject.requireList(require("locations"), element0 -> java.util.Objects.requireNonNull(Debugger.Location.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(LOCATIONS);
         }
         /**
          * Id of the created breakpoint for further reference.
@@ -2674,7 +2525,7 @@ public final class Debugger {
          */
         @Deprecated
         public Optional<java.util.List<Debugger.CallFrame>> callFrames() {
-            return raw("callFrames").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Debugger.CallFrame.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(CALL_FRAMES);
         }
         /**
          * Whether current call stack was modified after applying the changes.
@@ -2683,7 +2534,7 @@ public final class Debugger {
          */
         @Deprecated
         public Optional<Boolean> stackChanged() {
-            return raw("stackChanged").map(value -> (Boolean) value);
+            return optionalBoolean("stackChanged");
         }
         /**
          * Async stack trace, if any.
@@ -2692,7 +2543,7 @@ public final class Debugger {
          */
         @Deprecated
         public Optional<Runtime.StackTrace> asyncStackTrace() {
-            return raw("asyncStackTrace").flatMap(CdpObject::objectMap).map(Runtime.StackTrace::fromMap);
+            return optional(ASYNC_STACK_TRACE);
         }
         /**
          * Async stack trace, if any.
@@ -2701,7 +2552,7 @@ public final class Debugger {
          */
         @Deprecated
         public Optional<Runtime.StackTraceId> asyncStackTraceId() {
-            return raw("asyncStackTraceId").flatMap(CdpObject::objectMap).map(Runtime.StackTraceId::fromMap);
+            return optional(ASYNC_STACK_TRACE_ID);
         }
         /**
          * Whether the operation was successful or not. Only {@code Ok} denotes a successful live edit while the other enum variants denote why the live edit failed.
@@ -2709,14 +2560,14 @@ public final class Debugger {
          * @return the protocol field value
          */
         public SetScriptSourceResult.StatusValues status() {
-            return SetScriptSourceResult.StatusValues.of((String) require("status"));
+            return require(STATUS);
         }
         /**
          * Exception details if any. Only present when {@code status} is {@code CompileError}.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.ExceptionDetails> exceptionDetails() {
-            return raw("exceptionDetails").flatMap(CdpObject::objectMap).map(Runtime.ExceptionDetails::fromMap);
+            return optional(EXCEPTION_DETAILS);
         }
         /**
          * New stack trace in case editing has happened while VM was stopped.
@@ -2798,14 +2649,14 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Debugger.BreakpointId breakpointId() {
-            return new Debugger.BreakpointId((String) require("breakpointId"));
+            return require(BREAKPOINT_ID);
         }
         /**
          * Actual breakpoint location.
          * @return the protocol field value
          */
         public Debugger.Location location() {
-            return java.util.Objects.requireNonNull(Debugger.Location.fromMap(CdpObject.requireObjectMap(require("location"))));
+            return require(LOCATION);
         }
         /**
          * Breakpoint unique identifier.
@@ -2867,35 +2718,35 @@ public final class Debugger {
          * @return the protocol field value
          */
         public java.util.List<Debugger.CallFrame> callFrames() {
-            return CdpObject.requireList(require("callFrames"), element0 -> java.util.Objects.requireNonNull(Debugger.CallFrame.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(CALL_FRAMES);
         }
         /**
          * Pause reason.
          * @return the protocol field value
          */
         public PausedEvent.ReasonValues reason() {
-            return PausedEvent.ReasonValues.of((String) require("reason"));
+            return require(REASON);
         }
         /**
          * Object containing break-specific auxiliary properties.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> data() {
-            return raw("data").flatMap(CdpObject::objectMap);
+            return optionalObject("data");
         }
         /**
          * Hit breakpoints IDs
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<String>> hitBreakpoints() {
-            return raw("hitBreakpoints").flatMap(value -> list(value, element0 -> (String) element0));
+            return optional(HIT_BREAKPOINTS);
         }
         /**
          * Async stack trace, if any.
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.StackTrace> asyncStackTrace() {
-            return raw("asyncStackTrace").flatMap(CdpObject::objectMap).map(Runtime.StackTrace::fromMap);
+            return optional(ASYNC_STACK_TRACE);
         }
         /**
          * Async stack trace, if any.
@@ -2903,7 +2754,7 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.StackTraceId> asyncStackTraceId() {
-            return raw("asyncStackTraceId").flatMap(CdpObject::objectMap).map(Runtime.StackTraceId::fromMap);
+            return optional(ASYNC_STACK_TRACE_ID);
         }
         /**
          * Never present, will be removed.
@@ -2913,7 +2764,7 @@ public final class Debugger {
          */
         @Deprecated
         public Optional<Runtime.StackTraceId> asyncCallStackTraceId() {
-            return raw("asyncCallStackTraceId").flatMap(CdpObject::objectMap).map(Runtime.StackTraceId::fromMap);
+            return optional(ASYNC_CALL_STACK_TRACE_ID);
         }
         /**
          * Call stack the virtual machine stopped on.
@@ -3007,98 +2858,98 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Runtime.ScriptId scriptId() {
-            return new Runtime.ScriptId((String) require("scriptId"));
+            return require(SCRIPT_ID);
         }
         /**
          * URL or name of the script parsed (if any).
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Line offset of the script within the resource with given URL (for script tags).
          * @return the protocol field value
          */
         public long startLine() {
-            return ((Number) require("startLine")).longValue();
+            return requireLong("startLine");
         }
         /**
          * Column offset of the script within the resource with given URL.
          * @return the protocol field value
          */
         public long startColumn() {
-            return ((Number) require("startColumn")).longValue();
+            return requireLong("startColumn");
         }
         /**
          * Last line of the script.
          * @return the protocol field value
          */
         public long endLine() {
-            return ((Number) require("endLine")).longValue();
+            return requireLong("endLine");
         }
         /**
          * Length of the last line of the script.
          * @return the protocol field value
          */
         public long endColumn() {
-            return ((Number) require("endColumn")).longValue();
+            return requireLong("endColumn");
         }
         /**
          * Specifies script creation context.
          * @return the protocol field value
          */
         public Runtime.ExecutionContextId executionContextId() {
-            return new Runtime.ExecutionContextId(((Number) require("executionContextId")).longValue());
+            return require(EXECUTION_CONTEXT_ID);
         }
         /**
          * Content hash of the script, SHA-256.
          * @return the protocol field value
          */
         public String hash() {
-            return (String) require("hash");
+            return requireString("hash");
         }
         /**
          * For Wasm modules, the content of the {@code build_id} custom section. For JavaScript the {@code debugId} magic comment.
          * @return the protocol field value
          */
         public String buildId() {
-            return (String) require("buildId");
+            return requireString("buildId");
         }
         /**
          * Embedder-specific auxiliary data likely matching {isDefault: boolean, type: &#x27;default&#x27;|&#x27;isolated&#x27;|&#x27;worker&#x27;, frameId: string}
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> executionContextAuxData() {
-            return raw("executionContextAuxData").flatMap(CdpObject::objectMap);
+            return optionalObject("executionContextAuxData");
         }
         /**
          * URL of source map associated with script (if any).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> sourceMapURL() {
-            return raw("sourceMapURL").map(value -> (String) value);
+            return optionalString("sourceMapURL");
         }
         /**
          * True, if this script has sourceURL.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> hasSourceURL() {
-            return raw("hasSourceURL").map(value -> (Boolean) value);
+            return optionalBoolean("hasSourceURL");
         }
         /**
          * True, if this script is ES6 module.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isModule() {
-            return raw("isModule").map(value -> (Boolean) value);
+            return optionalBoolean("isModule");
         }
         /**
          * This script length.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong length() {
-            return raw("length").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("length");
         }
         /**
          * JavaScript top stack frame of where the script parsed event was triggered if available.
@@ -3106,7 +2957,7 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.StackTrace> stackTrace() {
-            return raw("stackTrace").flatMap(CdpObject::objectMap).map(Runtime.StackTrace::fromMap);
+            return optional(STACK_TRACE);
         }
         /**
          * If the scriptLanguage is WebAssembly, the code section offset in the module.
@@ -3114,7 +2965,7 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong codeOffset() {
-            return raw("codeOffset").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("codeOffset");
         }
         /**
          * The language of the script.
@@ -3122,7 +2973,7 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<Debugger.ScriptLanguage> scriptLanguage() {
-            return raw("scriptLanguage").map(value -> Debugger.ScriptLanguage.of((String) value));
+            return optional(SCRIPT_LANGUAGE);
         }
         /**
          * The name the embedder supplied for this script.
@@ -3130,7 +2981,7 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> embedderName() {
-            return raw("embedderName").map(value -> (String) value);
+            return optionalString("embedderName");
         }
         /**
          * Identifier of the script parsed.
@@ -3313,70 +3164,70 @@ public final class Debugger {
          * @return the protocol field value
          */
         public Runtime.ScriptId scriptId() {
-            return new Runtime.ScriptId((String) require("scriptId"));
+            return require(SCRIPT_ID);
         }
         /**
          * URL or name of the script parsed (if any).
          * @return the protocol field value
          */
         public String url() {
-            return (String) require("url");
+            return requireString("url");
         }
         /**
          * Line offset of the script within the resource with given URL (for script tags).
          * @return the protocol field value
          */
         public long startLine() {
-            return ((Number) require("startLine")).longValue();
+            return requireLong("startLine");
         }
         /**
          * Column offset of the script within the resource with given URL.
          * @return the protocol field value
          */
         public long startColumn() {
-            return ((Number) require("startColumn")).longValue();
+            return requireLong("startColumn");
         }
         /**
          * Last line of the script.
          * @return the protocol field value
          */
         public long endLine() {
-            return ((Number) require("endLine")).longValue();
+            return requireLong("endLine");
         }
         /**
          * Length of the last line of the script.
          * @return the protocol field value
          */
         public long endColumn() {
-            return ((Number) require("endColumn")).longValue();
+            return requireLong("endColumn");
         }
         /**
          * Specifies script creation context.
          * @return the protocol field value
          */
         public Runtime.ExecutionContextId executionContextId() {
-            return new Runtime.ExecutionContextId(((Number) require("executionContextId")).longValue());
+            return require(EXECUTION_CONTEXT_ID);
         }
         /**
          * Content hash of the script, SHA-256.
          * @return the protocol field value
          */
         public String hash() {
-            return (String) require("hash");
+            return requireString("hash");
         }
         /**
          * For Wasm modules, the content of the {@code build_id} custom section. For JavaScript the {@code debugId} magic comment.
          * @return the protocol field value
          */
         public String buildId() {
-            return (String) require("buildId");
+            return requireString("buildId");
         }
         /**
          * Embedder-specific auxiliary data likely matching {isDefault: boolean, type: &#x27;default&#x27;|&#x27;isolated&#x27;|&#x27;worker&#x27;, frameId: string}
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> executionContextAuxData() {
-            return raw("executionContextAuxData").flatMap(CdpObject::objectMap);
+            return optionalObject("executionContextAuxData");
         }
         /**
          * True, if this script is generated as a result of the live edit operation.
@@ -3384,35 +3235,35 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isLiveEdit() {
-            return raw("isLiveEdit").map(value -> (Boolean) value);
+            return optionalBoolean("isLiveEdit");
         }
         /**
          * URL of source map associated with script (if any).
          * @return the protocol field value, empty when absent
          */
         public Optional<String> sourceMapURL() {
-            return raw("sourceMapURL").map(value -> (String) value);
+            return optionalString("sourceMapURL");
         }
         /**
          * True, if this script has sourceURL.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> hasSourceURL() {
-            return raw("hasSourceURL").map(value -> (Boolean) value);
+            return optionalBoolean("hasSourceURL");
         }
         /**
          * True, if this script is ES6 module.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> isModule() {
-            return raw("isModule").map(value -> (Boolean) value);
+            return optionalBoolean("isModule");
         }
         /**
          * This script length.
          * @return the protocol field value, empty when absent
          */
         public OptionalLong length() {
-            return raw("length").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("length");
         }
         /**
          * JavaScript top stack frame of where the script parsed event was triggered if available.
@@ -3420,7 +3271,7 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<Runtime.StackTrace> stackTrace() {
-            return raw("stackTrace").flatMap(CdpObject::objectMap).map(Runtime.StackTrace::fromMap);
+            return optional(STACK_TRACE);
         }
         /**
          * If the scriptLanguage is WebAssembly, the code section offset in the module.
@@ -3428,7 +3279,7 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public OptionalLong codeOffset() {
-            return raw("codeOffset").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("codeOffset");
         }
         /**
          * The language of the script.
@@ -3436,7 +3287,7 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<Debugger.ScriptLanguage> scriptLanguage() {
-            return raw("scriptLanguage").map(value -> Debugger.ScriptLanguage.of((String) value));
+            return optional(SCRIPT_LANGUAGE);
         }
         /**
          * If the scriptLanguage is WebAssembly, the source of debug symbols for the module.
@@ -3444,7 +3295,7 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Debugger.DebugSymbols>> debugSymbols() {
-            return raw("debugSymbols").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Debugger.DebugSymbols.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(DEBUG_SYMBOLS);
         }
         /**
          * The name the embedder supplied for this script.
@@ -3452,7 +3303,7 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<String> embedderName() {
-            return raw("embedderName").map(value -> (String) value);
+            return optionalString("embedderName");
         }
         /**
          * The list of set breakpoints in this script if calls to {@code setBreakpointByUrl} matches this script&#x27;s URL or hash. Clients that use this list can ignore the {@code breakpointResolved} event. They are equivalent.
@@ -3460,7 +3311,7 @@ public final class Debugger {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Debugger.ResolvedBreakpoint>> resolvedBreakpoints() {
-            return raw("resolvedBreakpoints").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(Debugger.ResolvedBreakpoint.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(RESOLVED_BREAKPOINTS);
         }
         /**
          * Identifier of the script parsed.
@@ -3725,9 +3576,8 @@ public final class Debugger {
             throw new IllegalArgumentException("Unknown SetPauseOnExceptionsStateValues value: " + value);
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Continues execution until specific location is reached.
          * @param location protocol value
@@ -3735,10 +3585,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> continueToLocation(Debugger.Location location, ContinueToLocationTargetCallFramesValues targetCallFrames) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("location", CdpObject.json(location));
-            params.put("targetCallFrames", CdpObject.json(targetCallFrames));
-            return client.call("Debugger.continueToLocation", params);
+            return call("Debugger.continueToLocation", params("location", location, "targetCallFrames", targetCallFrames));
         }
         /**
          * Continues execution until specific location is reached.
@@ -3746,9 +3593,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> continueToLocation(Debugger.Location location) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("location", CdpObject.json(location));
-            return client.call("Debugger.continueToLocation", params);
+            return call("Debugger.continueToLocation", params("location", location));
         }
         /**
          * Continues execution until specific location is reached.
@@ -3756,14 +3601,14 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> continueToLocation(ContinueToLocationRequest request) {
-            return client.call("Debugger.continueToLocation", request == null ? null : request.toMap());
+            return call("Debugger.continueToLocation", request);
         }
         /**
          * Disables debugger for given page.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("Debugger.disable", null);
+            return call("Debugger.disable");
         }
         /**
          * Enables debugger for the given page. Clients should not assume that the debugging has been enabled until the result for this command is received.
@@ -3771,16 +3616,14 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<Runtime.UniqueDebuggerId> enable(double maxScriptsCacheSize) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("maxScriptsCacheSize", CdpObject.json(maxScriptsCacheSize));
-            return client.call("Debugger.enable", params, result_ -> new Runtime.UniqueDebuggerId((String) java.util.Objects.requireNonNull(result_.get("debuggerId"))));
+            return call("Debugger.enable", params("maxScriptsCacheSize", maxScriptsCacheSize), DEBUGGER_ID::require);
         }
         /**
          * Enables debugger for the given page. Clients should not assume that the debugging has been enabled until the result for this command is received.
          * @return a stage completing with the command result
          */
         public CompletionStage<Runtime.UniqueDebuggerId> enable() {
-            return client.call("Debugger.enable", null, result_ -> new Runtime.UniqueDebuggerId((String) java.util.Objects.requireNonNull(result_.get("debuggerId"))));
+            return call("Debugger.enable", DEBUGGER_ID::require);
         }
         /**
          * Enables debugger for the given page. Clients should not assume that the debugging has been enabled until the result for this command is received.
@@ -3788,7 +3631,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<Runtime.UniqueDebuggerId> enable(EnableRequest request) {
-            return client.call("Debugger.enable", request == null ? null : request.toMap(), result_ -> new Runtime.UniqueDebuggerId((String) java.util.Objects.requireNonNull(result_.get("debuggerId"))));
+            return call("Debugger.enable", request, DEBUGGER_ID::require);
         }
         /**
          * Evaluates expression on a given call frame.
@@ -3804,17 +3647,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<EvaluateOnCallFrameResult> evaluateOnCallFrame(Debugger.CallFrameId callFrameId, String expression, @Nullable String objectGroup, @Nullable Boolean includeCommandLineAPI, @Nullable Boolean silent, @Nullable Boolean returnByValue, @Nullable Boolean generatePreview, @Nullable Boolean throwOnSideEffect, Runtime.@Nullable TimeDelta timeout) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("callFrameId", CdpObject.json(callFrameId));
-            params.put("expression", CdpObject.json(expression));
-            if (objectGroup != null) params.put("objectGroup", CdpObject.json(objectGroup));
-            if (includeCommandLineAPI != null) params.put("includeCommandLineAPI", CdpObject.json(includeCommandLineAPI));
-            if (silent != null) params.put("silent", CdpObject.json(silent));
-            if (returnByValue != null) params.put("returnByValue", CdpObject.json(returnByValue));
-            if (generatePreview != null) params.put("generatePreview", CdpObject.json(generatePreview));
-            if (throwOnSideEffect != null) params.put("throwOnSideEffect", CdpObject.json(throwOnSideEffect));
-            if (timeout != null) params.put("timeout", CdpObject.json(timeout));
-            return client.call("Debugger.evaluateOnCallFrame", params, result_ -> new EvaluateOnCallFrameResult(result_));
+            return call("Debugger.evaluateOnCallFrame", params("callFrameId", callFrameId, "expression", expression, "objectGroup", objectGroup, "includeCommandLineAPI", includeCommandLineAPI, "silent", silent, "returnByValue", returnByValue, "generatePreview", generatePreview, "throwOnSideEffect", throwOnSideEffect, "timeout", timeout), EvaluateOnCallFrameResult::fromMap);
         }
         /**
          * Evaluates expression on a given call frame.
@@ -3823,10 +3656,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<EvaluateOnCallFrameResult> evaluateOnCallFrame(Debugger.CallFrameId callFrameId, String expression) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("callFrameId", CdpObject.json(callFrameId));
-            params.put("expression", CdpObject.json(expression));
-            return client.call("Debugger.evaluateOnCallFrame", params, result_ -> new EvaluateOnCallFrameResult(result_));
+            return call("Debugger.evaluateOnCallFrame", params("callFrameId", callFrameId, "expression", expression), EvaluateOnCallFrameResult::fromMap);
         }
         /**
          * Evaluates expression on a given call frame.
@@ -3834,7 +3664,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<EvaluateOnCallFrameResult> evaluateOnCallFrame(EvaluateOnCallFrameRequest request) {
-            return client.call("Debugger.evaluateOnCallFrame", request == null ? null : request.toMap(), result_ -> new EvaluateOnCallFrameResult(result_));
+            return call("Debugger.evaluateOnCallFrame", request, EvaluateOnCallFrameResult::fromMap);
         }
         /**
          * Returns possible locations for breakpoint. scriptId in start and end range locations should be the same.
@@ -3844,11 +3674,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Debugger.BreakLocation>> getPossibleBreakpoints(Debugger.Location start, Debugger.@Nullable Location end, @Nullable Boolean restrictToFunction) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("start", CdpObject.json(start));
-            if (end != null) params.put("end", CdpObject.json(end));
-            if (restrictToFunction != null) params.put("restrictToFunction", CdpObject.json(restrictToFunction));
-            return client.call("Debugger.getPossibleBreakpoints", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("locations")), element0 -> java.util.Objects.requireNonNull(Debugger.BreakLocation.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Debugger.getPossibleBreakpoints", params("start", start, "end", end, "restrictToFunction", restrictToFunction), LOCATIONS_2::require);
         }
         /**
          * Returns possible locations for breakpoint. scriptId in start and end range locations should be the same.
@@ -3856,9 +3682,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Debugger.BreakLocation>> getPossibleBreakpoints(Debugger.Location start) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("start", CdpObject.json(start));
-            return client.call("Debugger.getPossibleBreakpoints", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("locations")), element0 -> java.util.Objects.requireNonNull(Debugger.BreakLocation.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Debugger.getPossibleBreakpoints", params("start", start), LOCATIONS_2::require);
         }
         /**
          * Returns possible locations for breakpoint. scriptId in start and end range locations should be the same.
@@ -3866,7 +3690,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Debugger.BreakLocation>> getPossibleBreakpoints(GetPossibleBreakpointsRequest request) {
-            return client.call("Debugger.getPossibleBreakpoints", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("locations")), element0 -> java.util.Objects.requireNonNull(Debugger.BreakLocation.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Debugger.getPossibleBreakpoints", request, LOCATIONS_2::require);
         }
         /**
          * Returns source for the script with given id.
@@ -3874,9 +3698,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetScriptSourceResult> getScriptSource(Runtime.ScriptId scriptId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("scriptId", CdpObject.json(scriptId));
-            return client.call("Debugger.getScriptSource", params, result_ -> new GetScriptSourceResult(result_));
+            return call("Debugger.getScriptSource", params("scriptId", scriptId), GetScriptSourceResult::fromMap);
         }
         /**
          * Returns source for the script with given id.
@@ -3884,7 +3706,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<GetScriptSourceResult> getScriptSource(GetScriptSourceRequest request) {
-            return client.call("Debugger.getScriptSource", request == null ? null : request.toMap(), result_ -> new GetScriptSourceResult(result_));
+            return call("Debugger.getScriptSource", request, GetScriptSourceResult::fromMap);
         }
         /**
          * Invokes Debugger.disassembleWasmModule.
@@ -3893,9 +3715,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<DisassembleWasmModuleResult> disassembleWasmModule(Runtime.ScriptId scriptId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("scriptId", CdpObject.json(scriptId));
-            return client.call("Debugger.disassembleWasmModule", params, result_ -> new DisassembleWasmModuleResult(result_));
+            return call("Debugger.disassembleWasmModule", params("scriptId", scriptId), DisassembleWasmModuleResult::fromMap);
         }
         /**
          * Invokes Debugger.disassembleWasmModule with a request object.
@@ -3904,7 +3724,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<DisassembleWasmModuleResult> disassembleWasmModule(DisassembleWasmModuleRequest request) {
-            return client.call("Debugger.disassembleWasmModule", request == null ? null : request.toMap(), result_ -> new DisassembleWasmModuleResult(result_));
+            return call("Debugger.disassembleWasmModule", request, DisassembleWasmModuleResult::fromMap);
         }
         /**
          * Disassemble the next chunk of lines for the module corresponding to the stream. If disassembly is complete, this API will invalidate the streamId and return an empty chunk. Any subsequent calls for the now invalid stream will return errors.
@@ -3913,9 +3733,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<Debugger.WasmDisassemblyChunk> nextWasmDisassemblyChunk(String streamId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("streamId", CdpObject.json(streamId));
-            return client.call("Debugger.nextWasmDisassemblyChunk", params, result_ -> java.util.Objects.requireNonNull(Debugger.WasmDisassemblyChunk.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("chunk"))))));
+            return call("Debugger.nextWasmDisassemblyChunk", params("streamId", streamId), CHUNK::require);
         }
         /**
          * Disassemble the next chunk of lines for the module corresponding to the stream. If disassembly is complete, this API will invalidate the streamId and return an empty chunk. Any subsequent calls for the now invalid stream will return errors.
@@ -3924,7 +3742,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<Debugger.WasmDisassemblyChunk> nextWasmDisassemblyChunk(NextWasmDisassemblyChunkRequest request) {
-            return client.call("Debugger.nextWasmDisassemblyChunk", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Debugger.WasmDisassemblyChunk.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("chunk"))))));
+            return call("Debugger.nextWasmDisassemblyChunk", request, CHUNK::require);
         }
         /**
          * This command is deprecated. Use getScriptSource instead.
@@ -3934,9 +3752,7 @@ public final class Debugger {
          */
         @Deprecated
         public CompletionStage<String> getWasmBytecode(Runtime.ScriptId scriptId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("scriptId", CdpObject.json(scriptId));
-            return client.call("Debugger.getWasmBytecode", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("bytecode")));
+            return call("Debugger.getWasmBytecode", params("scriptId", scriptId), BYTECODE::require);
         }
         /**
          * This command is deprecated. Use getScriptSource instead.
@@ -3946,7 +3762,7 @@ public final class Debugger {
          */
         @Deprecated
         public CompletionStage<String> getWasmBytecode(GetWasmBytecodeRequest request) {
-            return client.call("Debugger.getWasmBytecode", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("bytecode")));
+            return call("Debugger.getWasmBytecode", request, BYTECODE::require);
         }
         /**
          * Returns stack trace with given {@code stackTraceId}.
@@ -3955,9 +3771,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<Runtime.StackTrace> getStackTrace(Runtime.StackTraceId stackTraceId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("stackTraceId", CdpObject.json(stackTraceId));
-            return client.call("Debugger.getStackTrace", params, result_ -> java.util.Objects.requireNonNull(Runtime.StackTrace.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("stackTrace"))))));
+            return call("Debugger.getStackTrace", params("stackTraceId", stackTraceId), STACK_TRACE::require);
         }
         /**
          * Returns stack trace with given {@code stackTraceId}.
@@ -3966,14 +3780,14 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<Runtime.StackTrace> getStackTrace(GetStackTraceRequest request) {
-            return client.call("Debugger.getStackTrace", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(Runtime.StackTrace.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("stackTrace"))))));
+            return call("Debugger.getStackTrace", request, STACK_TRACE::require);
         }
         /**
          * Stops on the next JavaScript statement.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> pause() {
-            return client.call("Debugger.pause", null);
+            return call("Debugger.pause");
         }
         /**
          * Invokes Debugger.pauseOnAsyncCall.
@@ -3984,9 +3798,7 @@ public final class Debugger {
          */
         @Deprecated
         public CompletionStage<Void> pauseOnAsyncCall(Runtime.StackTraceId parentStackTraceId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("parentStackTraceId", CdpObject.json(parentStackTraceId));
-            return client.call("Debugger.pauseOnAsyncCall", params);
+            return call("Debugger.pauseOnAsyncCall", params("parentStackTraceId", parentStackTraceId));
         }
         /**
          * Invokes Debugger.pauseOnAsyncCall with a request object.
@@ -3997,7 +3809,7 @@ public final class Debugger {
          */
         @Deprecated
         public CompletionStage<Void> pauseOnAsyncCall(PauseOnAsyncCallRequest request) {
-            return client.call("Debugger.pauseOnAsyncCall", request == null ? null : request.toMap());
+            return call("Debugger.pauseOnAsyncCall", request);
         }
         /**
          * Removes JavaScript breakpoint.
@@ -4005,9 +3817,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeBreakpoint(Debugger.BreakpointId breakpointId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("breakpointId", CdpObject.json(breakpointId));
-            return client.call("Debugger.removeBreakpoint", params);
+            return call("Debugger.removeBreakpoint", params("breakpointId", breakpointId));
         }
         /**
          * Removes JavaScript breakpoint.
@@ -4015,7 +3825,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeBreakpoint(RemoveBreakpointRequest request) {
-            return client.call("Debugger.removeBreakpoint", request == null ? null : request.toMap());
+            return call("Debugger.removeBreakpoint", request);
         }
         /**
          * Restarts particular call frame from the beginning. The old, deprecated behavior of {@code restartFrame} is to stay paused and allow further CDP commands after a restart was scheduled. This can cause problems with restarting, so we now continue execution immediatly after it has been scheduled until we reach the beginning of the restarted frame.
@@ -4026,10 +3836,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<RestartFrameResult> restartFrame(Debugger.CallFrameId callFrameId, RestartFrameModeValues mode) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("callFrameId", CdpObject.json(callFrameId));
-            params.put("mode", CdpObject.json(mode));
-            return client.call("Debugger.restartFrame", params, result_ -> new RestartFrameResult(result_));
+            return call("Debugger.restartFrame", params("callFrameId", callFrameId, "mode", mode), RestartFrameResult::fromMap);
         }
         /**
          * Restarts particular call frame from the beginning. The old, deprecated behavior of {@code restartFrame} is to stay paused and allow further CDP commands after a restart was scheduled. This can cause problems with restarting, so we now continue execution immediatly after it has been scheduled until we reach the beginning of the restarted frame.
@@ -4039,9 +3846,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<RestartFrameResult> restartFrame(Debugger.CallFrameId callFrameId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("callFrameId", CdpObject.json(callFrameId));
-            return client.call("Debugger.restartFrame", params, result_ -> new RestartFrameResult(result_));
+            return call("Debugger.restartFrame", params("callFrameId", callFrameId), RestartFrameResult::fromMap);
         }
         /**
          * Restarts particular call frame from the beginning. The old, deprecated behavior of {@code restartFrame} is to stay paused and allow further CDP commands after a restart was scheduled. This can cause problems with restarting, so we now continue execution immediatly after it has been scheduled until we reach the beginning of the restarted frame.
@@ -4051,7 +3856,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<RestartFrameResult> restartFrame(RestartFrameRequest request) {
-            return client.call("Debugger.restartFrame", request == null ? null : request.toMap(), result_ -> new RestartFrameResult(result_));
+            return call("Debugger.restartFrame", request, RestartFrameResult::fromMap);
         }
         /**
          * Resumes JavaScript execution.
@@ -4059,16 +3864,14 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> resume(boolean terminateOnResume) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("terminateOnResume", CdpObject.json(terminateOnResume));
-            return client.call("Debugger.resume", params);
+            return call("Debugger.resume", params("terminateOnResume", terminateOnResume));
         }
         /**
          * Resumes JavaScript execution.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> resume() {
-            return client.call("Debugger.resume", null);
+            return call("Debugger.resume");
         }
         /**
          * Resumes JavaScript execution.
@@ -4076,7 +3879,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> resume(ResumeRequest request) {
-            return client.call("Debugger.resume", request == null ? null : request.toMap());
+            return call("Debugger.resume", request);
         }
         /**
          * Searches for given string in script content.
@@ -4087,12 +3890,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Debugger.SearchMatch>> searchInContent(Runtime.ScriptId scriptId, String query, @Nullable Boolean caseSensitive, @Nullable Boolean isRegex) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("scriptId", CdpObject.json(scriptId));
-            params.put("query", CdpObject.json(query));
-            if (caseSensitive != null) params.put("caseSensitive", CdpObject.json(caseSensitive));
-            if (isRegex != null) params.put("isRegex", CdpObject.json(isRegex));
-            return client.call("Debugger.searchInContent", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("result")), element0 -> java.util.Objects.requireNonNull(Debugger.SearchMatch.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Debugger.searchInContent", params("scriptId", scriptId, "query", query, "caseSensitive", caseSensitive, "isRegex", isRegex), RESULT_2::require);
         }
         /**
          * Searches for given string in script content.
@@ -4101,10 +3899,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Debugger.SearchMatch>> searchInContent(Runtime.ScriptId scriptId, String query) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("scriptId", CdpObject.json(scriptId));
-            params.put("query", CdpObject.json(query));
-            return client.call("Debugger.searchInContent", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("result")), element0 -> java.util.Objects.requireNonNull(Debugger.SearchMatch.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Debugger.searchInContent", params("scriptId", scriptId, "query", query), RESULT_2::require);
         }
         /**
          * Searches for given string in script content.
@@ -4112,7 +3907,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<Debugger.SearchMatch>> searchInContent(SearchInContentRequest request) {
-            return client.call("Debugger.searchInContent", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("result")), element0 -> java.util.Objects.requireNonNull(Debugger.SearchMatch.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("Debugger.searchInContent", request, RESULT_2::require);
         }
         /**
          * Enables or disables async call stacks tracking.
@@ -4120,9 +3915,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAsyncCallStackDepth(long maxDepth) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("maxDepth", CdpObject.json(maxDepth));
-            return client.call("Debugger.setAsyncCallStackDepth", params);
+            return call("Debugger.setAsyncCallStackDepth", params("maxDepth", maxDepth));
         }
         /**
          * Enables or disables async call stacks tracking.
@@ -4130,7 +3923,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setAsyncCallStackDepth(SetAsyncCallStackDepthRequest request) {
-            return client.call("Debugger.setAsyncCallStackDepth", request == null ? null : request.toMap());
+            return call("Debugger.setAsyncCallStackDepth", request);
         }
         /**
          * Replace previous blackbox execution contexts with passed ones. Forces backend to skip stepping/pausing in scripts in these execution contexts. VM will try to leave blackboxed script by performing &#x27;step in&#x27; several times, finally resorting to &#x27;step out&#x27; if unsuccessful.
@@ -4139,9 +3932,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setBlackboxExecutionContexts(java.util.List<String> uniqueIds) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("uniqueIds", CdpObject.json(uniqueIds));
-            return client.call("Debugger.setBlackboxExecutionContexts", params);
+            return call("Debugger.setBlackboxExecutionContexts", params("uniqueIds", uniqueIds));
         }
         /**
          * Replace previous blackbox execution contexts with passed ones. Forces backend to skip stepping/pausing in scripts in these execution contexts. VM will try to leave blackboxed script by performing &#x27;step in&#x27; several times, finally resorting to &#x27;step out&#x27; if unsuccessful.
@@ -4150,7 +3941,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setBlackboxExecutionContexts(SetBlackboxExecutionContextsRequest request) {
-            return client.call("Debugger.setBlackboxExecutionContexts", request == null ? null : request.toMap());
+            return call("Debugger.setBlackboxExecutionContexts", request);
         }
         /**
          * Replace previous blackbox patterns with passed ones. Forces backend to skip stepping/pausing in scripts with url matching one of the patterns. VM will try to leave blackboxed script by performing &#x27;step in&#x27; several times, finally resorting to &#x27;step out&#x27; if unsuccessful.
@@ -4160,10 +3951,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setBlackboxPatterns(java.util.List<String> patterns, boolean skipAnonymous) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("patterns", CdpObject.json(patterns));
-            params.put("skipAnonymous", CdpObject.json(skipAnonymous));
-            return client.call("Debugger.setBlackboxPatterns", params);
+            return call("Debugger.setBlackboxPatterns", params("patterns", patterns, "skipAnonymous", skipAnonymous));
         }
         /**
          * Replace previous blackbox patterns with passed ones. Forces backend to skip stepping/pausing in scripts with url matching one of the patterns. VM will try to leave blackboxed script by performing &#x27;step in&#x27; several times, finally resorting to &#x27;step out&#x27; if unsuccessful.
@@ -4172,9 +3960,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setBlackboxPatterns(java.util.List<String> patterns) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("patterns", CdpObject.json(patterns));
-            return client.call("Debugger.setBlackboxPatterns", params);
+            return call("Debugger.setBlackboxPatterns", params("patterns", patterns));
         }
         /**
          * Replace previous blackbox patterns with passed ones. Forces backend to skip stepping/pausing in scripts with url matching one of the patterns. VM will try to leave blackboxed script by performing &#x27;step in&#x27; several times, finally resorting to &#x27;step out&#x27; if unsuccessful.
@@ -4183,7 +3969,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setBlackboxPatterns(SetBlackboxPatternsRequest request) {
-            return client.call("Debugger.setBlackboxPatterns", request == null ? null : request.toMap());
+            return call("Debugger.setBlackboxPatterns", request);
         }
         /**
          * Makes backend skip steps in the script in blackboxed ranges. VM will try leave blacklisted scripts by performing &#x27;step in&#x27; several times, finally resorting to &#x27;step out&#x27; if unsuccessful. Positions array contains positions where blackbox state is changed. First interval isn&#x27;t blackboxed. Array should be sorted.
@@ -4193,10 +3979,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setBlackboxedRanges(Runtime.ScriptId scriptId, java.util.List<Debugger.ScriptPosition> positions) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("scriptId", CdpObject.json(scriptId));
-            params.put("positions", CdpObject.json(positions));
-            return client.call("Debugger.setBlackboxedRanges", params);
+            return call("Debugger.setBlackboxedRanges", params("scriptId", scriptId, "positions", positions));
         }
         /**
          * Makes backend skip steps in the script in blackboxed ranges. VM will try leave blacklisted scripts by performing &#x27;step in&#x27; several times, finally resorting to &#x27;step out&#x27; if unsuccessful. Positions array contains positions where blackbox state is changed. First interval isn&#x27;t blackboxed. Array should be sorted.
@@ -4205,7 +3988,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setBlackboxedRanges(SetBlackboxedRangesRequest request) {
-            return client.call("Debugger.setBlackboxedRanges", request == null ? null : request.toMap());
+            return call("Debugger.setBlackboxedRanges", request);
         }
         /**
          * Sets JavaScript breakpoint at a given location.
@@ -4214,10 +3997,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<SetBreakpointResult> setBreakpoint(Debugger.Location location, String condition) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("location", CdpObject.json(location));
-            params.put("condition", CdpObject.json(condition));
-            return client.call("Debugger.setBreakpoint", params, result_ -> new SetBreakpointResult(result_));
+            return call("Debugger.setBreakpoint", params("location", location, "condition", condition), SetBreakpointResult::fromMap);
         }
         /**
          * Sets JavaScript breakpoint at a given location.
@@ -4225,9 +4005,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<SetBreakpointResult> setBreakpoint(Debugger.Location location) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("location", CdpObject.json(location));
-            return client.call("Debugger.setBreakpoint", params, result_ -> new SetBreakpointResult(result_));
+            return call("Debugger.setBreakpoint", params("location", location), SetBreakpointResult::fromMap);
         }
         /**
          * Sets JavaScript breakpoint at a given location.
@@ -4235,7 +4013,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<SetBreakpointResult> setBreakpoint(SetBreakpointRequest request) {
-            return client.call("Debugger.setBreakpoint", request == null ? null : request.toMap(), result_ -> new SetBreakpointResult(result_));
+            return call("Debugger.setBreakpoint", request, SetBreakpointResult::fromMap);
         }
         /**
          * Sets instrumentation breakpoint.
@@ -4243,9 +4021,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<Debugger.BreakpointId> setInstrumentationBreakpoint(SetInstrumentationBreakpointInstrumentationValues instrumentation) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("instrumentation", CdpObject.json(instrumentation));
-            return client.call("Debugger.setInstrumentationBreakpoint", params, result_ -> new Debugger.BreakpointId((String) java.util.Objects.requireNonNull(result_.get("breakpointId"))));
+            return call("Debugger.setInstrumentationBreakpoint", params("instrumentation", instrumentation), BREAKPOINT_ID::require);
         }
         /**
          * Sets instrumentation breakpoint.
@@ -4253,7 +4029,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<Debugger.BreakpointId> setInstrumentationBreakpoint(SetInstrumentationBreakpointRequest request) {
-            return client.call("Debugger.setInstrumentationBreakpoint", request == null ? null : request.toMap(), result_ -> new Debugger.BreakpointId((String) java.util.Objects.requireNonNull(result_.get("breakpointId"))));
+            return call("Debugger.setInstrumentationBreakpoint", request, BREAKPOINT_ID::require);
         }
         /**
          * Sets JavaScript breakpoint at given location specified either by URL or URL regex. Once this command is issued, all existing parsed scripts will have breakpoints resolved and returned in {@code locations} property. Further matching script parsing will result in subsequent {@code breakpointResolved} events issued. This logical breakpoint will survive page reloads.
@@ -4266,14 +4042,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<SetBreakpointByUrlResult> setBreakpointByUrl(long lineNumber, @Nullable String url, @Nullable String urlRegex, @Nullable String scriptHash, @Nullable Long columnNumber, @Nullable String condition) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("lineNumber", CdpObject.json(lineNumber));
-            if (url != null) params.put("url", CdpObject.json(url));
-            if (urlRegex != null) params.put("urlRegex", CdpObject.json(urlRegex));
-            if (scriptHash != null) params.put("scriptHash", CdpObject.json(scriptHash));
-            if (columnNumber != null) params.put("columnNumber", CdpObject.json(columnNumber));
-            if (condition != null) params.put("condition", CdpObject.json(condition));
-            return client.call("Debugger.setBreakpointByUrl", params, result_ -> new SetBreakpointByUrlResult(result_));
+            return call("Debugger.setBreakpointByUrl", params("lineNumber", lineNumber, "url", url, "urlRegex", urlRegex, "scriptHash", scriptHash, "columnNumber", columnNumber, "condition", condition), SetBreakpointByUrlResult::fromMap);
         }
         /**
          * Sets JavaScript breakpoint at given location specified either by URL or URL regex. Once this command is issued, all existing parsed scripts will have breakpoints resolved and returned in {@code locations} property. Further matching script parsing will result in subsequent {@code breakpointResolved} events issued. This logical breakpoint will survive page reloads.
@@ -4281,9 +4050,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<SetBreakpointByUrlResult> setBreakpointByUrl(long lineNumber) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("lineNumber", CdpObject.json(lineNumber));
-            return client.call("Debugger.setBreakpointByUrl", params, result_ -> new SetBreakpointByUrlResult(result_));
+            return call("Debugger.setBreakpointByUrl", params("lineNumber", lineNumber), SetBreakpointByUrlResult::fromMap);
         }
         /**
          * Sets JavaScript breakpoint at given location specified either by URL or URL regex. Once this command is issued, all existing parsed scripts will have breakpoints resolved and returned in {@code locations} property. Further matching script parsing will result in subsequent {@code breakpointResolved} events issued. This logical breakpoint will survive page reloads.
@@ -4291,7 +4058,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<SetBreakpointByUrlResult> setBreakpointByUrl(SetBreakpointByUrlRequest request) {
-            return client.call("Debugger.setBreakpointByUrl", request == null ? null : request.toMap(), result_ -> new SetBreakpointByUrlResult(result_));
+            return call("Debugger.setBreakpointByUrl", request, SetBreakpointByUrlResult::fromMap);
         }
         /**
          * Sets JavaScript breakpoint before each call to the given function. If another function was created from the same source as a given one, calling it will also trigger the breakpoint.
@@ -4301,10 +4068,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<Debugger.BreakpointId> setBreakpointOnFunctionCall(Runtime.RemoteObjectId objectId, String condition) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("objectId", CdpObject.json(objectId));
-            params.put("condition", CdpObject.json(condition));
-            return client.call("Debugger.setBreakpointOnFunctionCall", params, result_ -> new Debugger.BreakpointId((String) java.util.Objects.requireNonNull(result_.get("breakpointId"))));
+            return call("Debugger.setBreakpointOnFunctionCall", params("objectId", objectId, "condition", condition), BREAKPOINT_ID::require);
         }
         /**
          * Sets JavaScript breakpoint before each call to the given function. If another function was created from the same source as a given one, calling it will also trigger the breakpoint.
@@ -4313,9 +4077,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<Debugger.BreakpointId> setBreakpointOnFunctionCall(Runtime.RemoteObjectId objectId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("objectId", CdpObject.json(objectId));
-            return client.call("Debugger.setBreakpointOnFunctionCall", params, result_ -> new Debugger.BreakpointId((String) java.util.Objects.requireNonNull(result_.get("breakpointId"))));
+            return call("Debugger.setBreakpointOnFunctionCall", params("objectId", objectId), BREAKPOINT_ID::require);
         }
         /**
          * Sets JavaScript breakpoint before each call to the given function. If another function was created from the same source as a given one, calling it will also trigger the breakpoint.
@@ -4324,7 +4086,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<Debugger.BreakpointId> setBreakpointOnFunctionCall(SetBreakpointOnFunctionCallRequest request) {
-            return client.call("Debugger.setBreakpointOnFunctionCall", request == null ? null : request.toMap(), result_ -> new Debugger.BreakpointId((String) java.util.Objects.requireNonNull(result_.get("breakpointId"))));
+            return call("Debugger.setBreakpointOnFunctionCall", request, BREAKPOINT_ID::require);
         }
         /**
          * Activates / deactivates all breakpoints on the page.
@@ -4332,9 +4094,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setBreakpointsActive(boolean active) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("active", CdpObject.json(active));
-            return client.call("Debugger.setBreakpointsActive", params);
+            return call("Debugger.setBreakpointsActive", params("active", active));
         }
         /**
          * Activates / deactivates all breakpoints on the page.
@@ -4342,7 +4102,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setBreakpointsActive(SetBreakpointsActiveRequest request) {
-            return client.call("Debugger.setBreakpointsActive", request == null ? null : request.toMap());
+            return call("Debugger.setBreakpointsActive", request);
         }
         /**
          * Defines pause on exceptions state. Can be set to stop on all exceptions, uncaught exceptions, or caught exceptions, no exceptions. Initial pause on exceptions state is {@code none}.
@@ -4350,9 +4110,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPauseOnExceptions(SetPauseOnExceptionsStateValues state) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("state", CdpObject.json(state));
-            return client.call("Debugger.setPauseOnExceptions", params);
+            return call("Debugger.setPauseOnExceptions", params("state", state));
         }
         /**
          * Defines pause on exceptions state. Can be set to stop on all exceptions, uncaught exceptions, or caught exceptions, no exceptions. Initial pause on exceptions state is {@code none}.
@@ -4360,7 +4118,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setPauseOnExceptions(SetPauseOnExceptionsRequest request) {
-            return client.call("Debugger.setPauseOnExceptions", request == null ? null : request.toMap());
+            return call("Debugger.setPauseOnExceptions", request);
         }
         /**
          * Changes return value in top frame. Available only at return break position.
@@ -4369,9 +4127,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setReturnValue(Runtime.CallArgument newValue) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("newValue", CdpObject.json(newValue));
-            return client.call("Debugger.setReturnValue", params);
+            return call("Debugger.setReturnValue", params("newValue", newValue));
         }
         /**
          * Changes return value in top frame. Available only at return break position.
@@ -4380,7 +4136,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setReturnValue(SetReturnValueRequest request) {
-            return client.call("Debugger.setReturnValue", request == null ? null : request.toMap());
+            return call("Debugger.setReturnValue", request);
         }
         /**
          * Edits JavaScript source live.
@@ -4392,12 +4148,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<SetScriptSourceResult> setScriptSource(Runtime.ScriptId scriptId, String scriptSource, @Nullable Boolean dryRun, @Nullable Boolean allowTopFrameEditing) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("scriptId", CdpObject.json(scriptId));
-            params.put("scriptSource", CdpObject.json(scriptSource));
-            if (dryRun != null) params.put("dryRun", CdpObject.json(dryRun));
-            if (allowTopFrameEditing != null) params.put("allowTopFrameEditing", CdpObject.json(allowTopFrameEditing));
-            return client.call("Debugger.setScriptSource", params, result_ -> new SetScriptSourceResult(result_));
+            return call("Debugger.setScriptSource", params("scriptId", scriptId, "scriptSource", scriptSource, "dryRun", dryRun, "allowTopFrameEditing", allowTopFrameEditing), SetScriptSourceResult::fromMap);
         }
         /**
          * Edits JavaScript source live.
@@ -4407,10 +4158,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<SetScriptSourceResult> setScriptSource(Runtime.ScriptId scriptId, String scriptSource) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("scriptId", CdpObject.json(scriptId));
-            params.put("scriptSource", CdpObject.json(scriptSource));
-            return client.call("Debugger.setScriptSource", params, result_ -> new SetScriptSourceResult(result_));
+            return call("Debugger.setScriptSource", params("scriptId", scriptId, "scriptSource", scriptSource), SetScriptSourceResult::fromMap);
         }
         /**
          * Edits JavaScript source live.
@@ -4419,7 +4167,7 @@ public final class Debugger {
          * @return a stage completing with the command result
          */
         public CompletionStage<SetScriptSourceResult> setScriptSource(SetScriptSourceRequest request) {
-            return client.call("Debugger.setScriptSource", request == null ? null : request.toMap(), result_ -> new SetScriptSourceResult(result_));
+            return call("Debugger.setScriptSource", request, SetScriptSourceResult::fromMap);
         }
         /**
          * Makes page not interrupt on any pauses (breakpoint, exception, dom exception etc).
@@ -4427,9 +4175,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSkipAllPauses(boolean skip) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("skip", CdpObject.json(skip));
-            return client.call("Debugger.setSkipAllPauses", params);
+            return call("Debugger.setSkipAllPauses", params("skip", skip));
         }
         /**
          * Makes page not interrupt on any pauses (breakpoint, exception, dom exception etc).
@@ -4437,7 +4183,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setSkipAllPauses(SetSkipAllPausesRequest request) {
-            return client.call("Debugger.setSkipAllPauses", request == null ? null : request.toMap());
+            return call("Debugger.setSkipAllPauses", request);
         }
         /**
          * Changes value of variable in a callframe. Object-based scopes are not supported and must be mutated manually.
@@ -4448,12 +4194,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setVariableValue(long scopeNumber, String variableName, Runtime.CallArgument newValue, Debugger.CallFrameId callFrameId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("scopeNumber", CdpObject.json(scopeNumber));
-            params.put("variableName", CdpObject.json(variableName));
-            params.put("newValue", CdpObject.json(newValue));
-            params.put("callFrameId", CdpObject.json(callFrameId));
-            return client.call("Debugger.setVariableValue", params);
+            return call("Debugger.setVariableValue", params("scopeNumber", scopeNumber, "variableName", variableName, "newValue", newValue, "callFrameId", callFrameId));
         }
         /**
          * Changes value of variable in a callframe. Object-based scopes are not supported and must be mutated manually.
@@ -4461,7 +4202,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setVariableValue(SetVariableValueRequest request) {
-            return client.call("Debugger.setVariableValue", request == null ? null : request.toMap());
+            return call("Debugger.setVariableValue", request);
         }
         /**
          * Steps into the function call.
@@ -4470,17 +4211,14 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stepInto(@Nullable Boolean breakOnAsyncCall, java.util.@Nullable List<Debugger.LocationRange> skipList) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            if (breakOnAsyncCall != null) params.put("breakOnAsyncCall", CdpObject.json(breakOnAsyncCall));
-            if (skipList != null) params.put("skipList", CdpObject.json(skipList));
-            return client.call("Debugger.stepInto", params);
+            return call("Debugger.stepInto", params("breakOnAsyncCall", breakOnAsyncCall, "skipList", skipList));
         }
         /**
          * Steps into the function call.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stepInto() {
-            return client.call("Debugger.stepInto", null);
+            return call("Debugger.stepInto");
         }
         /**
          * Steps into the function call.
@@ -4488,14 +4226,14 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stepInto(StepIntoRequest request) {
-            return client.call("Debugger.stepInto", request == null ? null : request.toMap());
+            return call("Debugger.stepInto", request);
         }
         /**
          * Steps out of the function call.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stepOut() {
-            return client.call("Debugger.stepOut", null);
+            return call("Debugger.stepOut");
         }
         /**
          * Steps over the statement.
@@ -4503,16 +4241,14 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stepOver(java.util.List<Debugger.LocationRange> skipList) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("skipList", CdpObject.json(skipList));
-            return client.call("Debugger.stepOver", params);
+            return call("Debugger.stepOver", params("skipList", skipList));
         }
         /**
          * Steps over the statement.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stepOver() {
-            return client.call("Debugger.stepOver", null);
+            return call("Debugger.stepOver");
         }
         /**
          * Steps over the statement.
@@ -4520,7 +4256,7 @@ public final class Debugger {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stepOver(StepOverRequest request) {
-            return client.call("Debugger.stepOver", request == null ? null : request.toMap());
+            return call("Debugger.stepOver", request);
         }
         /**
          * Fired when breakpoint is resolved to an actual script and location. Deprecated in favor of {@code resolvedBreakpoints} in the {@code scriptParsed} event.
@@ -4530,7 +4266,7 @@ public final class Debugger {
          */
         @Deprecated
         public CdpSubscription onBreakpointResolved(Consumer<BreakpointResolvedEvent> handler) {
-            return client.on("Debugger.breakpointResolved", BreakpointResolvedEvent::fromMap, handler);
+            return on("Debugger.breakpointResolved", BreakpointResolvedEvent::fromMap, handler);
         }
         /**
          * Fired when the virtual machine stopped on breakpoint or exception or any other stop criteria.
@@ -4538,7 +4274,7 @@ public final class Debugger {
          * @return a removable subscription
          */
         public CdpSubscription onPaused(Consumer<PausedEvent> handler) {
-            return client.on("Debugger.paused", PausedEvent::fromMap, handler);
+            return on("Debugger.paused", PausedEvent::fromMap, handler);
         }
         /**
          * Fired when the virtual machine resumed execution.
@@ -4546,7 +4282,7 @@ public final class Debugger {
          * @return a removable subscription
          */
         public CdpSubscription onResumed(Consumer<ResumedEvent> handler) {
-            return client.on("Debugger.resumed", ResumedEvent::fromMap, handler);
+            return on("Debugger.resumed", ResumedEvent::fromMap, handler);
         }
         /**
          * Fired when virtual machine fails to parse the script.
@@ -4554,7 +4290,7 @@ public final class Debugger {
          * @return a removable subscription
          */
         public CdpSubscription onScriptFailedToParse(Consumer<ScriptFailedToParseEvent> handler) {
-            return client.on("Debugger.scriptFailedToParse", ScriptFailedToParseEvent::fromMap, handler);
+            return on("Debugger.scriptFailedToParse", ScriptFailedToParseEvent::fromMap, handler);
         }
         /**
          * Fired when virtual machine parses script. This event is also fired for all known and uncollected scripts upon enabling debugger.
@@ -4562,7 +4298,7 @@ public final class Debugger {
          * @return a removable subscription
          */
         public CdpSubscription onScriptParsed(Consumer<ScriptParsedEvent> handler) {
-            return client.on("Debugger.scriptParsed", ScriptParsedEvent::fromMap, handler);
+            return on("Debugger.scriptParsed", ScriptParsedEvent::fromMap, handler);
         }
     }
 }

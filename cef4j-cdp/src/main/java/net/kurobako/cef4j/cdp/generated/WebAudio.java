@@ -1,7 +1,6 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -9,6 +8,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -24,6 +25,24 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class WebAudio {
     private WebAudio() {}
+    private static final CdpField<WebAudio.ChannelCountMode> CHANNEL_COUNT_MODE = CdpField.of("channelCountMode", value -> WebAudio.ChannelCountMode.of((String) value));
+    private static final CdpField<WebAudio.ChannelInterpretation> CHANNEL_INTERPRETATION = CdpField.of("channelInterpretation", value -> WebAudio.ChannelInterpretation.of((String) value));
+    private static final CdpField<WebAudio.BaseAudioContext> CONTEXT = CdpField.of("context", value -> java.util.Objects.requireNonNull(WebAudio.BaseAudioContext.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<WebAudio.GraphObjectId> CONTEXT_ID = CdpField.of("contextId", value -> new WebAudio.GraphObjectId((String) value));
+    private static final CdpField<WebAudio.ContextState> CONTEXT_STATE = CdpField.of("contextState", value -> WebAudio.ContextState.of((String) value));
+    private static final CdpField<WebAudio.ContextType> CONTEXT_TYPE = CdpField.of("contextType", value -> WebAudio.ContextType.of((String) value));
+    private static final CdpField<WebAudio.GraphObjectId> DESTINATION_ID = CdpField.of("destinationId", value -> new WebAudio.GraphObjectId((String) value));
+    private static final CdpField<WebAudio.AudioListener> LISTENER = CdpField.of("listener", value -> java.util.Objects.requireNonNull(WebAudio.AudioListener.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<WebAudio.GraphObjectId> LISTENER_ID = CdpField.of("listenerId", value -> new WebAudio.GraphObjectId((String) value));
+    private static final CdpField<WebAudio.AudioNode> NODE = CdpField.of("node", value -> java.util.Objects.requireNonNull(WebAudio.AudioNode.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<WebAudio.GraphObjectId> NODE_ID = CdpField.of("nodeId", value -> new WebAudio.GraphObjectId((String) value));
+    private static final CdpField<WebAudio.NodeType> NODE_TYPE = CdpField.of("nodeType", value -> new WebAudio.NodeType((String) value));
+    private static final CdpField<WebAudio.AudioParam> PARAM = CdpField.of("param", value -> java.util.Objects.requireNonNull(WebAudio.AudioParam.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<WebAudio.GraphObjectId> PARAM_ID = CdpField.of("paramId", value -> new WebAudio.GraphObjectId((String) value));
+    private static final CdpField<WebAudio.ParamType> PARAM_TYPE = CdpField.of("paramType", value -> new WebAudio.ParamType((String) value));
+    private static final CdpField<WebAudio.AutomationRate> RATE = CdpField.of("rate", value -> WebAudio.AutomationRate.of((String) value));
+    private static final CdpField<WebAudio.ContextRealtimeData> REALTIME_DATA = CdpField.of("realtimeData", value -> java.util.Objects.requireNonNull(WebAudio.ContextRealtimeData.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<WebAudio.GraphObjectId> SOURCE_ID = CdpField.of("sourceId", value -> new WebAudio.GraphObjectId((String) value));
     /**
      * An unique ID for a graph object (AudioContext, AudioNode, AudioParam) in Web Audio API
      */
@@ -166,28 +185,28 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public double currentTime() {
-            return ((Number) require("currentTime")).doubleValue();
+            return requireDouble("currentTime");
         }
         /**
          * The time spent on rendering graph divided by render quantum duration, and multiplied by 100. 100 means the audio renderer reached the full capacity and glitch may occur.
          * @return the protocol field value
          */
         public double renderCapacity() {
-            return ((Number) require("renderCapacity")).doubleValue();
+            return requireDouble("renderCapacity");
         }
         /**
          * A running mean of callback interval.
          * @return the protocol field value
          */
         public double callbackIntervalMean() {
-            return ((Number) require("callbackIntervalMean")).doubleValue();
+            return requireDouble("callbackIntervalMean");
         }
         /**
          * A running variance of callback interval.
          * @return the protocol field value
          */
         public double callbackIntervalVariance() {
-            return ((Number) require("callbackIntervalVariance")).doubleValue();
+            return requireDouble("callbackIntervalVariance");
         }
         /**
          * The current context time in second in BaseAudioContext.
@@ -240,49 +259,49 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId contextId() {
-            return new WebAudio.GraphObjectId((String) require("contextId"));
+            return require(CONTEXT_ID);
         }
         /**
          * Returns the contextType field.
          * @return the protocol field value
          */
         public WebAudio.ContextType contextType() {
-            return WebAudio.ContextType.of((String) require("contextType"));
+            return require(CONTEXT_TYPE);
         }
         /**
          * Returns the contextState field.
          * @return the protocol field value
          */
         public WebAudio.ContextState contextState() {
-            return WebAudio.ContextState.of((String) require("contextState"));
+            return require(CONTEXT_STATE);
         }
         /**
          * Returns the realtimeData field.
          * @return the protocol field value, empty when absent
          */
         public Optional<WebAudio.ContextRealtimeData> realtimeData() {
-            return raw("realtimeData").flatMap(CdpObject::objectMap).map(WebAudio.ContextRealtimeData::fromMap);
+            return optional(REALTIME_DATA);
         }
         /**
          * Platform-dependent callback buffer size.
          * @return the protocol field value
          */
         public double callbackBufferSize() {
-            return ((Number) require("callbackBufferSize")).doubleValue();
+            return requireDouble("callbackBufferSize");
         }
         /**
          * Number of output channels supported by audio hardware in use.
          * @return the protocol field value
          */
         public double maxOutputChannelCount() {
-            return ((Number) require("maxOutputChannelCount")).doubleValue();
+            return requireDouble("maxOutputChannelCount");
         }
         /**
          * Context sample rate.
          * @return the protocol field value
          */
         public double sampleRate() {
-            return ((Number) require("sampleRate")).doubleValue();
+            return requireDouble("sampleRate");
         }
         /**
          * Sets the contextId field.
@@ -362,14 +381,14 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId listenerId() {
-            return new WebAudio.GraphObjectId((String) require("listenerId"));
+            return require(LISTENER_ID);
         }
         /**
          * Returns the contextId field.
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId contextId() {
-            return new WebAudio.GraphObjectId((String) require("contextId"));
+            return require(CONTEXT_ID);
         }
         /**
          * Sets the listenerId field.
@@ -404,56 +423,56 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId nodeId() {
-            return new WebAudio.GraphObjectId((String) require("nodeId"));
+            return require(NODE_ID);
         }
         /**
          * Returns the contextId field.
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId contextId() {
-            return new WebAudio.GraphObjectId((String) require("contextId"));
+            return require(CONTEXT_ID);
         }
         /**
          * Returns the nodeType field.
          * @return the protocol field value
          */
         public WebAudio.NodeType nodeType() {
-            return new WebAudio.NodeType((String) require("nodeType"));
+            return require(NODE_TYPE);
         }
         /**
          * Returns the numberOfInputs field.
          * @return the protocol field value
          */
         public double numberOfInputs() {
-            return ((Number) require("numberOfInputs")).doubleValue();
+            return requireDouble("numberOfInputs");
         }
         /**
          * Returns the numberOfOutputs field.
          * @return the protocol field value
          */
         public double numberOfOutputs() {
-            return ((Number) require("numberOfOutputs")).doubleValue();
+            return requireDouble("numberOfOutputs");
         }
         /**
          * Returns the channelCount field.
          * @return the protocol field value
          */
         public double channelCount() {
-            return ((Number) require("channelCount")).doubleValue();
+            return requireDouble("channelCount");
         }
         /**
          * Returns the channelCountMode field.
          * @return the protocol field value
          */
         public WebAudio.ChannelCountMode channelCountMode() {
-            return WebAudio.ChannelCountMode.of((String) require("channelCountMode"));
+            return require(CHANNEL_COUNT_MODE);
         }
         /**
          * Returns the channelInterpretation field.
          * @return the protocol field value
          */
         public WebAudio.ChannelInterpretation channelInterpretation() {
-            return WebAudio.ChannelInterpretation.of((String) require("channelInterpretation"));
+            return require(CHANNEL_INTERPRETATION);
         }
         /**
          * Sets the nodeId field.
@@ -542,56 +561,56 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId paramId() {
-            return new WebAudio.GraphObjectId((String) require("paramId"));
+            return require(PARAM_ID);
         }
         /**
          * Returns the nodeId field.
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId nodeId() {
-            return new WebAudio.GraphObjectId((String) require("nodeId"));
+            return require(NODE_ID);
         }
         /**
          * Returns the contextId field.
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId contextId() {
-            return new WebAudio.GraphObjectId((String) require("contextId"));
+            return require(CONTEXT_ID);
         }
         /**
          * Returns the paramType field.
          * @return the protocol field value
          */
         public WebAudio.ParamType paramType() {
-            return new WebAudio.ParamType((String) require("paramType"));
+            return require(PARAM_TYPE);
         }
         /**
          * Returns the rate field.
          * @return the protocol field value
          */
         public WebAudio.AutomationRate rate() {
-            return WebAudio.AutomationRate.of((String) require("rate"));
+            return require(RATE);
         }
         /**
          * Returns the defaultValue field.
          * @return the protocol field value
          */
         public double defaultValue() {
-            return ((Number) require("defaultValue")).doubleValue();
+            return requireDouble("defaultValue");
         }
         /**
          * Returns the minValue field.
          * @return the protocol field value
          */
         public double minValue() {
-            return ((Number) require("minValue")).doubleValue();
+            return requireDouble("minValue");
         }
         /**
          * Returns the maxValue field.
          * @return the protocol field value
          */
         public double maxValue() {
-            return ((Number) require("maxValue")).doubleValue();
+            return requireDouble("maxValue");
         }
         /**
          * Sets the paramId field.
@@ -671,13 +690,6 @@ public final class WebAudio {
      */
     public static final class GetRealtimeDataRequest extends CdpObject {
         public GetRealtimeDataRequest() {}
-        /**
-         * Fetch the realtime data from the registered contexts.
-         * @param contextId protocol value
-         */
-        public GetRealtimeDataRequest(WebAudio.GraphObjectId contextId) {
-            contextId(contextId);
-        }
         public static GetRealtimeDataRequest fromMap(Map<String, Object> values) {
             final GetRealtimeDataRequest instance_ = new GetRealtimeDataRequest();
             if (values != null) instance_.values.putAll(values);
@@ -688,7 +700,7 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId contextId() {
-            return new WebAudio.GraphObjectId((String) require("contextId"));
+            return require(CONTEXT_ID);
         }
         /**
          * Sets the contextId field.
@@ -714,7 +726,7 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.BaseAudioContext context() {
-            return java.util.Objects.requireNonNull(WebAudio.BaseAudioContext.fromMap(CdpObject.requireObjectMap(require("context"))));
+            return require(CONTEXT);
         }
         /**
          * Sets the context field.
@@ -740,7 +752,7 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId contextId() {
-            return new WebAudio.GraphObjectId((String) require("contextId"));
+            return require(CONTEXT_ID);
         }
         /**
          * Sets the contextId field.
@@ -766,7 +778,7 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.BaseAudioContext context() {
-            return java.util.Objects.requireNonNull(WebAudio.BaseAudioContext.fromMap(CdpObject.requireObjectMap(require("context"))));
+            return require(CONTEXT);
         }
         /**
          * Sets the context field.
@@ -792,7 +804,7 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.AudioListener listener() {
-            return java.util.Objects.requireNonNull(WebAudio.AudioListener.fromMap(CdpObject.requireObjectMap(require("listener"))));
+            return require(LISTENER);
         }
         /**
          * Sets the listener field.
@@ -818,14 +830,14 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId contextId() {
-            return new WebAudio.GraphObjectId((String) require("contextId"));
+            return require(CONTEXT_ID);
         }
         /**
          * Returns the listenerId field.
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId listenerId() {
-            return new WebAudio.GraphObjectId((String) require("listenerId"));
+            return require(LISTENER_ID);
         }
         /**
          * Sets the contextId field.
@@ -860,7 +872,7 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.AudioNode node() {
-            return java.util.Objects.requireNonNull(WebAudio.AudioNode.fromMap(CdpObject.requireObjectMap(require("node"))));
+            return require(NODE);
         }
         /**
          * Sets the node field.
@@ -886,14 +898,14 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId contextId() {
-            return new WebAudio.GraphObjectId((String) require("contextId"));
+            return require(CONTEXT_ID);
         }
         /**
          * Returns the nodeId field.
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId nodeId() {
-            return new WebAudio.GraphObjectId((String) require("nodeId"));
+            return require(NODE_ID);
         }
         /**
          * Sets the contextId field.
@@ -928,7 +940,7 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.AudioParam param() {
-            return java.util.Objects.requireNonNull(WebAudio.AudioParam.fromMap(CdpObject.requireObjectMap(require("param"))));
+            return require(PARAM);
         }
         /**
          * Sets the param field.
@@ -954,21 +966,21 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId contextId() {
-            return new WebAudio.GraphObjectId((String) require("contextId"));
+            return require(CONTEXT_ID);
         }
         /**
          * Returns the nodeId field.
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId nodeId() {
-            return new WebAudio.GraphObjectId((String) require("nodeId"));
+            return require(NODE_ID);
         }
         /**
          * Returns the paramId field.
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId paramId() {
-            return new WebAudio.GraphObjectId((String) require("paramId"));
+            return require(PARAM_ID);
         }
         /**
          * Sets the contextId field.
@@ -1012,35 +1024,35 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId contextId() {
-            return new WebAudio.GraphObjectId((String) require("contextId"));
+            return require(CONTEXT_ID);
         }
         /**
          * Returns the sourceId field.
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId sourceId() {
-            return new WebAudio.GraphObjectId((String) require("sourceId"));
+            return require(SOURCE_ID);
         }
         /**
          * Returns the destinationId field.
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId destinationId() {
-            return new WebAudio.GraphObjectId((String) require("destinationId"));
+            return require(DESTINATION_ID);
         }
         /**
          * Returns the sourceOutputIndex field.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble sourceOutputIndex() {
-            return raw("sourceOutputIndex").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("sourceOutputIndex");
         }
         /**
          * Returns the destinationInputIndex field.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble destinationInputIndex() {
-            return raw("destinationInputIndex").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("destinationInputIndex");
         }
         /**
          * Sets the contextId field.
@@ -1102,35 +1114,35 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId contextId() {
-            return new WebAudio.GraphObjectId((String) require("contextId"));
+            return require(CONTEXT_ID);
         }
         /**
          * Returns the sourceId field.
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId sourceId() {
-            return new WebAudio.GraphObjectId((String) require("sourceId"));
+            return require(SOURCE_ID);
         }
         /**
          * Returns the destinationId field.
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId destinationId() {
-            return new WebAudio.GraphObjectId((String) require("destinationId"));
+            return require(DESTINATION_ID);
         }
         /**
          * Returns the sourceOutputIndex field.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble sourceOutputIndex() {
-            return raw("sourceOutputIndex").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("sourceOutputIndex");
         }
         /**
          * Returns the destinationInputIndex field.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble destinationInputIndex() {
-            return raw("destinationInputIndex").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("destinationInputIndex");
         }
         /**
          * Sets the contextId field.
@@ -1192,28 +1204,28 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId contextId() {
-            return new WebAudio.GraphObjectId((String) require("contextId"));
+            return require(CONTEXT_ID);
         }
         /**
          * Returns the sourceId field.
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId sourceId() {
-            return new WebAudio.GraphObjectId((String) require("sourceId"));
+            return require(SOURCE_ID);
         }
         /**
          * Returns the destinationId field.
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId destinationId() {
-            return new WebAudio.GraphObjectId((String) require("destinationId"));
+            return require(DESTINATION_ID);
         }
         /**
          * Returns the sourceOutputIndex field.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble sourceOutputIndex() {
-            return raw("sourceOutputIndex").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("sourceOutputIndex");
         }
         /**
          * Sets the contextId field.
@@ -1266,28 +1278,28 @@ public final class WebAudio {
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId contextId() {
-            return new WebAudio.GraphObjectId((String) require("contextId"));
+            return require(CONTEXT_ID);
         }
         /**
          * Returns the sourceId field.
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId sourceId() {
-            return new WebAudio.GraphObjectId((String) require("sourceId"));
+            return require(SOURCE_ID);
         }
         /**
          * Returns the destinationId field.
          * @return the protocol field value
          */
         public WebAudio.GraphObjectId destinationId() {
-            return new WebAudio.GraphObjectId((String) require("destinationId"));
+            return require(DESTINATION_ID);
         }
         /**
          * Returns the sourceOutputIndex field.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble sourceOutputIndex() {
-            return raw("sourceOutputIndex").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("sourceOutputIndex");
         }
         /**
          * Sets the contextId field.
@@ -1326,22 +1338,21 @@ public final class WebAudio {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Enables the WebAudio domain and starts sending context lifetime events.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("WebAudio.enable", null);
+            return call("WebAudio.enable");
         }
         /**
          * Disables the WebAudio domain.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("WebAudio.disable", null);
+            return call("WebAudio.disable");
         }
         /**
          * Fetch the realtime data from the registered contexts.
@@ -1349,9 +1360,7 @@ public final class WebAudio {
          * @return a stage completing with the command result
          */
         public CompletionStage<WebAudio.ContextRealtimeData> getRealtimeData(WebAudio.GraphObjectId contextId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("contextId", CdpObject.json(contextId));
-            return client.call("WebAudio.getRealtimeData", params, result_ -> java.util.Objects.requireNonNull(WebAudio.ContextRealtimeData.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("realtimeData"))))));
+            return call("WebAudio.getRealtimeData", params("contextId", contextId), REALTIME_DATA::require);
         }
         /**
          * Fetch the realtime data from the registered contexts.
@@ -1359,7 +1368,7 @@ public final class WebAudio {
          * @return a stage completing with the command result
          */
         public CompletionStage<WebAudio.ContextRealtimeData> getRealtimeData(GetRealtimeDataRequest request) {
-            return client.call("WebAudio.getRealtimeData", request == null ? null : request.toMap(), result_ -> java.util.Objects.requireNonNull(WebAudio.ContextRealtimeData.fromMap(CdpObject.requireObjectMap(java.util.Objects.requireNonNull(result_.get("realtimeData"))))));
+            return call("WebAudio.getRealtimeData", request, REALTIME_DATA::require);
         }
         /**
          * Notifies that a new BaseAudioContext has been created.
@@ -1367,7 +1376,7 @@ public final class WebAudio {
          * @return a removable subscription
          */
         public CdpSubscription onContextCreated(Consumer<ContextCreatedEvent> handler) {
-            return client.on("WebAudio.contextCreated", ContextCreatedEvent::fromMap, handler);
+            return on("WebAudio.contextCreated", ContextCreatedEvent::fromMap, handler);
         }
         /**
          * Notifies that an existing BaseAudioContext will be destroyed.
@@ -1375,7 +1384,7 @@ public final class WebAudio {
          * @return a removable subscription
          */
         public CdpSubscription onContextWillBeDestroyed(Consumer<ContextWillBeDestroyedEvent> handler) {
-            return client.on("WebAudio.contextWillBeDestroyed", ContextWillBeDestroyedEvent::fromMap, handler);
+            return on("WebAudio.contextWillBeDestroyed", ContextWillBeDestroyedEvent::fromMap, handler);
         }
         /**
          * Notifies that existing BaseAudioContext has changed some properties (id stays the same)..
@@ -1383,7 +1392,7 @@ public final class WebAudio {
          * @return a removable subscription
          */
         public CdpSubscription onContextChanged(Consumer<ContextChangedEvent> handler) {
-            return client.on("WebAudio.contextChanged", ContextChangedEvent::fromMap, handler);
+            return on("WebAudio.contextChanged", ContextChangedEvent::fromMap, handler);
         }
         /**
          * Notifies that the construction of an AudioListener has finished.
@@ -1391,7 +1400,7 @@ public final class WebAudio {
          * @return a removable subscription
          */
         public CdpSubscription onAudioListenerCreated(Consumer<AudioListenerCreatedEvent> handler) {
-            return client.on("WebAudio.audioListenerCreated", AudioListenerCreatedEvent::fromMap, handler);
+            return on("WebAudio.audioListenerCreated", AudioListenerCreatedEvent::fromMap, handler);
         }
         /**
          * Notifies that a new AudioListener has been created.
@@ -1399,7 +1408,7 @@ public final class WebAudio {
          * @return a removable subscription
          */
         public CdpSubscription onAudioListenerWillBeDestroyed(Consumer<AudioListenerWillBeDestroyedEvent> handler) {
-            return client.on("WebAudio.audioListenerWillBeDestroyed", AudioListenerWillBeDestroyedEvent::fromMap, handler);
+            return on("WebAudio.audioListenerWillBeDestroyed", AudioListenerWillBeDestroyedEvent::fromMap, handler);
         }
         /**
          * Notifies that a new AudioNode has been created.
@@ -1407,7 +1416,7 @@ public final class WebAudio {
          * @return a removable subscription
          */
         public CdpSubscription onAudioNodeCreated(Consumer<AudioNodeCreatedEvent> handler) {
-            return client.on("WebAudio.audioNodeCreated", AudioNodeCreatedEvent::fromMap, handler);
+            return on("WebAudio.audioNodeCreated", AudioNodeCreatedEvent::fromMap, handler);
         }
         /**
          * Notifies that an existing AudioNode has been destroyed.
@@ -1415,7 +1424,7 @@ public final class WebAudio {
          * @return a removable subscription
          */
         public CdpSubscription onAudioNodeWillBeDestroyed(Consumer<AudioNodeWillBeDestroyedEvent> handler) {
-            return client.on("WebAudio.audioNodeWillBeDestroyed", AudioNodeWillBeDestroyedEvent::fromMap, handler);
+            return on("WebAudio.audioNodeWillBeDestroyed", AudioNodeWillBeDestroyedEvent::fromMap, handler);
         }
         /**
          * Notifies that a new AudioParam has been created.
@@ -1423,7 +1432,7 @@ public final class WebAudio {
          * @return a removable subscription
          */
         public CdpSubscription onAudioParamCreated(Consumer<AudioParamCreatedEvent> handler) {
-            return client.on("WebAudio.audioParamCreated", AudioParamCreatedEvent::fromMap, handler);
+            return on("WebAudio.audioParamCreated", AudioParamCreatedEvent::fromMap, handler);
         }
         /**
          * Notifies that an existing AudioParam has been destroyed.
@@ -1431,7 +1440,7 @@ public final class WebAudio {
          * @return a removable subscription
          */
         public CdpSubscription onAudioParamWillBeDestroyed(Consumer<AudioParamWillBeDestroyedEvent> handler) {
-            return client.on("WebAudio.audioParamWillBeDestroyed", AudioParamWillBeDestroyedEvent::fromMap, handler);
+            return on("WebAudio.audioParamWillBeDestroyed", AudioParamWillBeDestroyedEvent::fromMap, handler);
         }
         /**
          * Notifies that two AudioNodes are connected.
@@ -1439,7 +1448,7 @@ public final class WebAudio {
          * @return a removable subscription
          */
         public CdpSubscription onNodesConnected(Consumer<NodesConnectedEvent> handler) {
-            return client.on("WebAudio.nodesConnected", NodesConnectedEvent::fromMap, handler);
+            return on("WebAudio.nodesConnected", NodesConnectedEvent::fromMap, handler);
         }
         /**
          * Notifies that AudioNodes are disconnected. The destination can be null, and it means all the outgoing connections from the source are disconnected.
@@ -1447,7 +1456,7 @@ public final class WebAudio {
          * @return a removable subscription
          */
         public CdpSubscription onNodesDisconnected(Consumer<NodesDisconnectedEvent> handler) {
-            return client.on("WebAudio.nodesDisconnected", NodesDisconnectedEvent::fromMap, handler);
+            return on("WebAudio.nodesDisconnected", NodesDisconnectedEvent::fromMap, handler);
         }
         /**
          * Notifies that an AudioNode is connected to an AudioParam.
@@ -1455,7 +1464,7 @@ public final class WebAudio {
          * @return a removable subscription
          */
         public CdpSubscription onNodeParamConnected(Consumer<NodeParamConnectedEvent> handler) {
-            return client.on("WebAudio.nodeParamConnected", NodeParamConnectedEvent::fromMap, handler);
+            return on("WebAudio.nodeParamConnected", NodeParamConnectedEvent::fromMap, handler);
         }
         /**
          * Notifies that an AudioNode is disconnected to an AudioParam.
@@ -1463,7 +1472,7 @@ public final class WebAudio {
          * @return a removable subscription
          */
         public CdpSubscription onNodeParamDisconnected(Consumer<NodeParamDisconnectedEvent> handler) {
-            return client.on("WebAudio.nodeParamDisconnected", NodeParamDisconnectedEvent::fromMap, handler);
+            return on("WebAudio.nodeParamDisconnected", NodeParamDisconnectedEvent::fromMap, handler);
         }
     }
 }

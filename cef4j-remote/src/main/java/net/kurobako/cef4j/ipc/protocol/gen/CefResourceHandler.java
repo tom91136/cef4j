@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -25,7 +26,7 @@ public interface CefResourceHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__resource__handler_8h.html">cef_resource_handler.h:107</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> processRequest(net.kurobako.cef4j.ipc.session.RemoteHandle request, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> processRequest(net.kurobako.cef4j.ipc.session.RemoteHandle request, net.kurobako.cef4j.ipc.session.RemoteHandle callback) { return Unhandled.bool(); }
 
     /**
      * Request processing has been canceled.
@@ -39,11 +40,11 @@ public interface CefResourceHandler {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefResourceHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.intercept(ResourceHandlerProcessRequestEvent.MESSAGE_ID, ResourceHandlerProcessRequestEvent.DECODER, ev -> {
+                session.intercept(MessageIds.RESOURCE_HANDLER_PROCESS_REQUEST_EVENT, ResourceHandlerProcessRequestEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.processRequest(ev.request(), ev.callback());
-                    return java.util.Optional.of(new ResourceHandlerProcessRequestResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.RESOURCE_HANDLER_PROCESS_REQUEST_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.on(ResourceHandlerCancelEvent.MESSAGE_ID, ResourceHandlerCancelEvent.DECODER,
+                session.on(MessageIds.RESOURCE_HANDLER_CANCEL_EVENT, EmptyMessage.DECODER,
                         ev -> handler.cancel()));
     }
 }

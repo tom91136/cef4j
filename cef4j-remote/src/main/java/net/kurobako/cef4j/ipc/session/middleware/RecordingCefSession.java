@@ -104,33 +104,33 @@ public final class RecordingCefSession implements CefSession {
 
     @Override
     public <R extends CefMessageView> CompletableFuture<R> request(
-            CefMessageEncoder request, CefMessageDecoder<R> decoder) {
+            int messageId, CefMessageEncoder request, CefMessageDecoder<R> decoder) {
         Objects.requireNonNull(request, "request");
         Objects.requireNonNull(decoder, "decoder");
         final long operationId = nextOperationId.getAndIncrement();
         append(
                 SessionTrace.Kind.REQUEST,
                 operationId,
-                request.messageId(),
-                MessagePayloads.encode(request),
+                messageId,
+                MessagePayloads.encode(messageId, request),
                 null,
                 null);
         final AtomicBoolean receivedResponse = new AtomicBoolean();
         final CefMessageDecoder<R> recordingDecoder = payload -> {
             final byte[] bytes = copy(payload);
-            append(SessionTrace.Kind.RESPONSE, operationId, request.messageId(), bytes, null, null);
+            append(SessionTrace.Kind.RESPONSE, operationId, messageId, bytes, null, null);
             receivedResponse.set(true);
             return decoder.decode(payload);
         };
         CompletableFuture<R> result;
         try {
-            result = delegate.request(request, recordingDecoder);
+            result = delegate.request(messageId, request, recordingDecoder);
         } catch (RuntimeException failure) {
-            recordFailure(operationId, request.messageId(), failure);
+            recordFailure(operationId, messageId, failure);
             throw failure;
         }
         return result.whenComplete((ignored, failure) -> {
-            if (failure != null && !receivedResponse.get()) recordFailure(operationId, request.messageId(), failure);
+            if (failure != null && !receivedResponse.get()) recordFailure(operationId, messageId, failure);
         });
     }
 
@@ -193,12 +193,13 @@ public final class RecordingCefSession implements CefSession {
                 },
                 delivery -> {
                     try {
-                        final Optional<? extends CefMessageEncoder> response = handler.onIntercept(delivery.event);
+                        final Optional<Reply> response = handler.onIntercept(delivery.event);
                         append(
                                 SessionTrace.Kind.INTERCEPT_RESPONSE,
                                 delivery.callId,
-                                response.map(CefMessageEncoder::messageId).orElse(messageId),
-                                response.map(MessagePayloads::encode).orElse(null),
+                                response.map(Reply::messageId).orElse(messageId),
+                                response.map(reply -> MessagePayloads.encode(reply.messageId(), reply.payload()))
+                                        .orElse(null),
                                 Long.toString(registrationId),
                                 null);
                         return response;
@@ -288,11 +289,6 @@ public final class RecordingCefSession implements CefSession {
         InterceptDelivery(long callId, E event) {
             this.callId = callId;
             this.event = event;
-        }
-
-        @Override
-        public int messageId() {
-            return event.messageId();
         }
     }
 }

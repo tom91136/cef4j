@@ -11,6 +11,8 @@ import net.kurobako.cef4j.codegen.FileSystem
 import net.kurobako.cef4j.codegen.TempDirectorySuite
 
 class CdpCodegenSpec extends TempDirectorySuite {
+  private val requestConstructor = """\s*public \w+Request\(.+\) \{""".r
+
   test("parses the PDL fixture into the expected AST") {
     val pdl = PdlParser.parse(resourcePath("browser_protocol.pdl"))
     assertEquals(
@@ -167,6 +169,177 @@ class CdpCodegenSpec extends TempDirectorySuite {
       assert(metadata.contains("chromium.version=150.0.0.0"))
       assert(!metadata.contains("schema.sha256="))
     } finally FileSystem.deleteTree(root)
+  }
+
+  private val shapeProtocol =
+    """version
+      |  major 1
+      |  minor 3
+      |
+      |domain Shape
+      |  type NodeId extends integer
+      |  type Label extends string
+      |  type Mode extends string
+      |    enum
+      |      fast
+      |      slow
+      |  type Node extends object
+      |    properties
+      |      NodeId id
+      |      optional NodeId parentId
+      |      string name
+      |      optional string title
+      |      integer count
+      |      optional integer depth
+      |      number ratio
+      |      optional number scale
+      |      boolean flag
+      |      optional boolean hidden
+      |      object bag
+      |      optional object extra
+      |      any payload
+      |      optional any hint
+      |      array of string tags
+      |      optional array of Node children
+      |      Mode mode
+      |      optional Label label
+      |      enum level
+      |        low
+      |        high
+      |
+      |  command enable
+      |
+      |  command ping
+      |    returns
+      |      Label label
+      |
+      |  command probe
+      |    parameters
+      |      optional integer depth
+      |      optional Label label
+      |    returns
+      |      optional Node node
+      |
+      |  command resolve
+      |    parameters
+      |      NodeId id
+      |      optional boolean deep
+      |    returns
+      |      array of Node nodes
+      |
+      |  command describe
+      |    returns
+      |      string name
+      |      integer count
+      |
+      |  event changed
+      |    parameters
+      |      NodeId id
+      |""".stripMargin
+
+  private def generateShape(): String = {
+    val root = tempDirectory("cef4j-cdp-shape-")
+    try {
+      val schema = root.resolve("browser_protocol.pdl")
+      val _      = Files.writeString(schema, shapeProtocol)
+      Main.main(Array(
+        s"--browser-schema=$schema",
+        s"--javascript-schema=${resourcePath("js_protocol.pdl")}",
+        s"--schema-metadata=${resourcePath("schema.properties")}",
+        s"--out-java=${root.resolve("java")}",
+        s"--out-resources=${root.resolve("resources")}",
+        "--java-package=example.shape",
+        "--regenerate-command=./mvnw generate-sources -pl cef4j-cdp"
+      ))
+      Files.readString(root.resolve("java/example/shape/Shape.java"))
+    } finally FileSystem.deleteTree(root)
+  }
+
+  test("accessors of untyped values call a named helper") {
+    val shape = generateShape()
+    List(
+      "return requireString(\"name\");",
+      "return requireLong(\"count\");",
+      "return requireDouble(\"ratio\");",
+      "return requireBoolean(\"flag\");",
+      "return requireObject(\"bag\");",
+      "return require(\"payload\");",
+      "return optionalString(\"title\");",
+      "return optionalLong(\"depth\");",
+      "return optionalDouble(\"scale\");",
+      "return optionalBoolean(\"hidden\");",
+      "return optionalObject(\"extra\");",
+      "return raw(\"hint\");"
+    ).foreach(line => assert(shape.contains(line), line))
+  }
+
+  test("accessors of converted values read a field constant") {
+    val shape = generateShape()
+    List(
+      "    private static final CdpField<Shape.NodeId> ID = CdpField.of(\"id\", value -> new Shape.NodeId(((Number) value).longValue()));",
+      "    private static final CdpField<Shape.Mode> MODE = CdpField.of(\"mode\", value -> Shape.Mode.of((String) value));",
+      "    private static final CdpField<Node.LevelValues> LEVEL = CdpField.of(\"level\", value -> Node.LevelValues.of((String) value));",
+      "return require(ID);",
+      "return optional(PARENT_ID);",
+      "return optional(LABEL);",
+      "return require(TAGS);",
+      "return optional(CHILDREN);",
+      "return require(MODE);",
+      "return require(LEVEL);"
+    ).foreach(line => assert(shape.contains(line), line))
+  }
+
+  test("equal fields share one constant per domain") {
+    val shape = generateShape()
+    assertEquals(shape.linesIterator.count(_.contains("CdpField.of(\"label\"")), 1)
+    assertEquals(shape.linesIterator.count(_.contains("CdpField.of(\"id\"")), 1)
+    assert(!shape.linesIterator.exists(line => line.startsWith("        private static final CdpField")), shape)
+  }
+
+  test("accessors keep their public signatures") {
+    val shape = generateShape()
+    List(
+      "public Shape.NodeId id()",
+      "public Optional<Shape.NodeId> parentId()",
+      "public OptionalLong depth()",
+      "public long count()",
+      "public Optional<Boolean> hidden()",
+      "public java.util.List<String> tags()",
+      "public Optional<java.util.List<Shape.Node>> children()"
+    ).foreach(line => assert(shape.contains(line), line))
+  }
+
+  test("commands are single calls to the shared helper") {
+    val shape = generateShape()
+    List(
+      "public static final class Client extends CdpDomainClient {",
+      "public Client(CdpClient client) { super(client); }",
+      "return call(\"Shape.enable\");",
+      "return call(\"Shape.ping\", LABEL::require);",
+      "return call(\"Shape.probe\", params(\"depth\", depth, \"label\", label), NODE::optional);",
+      "return call(\"Shape.probe\", NODE::optional);",
+      "return call(\"Shape.probe\", request, NODE::optional);",
+      "return call(\"Shape.resolve\", params(\"id\", id, \"deep\", deep), NODES::require);",
+      "return call(\"Shape.resolve\", params(\"id\", id), NODES::require);",
+      "return call(\"Shape.describe\", DescribeResult::fromMap);",
+      "return on(\"Shape.changed\", ChangedEvent::fromMap, handler);",
+      "    private static final CdpField<Shape.Label> LABEL = CdpField.of(\"label\", value -> new Shape.Label((String) value));"
+    ).foreach(line => assert(shape.contains(line), line))
+  }
+
+  test("commands build no parameter maps of their own") {
+    val shape = generateShape()
+    assert(!shape.contains("params.put("), shape)
+    assert(!shape.contains("new LinkedHashMap"), shape)
+    assert(!shape.contains("client.call("), shape)
+    assert(!shape.contains("result_ ->"), shape)
+    assert(!shape.contains("(String) require("), shape)
+  }
+
+  test("requests have only the no-argument constructor") {
+    val shape = generateShape()
+    assert(shape.contains("        public ResolveRequest() {}"), shape)
+    assert(!shape.linesIterator.exists(line => requestConstructor.matches(line)), shape)
   }
 
   private def resourcePath(name: String): Path =

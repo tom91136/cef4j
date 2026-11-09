@@ -163,7 +163,7 @@ final class RuntimeServerSupervisorTest {
             assertThat(supervisor.current()).contains(second);
             assertThat(middlewareApplications).hasValue(2);
 
-            assertThat(first.session().request(new EmptyMessage(), payload -> new EmptyMessage()))
+            assertThat(first.session().request(1, new EmptyMessage(), payload -> new EmptyMessage()))
                     .isCompletedExceptionally();
         }
     }
@@ -261,11 +261,6 @@ final class RuntimeServerSupervisorTest {
 
     private static final class EmptyMessage implements CefMessageEncoder, CefMessageView {
         @Override
-        public int messageId() {
-            return 1;
-        }
-
-        @Override
         public int encodedSize() {
             return 0;
         }
@@ -285,8 +280,8 @@ final class RuntimeServerSupervisorTest {
 
         @Override
         public <R extends CefMessageView> CompletableFuture<R> request(
-                CefMessageEncoder request, CefMessageDecoder<R> decoder) {
-            return delegate.request(request, decoder);
+                int messageId, CefMessageEncoder request, CefMessageDecoder<R> decoder) {
+            return delegate.request(messageId, request, decoder);
         }
 
         @Override

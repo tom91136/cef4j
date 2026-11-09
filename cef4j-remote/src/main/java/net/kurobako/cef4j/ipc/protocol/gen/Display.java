@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class Display implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class Display extends BrowserFacade {
 
     public Display(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_display_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_display_t");
     }
 
     /**
@@ -58,28 +27,28 @@ public final class Display implements AutoCloseable {
      */
     public CompletableFuture<Long> getId() {
         return CefFutures.map(
-            session.request(new DisplayGetIdRequest(handle), DisplayGetIdResponse.DECODER),
-            DisplayGetIdResponse::result);
+            session.request(MessageIds.DISPLAY_GET_ID_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /** Dispatches {@code get_bounds} to the runtime server. */
-    public CompletableFuture<Rect> getBounds() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefRect> getBounds() {
         return CefFutures.map(
-            session.request(new DisplayGetBoundsRequest(handle), DisplayGetBoundsResponse.DECODER),
-            DisplayGetBoundsResponse::result);
+            session.request(MessageIds.DISPLAY_GET_BOUNDS_REQUEST, new SelfHandleMessage(handle), ResultCefRectMessage.DECODER),
+            ResultCefRectMessage::result);
     }
 
     /** Dispatches {@code get_work_area} to the runtime server. */
-    public CompletableFuture<Rect> getWorkArea() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefRect> getWorkArea() {
         return CefFutures.map(
-            session.request(new DisplayGetWorkAreaRequest(handle), DisplayGetWorkAreaResponse.DECODER),
-            DisplayGetWorkAreaResponse::result);
+            session.request(MessageIds.DISPLAY_GET_WORK_AREA_REQUEST, new SelfHandleMessage(handle), ResultCefRectMessage.DECODER),
+            ResultCefRectMessage::result);
     }
 
     /** Dispatches {@code get_rotation} to the runtime server. */
     public CompletableFuture<Integer> getRotation() {
         return CefFutures.map(
-            session.request(new DisplayGetRotationRequest(handle), DisplayGetRotationResponse.DECODER),
-            DisplayGetRotationResponse::result);
+            session.request(MessageIds.DISPLAY_GET_ROTATION_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

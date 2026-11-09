@@ -38,7 +38,8 @@ object Naming {
       javaPackage: String,
       subPackages: Map[String, String] = Map.empty,
       platformCppMode: Boolean = false,
-      platformInterfaceTypes: Set[String] = Set.empty
+      platformInterfaceTypes: Set[String] = Set.empty,
+      typesPackage: String = ""
   )
 
   /** File-level identity of a generated Java source file. */
@@ -177,6 +178,9 @@ object Naming {
   )
 
   def javaPackage(using context: Context): String = context.javaPackage
+
+  def sharedTypeName(cefStructName: String)(using context: Context): String =
+    s"${context.typesPackage}.${structToJavaName(cefStructName)}"
 
   def javaPackageFor(cefStructName: String)(using context: Context): String =
     context.subPackages.get(cefStructName) match {

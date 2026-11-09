@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class DragData implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class DragData extends BrowserFacade {
 
     public DragData(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_drag_data_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_drag_data_t");
     }
 
     /**
@@ -58,7 +27,7 @@ public final class DragData implements AutoCloseable {
      */
     public CompletableFuture<DragData> cefClone() {
         return CefFutures.map(
-            session.request(new DragDataCloneRequest(handle), DragDataCloneResponse.DECODER),
+            session.request(MessageIds.DRAG_DATA_CLONE_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new DragData(session, __r.result()));
     }
 
@@ -70,8 +39,8 @@ public final class DragData implements AutoCloseable {
      */
     public CompletableFuture<Integer> isReadOnly() {
         return CefFutures.map(
-            session.request(new DragDataIsReadOnlyRequest(handle), DragDataIsReadOnlyResponse.DECODER),
-            DragDataIsReadOnlyResponse::result);
+            session.request(MessageIds.DRAG_DATA_IS_READ_ONLY_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -82,8 +51,8 @@ public final class DragData implements AutoCloseable {
      */
     public CompletableFuture<Integer> isLink() {
         return CefFutures.map(
-            session.request(new DragDataIsLinkRequest(handle), DragDataIsLinkResponse.DECODER),
-            DragDataIsLinkResponse::result);
+            session.request(MessageIds.DRAG_DATA_IS_LINK_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -94,8 +63,8 @@ public final class DragData implements AutoCloseable {
      */
     public CompletableFuture<Integer> isFragment() {
         return CefFutures.map(
-            session.request(new DragDataIsFragmentRequest(handle), DragDataIsFragmentResponse.DECODER),
-            DragDataIsFragmentResponse::result);
+            session.request(MessageIds.DRAG_DATA_IS_FRAGMENT_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -106,8 +75,8 @@ public final class DragData implements AutoCloseable {
      */
     public CompletableFuture<Integer> isFile() {
         return CefFutures.map(
-            session.request(new DragDataIsFileRequest(handle), DragDataIsFileResponse.DECODER),
-            DragDataIsFileResponse::result);
+            session.request(MessageIds.DRAG_DATA_IS_FILE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -118,8 +87,8 @@ public final class DragData implements AutoCloseable {
      */
     public CompletableFuture<String> getLinkUrl() {
         return CefFutures.map(
-            session.request(new DragDataGetLinkUrlRequest(handle), DragDataGetLinkUrlResponse.DECODER),
-            DragDataGetLinkUrlResponse::result);
+            session.request(MessageIds.DRAG_DATA_GET_LINK_URL_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -130,8 +99,8 @@ public final class DragData implements AutoCloseable {
      */
     public CompletableFuture<String> getLinkTitle() {
         return CefFutures.map(
-            session.request(new DragDataGetLinkTitleRequest(handle), DragDataGetLinkTitleResponse.DECODER),
-            DragDataGetLinkTitleResponse::result);
+            session.request(MessageIds.DRAG_DATA_GET_LINK_TITLE_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -142,8 +111,8 @@ public final class DragData implements AutoCloseable {
      */
     public CompletableFuture<String> getLinkMetadata() {
         return CefFutures.map(
-            session.request(new DragDataGetLinkMetadataRequest(handle), DragDataGetLinkMetadataResponse.DECODER),
-            DragDataGetLinkMetadataResponse::result);
+            session.request(MessageIds.DRAG_DATA_GET_LINK_METADATA_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -154,8 +123,8 @@ public final class DragData implements AutoCloseable {
      */
     public CompletableFuture<String> getFragmentText() {
         return CefFutures.map(
-            session.request(new DragDataGetFragmentTextRequest(handle), DragDataGetFragmentTextResponse.DECODER),
-            DragDataGetFragmentTextResponse::result);
+            session.request(MessageIds.DRAG_DATA_GET_FRAGMENT_TEXT_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -166,8 +135,8 @@ public final class DragData implements AutoCloseable {
      */
     public CompletableFuture<String> getFragmentHtml() {
         return CefFutures.map(
-            session.request(new DragDataGetFragmentHtmlRequest(handle), DragDataGetFragmentHtmlResponse.DECODER),
-            DragDataGetFragmentHtmlResponse::result);
+            session.request(MessageIds.DRAG_DATA_GET_FRAGMENT_HTML_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -178,8 +147,8 @@ public final class DragData implements AutoCloseable {
      */
     public CompletableFuture<String> getFragmentBaseUrl() {
         return CefFutures.map(
-            session.request(new DragDataGetFragmentBaseUrlRequest(handle), DragDataGetFragmentBaseUrlResponse.DECODER),
-            DragDataGetFragmentBaseUrlResponse::result);
+            session.request(MessageIds.DRAG_DATA_GET_FRAGMENT_BASE_URL_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -190,8 +159,8 @@ public final class DragData implements AutoCloseable {
      */
     public CompletableFuture<String> getFileName() {
         return CefFutures.map(
-            session.request(new DragDataGetFileNameRequest(handle), DragDataGetFileNameResponse.DECODER),
-            DragDataGetFileNameResponse::result);
+            session.request(MessageIds.DRAG_DATA_GET_FILE_NAME_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -204,8 +173,8 @@ public final class DragData implements AutoCloseable {
      */
     public CompletableFuture<Long> getFileContents(RemoteHandle writer) {
         return CefFutures.map(
-            session.request(new DragDataGetFileContentsRequest(handle, writer), DragDataGetFileContentsResponse.DECODER),
-            DragDataGetFileContentsResponse::result);
+            session.request(MessageIds.DRAG_DATA_GET_FILE_CONTENTS_REQUEST, new DragDataGetFileContentsRequest(handle, writer), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -216,8 +185,8 @@ public final class DragData implements AutoCloseable {
      */
     public CompletableFuture<Integer> getFileNames(String[] names) {
         return CefFutures.map(
-            session.request(new DragDataGetFileNamesRequest(handle, names), DragDataGetFileNamesResponse.DECODER),
-            DragDataGetFileNamesResponse::result);
+            session.request(MessageIds.DRAG_DATA_GET_FILE_NAMES_REQUEST, new SelfHandleNamesStringsMessage(handle, names), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -228,8 +197,8 @@ public final class DragData implements AutoCloseable {
      */
     public CompletableFuture<Integer> getFilePaths(String[] paths) {
         return CefFutures.map(
-            session.request(new DragDataGetFilePathsRequest(handle, paths), DragDataGetFilePathsResponse.DECODER),
-            DragDataGetFilePathsResponse::result);
+            session.request(MessageIds.DRAG_DATA_GET_FILE_PATHS_REQUEST, new DragDataGetFilePathsRequest(handle, paths), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -241,7 +210,7 @@ public final class DragData implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:156</a>
      */
     public CompletableFuture<Void> setLinkUrl(String url) {
-        return CefFutures.discard(session.request(new DragDataSetLinkUrlRequest(handle, url), DragDataSetLinkUrlResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.DRAG_DATA_SET_LINK_URL_REQUEST, new SelfHandleUrlStringMessage(handle, url), EmptyMessage.DECODER));
     }
 
     /**
@@ -253,7 +222,7 @@ public final class DragData implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:162</a>
      */
     public CompletableFuture<Void> setLinkTitle(String title) {
-        return CefFutures.discard(session.request(new DragDataSetLinkTitleRequest(handle, title), DragDataSetLinkTitleResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.DRAG_DATA_SET_LINK_TITLE_REQUEST, new SelfHandleTitleStringMessage(handle, title), EmptyMessage.DECODER));
     }
 
     /**
@@ -265,7 +234,7 @@ public final class DragData implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:168</a>
      */
     public CompletableFuture<Void> setLinkMetadata(String data) {
-        return CefFutures.discard(session.request(new DragDataSetLinkMetadataRequest(handle, data), DragDataSetLinkMetadataResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.DRAG_DATA_SET_LINK_METADATA_REQUEST, new DragDataSetLinkMetadataRequest(handle, data), EmptyMessage.DECODER));
     }
 
     /**
@@ -277,7 +246,7 @@ public final class DragData implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:174</a>
      */
     public CompletableFuture<Void> setFragmentText(String text) {
-        return CefFutures.discard(session.request(new DragDataSetFragmentTextRequest(handle, text), DragDataSetFragmentTextResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.DRAG_DATA_SET_FRAGMENT_TEXT_REQUEST, new SelfHandleTextStringMessage(handle, text), EmptyMessage.DECODER));
     }
 
     /**
@@ -289,7 +258,7 @@ public final class DragData implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:180</a>
      */
     public CompletableFuture<Void> setFragmentHtml(String html) {
-        return CefFutures.discard(session.request(new DragDataSetFragmentHtmlRequest(handle, html), DragDataSetFragmentHtmlResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.DRAG_DATA_SET_FRAGMENT_HTML_REQUEST, new DragDataSetFragmentHtmlRequest(handle, html), EmptyMessage.DECODER));
     }
 
     /**
@@ -301,7 +270,7 @@ public final class DragData implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:186</a>
      */
     public CompletableFuture<Void> setFragmentBaseUrl(String baseUrl) {
-        return CefFutures.discard(session.request(new DragDataSetFragmentBaseUrlRequest(handle, baseUrl), DragDataSetFragmentBaseUrlResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.DRAG_DATA_SET_FRAGMENT_BASE_URL_REQUEST, new DragDataSetFragmentBaseUrlRequest(handle, baseUrl), EmptyMessage.DECODER));
     }
 
     /**
@@ -311,7 +280,7 @@ public final class DragData implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:192</a>
      */
     public CompletableFuture<Void> resetFileContents() {
-        return CefFutures.discard(session.request(new DragDataResetFileContentsRequest(handle), DragDataResetFileContentsResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.DRAG_DATA_RESET_FILE_CONTENTS_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -323,7 +292,7 @@ public final class DragData implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:200</a>
      */
     public CompletableFuture<Void> addFile(String path, String displayName) {
-        return CefFutures.discard(session.request(new DragDataAddFileRequest(handle, path, displayName), DragDataAddFileResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.DRAG_DATA_ADD_FILE_REQUEST, new DragDataAddFileRequest(handle, path, displayName), EmptyMessage.DECODER));
     }
 
     /**
@@ -333,7 +302,7 @@ public final class DragData implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:207</a>
      */
     public CompletableFuture<Void> clearFilenames() {
-        return CefFutures.discard(session.request(new DragDataClearFilenamesRequest(handle), DragDataClearFilenamesResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.DRAG_DATA_CLEAR_FILENAMES_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -344,7 +313,7 @@ public final class DragData implements AutoCloseable {
      */
     public CompletableFuture<Image> getImage() {
         return CefFutures.map(
-            session.request(new DragDataGetImageRequest(handle), DragDataGetImageResponse.DECODER),
+            session.request(MessageIds.DRAG_DATA_GET_IMAGE_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new Image(session, __r.result()));
     }
 
@@ -354,10 +323,10 @@ public final class DragData implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__drag__data_8h.html">cef_drag_data.h:220</a>
      */
-    public CompletableFuture<Point> getImageHotspot() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefPoint> getImageHotspot() {
         return CefFutures.map(
-            session.request(new DragDataGetImageHotspotRequest(handle), DragDataGetImageHotspotResponse.DECODER),
-            DragDataGetImageHotspotResponse::result);
+            session.request(MessageIds.DRAG_DATA_GET_IMAGE_HOTSPOT_REQUEST, new SelfHandleMessage(handle), ResultCefPointMessage.DECODER),
+            ResultCefPointMessage::result);
     }
 
     /**
@@ -368,7 +337,7 @@ public final class DragData implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasImage() {
         return CefFutures.map(
-            session.request(new DragDataHasImageRequest(handle), DragDataHasImageResponse.DECODER),
-            DragDataHasImageResponse::result);
+            session.request(MessageIds.DRAG_DATA_HAS_IMAGE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

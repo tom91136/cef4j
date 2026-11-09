@@ -11,9 +11,10 @@ import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessage;
+import net.kurobako.cef4j.ipc.protocol.gen.EmptyMessage;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.protocol.gen.ReleaseHandleRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.ReleaseHandleResponse;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -131,14 +132,15 @@ class RuntimeServerProcessTest {
             CountDownLatch sawEvent = new CountDownLatch(1);
             int[] capturedHandle = {-1};
             try (CefSession.HandlerRegistration registration = session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, ev -> {
+                    MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, BrowserHandleMessage.DECODER, ev -> {
                         capturedHandle[0] = ev.browser().id();
                         sawEvent.countDown();
                     })) {
                 assertThat(registration).isNotNull();
-                ReleaseHandleResponse ack = session.request(
+                EmptyMessage ack = session.request(
+                                MessageIds.RELEASE_HANDLE_REQUEST,
                                 new ReleaseHandleRequest(new RemoteHandle(99), "cef_browser_t"),
-                                ReleaseHandleResponse.DECODER)
+                                EmptyMessage.DECODER)
                         .get(30, TimeUnit.SECONDS);
                 assertThat(ack).isNotNull();
 

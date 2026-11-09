@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,48 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class V8Context implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle frame;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class V8Context extends RendererFacade {
 
     public V8Context(CefSession session, RemoteHandle frame, RemoteHandle handle) {
-        this.session = session;
-        this.frame = frame;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-    /** The frame whose V8 context this handle lives in. Renderer-side dispatch enters this frame's
-      * V8 context before invoking methods on the receiver. */
-    public RemoteHandle frame() {
-        return frame;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new RendererReleaseHandleRequest(frame, handle, "cef_v8_context_t"),
-                    RendererReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, frame, handle, "cef_v8_context_t");
     }
 
     /**
@@ -66,7 +27,7 @@ public final class V8Context implements AutoCloseable {
      */
     public CompletableFuture<TaskRunner> getTaskRunner() {
         return CefFutures.map(
-            session.request(new V8ContextGetTaskRunnerRequest(frame, handle), V8ContextGetTaskRunnerResponse.DECODER),
+            session.request(MessageIds.V8_CONTEXT_GET_TASK_RUNNER_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultHandleMessage.DECODER),
             __r -> new TaskRunner(session, __r.result()));
     }
 
@@ -78,8 +39,8 @@ public final class V8Context implements AutoCloseable {
      */
     public CompletableFuture<Integer> isValid() {
         return CefFutures.map(
-            session.request(new V8ContextIsValidRequest(frame, handle), V8ContextIsValidResponse.DECODER),
-            V8ContextIsValidResponse::result);
+            session.request(MessageIds.V8_CONTEXT_IS_VALID_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -90,7 +51,7 @@ public final class V8Context implements AutoCloseable {
      */
     public CompletableFuture<Browser> getBrowser() {
         return CefFutures.map(
-            session.request(new V8ContextGetBrowserRequest(frame, handle), V8ContextGetBrowserResponse.DECODER),
+            session.request(MessageIds.V8_CONTEXT_GET_BROWSER_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultHandleMessage.DECODER),
             __r -> new Browser(session, __r.result()));
     }
 
@@ -102,7 +63,7 @@ public final class V8Context implements AutoCloseable {
      */
     public CompletableFuture<Frame> getFrame() {
         return CefFutures.map(
-            session.request(new V8ContextGetFrameRequest(frame, handle), V8ContextGetFrameResponse.DECODER),
+            session.request(MessageIds.V8_CONTEXT_GET_FRAME_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultHandleMessage.DECODER),
             __r -> new Frame(session, __r.result()));
     }
 
@@ -114,7 +75,7 @@ public final class V8Context implements AutoCloseable {
      */
     public CompletableFuture<V8Value> getGlobal() {
         return CefFutures.map(
-            session.request(new V8ContextGetGlobalRequest(frame, handle), V8ContextGetGlobalResponse.DECODER),
+            session.request(MessageIds.V8_CONTEXT_GET_GLOBAL_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultHandleMessage.DECODER),
             __r -> new V8Value(session, frame, __r.result()));
     }
 
@@ -126,8 +87,8 @@ public final class V8Context implements AutoCloseable {
      */
     public CompletableFuture<Integer> enter() {
         return CefFutures.map(
-            session.request(new V8ContextEnterRequest(frame, handle), V8ContextEnterResponse.DECODER),
-            V8ContextEnterResponse::result);
+            session.request(MessageIds.V8_CONTEXT_ENTER_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -138,8 +99,8 @@ public final class V8Context implements AutoCloseable {
      */
     public CompletableFuture<Integer> exit() {
         return CefFutures.map(
-            session.request(new V8ContextExitRequest(frame, handle), V8ContextExitResponse.DECODER),
-            V8ContextExitResponse::result);
+            session.request(MessageIds.V8_CONTEXT_EXIT_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -150,7 +111,7 @@ public final class V8Context implements AutoCloseable {
      */
     public CompletableFuture<Integer> isSame(RemoteHandle that) {
         return CefFutures.map(
-            session.request(new V8ContextIsSameRequest(frame, handle, that), V8ContextIsSameResponse.DECODER),
-            V8ContextIsSameResponse::result);
+            session.request(MessageIds.V8_CONTEXT_IS_SAME_REQUEST, new FrameHandleSelfHandleThatHandleMessage(frame, handle, that), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

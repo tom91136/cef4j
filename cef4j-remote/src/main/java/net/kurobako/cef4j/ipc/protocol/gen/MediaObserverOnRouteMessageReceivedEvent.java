@@ -2,18 +2,16 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class MediaObserverOnRouteMessageReceivedEvent implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 147081434;
 
     private final RemoteHandle route;
     private final byte[] message;
@@ -32,34 +30,21 @@ public final class MediaObserverOnRouteMessageReceivedEvent implements CefMessag
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 8 + message.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(route.id());
-            __dst.putInt(message.length);
-            __dst.put(message);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(route.id());
+            WireEncoder.bytes(__out, message);
+        });
     }
 
-    public static final CefMessageDecoder<MediaObserverOnRouteMessageReceivedEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<MediaObserverOnRouteMessageReceivedEvent> DECODER = WireDecoder.message("MediaObserverOnRouteMessageReceivedEvent", __buf -> {
         final RemoteHandle route = WireDecoder.handle(__buf, "route");
         final byte[] message = WireDecoder.bytes(__buf, "message");
-        WireDecoder.requireFullyConsumed(__buf, "MediaObserverOnRouteMessageReceivedEvent");
         return new MediaObserverOnRouteMessageReceivedEvent(route, message);
-    };
+    });
 }

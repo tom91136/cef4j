@@ -13,9 +13,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import javax.swing.SwingUtilities;
 import net.kurobako.cef4j.ipc.frame.FrameTransport;
-import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessage;
+import net.kurobako.cef4j.ipc.protocol.gen.EmptyMessage;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeResponse;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
@@ -40,7 +41,8 @@ class RemoteBrowserPanelTest {
         });
 
         panel.attach(session);
-        session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(17)));
+        session.emit(
+                MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, new BrowserHandleMessage(new RemoteHandle(17)));
 
         assertThat(panel.browserReady()).isCompletedWithValue(new RemoteHandle(17));
         assertThat(frames.consumer).isNotNull();
@@ -69,7 +71,8 @@ class RemoteBrowserPanelTest {
         RemoteBrowserPanel panel = new RemoteBrowserPanel((ignored, browser) -> new FakeFrameTransport());
         panel.setSize(640, 480);
         panel.attach(session);
-        session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(17)));
+        session.emit(
+                MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, new BrowserHandleMessage(new RemoteHandle(17)));
 
         CompletableFuture<Void> resized = panel.resizeViewport(512, 384);
 
@@ -80,7 +83,7 @@ class RemoteBrowserPanelTest {
                     assertThat(request.width()).isEqualTo(512);
                     assertThat(request.height()).isEqualTo(384);
                 });
-        session.completeLast(new SetViewportSizeResponse());
+        session.completeLast(new EmptyMessage());
         assertThat(resized).isCompleted();
         panel.release();
     }
@@ -91,7 +94,8 @@ class RemoteBrowserPanelTest {
         RemoteBrowserPanel panel = new RemoteBrowserPanel((ignored, browser) -> new FakeFrameTransport());
         panel.setSize(640, 480);
         panel.attach(session);
-        session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(17)));
+        session.emit(
+                MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, new BrowserHandleMessage(new RemoteHandle(17)));
         AtomicReference<@Nullable CompletableFuture<Void>> resized = new AtomicReference<>();
 
         SwingUtilities.invokeAndWait(() -> {
@@ -106,7 +110,7 @@ class RemoteBrowserPanelTest {
                     assertThat(request.width()).isEqualTo(512);
                     assertThat(request.height()).isEqualTo(384);
                 });
-        session.completeLast(new SetViewportSizeResponse());
+        session.completeLast(new EmptyMessage());
         assertThat(resized.get()).isCompleted();
         panel.release();
     }
@@ -117,7 +121,8 @@ class RemoteBrowserPanelTest {
         RemoteBrowserPanel panel = new RemoteBrowserPanel((ignored, browser) -> new FakeFrameTransport());
         panel.setSize(640, 480);
         panel.attach(session);
-        session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(17)));
+        session.emit(
+                MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, new BrowserHandleMessage(new RemoteHandle(17)));
 
         SwingUtilities.invokeAndWait(() -> SwingUtilities.invokeLater(() -> panel.dispatchEvent(
                 new java.awt.event.ComponentEvent(panel, java.awt.event.ComponentEvent.COMPONENT_RESIZED))));
@@ -130,7 +135,7 @@ class RemoteBrowserPanelTest {
                     assertThat(request.height()).isEqualTo(384);
                 });
         assertThat(resized).isNotDone();
-        session.completeLast(new SetViewportSizeResponse());
+        session.completeLast(new EmptyMessage());
         assertThat(resized).isCompleted();
         panel.release();
     }
@@ -157,12 +162,14 @@ class RemoteBrowserPanelTest {
 
         panel.attach(session);
         CompletableFuture<RemoteHandle> failedReady = panel.browserReady();
-        session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(29)));
+        session.emit(
+                MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, new BrowserHandleMessage(new RemoteHandle(29)));
         assertThat(failedReady).isCompletedExceptionally();
         assertThat(rejected.closed).isTrue();
 
         panel.attach(session);
-        session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(31)));
+        session.emit(
+                MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, new BrowserHandleMessage(new RemoteHandle(31)));
         assertThat(panel.browserReady()).isCompletedWithValue(new RemoteHandle(31));
         panel.release();
         assertThat(accepted.closed).isTrue();
@@ -194,7 +201,7 @@ class RemoteBrowserPanelTest {
 
         @Override
         public <R extends CefMessageView> CompletableFuture<R> request(
-                CefMessageEncoder request, CefMessageDecoder<R> decoder) {
+                int messageId, CefMessageEncoder request, CefMessageDecoder<R> decoder) {
             requests.add(request);
             CompletableFuture<R> response = new CompletableFuture<>();
             responses.add(response);
@@ -220,8 +227,8 @@ class RemoteBrowserPanelTest {
         }
 
         @SuppressWarnings("unchecked")
-        private <E extends CefMessageView> void emit(E event) {
-            for (Consumer<?> handler : new ArrayList<>(handlers.getOrDefault(event.messageId(), List.of()))) {
+        private <E extends CefMessageView> void emit(int messageId, E event) {
+            for (Consumer<?> handler : new ArrayList<>(handlers.getOrDefault(messageId, List.of()))) {
                 ((Consumer<E>) handler).accept(event);
             }
         }

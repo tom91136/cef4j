@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,52 +13,22 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class Button implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class Button extends BrowserFacade {
 
     public Button(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_button_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_button_t");
     }
 
     /** Dispatches {@code as_label_button} to the runtime server. */
     public CompletableFuture<LabelButton> asLabelButton() {
         return CefFutures.map(
-            session.request(new ButtonAsLabelButtonRequest(handle), ButtonAsLabelButtonResponse.DECODER),
+            session.request(MessageIds.BUTTON_AS_LABEL_BUTTON_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new LabelButton(session, __r.result()));
     }
 
     /** Dispatches {@code set_state} to the runtime server. */
     public CompletableFuture<Void> setState(int state) {
-        return CefFutures.discard(session.request(new ButtonSetStateRequest(handle, state), ButtonSetStateResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BUTTON_SET_STATE_REQUEST, new ButtonSetStateRequest(handle, state), EmptyMessage.DECODER));
     }
 
     /**
@@ -70,22 +39,22 @@ public final class Button implements AutoCloseable {
      */
     public CompletableFuture<Integer> getState() {
         return CefFutures.map(
-            session.request(new ButtonGetStateRequest(handle), ButtonGetStateResponse.DECODER),
-            ButtonGetStateResponse::result);
+            session.request(MessageIds.BUTTON_GET_STATE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code set_ink_drop_enabled} to the runtime server. */
     public CompletableFuture<Void> setInkDropEnabled(int enabled) {
-        return CefFutures.discard(session.request(new ButtonSetInkDropEnabledRequest(handle, enabled), ButtonSetInkDropEnabledResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BUTTON_SET_INK_DROP_ENABLED_REQUEST, new SelfHandleEnabledIntMessage(handle, enabled), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code set_tooltip_text} to the runtime server. */
     public CompletableFuture<Void> setTooltipText(String tooltipText) {
-        return CefFutures.discard(session.request(new ButtonSetTooltipTextRequest(handle, tooltipText), ButtonSetTooltipTextResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BUTTON_SET_TOOLTIP_TEXT_REQUEST, new ButtonSetTooltipTextRequest(handle, tooltipText), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code set_accessible_name} to the runtime server. */
     public CompletableFuture<Void> setAccessibleName(String name) {
-        return CefFutures.discard(session.request(new ButtonSetAccessibleNameRequest(handle, name), ButtonSetAccessibleNameResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BUTTON_SET_ACCESSIBLE_NAME_REQUEST, new SelfHandleNameStringMessage(handle, name), EmptyMessage.DECODER));
     }
 }

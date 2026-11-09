@@ -28,7 +28,7 @@ public interface CefEndTracingCallback {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefEndTracingCallback handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(EndTracingCallbackOnEndTracingCompleteEvent.MESSAGE_ID, EndTracingCallbackOnEndTracingCompleteEvent.DECODER,
+                session.on(MessageIds.END_TRACING_CALLBACK_ON_END_TRACING_COMPLETE_EVENT, EndTracingCallbackOnEndTracingCompleteEvent.DECODER,
                         ev -> handler.onEndTracingComplete(ev.tracingFile())));
     }
 }

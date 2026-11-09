@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,11 +9,10 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class ListValueSetStringRequest implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 942448174;
 
     private final RemoteHandle self;
     private final long index;
@@ -41,36 +39,23 @@ public final class ListValueSetStringRequest implements CefMessageView, CefMessa
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 16 + valueBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putLong(index);
-            __dst.putInt(valueBytes.length);
-            __dst.put(valueBytes);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            __out.putLong(index);
+            WireEncoder.bytes(__out, valueBytes);
+        });
     }
 
-    public static final CefMessageDecoder<ListValueSetStringRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<ListValueSetStringRequest> DECODER = WireDecoder.message("ListValueSetStringRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final long index = WireDecoder.int64(__buf, "index");
         final String value = WireDecoder.utf8(__buf, "value");
-        WireDecoder.requireFullyConsumed(__buf, "ListValueSetStringRequest");
         return new ListValueSetStringRequest(self, index, value);
-    };
+    });
 }

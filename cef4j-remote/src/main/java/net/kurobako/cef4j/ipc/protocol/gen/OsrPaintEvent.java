@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,11 +9,10 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class OsrPaintEvent implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 9;
 
     private final RemoteHandle browser;
     private final String shmName;
@@ -89,40 +87,28 @@ public final class OsrPaintEvent implements CefMessageView, CefMessageEncoder {
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 48 + shmNameBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(browser.id());
-            __dst.putInt(shmNameBytes.length);
-            __dst.put(shmNameBytes);
-            __dst.putLong(frameSequence);
-            __dst.putInt(width);
-            __dst.putInt(height);
-            __dst.putInt(byteCount);
-            __dst.putInt(paintType);
-            __dst.putInt(dirtyX);
-            __dst.putInt(dirtyY);
-            __dst.putInt(dirtyWidth);
-            __dst.putInt(dirtyHeight);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(browser.id());
+            WireEncoder.bytes(__out, shmNameBytes);
+            __out.putLong(frameSequence);
+            __out.putInt(width);
+            __out.putInt(height);
+            __out.putInt(byteCount);
+            __out.putInt(paintType);
+            __out.putInt(dirtyX);
+            __out.putInt(dirtyY);
+            __out.putInt(dirtyWidth);
+            __out.putInt(dirtyHeight);
+        });
     }
 
-    public static final CefMessageDecoder<OsrPaintEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<OsrPaintEvent> DECODER = WireDecoder.message("OsrPaintEvent", __buf -> {
         final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
         final String shmName = WireDecoder.utf8(__buf, "shmName");
         final long frameSequence = WireDecoder.int64(__buf, "frameSequence");
@@ -134,7 +120,6 @@ public final class OsrPaintEvent implements CefMessageView, CefMessageEncoder {
         final int dirtyY = WireDecoder.int32(__buf, "dirtyY");
         final int dirtyWidth = WireDecoder.int32(__buf, "dirtyWidth");
         final int dirtyHeight = WireDecoder.int32(__buf, "dirtyHeight");
-        WireDecoder.requireFullyConsumed(__buf, "OsrPaintEvent");
         return new OsrPaintEvent(browser, shmName, frameSequence, width, height, byteCount, paintType, dirtyX, dirtyY, dirtyWidth, dirtyHeight);
-    };
+    });
 }

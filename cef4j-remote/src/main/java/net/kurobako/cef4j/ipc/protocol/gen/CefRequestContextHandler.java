@@ -28,7 +28,7 @@ public interface CefRequestContextHandler {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefRequestContextHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(RequestContextHandlerOnRequestContextInitializedEvent.MESSAGE_ID, RequestContextHandlerOnRequestContextInitializedEvent.DECODER,
+                session.on(MessageIds.REQUEST_CONTEXT_HANDLER_ON_REQUEST_CONTEXT_INITIALIZED_EVENT, RequestContextHandlerOnRequestContextInitializedEvent.DECODER,
                         ev -> handler.onRequestContextInitialized(ev.requestContext())));
     }
 }

@@ -10,7 +10,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessage;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -148,8 +149,8 @@ public final class RuntimeServerBrowserRuntimeFactory implements RemoteBrowserRu
             }
             final CompletableFuture<RemoteHandle> browser = new CompletableFuture<>();
             final CefSession.HandlerRegistration registration = session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
-                    LifeSpanHandlerOnAfterCreatedEvent.DECODER,
+                    MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT,
+                    BrowserHandleMessage.DECODER,
                     event -> browser.complete(event.browser()));
             // CefSessionImpl's runtime-server handshake creates the bootstrap browser only after the receive
             // handler is installed. onLatest also replays the event if creation wins this registration race.

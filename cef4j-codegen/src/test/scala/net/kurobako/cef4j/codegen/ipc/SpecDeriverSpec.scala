@@ -2,6 +2,7 @@ package net.kurobako.cef4j.codegen.ipc
 
 import net.kurobako.cef4j.codegen.CType
 import net.kurobako.cef4j.codegen.CefDecl
+import net.kurobako.cef4j.codegen.Field
 import net.kurobako.cef4j.codegen.FnPtr
 import net.kurobako.cef4j.codegen.Naming
 import net.kurobako.cef4j.codegen.Param
@@ -23,6 +24,28 @@ class SpecDeriverSpec extends munit.FunSuite {
     assertEquals(spec.className, "LoadHandlerOnLoadEndEvent")
     assertEquals(spec.fields, List(FieldSpec("browserId", FieldType.I32), FieldSpec("url", FieldType.Utf8String)))
     assert(spec.messageId >= SpecDeriver.AstIdBase, s"id ${spec.messageId} below AST base")
+  }
+
+  test("handler defaults answer through the shared unhandled constants") {
+    val decl   = handler("cef_key_handler_t", FnPtr("on_key_event", CType.Int, List(Param("key", CType.Int))))
+    val source = JavaHandlerEmitter.emit(SpecDeriver.deriveHandlers(List(decl), "test.gen").head)
+
+    assert(
+      source.contains("default java.util.Optional<Boolean> onKeyEvent(int key) { return Unhandled.bool(); }"),
+      source
+    )
+    assert(source.contains("import net.kurobako.cef4j.ipc.session.Unhandled;"))
+    assert(!source.contains(".empty()"))
+  }
+
+  test("handler intercepts reply under the id of their response message") {
+    val decl     = handler("cef_key_handler_t", FnPtr("on_key_event", CType.Int, List(Param("key", CType.Int))))
+    val messages = SpecDeriver.derive(List(decl), "test.gen")
+    val refs     = SharedMessages.derive(messages).refs
+    val source   = JavaHandlerEmitter.emit(SpecDeriver.deriveHandlers(List(decl), "test.gen").head, refs)
+
+    assert(source.contains("new CefSession.Reply(MessageIds.KEY_HANDLER_ON_KEY_EVENT_RESPONSE, "), source)
+    assert(source.contains("session.intercept(MessageIds.KEY_HANDLER_ON_KEY_EVENT_EVENT, "), source)
   }
 
   test("remote names use the shared CEF acronym dictionary") {
@@ -109,32 +132,91 @@ class SpecDeriverSpec extends munit.FunSuite {
     assertEquals(facade.methods.head.cefMethodName, "close")
   }
 
-  test("facade releases its handle through an idempotent AutoCloseable contract") {
+  test("facade and handler address derived messages by their shared shape or their own name") {
+    val facadeDecl = CefDecl.ObjectStruct(
+      "cef_browser_t",
+      List(
+        FnPtr("is_valid", CType.Bool, Nil),
+        FnPtr("is_loading", CType.Bool, Nil),
+        FnPtr("can_go_back", CType.Int, Nil)
+      )
+    )
+    val handlerDecl = handler("cef_load_handler_t", fn("on_load_end", "browser_id" -> CType.Int))
+    val messages    = SpecDeriver.derive(List(facadeDecl, handlerDecl), "test.gen")
+    val refs        = SharedMessages.derive(messages).refs
+
+    val facade = JavaFacadeEmitter.emit(SpecDeriver.deriveFacades(List(facadeDecl), "test.gen").head, refs = refs)
+    assert(
+      facade.contains(
+        "session.request(MessageIds.BROWSER_IS_VALID_REQUEST, new SelfHandleMessage(handle), ResultBoolMessage.DECODER)"
+      ),
+      facade
+    )
+    assert(facade.contains("ResultBoolMessage::result"), facade)
+    assert(facade.contains("BrowserCanGoBackResponse.DECODER"), facade)
+
+    val events = JavaHandlerEmitter.emit(SpecDeriver.deriveHandlers(List(handlerDecl), "test.gen").head, refs)
+    assert(events.contains("session.on(MessageIds.LOAD_HANDLER_ON_LOAD_END_EVENT, "), events)
+    assert(events.contains("LoadHandlerOnLoadEndEvent.DECODER"), events)
+    assert(!events.contains("decoder("), events)
+  }
+
+  test("facade inherits its lifetime from the shared browser base") {
     val method = FnPtr("is_valid", CType.Bool, Nil)
     val decl   = CefDecl.ObjectStruct("cef_browser_t", List(method))
 
     val source = JavaFacadeEmitter.emit(SpecDeriver.deriveFacades(List(decl), "test.gen").head)
 
-    assert(source.contains("public final class Browser implements AutoCloseable"))
-    assert(source.contains("private final Object closeLock = new Object();"))
-    assert(source.contains("public CompletableFuture<Void> closeAsync()"))
-    assert(source.contains("synchronized (closeLock)"))
-    assert(source.contains("if (closeFuture == null)"))
-    assert(source.contains("public CompletableFuture<Void> releaseHandle()"))
-    assert(source.contains("return closeAsync();"))
-    assert(source.contains("public void close()"))
-    assert(source.contains("@SuppressWarnings(\"FutureReturnValueIgnored\")"))
-    assert(source.contains("closeAsync();"))
-    assert(!source.contains("closeAsync().join();"))
+    assert(source.contains("public final class Browser extends BrowserFacade"))
+    assert(source.contains("super(session, handle, \"cef_browser_t\");"))
+    for (member <- List("closeLock", "closeFuture", "closeAsync", "releaseHandle", "public void close()", "handle()"))
+      assert(!source.contains(member), s"Unexpected $member in:\n$source")
   }
 
-  test("renderer facade releases its frame-bound handle") {
+  test("renderer facade inherits its lifetime from the shared renderer base") {
     val source = JavaFacadeEmitter.emit(
-      FacadeSpec("RendererObject", "test.gen", "cef_renderer_object_t", Nil, ProcessAffinity.Renderer)
+      FacadeSpec("RendererThing", "test.gen", "cef_renderer_object_t", Nil, ProcessAffinity.Renderer)
     )
 
-    assert(source.contains("new RendererReleaseHandleRequest(frame, handle, \"cef_renderer_object_t\")"))
-    assert(source.contains("RendererReleaseHandleResponse.DECODER"))
+    assert(source.contains("public final class RendererThing extends RendererFacade"))
+    assert(source.contains("super(session, frame, handle, \"cef_renderer_object_t\");"))
+    assert(!source.contains("closeLock"))
+    assert(!source.contains("frame()"))
+  }
+
+  test("browser facade base releases its handle through the browser release message") {
+    val refs   = SharedMessages.derive(Specs.all("test.gen")).refs
+    val source = JavaFacadeEmitter.emitBase(ProcessAffinity.Browser, "test.gen", refs)
+
+    assert(source.contains("package test.gen;"))
+    assert(source.contains("public abstract class BrowserFacade extends RemoteFacade"))
+    assert(
+      source.contains(
+        s"session.request(${refs.idExpr("ReleaseHandleRequest")}, " +
+          s"${refs.newExpr("ReleaseHandleRequest", "handle, cefStructName")}, " +
+          s"${refs.decoderExpr("ReleaseHandleResponse")})"
+      ),
+      source
+    )
+    assertEquals(refs.idExpr("ReleaseHandleRequest"), "MessageIds.RELEASE_HANDLE_REQUEST")
+    assert(!source.contains("frame"))
+  }
+
+  test("renderer facade base releases its frame-bound handle") {
+    val refs   = SharedMessages.derive(Specs.all("test.gen")).refs
+    val source = JavaFacadeEmitter.emitBase(ProcessAffinity.Renderer, "test.gen", refs)
+
+    assert(source.contains("public abstract class RendererFacade extends RemoteFacade"))
+    assert(
+      source.contains(
+        s"session.request(${refs.idExpr("RendererReleaseHandleRequest")}, " +
+          s"${refs.newExpr("RendererReleaseHandleRequest", "frame, handle, cefStructName")}, " +
+          s"${refs.decoderExpr("RendererReleaseHandleResponse")})"
+      ),
+      source
+    )
+    assert(source.contains("public final RemoteHandle frame()"))
+    assert(source.contains("protected final RemoteHandle frame;"))
   }
 
   test("ObjectStruct method with unsupported return type is skipped wholesale") {
@@ -182,5 +264,16 @@ class SpecDeriverSpec extends munit.FunSuite {
       CefDecl.FreeFunction("cef_initialize", CType.Bool, Nil, "", "initialize")
     )
     assertEquals(SpecDeriver.derive(decls, "p"), Nil)
+  }
+
+  test("wire structs link a gen type unless platform-specific") {
+    given Naming.Context = Naming.Context.empty.copy(typesPackage = "t.gen")
+    val point            = CefDecl.DataStruct("cef_point_t", List(Field("x", CType.Int), Field("y", CType.Int)))
+    val plane            = CefDecl.DataStruct("cef_plane_t", List(Field("fd", CType.Int)))
+    val specs            = SpecDeriver.deriveDataStructs(List(point, plane), "p", Set("cef_plane_t"))
+    assertEquals(
+      specs.map(s => s.cefStructName -> s.shared.map(_.javaType)),
+      List("cef_point_t" -> Some("t.gen.CefPoint"), "cef_plane_t" -> None)
+    )
   }
 }

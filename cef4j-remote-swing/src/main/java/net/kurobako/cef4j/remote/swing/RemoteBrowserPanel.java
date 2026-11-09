@@ -18,6 +18,9 @@ import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import net.kurobako.cef4j.gen.CefKeyEvent;
+import net.kurobako.cef4j.gen.CefKeyEventType;
+import net.kurobako.cef4j.gen.CefMouseEvent;
 import net.kurobako.cef4j.ipc.frame.FrameMetadata;
 import net.kurobako.cef4j.ipc.frame.LatestOnlyDispatcher;
 import net.kurobako.cef4j.ipc.frame.RemoteBrowserBinding;
@@ -202,21 +205,20 @@ public final class RemoteBrowserPanel extends JPanel implements AutoCloseable {
         final BrowserHost host = binding.host().orElse(null);
         if (host == null) return;
         binding.observe(
-                host.sendKeyEvent(net.kurobako.cef4j.ipc.protocol.gen.KeyEvent.builder()
-                        .type(type)
-                        .modifiers(modifiers(event))
-                        .windowsKeyCode(keyCode)
-                        .nativeKeyCode(event.getExtendedKeyCode())
-                        .isSystemKey(event.isAltDown() ? 1 : 0)
-                        .character(character)
-                        .unmodifiedCharacter(character)
-                        .focusOnEditableField(0)
-                        .build()),
+                host.sendKeyEvent(new CefKeyEvent(
+                        CefKeyEventType.of(type),
+                        modifiers(event),
+                        keyCode,
+                        event.getExtendedKeyCode(),
+                        event.isAltDown() ? 1 : 0,
+                        (char) character,
+                        (char) character,
+                        0)),
                 "forward key event");
     }
 
-    private static net.kurobako.cef4j.ipc.protocol.gen.MouseEvent mouseEvent(MouseEvent event) {
-        return new net.kurobako.cef4j.ipc.protocol.gen.MouseEvent(event.getX(), event.getY(), modifiers(event));
+    private static CefMouseEvent mouseEvent(MouseEvent event) {
+        return new CefMouseEvent(event.getX(), event.getY(), modifiers(event));
     }
 
     private static int modifiers(InputEvent event) {

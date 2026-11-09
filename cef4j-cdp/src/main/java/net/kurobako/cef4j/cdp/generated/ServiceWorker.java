@@ -1,7 +1,6 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -9,6 +8,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -24,6 +25,14 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class ServiceWorker {
     private ServiceWorker() {}
+    private static final CdpField<java.util.List<Target.TargetID>> CONTROLLED_CLIENTS = CdpField.of("controlledClients", value -> CdpObject.requireList(value, element0 -> new Target.TargetID((String) element0)));
+    private static final CdpField<ServiceWorker.ServiceWorkerErrorMessage> ERROR_MESSAGE = CdpField.of("errorMessage", value -> java.util.Objects.requireNonNull(ServiceWorker.ServiceWorkerErrorMessage.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<ServiceWorker.ServiceWorkerRegistration>> REGISTRATIONS = CdpField.of("registrations", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(ServiceWorker.ServiceWorkerRegistration.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<ServiceWorker.RegistrationID> REGISTRATION_ID = CdpField.of("registrationId", value -> new ServiceWorker.RegistrationID((String) value));
+    private static final CdpField<ServiceWorker.ServiceWorkerVersionRunningStatus> RUNNING_STATUS = CdpField.of("runningStatus", value -> ServiceWorker.ServiceWorkerVersionRunningStatus.of((String) value));
+    private static final CdpField<ServiceWorker.ServiceWorkerVersionStatus> STATUS = CdpField.of("status", value -> ServiceWorker.ServiceWorkerVersionStatus.of((String) value));
+    private static final CdpField<Target.TargetID> TARGET_ID = CdpField.of("targetId", value -> new Target.TargetID((String) value));
+    private static final CdpField<java.util.List<ServiceWorker.ServiceWorkerVersion>> VERSIONS = CdpField.of("versions", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(ServiceWorker.ServiceWorkerVersion.fromMap(CdpObject.requireObjectMap(element0)))));
     /**
      * Tagged String wire value for RegistrationID.
      */
@@ -53,21 +62,21 @@ public final class ServiceWorker {
          * @return the protocol field value
          */
         public ServiceWorker.RegistrationID registrationId() {
-            return new ServiceWorker.RegistrationID((String) require("registrationId"));
+            return require(REGISTRATION_ID);
         }
         /**
          * Returns the scopeURL field.
          * @return the protocol field value
          */
         public String scopeURL() {
-            return (String) require("scopeURL");
+            return requireString("scopeURL");
         }
         /**
          * Returns the isDeleted field.
          * @return the protocol field value
          */
         public boolean isDeleted() {
-            return (Boolean) require("isDeleted");
+            return requireBoolean("isDeleted");
         }
         /**
          * Sets the registrationId field.
@@ -149,70 +158,70 @@ public final class ServiceWorker {
          * @return the protocol field value
          */
         public String versionId() {
-            return (String) require("versionId");
+            return requireString("versionId");
         }
         /**
          * Returns the registrationId field.
          * @return the protocol field value
          */
         public ServiceWorker.RegistrationID registrationId() {
-            return new ServiceWorker.RegistrationID((String) require("registrationId"));
+            return require(REGISTRATION_ID);
         }
         /**
          * Returns the scriptURL field.
          * @return the protocol field value
          */
         public String scriptURL() {
-            return (String) require("scriptURL");
+            return requireString("scriptURL");
         }
         /**
          * Returns the runningStatus field.
          * @return the protocol field value
          */
         public ServiceWorker.ServiceWorkerVersionRunningStatus runningStatus() {
-            return ServiceWorker.ServiceWorkerVersionRunningStatus.of((String) require("runningStatus"));
+            return require(RUNNING_STATUS);
         }
         /**
          * Returns the status field.
          * @return the protocol field value
          */
         public ServiceWorker.ServiceWorkerVersionStatus status() {
-            return ServiceWorker.ServiceWorkerVersionStatus.of((String) require("status"));
+            return require(STATUS);
         }
         /**
          * The Last-Modified header value of the main script.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble scriptLastModified() {
-            return raw("scriptLastModified").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("scriptLastModified");
         }
         /**
          * The time at which the response headers of the main script were received from the server. For cached script it is the last time the cache entry was validated.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble scriptResponseTime() {
-            return raw("scriptResponseTime").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("scriptResponseTime");
         }
         /**
          * Returns the controlledClients field.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Target.TargetID>> controlledClients() {
-            return raw("controlledClients").flatMap(value -> list(value, element0 -> new Target.TargetID((String) element0)));
+            return optional(CONTROLLED_CLIENTS);
         }
         /**
          * Returns the targetId field.
          * @return the protocol field value, empty when absent
          */
         public Optional<Target.TargetID> targetId() {
-            return raw("targetId").map(value -> new Target.TargetID((String) value));
+            return optional(TARGET_ID);
         }
         /**
          * Returns the routerRules field.
          * @return the protocol field value, empty when absent
          */
         public Optional<String> routerRules() {
-            return raw("routerRules").map(value -> (String) value);
+            return optionalString("routerRules");
         }
         /**
          * Sets the versionId field.
@@ -319,42 +328,42 @@ public final class ServiceWorker {
          * @return the protocol field value
          */
         public String errorMessage() {
-            return (String) require("errorMessage");
+            return requireString("errorMessage");
         }
         /**
          * Returns the registrationId field.
          * @return the protocol field value
          */
         public ServiceWorker.RegistrationID registrationId() {
-            return new ServiceWorker.RegistrationID((String) require("registrationId"));
+            return require(REGISTRATION_ID);
         }
         /**
          * Returns the versionId field.
          * @return the protocol field value
          */
         public String versionId() {
-            return (String) require("versionId");
+            return requireString("versionId");
         }
         /**
          * Returns the sourceURL field.
          * @return the protocol field value
          */
         public String sourceURL() {
-            return (String) require("sourceURL");
+            return requireString("sourceURL");
         }
         /**
          * Returns the lineNumber field.
          * @return the protocol field value
          */
         public long lineNumber() {
-            return ((Number) require("lineNumber")).longValue();
+            return requireLong("lineNumber");
         }
         /**
          * Returns the columnNumber field.
          * @return the protocol field value
          */
         public long columnNumber() {
-            return ((Number) require("columnNumber")).longValue();
+            return requireLong("columnNumber");
         }
         /**
          * Sets the errorMessage field.
@@ -416,15 +425,6 @@ public final class ServiceWorker {
      */
     public static final class DeliverPushMessageRequest extends CdpObject {
         public DeliverPushMessageRequest() {}
-        /**
-         * Creates a new DeliverPushMessageRequest with all required parameters.
-         * @param origin protocol value
-         * @param registrationId protocol value
-         * @param data protocol value
-         */
-        public DeliverPushMessageRequest(String origin, ServiceWorker.RegistrationID registrationId, String data) {
-            origin(origin).registrationId(registrationId).data(data);
-        }
         public static DeliverPushMessageRequest fromMap(Map<String, Object> values) {
             final DeliverPushMessageRequest instance_ = new DeliverPushMessageRequest();
             if (values != null) instance_.values.putAll(values);
@@ -435,21 +435,21 @@ public final class ServiceWorker {
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * Returns the registrationId field.
          * @return the protocol field value
          */
         public ServiceWorker.RegistrationID registrationId() {
-            return new ServiceWorker.RegistrationID((String) require("registrationId"));
+            return require(REGISTRATION_ID);
         }
         /**
          * Returns the data field.
          * @return the protocol field value
          */
         public String data() {
-            return (String) require("data");
+            return requireString("data");
         }
         /**
          * Sets the origin field.
@@ -484,16 +484,6 @@ public final class ServiceWorker {
      */
     public static final class DispatchSyncEventRequest extends CdpObject {
         public DispatchSyncEventRequest() {}
-        /**
-         * Creates a new DispatchSyncEventRequest with all required parameters.
-         * @param origin protocol value
-         * @param registrationId protocol value
-         * @param tag protocol value
-         * @param lastChance protocol value
-         */
-        public DispatchSyncEventRequest(String origin, ServiceWorker.RegistrationID registrationId, String tag, boolean lastChance) {
-            origin(origin).registrationId(registrationId).tag(tag).lastChance(lastChance);
-        }
         public static DispatchSyncEventRequest fromMap(Map<String, Object> values) {
             final DispatchSyncEventRequest instance_ = new DispatchSyncEventRequest();
             if (values != null) instance_.values.putAll(values);
@@ -504,28 +494,28 @@ public final class ServiceWorker {
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * Returns the registrationId field.
          * @return the protocol field value
          */
         public ServiceWorker.RegistrationID registrationId() {
-            return new ServiceWorker.RegistrationID((String) require("registrationId"));
+            return require(REGISTRATION_ID);
         }
         /**
          * Returns the tag field.
          * @return the protocol field value
          */
         public String tag() {
-            return (String) require("tag");
+            return requireString("tag");
         }
         /**
          * Returns the lastChance field.
          * @return the protocol field value
          */
         public boolean lastChance() {
-            return (Boolean) require("lastChance");
+            return requireBoolean("lastChance");
         }
         /**
          * Sets the origin field.
@@ -569,15 +559,6 @@ public final class ServiceWorker {
      */
     public static final class DispatchPeriodicSyncEventRequest extends CdpObject {
         public DispatchPeriodicSyncEventRequest() {}
-        /**
-         * Creates a new DispatchPeriodicSyncEventRequest with all required parameters.
-         * @param origin protocol value
-         * @param registrationId protocol value
-         * @param tag protocol value
-         */
-        public DispatchPeriodicSyncEventRequest(String origin, ServiceWorker.RegistrationID registrationId, String tag) {
-            origin(origin).registrationId(registrationId).tag(tag);
-        }
         public static DispatchPeriodicSyncEventRequest fromMap(Map<String, Object> values) {
             final DispatchPeriodicSyncEventRequest instance_ = new DispatchPeriodicSyncEventRequest();
             if (values != null) instance_.values.putAll(values);
@@ -588,21 +569,21 @@ public final class ServiceWorker {
          * @return the protocol field value
          */
         public String origin() {
-            return (String) require("origin");
+            return requireString("origin");
         }
         /**
          * Returns the registrationId field.
          * @return the protocol field value
          */
         public ServiceWorker.RegistrationID registrationId() {
-            return new ServiceWorker.RegistrationID((String) require("registrationId"));
+            return require(REGISTRATION_ID);
         }
         /**
          * Returns the tag field.
          * @return the protocol field value
          */
         public String tag() {
-            return (String) require("tag");
+            return requireString("tag");
         }
         /**
          * Sets the origin field.
@@ -637,13 +618,6 @@ public final class ServiceWorker {
      */
     public static final class SetForceUpdateOnPageLoadRequest extends CdpObject {
         public SetForceUpdateOnPageLoadRequest() {}
-        /**
-         * Creates a new SetForceUpdateOnPageLoadRequest with all required parameters.
-         * @param forceUpdateOnPageLoad protocol value
-         */
-        public SetForceUpdateOnPageLoadRequest(boolean forceUpdateOnPageLoad) {
-            forceUpdateOnPageLoad(forceUpdateOnPageLoad);
-        }
         public static SetForceUpdateOnPageLoadRequest fromMap(Map<String, Object> values) {
             final SetForceUpdateOnPageLoadRequest instance_ = new SetForceUpdateOnPageLoadRequest();
             if (values != null) instance_.values.putAll(values);
@@ -654,7 +628,7 @@ public final class ServiceWorker {
          * @return the protocol field value
          */
         public boolean forceUpdateOnPageLoad() {
-            return (Boolean) require("forceUpdateOnPageLoad");
+            return requireBoolean("forceUpdateOnPageLoad");
         }
         /**
          * Sets the forceUpdateOnPageLoad field.
@@ -671,13 +645,6 @@ public final class ServiceWorker {
      */
     public static final class SkipWaitingRequest extends CdpObject {
         public SkipWaitingRequest() {}
-        /**
-         * Creates a new SkipWaitingRequest with all required parameters.
-         * @param scopeURL protocol value
-         */
-        public SkipWaitingRequest(String scopeURL) {
-            scopeURL(scopeURL);
-        }
         public static SkipWaitingRequest fromMap(Map<String, Object> values) {
             final SkipWaitingRequest instance_ = new SkipWaitingRequest();
             if (values != null) instance_.values.putAll(values);
@@ -688,7 +655,7 @@ public final class ServiceWorker {
          * @return the protocol field value
          */
         public String scopeURL() {
-            return (String) require("scopeURL");
+            return requireString("scopeURL");
         }
         /**
          * Sets the scopeURL field.
@@ -705,13 +672,6 @@ public final class ServiceWorker {
      */
     public static final class StartWorkerRequest extends CdpObject {
         public StartWorkerRequest() {}
-        /**
-         * Creates a new StartWorkerRequest with all required parameters.
-         * @param scopeURL protocol value
-         */
-        public StartWorkerRequest(String scopeURL) {
-            scopeURL(scopeURL);
-        }
         public static StartWorkerRequest fromMap(Map<String, Object> values) {
             final StartWorkerRequest instance_ = new StartWorkerRequest();
             if (values != null) instance_.values.putAll(values);
@@ -722,7 +682,7 @@ public final class ServiceWorker {
          * @return the protocol field value
          */
         public String scopeURL() {
-            return (String) require("scopeURL");
+            return requireString("scopeURL");
         }
         /**
          * Sets the scopeURL field.
@@ -739,13 +699,6 @@ public final class ServiceWorker {
      */
     public static final class StopWorkerRequest extends CdpObject {
         public StopWorkerRequest() {}
-        /**
-         * Creates a new StopWorkerRequest with all required parameters.
-         * @param versionId protocol value
-         */
-        public StopWorkerRequest(String versionId) {
-            versionId(versionId);
-        }
         public static StopWorkerRequest fromMap(Map<String, Object> values) {
             final StopWorkerRequest instance_ = new StopWorkerRequest();
             if (values != null) instance_.values.putAll(values);
@@ -756,7 +709,7 @@ public final class ServiceWorker {
          * @return the protocol field value
          */
         public String versionId() {
-            return (String) require("versionId");
+            return requireString("versionId");
         }
         /**
          * Sets the versionId field.
@@ -773,13 +726,6 @@ public final class ServiceWorker {
      */
     public static final class UnregisterRequest extends CdpObject {
         public UnregisterRequest() {}
-        /**
-         * Creates a new UnregisterRequest with all required parameters.
-         * @param scopeURL protocol value
-         */
-        public UnregisterRequest(String scopeURL) {
-            scopeURL(scopeURL);
-        }
         public static UnregisterRequest fromMap(Map<String, Object> values) {
             final UnregisterRequest instance_ = new UnregisterRequest();
             if (values != null) instance_.values.putAll(values);
@@ -790,7 +736,7 @@ public final class ServiceWorker {
          * @return the protocol field value
          */
         public String scopeURL() {
-            return (String) require("scopeURL");
+            return requireString("scopeURL");
         }
         /**
          * Sets the scopeURL field.
@@ -807,13 +753,6 @@ public final class ServiceWorker {
      */
     public static final class UpdateRegistrationRequest extends CdpObject {
         public UpdateRegistrationRequest() {}
-        /**
-         * Creates a new UpdateRegistrationRequest with all required parameters.
-         * @param scopeURL protocol value
-         */
-        public UpdateRegistrationRequest(String scopeURL) {
-            scopeURL(scopeURL);
-        }
         public static UpdateRegistrationRequest fromMap(Map<String, Object> values) {
             final UpdateRegistrationRequest instance_ = new UpdateRegistrationRequest();
             if (values != null) instance_.values.putAll(values);
@@ -824,7 +763,7 @@ public final class ServiceWorker {
          * @return the protocol field value
          */
         public String scopeURL() {
-            return (String) require("scopeURL");
+            return requireString("scopeURL");
         }
         /**
          * Sets the scopeURL field.
@@ -850,7 +789,7 @@ public final class ServiceWorker {
          * @return the protocol field value
          */
         public ServiceWorker.ServiceWorkerErrorMessage errorMessage() {
-            return java.util.Objects.requireNonNull(ServiceWorker.ServiceWorkerErrorMessage.fromMap(CdpObject.requireObjectMap(require("errorMessage"))));
+            return require(ERROR_MESSAGE);
         }
         /**
          * Sets the errorMessage field.
@@ -876,7 +815,7 @@ public final class ServiceWorker {
          * @return the protocol field value
          */
         public java.util.List<ServiceWorker.ServiceWorkerRegistration> registrations() {
-            return CdpObject.requireList(require("registrations"), element0 -> java.util.Objects.requireNonNull(ServiceWorker.ServiceWorkerRegistration.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(REGISTRATIONS);
         }
         /**
          * Sets the registrations field.
@@ -902,7 +841,7 @@ public final class ServiceWorker {
          * @return the protocol field value
          */
         public java.util.List<ServiceWorker.ServiceWorkerVersion> versions() {
-            return CdpObject.requireList(require("versions"), element0 -> java.util.Objects.requireNonNull(ServiceWorker.ServiceWorkerVersion.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(VERSIONS);
         }
         /**
          * Sets the versions field.
@@ -914,9 +853,8 @@ public final class ServiceWorker {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Invokes ServiceWorker.deliverPushMessage.
          * @param origin protocol value
@@ -925,11 +863,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deliverPushMessage(String origin, ServiceWorker.RegistrationID registrationId, String data) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("origin", CdpObject.json(origin));
-            params.put("registrationId", CdpObject.json(registrationId));
-            params.put("data", CdpObject.json(data));
-            return client.call("ServiceWorker.deliverPushMessage", params);
+            return call("ServiceWorker.deliverPushMessage", params("origin", origin, "registrationId", registrationId, "data", data));
         }
         /**
          * Invokes ServiceWorker.deliverPushMessage with a request object.
@@ -937,14 +871,14 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> deliverPushMessage(DeliverPushMessageRequest request) {
-            return client.call("ServiceWorker.deliverPushMessage", request == null ? null : request.toMap());
+            return call("ServiceWorker.deliverPushMessage", request);
         }
         /**
          * Invokes ServiceWorker.disable.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("ServiceWorker.disable", null);
+            return call("ServiceWorker.disable");
         }
         /**
          * Invokes ServiceWorker.dispatchSyncEvent.
@@ -955,12 +889,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchSyncEvent(String origin, ServiceWorker.RegistrationID registrationId, String tag, boolean lastChance) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("origin", CdpObject.json(origin));
-            params.put("registrationId", CdpObject.json(registrationId));
-            params.put("tag", CdpObject.json(tag));
-            params.put("lastChance", CdpObject.json(lastChance));
-            return client.call("ServiceWorker.dispatchSyncEvent", params);
+            return call("ServiceWorker.dispatchSyncEvent", params("origin", origin, "registrationId", registrationId, "tag", tag, "lastChance", lastChance));
         }
         /**
          * Invokes ServiceWorker.dispatchSyncEvent with a request object.
@@ -968,7 +897,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchSyncEvent(DispatchSyncEventRequest request) {
-            return client.call("ServiceWorker.dispatchSyncEvent", request == null ? null : request.toMap());
+            return call("ServiceWorker.dispatchSyncEvent", request);
         }
         /**
          * Invokes ServiceWorker.dispatchPeriodicSyncEvent.
@@ -978,11 +907,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchPeriodicSyncEvent(String origin, ServiceWorker.RegistrationID registrationId, String tag) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("origin", CdpObject.json(origin));
-            params.put("registrationId", CdpObject.json(registrationId));
-            params.put("tag", CdpObject.json(tag));
-            return client.call("ServiceWorker.dispatchPeriodicSyncEvent", params);
+            return call("ServiceWorker.dispatchPeriodicSyncEvent", params("origin", origin, "registrationId", registrationId, "tag", tag));
         }
         /**
          * Invokes ServiceWorker.dispatchPeriodicSyncEvent with a request object.
@@ -990,14 +915,14 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> dispatchPeriodicSyncEvent(DispatchPeriodicSyncEventRequest request) {
-            return client.call("ServiceWorker.dispatchPeriodicSyncEvent", request == null ? null : request.toMap());
+            return call("ServiceWorker.dispatchPeriodicSyncEvent", request);
         }
         /**
          * Invokes ServiceWorker.enable.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("ServiceWorker.enable", null);
+            return call("ServiceWorker.enable");
         }
         /**
          * Invokes ServiceWorker.setForceUpdateOnPageLoad.
@@ -1005,9 +930,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setForceUpdateOnPageLoad(boolean forceUpdateOnPageLoad) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("forceUpdateOnPageLoad", CdpObject.json(forceUpdateOnPageLoad));
-            return client.call("ServiceWorker.setForceUpdateOnPageLoad", params);
+            return call("ServiceWorker.setForceUpdateOnPageLoad", params("forceUpdateOnPageLoad", forceUpdateOnPageLoad));
         }
         /**
          * Invokes ServiceWorker.setForceUpdateOnPageLoad with a request object.
@@ -1015,7 +938,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setForceUpdateOnPageLoad(SetForceUpdateOnPageLoadRequest request) {
-            return client.call("ServiceWorker.setForceUpdateOnPageLoad", request == null ? null : request.toMap());
+            return call("ServiceWorker.setForceUpdateOnPageLoad", request);
         }
         /**
          * Invokes ServiceWorker.skipWaiting.
@@ -1023,9 +946,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> skipWaiting(String scopeURL) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("scopeURL", CdpObject.json(scopeURL));
-            return client.call("ServiceWorker.skipWaiting", params);
+            return call("ServiceWorker.skipWaiting", params("scopeURL", scopeURL));
         }
         /**
          * Invokes ServiceWorker.skipWaiting with a request object.
@@ -1033,7 +954,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> skipWaiting(SkipWaitingRequest request) {
-            return client.call("ServiceWorker.skipWaiting", request == null ? null : request.toMap());
+            return call("ServiceWorker.skipWaiting", request);
         }
         /**
          * Invokes ServiceWorker.startWorker.
@@ -1041,9 +962,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startWorker(String scopeURL) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("scopeURL", CdpObject.json(scopeURL));
-            return client.call("ServiceWorker.startWorker", params);
+            return call("ServiceWorker.startWorker", params("scopeURL", scopeURL));
         }
         /**
          * Invokes ServiceWorker.startWorker with a request object.
@@ -1051,14 +970,14 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> startWorker(StartWorkerRequest request) {
-            return client.call("ServiceWorker.startWorker", request == null ? null : request.toMap());
+            return call("ServiceWorker.startWorker", request);
         }
         /**
          * Invokes ServiceWorker.stopAllWorkers.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopAllWorkers() {
-            return client.call("ServiceWorker.stopAllWorkers", null);
+            return call("ServiceWorker.stopAllWorkers");
         }
         /**
          * Invokes ServiceWorker.stopWorker.
@@ -1066,9 +985,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopWorker(String versionId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("versionId", CdpObject.json(versionId));
-            return client.call("ServiceWorker.stopWorker", params);
+            return call("ServiceWorker.stopWorker", params("versionId", versionId));
         }
         /**
          * Invokes ServiceWorker.stopWorker with a request object.
@@ -1076,7 +993,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> stopWorker(StopWorkerRequest request) {
-            return client.call("ServiceWorker.stopWorker", request == null ? null : request.toMap());
+            return call("ServiceWorker.stopWorker", request);
         }
         /**
          * Invokes ServiceWorker.unregister.
@@ -1084,9 +1001,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> unregister(String scopeURL) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("scopeURL", CdpObject.json(scopeURL));
-            return client.call("ServiceWorker.unregister", params);
+            return call("ServiceWorker.unregister", params("scopeURL", scopeURL));
         }
         /**
          * Invokes ServiceWorker.unregister with a request object.
@@ -1094,7 +1009,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> unregister(UnregisterRequest request) {
-            return client.call("ServiceWorker.unregister", request == null ? null : request.toMap());
+            return call("ServiceWorker.unregister", request);
         }
         /**
          * Invokes ServiceWorker.updateRegistration.
@@ -1102,9 +1017,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> updateRegistration(String scopeURL) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("scopeURL", CdpObject.json(scopeURL));
-            return client.call("ServiceWorker.updateRegistration", params);
+            return call("ServiceWorker.updateRegistration", params("scopeURL", scopeURL));
         }
         /**
          * Invokes ServiceWorker.updateRegistration with a request object.
@@ -1112,7 +1025,7 @@ public final class ServiceWorker {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> updateRegistration(UpdateRegistrationRequest request) {
-            return client.call("ServiceWorker.updateRegistration", request == null ? null : request.toMap());
+            return call("ServiceWorker.updateRegistration", request);
         }
         /**
          * Subscribes to ServiceWorker.workerErrorReported.
@@ -1120,7 +1033,7 @@ public final class ServiceWorker {
          * @return a removable subscription
          */
         public CdpSubscription onWorkerErrorReported(Consumer<WorkerErrorReportedEvent> handler) {
-            return client.on("ServiceWorker.workerErrorReported", WorkerErrorReportedEvent::fromMap, handler);
+            return on("ServiceWorker.workerErrorReported", WorkerErrorReportedEvent::fromMap, handler);
         }
         /**
          * Subscribes to ServiceWorker.workerRegistrationUpdated.
@@ -1128,7 +1041,7 @@ public final class ServiceWorker {
          * @return a removable subscription
          */
         public CdpSubscription onWorkerRegistrationUpdated(Consumer<WorkerRegistrationUpdatedEvent> handler) {
-            return client.on("ServiceWorker.workerRegistrationUpdated", WorkerRegistrationUpdatedEvent::fromMap, handler);
+            return on("ServiceWorker.workerRegistrationUpdated", WorkerRegistrationUpdatedEvent::fromMap, handler);
         }
         /**
          * Subscribes to ServiceWorker.workerVersionUpdated.
@@ -1136,7 +1049,7 @@ public final class ServiceWorker {
          * @return a removable subscription
          */
         public CdpSubscription onWorkerVersionUpdated(Consumer<WorkerVersionUpdatedEvent> handler) {
-            return client.on("ServiceWorker.workerVersionUpdated", WorkerVersionUpdatedEvent::fromMap, handler);
+            return on("ServiceWorker.workerVersionUpdated", WorkerVersionUpdatedEvent::fromMap, handler);
         }
     }
 }

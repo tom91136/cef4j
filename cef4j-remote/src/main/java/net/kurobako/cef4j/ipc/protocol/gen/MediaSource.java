@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class MediaSource implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class MediaSource extends BrowserFacade {
 
     public MediaSource(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_media_source_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_media_source_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class MediaSource implements AutoCloseable {
      */
     public CompletableFuture<String> getId() {
         return CefFutures.map(
-            session.request(new MediaSourceGetIdRequest(handle), MediaSourceGetIdResponse.DECODER),
-            MediaSourceGetIdResponse::result);
+            session.request(MessageIds.MEDIA_SOURCE_GET_ID_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class MediaSource implements AutoCloseable {
      */
     public CompletableFuture<Integer> isCastSource() {
         return CefFutures.map(
-            session.request(new MediaSourceIsCastSourceRequest(handle), MediaSourceIsCastSourceResponse.DECODER),
-            MediaSourceIsCastSourceResponse::result);
+            session.request(MessageIds.MEDIA_SOURCE_IS_CAST_SOURCE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -82,7 +51,7 @@ public final class MediaSource implements AutoCloseable {
      */
     public CompletableFuture<Integer> isDialSource() {
         return CefFutures.map(
-            session.request(new MediaSourceIsDialSourceRequest(handle), MediaSourceIsDialSourceResponse.DECODER),
-            MediaSourceIsDialSourceResponse::result);
+            session.request(MessageIds.MEDIA_SOURCE_IS_DIAL_SOURCE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

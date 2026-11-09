@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class ProcessMessage implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class ProcessMessage extends BrowserFacade {
 
     public ProcessMessage(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_process_message_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_process_message_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class ProcessMessage implements AutoCloseable {
      */
     public CompletableFuture<Integer> isValid() {
         return CefFutures.map(
-            session.request(new ProcessMessageIsValidRequest(handle), ProcessMessageIsValidResponse.DECODER),
-            ProcessMessageIsValidResponse::result);
+            session.request(MessageIds.PROCESS_MESSAGE_IS_VALID_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class ProcessMessage implements AutoCloseable {
      */
     public CompletableFuture<Integer> isReadOnly() {
         return CefFutures.map(
-            session.request(new ProcessMessageIsReadOnlyRequest(handle), ProcessMessageIsReadOnlyResponse.DECODER),
-            ProcessMessageIsReadOnlyResponse::result);
+            session.request(MessageIds.PROCESS_MESSAGE_IS_READ_ONLY_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -82,7 +51,7 @@ public final class ProcessMessage implements AutoCloseable {
      */
     public CompletableFuture<ProcessMessage> copy() {
         return CefFutures.map(
-            session.request(new ProcessMessageCopyRequest(handle), ProcessMessageCopyResponse.DECODER),
+            session.request(MessageIds.PROCESS_MESSAGE_COPY_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new ProcessMessage(session, __r.result()));
     }
 
@@ -94,8 +63,8 @@ public final class ProcessMessage implements AutoCloseable {
      */
     public CompletableFuture<String> getName() {
         return CefFutures.map(
-            session.request(new ProcessMessageGetNameRequest(handle), ProcessMessageGetNameResponse.DECODER),
-            ProcessMessageGetNameResponse::result);
+            session.request(MessageIds.PROCESS_MESSAGE_GET_NAME_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -106,7 +75,7 @@ public final class ProcessMessage implements AutoCloseable {
      */
     public CompletableFuture<ListValue> getArgumentList() {
         return CefFutures.map(
-            session.request(new ProcessMessageGetArgumentListRequest(handle), ProcessMessageGetArgumentListResponse.DECODER),
+            session.request(MessageIds.PROCESS_MESSAGE_GET_ARGUMENT_LIST_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new ListValue(session, __r.result()));
     }
 
@@ -118,7 +87,7 @@ public final class ProcessMessage implements AutoCloseable {
      */
     public CompletableFuture<SharedMemoryRegion> getSharedMemoryRegion() {
         return CefFutures.map(
-            session.request(new ProcessMessageGetSharedMemoryRegionRequest(handle), ProcessMessageGetSharedMemoryRegionResponse.DECODER),
+            session.request(MessageIds.PROCESS_MESSAGE_GET_SHARED_MEMORY_REGION_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new SharedMemoryRegion(session, __r.result()));
     }
 }

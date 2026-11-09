@@ -2,23 +2,21 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class DisplayHandlerOnAutoResizeEvent implements CefMessageView, CefMessageEncoder {
 
-    public static final int MESSAGE_ID = 1745044920;
-
     private final RemoteHandle browser;
-    private final Size newSize;
+    private final net.kurobako.cef4j.gen.CefSize newSize;
 
-    public DisplayHandlerOnAutoResizeEvent(RemoteHandle browser, Size newSize) {
+    public DisplayHandlerOnAutoResizeEvent(RemoteHandle browser, net.kurobako.cef4j.gen.CefSize newSize) {
         this.browser = browser;
         this.newSize = newSize;
     }
@@ -27,38 +25,26 @@ public final class DisplayHandlerOnAutoResizeEvent implements CefMessageView, Ce
         return browser;
     }
 
-    public Size newSize() {
+    public net.kurobako.cef4j.gen.CefSize newSize() {
         return newSize;
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return 4 + newSize.encodedSize();
+        return 4 + SizeCodec.encodedSize(newSize);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(browser.id());
-            newSize.encodeInto(__dst);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(browser.id());
+            SizeCodec.encode(__out, newSize);
+        });
     }
 
-    public static final CefMessageDecoder<DisplayHandlerOnAutoResizeEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<DisplayHandlerOnAutoResizeEvent> DECODER = WireDecoder.message("DisplayHandlerOnAutoResizeEvent", __buf -> {
         final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
-        final Size newSize = Size.decode(__buf);
-        WireDecoder.requireFullyConsumed(__buf, "DisplayHandlerOnAutoResizeEvent");
+        final net.kurobako.cef4j.gen.CefSize newSize = SizeCodec.decode(__buf);
         return new DisplayHandlerOnAutoResizeEvent(browser, newSize);
-    };
+    });
 }

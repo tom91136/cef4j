@@ -2,25 +2,23 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class MenuButtonDelegateOnMenuButtonPressedRequest implements CefMessageView, CefMessageEncoder {
 
-    public static final int MESSAGE_ID = 779905604;
-
     private final RemoteHandle self;
     private final RemoteHandle menuButton;
-    private final Point screenPoint;
+    private final net.kurobako.cef4j.gen.CefPoint screenPoint;
     private final RemoteHandle buttonPressedLock;
 
-    public MenuButtonDelegateOnMenuButtonPressedRequest(RemoteHandle self, RemoteHandle menuButton, Point screenPoint, RemoteHandle buttonPressedLock) {
+    public MenuButtonDelegateOnMenuButtonPressedRequest(RemoteHandle self, RemoteHandle menuButton, net.kurobako.cef4j.gen.CefPoint screenPoint, RemoteHandle buttonPressedLock) {
         this.self = self;
         this.menuButton = menuButton;
         this.screenPoint = screenPoint;
@@ -35,7 +33,7 @@ public final class MenuButtonDelegateOnMenuButtonPressedRequest implements CefMe
         return menuButton;
     }
 
-    public Point screenPoint() {
+    public net.kurobako.cef4j.gen.CefPoint screenPoint() {
         return screenPoint;
     }
 
@@ -44,37 +42,25 @@ public final class MenuButtonDelegateOnMenuButtonPressedRequest implements CefMe
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return 12 + screenPoint.encodedSize();
+        return 12 + PointCodec.encodedSize(screenPoint);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putInt(menuButton.id());
-            screenPoint.encodeInto(__dst);
-            __dst.putInt(buttonPressedLock.id());
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            __out.putInt(menuButton.id());
+            PointCodec.encode(__out, screenPoint);
+            __out.putInt(buttonPressedLock.id());
+        });
     }
 
-    public static final CefMessageDecoder<MenuButtonDelegateOnMenuButtonPressedRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<MenuButtonDelegateOnMenuButtonPressedRequest> DECODER = WireDecoder.message("MenuButtonDelegateOnMenuButtonPressedRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final RemoteHandle menuButton = WireDecoder.handle(__buf, "menuButton");
-        final Point screenPoint = Point.decode(__buf);
+        final net.kurobako.cef4j.gen.CefPoint screenPoint = PointCodec.decode(__buf);
         final RemoteHandle buttonPressedLock = WireDecoder.handle(__buf, "buttonPressedLock");
-        WireDecoder.requireFullyConsumed(__buf, "MenuButtonDelegateOnMenuButtonPressedRequest");
         return new MenuButtonDelegateOnMenuButtonPressedRequest(self, menuButton, screenPoint, buttonPressedLock);
-    };
+    });
 }

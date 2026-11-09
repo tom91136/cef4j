@@ -2,18 +2,16 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class PrintSettingsSetCollateRequest implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 894376330;
 
     private final RemoteHandle self;
     private final int collate;
@@ -32,33 +30,21 @@ public final class PrintSettingsSetCollateRequest implements CefMessageView, Cef
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 8;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putInt(collate);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            __out.putInt(collate);
+        });
     }
 
-    public static final CefMessageDecoder<PrintSettingsSetCollateRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<PrintSettingsSetCollateRequest> DECODER = WireDecoder.message("PrintSettingsSetCollateRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final int collate = WireDecoder.int32(__buf, "collate");
-        WireDecoder.requireFullyConsumed(__buf, "PrintSettingsSetCollateRequest");
         return new PrintSettingsSetCollateRequest(self, collate);
-    };
+    });
 }

@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,11 +9,10 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class MenuModelInsertRadioItemAtRequest implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 1380078748;
 
     private final RemoteHandle self;
     private final long index;
@@ -53,40 +51,27 @@ public final class MenuModelInsertRadioItemAtRequest implements CefMessageView, 
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 24 + labelBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putLong(index);
-            __dst.putInt(commandId);
-            __dst.putInt(labelBytes.length);
-            __dst.put(labelBytes);
-            __dst.putInt(groupId);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            __out.putLong(index);
+            __out.putInt(commandId);
+            WireEncoder.bytes(__out, labelBytes);
+            __out.putInt(groupId);
+        });
     }
 
-    public static final CefMessageDecoder<MenuModelInsertRadioItemAtRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<MenuModelInsertRadioItemAtRequest> DECODER = WireDecoder.message("MenuModelInsertRadioItemAtRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final long index = WireDecoder.int64(__buf, "index");
         final int commandId = WireDecoder.int32(__buf, "commandId");
         final String label = WireDecoder.utf8(__buf, "label");
         final int groupId = WireDecoder.int32(__buf, "groupId");
-        WireDecoder.requireFullyConsumed(__buf, "MenuModelInsertRadioItemAtRequest");
         return new MenuModelInsertRadioItemAtRequest(self, index, commandId, label, groupId);
-    };
+    });
 }

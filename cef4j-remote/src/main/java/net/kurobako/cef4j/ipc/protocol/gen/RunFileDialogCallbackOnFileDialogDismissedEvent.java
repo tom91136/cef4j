@@ -2,18 +2,15 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class RunFileDialogCallbackOnFileDialogDismissedEvent implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 2033431130;
 
     private final String[] filePaths;
 
@@ -26,36 +23,19 @@ public final class RunFileDialogCallbackOnFileDialogDismissedEvent implements Ce
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return 4 + java.util.Arrays.stream(filePaths).mapToInt(__s -> 4 + __s.getBytes(StandardCharsets.UTF_8).length).sum();
+        return 4 + WireEncoder.utf8ListSize(filePaths);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(filePaths.length);
-            for (final String __s : filePaths) {
-                final byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
-                __dst.putInt(__b.length);
-                __dst.put(__b);
-            }
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            WireEncoder.utf8List(__out, filePaths);
+        });
     }
 
-    public static final CefMessageDecoder<RunFileDialogCallbackOnFileDialogDismissedEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<RunFileDialogCallbackOnFileDialogDismissedEvent> DECODER = WireDecoder.message("RunFileDialogCallbackOnFileDialogDismissedEvent", __buf -> {
         final String[] filePaths = WireDecoder.utf8List(__buf, "filePaths");
-        WireDecoder.requireFullyConsumed(__buf, "RunFileDialogCallbackOnFileDialogDismissedEvent");
         return new RunFileDialogCallbackOnFileDialogDismissedEvent(filePaths);
-    };
+    });
 }

@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class PreferenceRegistrar implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class PreferenceRegistrar extends BrowserFacade {
 
     public PreferenceRegistrar(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_preference_registrar_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_preference_registrar_t");
     }
 
     /**
@@ -58,7 +27,7 @@ public final class PreferenceRegistrar implements AutoCloseable {
      */
     public CompletableFuture<Integer> addPreference(String name, RemoteHandle defaultValue) {
         return CefFutures.map(
-            session.request(new PreferenceRegistrarAddPreferenceRequest(handle, name, defaultValue), PreferenceRegistrarAddPreferenceResponse.DECODER),
-            PreferenceRegistrarAddPreferenceResponse::result);
+            session.request(MessageIds.PREFERENCE_REGISTRAR_ADD_PREFERENCE_REQUEST, new PreferenceRegistrarAddPreferenceRequest(handle, name, defaultValue), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

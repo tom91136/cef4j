@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class Image implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class Image extends BrowserFacade {
 
     public Image(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_image_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_image_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class Image implements AutoCloseable {
      */
     public CompletableFuture<Integer> isEmpty() {
         return CefFutures.map(
-            session.request(new ImageIsEmptyRequest(handle), ImageIsEmptyResponse.DECODER),
-            ImageIsEmptyResponse::result);
+            session.request(MessageIds.IMAGE_IS_EMPTY_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class Image implements AutoCloseable {
      */
     public CompletableFuture<Integer> isSame(RemoteHandle that) {
         return CefFutures.map(
-            session.request(new ImageIsSameRequest(handle, that), ImageIsSameResponse.DECODER),
-            ImageIsSameResponse::result);
+            session.request(MessageIds.IMAGE_IS_SAME_REQUEST, new SelfHandleThatHandleMessage(handle, that), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -82,8 +51,8 @@ public final class Image implements AutoCloseable {
      */
     public CompletableFuture<Long> getWidth() {
         return CefFutures.map(
-            session.request(new ImageGetWidthRequest(handle), ImageGetWidthResponse.DECODER),
-            ImageGetWidthResponse::result);
+            session.request(MessageIds.IMAGE_GET_WIDTH_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -94,7 +63,7 @@ public final class Image implements AutoCloseable {
      */
     public CompletableFuture<Long> getHeight() {
         return CefFutures.map(
-            session.request(new ImageGetHeightRequest(handle), ImageGetHeightResponse.DECODER),
-            ImageGetHeightResponse::result);
+            session.request(MessageIds.IMAGE_GET_HEIGHT_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 }

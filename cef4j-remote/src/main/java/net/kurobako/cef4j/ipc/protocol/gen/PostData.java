@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class PostData implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class PostData extends BrowserFacade {
 
     public PostData(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_post_data_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_post_data_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class PostData implements AutoCloseable {
      */
     public CompletableFuture<Integer> isReadOnly() {
         return CefFutures.map(
-            session.request(new PostDataIsReadOnlyRequest(handle), PostDataIsReadOnlyResponse.DECODER),
-            PostDataIsReadOnlyResponse::result);
+            session.request(MessageIds.POST_DATA_IS_READ_ONLY_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class PostData implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasExcludedElements() {
         return CefFutures.map(
-            session.request(new PostDataHasExcludedElementsRequest(handle), PostDataHasExcludedElementsResponse.DECODER),
-            PostDataHasExcludedElementsResponse::result);
+            session.request(MessageIds.POST_DATA_HAS_EXCLUDED_ELEMENTS_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -82,8 +51,8 @@ public final class PostData implements AutoCloseable {
      */
     public CompletableFuture<Long> getElementCount() {
         return CefFutures.map(
-            session.request(new PostDataGetElementCountRequest(handle), PostDataGetElementCountResponse.DECODER),
-            PostDataGetElementCountResponse::result);
+            session.request(MessageIds.POST_DATA_GET_ELEMENT_COUNT_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -94,8 +63,8 @@ public final class PostData implements AutoCloseable {
      */
     public CompletableFuture<Integer> removeElement(RemoteHandle element) {
         return CefFutures.map(
-            session.request(new PostDataRemoveElementRequest(handle, element), PostDataRemoveElementResponse.DECODER),
-            PostDataRemoveElementResponse::result);
+            session.request(MessageIds.POST_DATA_REMOVE_ELEMENT_REQUEST, new SelfHandleElementHandleMessage(handle, element), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -106,8 +75,8 @@ public final class PostData implements AutoCloseable {
      */
     public CompletableFuture<Integer> addElement(RemoteHandle element) {
         return CefFutures.map(
-            session.request(new PostDataAddElementRequest(handle, element), PostDataAddElementResponse.DECODER),
-            PostDataAddElementResponse::result);
+            session.request(MessageIds.POST_DATA_ADD_ELEMENT_REQUEST, new SelfHandleElementHandleMessage(handle, element), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -117,6 +86,6 @@ public final class PostData implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__request_8h.html">cef_request.h:279</a>
      */
     public CompletableFuture<Void> removeElements() {
-        return CefFutures.discard(session.request(new PostDataRemoveElementsRequest(handle), PostDataRemoveElementsResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.POST_DATA_REMOVE_ELEMENTS_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 }

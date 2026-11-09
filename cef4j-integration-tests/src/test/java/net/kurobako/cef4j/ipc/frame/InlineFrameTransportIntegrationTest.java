@@ -7,9 +7,10 @@ import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import net.kurobako.cef4j.ipc.protocol.gen.BrowserSettings;
+import net.kurobako.cef4j.gen.CefBrowserSettings;
 import net.kurobako.cef4j.ipc.protocol.gen.CreateBrowserRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.CreateBrowserResponse;
+import net.kurobako.cef4j.ipc.protocol.gen.EmptyMessage;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.process.RuntimeServerProcess;
@@ -40,9 +41,9 @@ final class InlineFrameTransportIntegrationTest {
             });
 
             session.request(
-                            new CreateBrowserRequest(
-                                    "about:blank", BrowserSettings.builder().build()),
-                            CreateBrowserResponse.DECODER)
+                            MessageIds.CREATE_BROWSER_REQUEST,
+                            new CreateBrowserRequest("about:blank", new CefBrowserSettings.Mutable().toImmutable()),
+                            EmptyMessage.DECODER)
                     .get(20, TimeUnit.SECONDS);
 
             assertThat(arrived.await(20, TimeUnit.SECONDS)).isTrue();

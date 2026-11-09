@@ -15,13 +15,11 @@ import net.kurobako.cef4j.cdp.CdpException;
 import net.kurobako.cef4j.cdp.CdpRequestTracker;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpTransport;
+import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessage;
+import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessageBytesMessage;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserHost;
-import net.kurobako.cef4j.ipc.protocol.gen.DevToolsAgentDetachedEvent;
-import net.kurobako.cef4j.ipc.protocol.gen.DevToolsAttachRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.DevToolsAttachResponse;
-import net.kurobako.cef4j.ipc.protocol.gen.DevToolsDetachRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.DevToolsDetachResponse;
-import net.kurobako.cef4j.ipc.protocol.gen.DevToolsMessageEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.EmptyMessage;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -77,10 +75,10 @@ public final class DevToolsSession implements CdpTransport {
         this.browser = browser;
         this.host = host;
         this.codec = codec;
-        messageRegistration =
-                session.on(DevToolsMessageEvent.MESSAGE_ID, DevToolsMessageEvent.DECODER, this::handleMessage);
+        messageRegistration = session.on(
+                MessageIds.DEV_TOOLS_MESSAGE_EVENT, BrowserHandleMessageBytesMessage.DECODER, this::handleMessage);
         detachedRegistration =
-                session.on(DevToolsAgentDetachedEvent.MESSAGE_ID, DevToolsAgentDetachedEvent.DECODER, event -> {
+                session.on(MessageIds.DEV_TOOLS_AGENT_DETACHED_EVENT, BrowserHandleMessage.DECODER, event -> {
                     if (browser.equals(event.browser()))
                         failAndClose(new IllegalStateException("DevTools agent detached"));
                 });
@@ -96,7 +94,8 @@ public final class DevToolsSession implements CdpTransport {
         Objects.requireNonNull(codec, "codec");
         final DevToolsSession devTools = new DevToolsSession(session, browser, host, codec);
         final CompletableFuture<DevToolsSession> attached = CefFutures.map(
-                session.request(new DevToolsAttachRequest(browser), DevToolsAttachResponse.DECODER),
+                session.request(
+                        MessageIds.DEV_TOOLS_ATTACH_REQUEST, new BrowserHandleMessage(browser), EmptyMessage.DECODER),
                 ignored -> devTools);
         CefFutures.observeFailure(attached, devTools::failAndClose);
         return attached;
@@ -211,7 +210,10 @@ public final class DevToolsSession implements CdpTransport {
             unregisterClose();
             requests.failAll(new IllegalStateException("DevTools session is closed"));
             eventHandlers.clear();
-            closeFuture = session.request(new DevToolsDetachRequest(browser), DevToolsDetachResponse.DECODER)
+            closeFuture = session.request(
+                            MessageIds.DEV_TOOLS_DETACH_REQUEST,
+                            new BrowserHandleMessage(browser),
+                            EmptyMessage.DECODER)
                     .handle((ignored, failure) -> {
                         if (failure != null) LOG.debug("DevTools detach failed during close", failure);
                         return null;
@@ -220,7 +222,7 @@ public final class DevToolsSession implements CdpTransport {
         }
     }
 
-    private void handleMessage(DevToolsMessageEvent event) {
+    private void handleMessage(BrowserHandleMessageBytesMessage event) {
         if (!open.get() || !browser.equals(event.browser())) return;
         try {
             final Map<String, Object> message = asMap(codec.decode(event.message())

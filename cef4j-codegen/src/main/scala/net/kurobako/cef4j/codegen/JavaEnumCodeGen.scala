@@ -117,7 +117,7 @@ object JavaEnumCodeGen {
       }
       val expr    = javaExpr(rawExpr, v)
       val exprLit = canonicalExprText(rawExpr, v).replace("\\", "\\\\").replace("\"", "\\\"")
-      s"""$javadoc        $jName($expr, "$exprLit", "$cName")"""
+      s"""$javadoc        $jName(new EnumConstant($expr, "$exprLit", "$cName"))"""
     }.mkString(",\n")
 
     val cProto = DocComments.cPrototypeForEnum(cefName, deduped)
@@ -127,8 +127,7 @@ object JavaEnumCodeGen {
 
     val basePkg    = Naming.javaPackage
     val enumImport =
-      if (subPackage.nonEmpty) List(s"import $basePkg.CefEnum;")
-      else Nil
+      if (subPackage.nonEmpty) List(s"import $basePkg.CefEnum;", s"import $basePkg.EnumConstant;") else Nil
 
     JavaCodeGen.renderJavaFile(
       declaration = s"public final class $javaName implements CefEnum<$javaName>",
@@ -139,24 +138,30 @@ object JavaEnumCodeGen {
            |
            |        private static final Kind[] VALUES = Kind.values();
            |
+           |        private final EnumConstant constant;
+           |
+           |        Kind(EnumConstant constant) {
+           |            this.constant = constant;
+           |        }
+           |
            |        /** The underlying C enum numeric value. */
-           |        public final long value;
+           |        public long value() {
+           |            return constant.value();
+           |        }
            |
            |        /** The original C expression/literal (e.g. {@code "1 << 3"}), or the numeric string. */
-           |        public final String expr;
+           |        public String expr() {
+           |            return constant.expr();
+           |        }
            |
            |        /** The C constant name (e.g., {@code "$cefName"}). */
-           |        public final String name;
-           |
-           |        Kind(long value, String expr, String name) {
-           |            this.value = value;
-           |            this.expr = expr;
-           |            this.name = name;
+           |        public String cName() {
+           |            return constant.name();
            |        }
            |
            |        @Override
            |        public String toString() {
-           |            return name + "(expr=" + expr + ", value=" + value + ")";
+           |            return cName() + "(expr=" + expr() + ", value=" + value() + ")";
            |        }
            |    }
            |
@@ -176,13 +181,13 @@ object JavaEnumCodeGen {
 		   |    /** {@inheritDoc} */
            |    @Override
            |    public String expr() {
-           |        return kind().map(k -> k.expr).orElse(String.valueOf(value));
+           |        return kind().map(Kind::expr).orElse(String.valueOf(value));
            |    }
            |
 		   |    /** {@inheritDoc} */
            |    @Override
            |    public String name() {
-           |        return kind().map(k -> k.name).orElse("UNKNOWN(" + value + ")");
+           |        return kind().map(Kind::cName).orElse("UNKNOWN(" + value + ")");
            |    }
            |
            |    /**
@@ -191,7 +196,7 @@ object JavaEnumCodeGen {
            |     */
            |    public java.util.Optional<Kind> kind() {
            |        for (Kind k : Kind.VALUES) {
-           |            if (k.value == value) return java.util.Optional.of(k);
+           |            if (k.value() == value) return java.util.Optional.of(k);
            |        }
            |        return java.util.Optional.empty();
            |    }
@@ -203,7 +208,7 @@ object JavaEnumCodeGen {
            |
            |    /** Returns an instance for the given known constant. */
            |    public static $javaName of(Kind k) {
-           |        return new $javaName(k.value);
+           |        return new $javaName(k.value());
            |    }
            |
            |    @Override

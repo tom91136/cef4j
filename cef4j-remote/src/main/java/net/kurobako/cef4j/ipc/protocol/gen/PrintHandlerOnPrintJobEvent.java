@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,11 +9,10 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class PrintHandlerOnPrintJobEvent implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 580858005;
 
     private final RemoteHandle browser;
     private final String documentName;
@@ -49,39 +47,25 @@ public final class PrintHandlerOnPrintJobEvent implements CefMessageView, CefMes
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 16 + documentNameBytes.length + pdfFilePathBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(browser.id());
-            __dst.putInt(documentNameBytes.length);
-            __dst.put(documentNameBytes);
-            __dst.putInt(pdfFilePathBytes.length);
-            __dst.put(pdfFilePathBytes);
-            __dst.putInt(callback.id());
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(browser.id());
+            WireEncoder.bytes(__out, documentNameBytes);
+            WireEncoder.bytes(__out, pdfFilePathBytes);
+            __out.putInt(callback.id());
+        });
     }
 
-    public static final CefMessageDecoder<PrintHandlerOnPrintJobEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<PrintHandlerOnPrintJobEvent> DECODER = WireDecoder.message("PrintHandlerOnPrintJobEvent", __buf -> {
         final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
         final String documentName = WireDecoder.utf8(__buf, "documentName");
         final String pdfFilePath = WireDecoder.utf8(__buf, "pdfFilePath");
         final RemoteHandle callback = WireDecoder.handle(__buf, "callback");
-        WireDecoder.requireFullyConsumed(__buf, "PrintHandlerOnPrintJobEvent");
         return new PrintHandlerOnPrintJobEvent(browser, documentName, pdfFilePath, callback);
-    };
+    });
 }

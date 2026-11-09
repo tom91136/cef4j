@@ -1,12 +1,12 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.policy.NullableBoundary;
@@ -26,13 +26,6 @@ public final class Tethering {
      */
     public static final class BindRequest extends CdpObject {
         public BindRequest() {}
-        /**
-         * Request browser port binding.
-         * @param port protocol value
-         */
-        public BindRequest(long port) {
-            port(port);
-        }
         public static BindRequest fromMap(Map<String, Object> values) {
             final BindRequest instance_ = new BindRequest();
             if (values != null) instance_.values.putAll(values);
@@ -43,7 +36,7 @@ public final class Tethering {
          * @return the protocol field value
          */
         public long port() {
-            return ((Number) require("port")).longValue();
+            return requireLong("port");
         }
         /**
          * Port number to bind.
@@ -60,13 +53,6 @@ public final class Tethering {
      */
     public static final class UnbindRequest extends CdpObject {
         public UnbindRequest() {}
-        /**
-         * Request browser port unbinding.
-         * @param port protocol value
-         */
-        public UnbindRequest(long port) {
-            port(port);
-        }
         public static UnbindRequest fromMap(Map<String, Object> values) {
             final UnbindRequest instance_ = new UnbindRequest();
             if (values != null) instance_.values.putAll(values);
@@ -77,7 +63,7 @@ public final class Tethering {
          * @return the protocol field value
          */
         public long port() {
-            return ((Number) require("port")).longValue();
+            return requireLong("port");
         }
         /**
          * Port number to unbind.
@@ -103,14 +89,14 @@ public final class Tethering {
          * @return the protocol field value
          */
         public long port() {
-            return ((Number) require("port")).longValue();
+            return requireLong("port");
         }
         /**
          * Connection id to be used.
          * @return the protocol field value
          */
         public String connectionId() {
-            return (String) require("connectionId");
+            return requireString("connectionId");
         }
         /**
          * Port number that was successfully bound.
@@ -131,18 +117,15 @@ public final class Tethering {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Request browser port binding.
          * @param port protocol value
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> bind(long port) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("port", CdpObject.json(port));
-            return client.call("Tethering.bind", params);
+            return call("Tethering.bind", params("port", port));
         }
         /**
          * Request browser port binding.
@@ -150,7 +133,7 @@ public final class Tethering {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> bind(BindRequest request) {
-            return client.call("Tethering.bind", request == null ? null : request.toMap());
+            return call("Tethering.bind", request);
         }
         /**
          * Request browser port unbinding.
@@ -158,9 +141,7 @@ public final class Tethering {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> unbind(long port) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("port", CdpObject.json(port));
-            return client.call("Tethering.unbind", params);
+            return call("Tethering.unbind", params("port", port));
         }
         /**
          * Request browser port unbinding.
@@ -168,7 +149,7 @@ public final class Tethering {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> unbind(UnbindRequest request) {
-            return client.call("Tethering.unbind", request == null ? null : request.toMap());
+            return call("Tethering.unbind", request);
         }
         /**
          * Informs that port was successfully bound and got a specified connection id.
@@ -176,7 +157,7 @@ public final class Tethering {
          * @return a removable subscription
          */
         public CdpSubscription onAccepted(Consumer<AcceptedEvent> handler) {
-            return client.on("Tethering.accepted", AcceptedEvent::fromMap, handler);
+            return on("Tethering.accepted", AcceptedEvent::fromMap, handler);
         }
     }
 }

@@ -2,18 +2,16 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class NavigateRequest implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 100;
 
     private final String url;
     private final byte[] urlBytes;
@@ -48,39 +46,25 @@ public final class NavigateRequest implements CefMessageView, CefMessageEncoder 
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 13 + urlBytes.length + referrerBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(urlBytes.length);
-            __dst.put(urlBytes);
-            __dst.putInt(referrerBytes.length);
-            __dst.put(referrerBytes);
-            __dst.putInt(transitionType);
-            __dst.put((byte) (preserveSession ? 1 : 0));
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            WireEncoder.bytes(__out, urlBytes);
+            WireEncoder.bytes(__out, referrerBytes);
+            __out.putInt(transitionType);
+            WireEncoder.bool(__out, preserveSession);
+        });
     }
 
-    public static final CefMessageDecoder<NavigateRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<NavigateRequest> DECODER = WireDecoder.message("NavigateRequest", __buf -> {
         final String url = WireDecoder.utf8(__buf, "url");
         final String referrer = WireDecoder.utf8(__buf, "referrer");
         final int transitionType = WireDecoder.int32(__buf, "transitionType");
         final boolean preserveSession = WireDecoder.bool(__buf, "preserveSession");
-        WireDecoder.requireFullyConsumed(__buf, "NavigateRequest");
         return new NavigateRequest(url, referrer, transitionType, preserveSession);
-    };
+    });
 }

@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,48 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class V8StackFrame implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle frame;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class V8StackFrame extends RendererFacade {
 
     public V8StackFrame(CefSession session, RemoteHandle frame, RemoteHandle handle) {
-        this.session = session;
-        this.frame = frame;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-    /** The frame whose V8 context this handle lives in. Renderer-side dispatch enters this frame's
-      * V8 context before invoking methods on the receiver. */
-    public RemoteHandle frame() {
-        return frame;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new RendererReleaseHandleRequest(frame, handle, "cef_v8_stack_frame_t"),
-                    RendererReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, frame, handle, "cef_v8_stack_frame_t");
     }
 
     /**
@@ -66,8 +27,8 @@ public final class V8StackFrame implements AutoCloseable {
      */
     public CompletableFuture<Integer> isValid() {
         return CefFutures.map(
-            session.request(new V8StackFrameIsValidRequest(frame, handle), V8StackFrameIsValidResponse.DECODER),
-            V8StackFrameIsValidResponse::result);
+            session.request(MessageIds.V8_STACK_FRAME_IS_VALID_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -78,8 +39,8 @@ public final class V8StackFrame implements AutoCloseable {
      */
     public CompletableFuture<String> getScriptName() {
         return CefFutures.map(
-            session.request(new V8StackFrameGetScriptNameRequest(frame, handle), V8StackFrameGetScriptNameResponse.DECODER),
-            V8StackFrameGetScriptNameResponse::result);
+            session.request(MessageIds.V8_STACK_FRAME_GET_SCRIPT_NAME_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -90,8 +51,8 @@ public final class V8StackFrame implements AutoCloseable {
      */
     public CompletableFuture<String> getScriptNameOrSourceUrl() {
         return CefFutures.map(
-            session.request(new V8StackFrameGetScriptNameOrSourceUrlRequest(frame, handle), V8StackFrameGetScriptNameOrSourceUrlResponse.DECODER),
-            V8StackFrameGetScriptNameOrSourceUrlResponse::result);
+            session.request(MessageIds.V8_STACK_FRAME_GET_SCRIPT_NAME_OR_SOURCE_URL_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -102,8 +63,8 @@ public final class V8StackFrame implements AutoCloseable {
      */
     public CompletableFuture<String> getFunctionName() {
         return CefFutures.map(
-            session.request(new V8StackFrameGetFunctionNameRequest(frame, handle), V8StackFrameGetFunctionNameResponse.DECODER),
-            V8StackFrameGetFunctionNameResponse::result);
+            session.request(MessageIds.V8_STACK_FRAME_GET_FUNCTION_NAME_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -114,8 +75,8 @@ public final class V8StackFrame implements AutoCloseable {
      */
     public CompletableFuture<Integer> getLineNumber() {
         return CefFutures.map(
-            session.request(new V8StackFrameGetLineNumberRequest(frame, handle), V8StackFrameGetLineNumberResponse.DECODER),
-            V8StackFrameGetLineNumberResponse::result);
+            session.request(MessageIds.V8_STACK_FRAME_GET_LINE_NUMBER_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -126,8 +87,8 @@ public final class V8StackFrame implements AutoCloseable {
      */
     public CompletableFuture<Integer> getColumn() {
         return CefFutures.map(
-            session.request(new V8StackFrameGetColumnRequest(frame, handle), V8StackFrameGetColumnResponse.DECODER),
-            V8StackFrameGetColumnResponse::result);
+            session.request(MessageIds.V8_STACK_FRAME_GET_COLUMN_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -138,8 +99,8 @@ public final class V8StackFrame implements AutoCloseable {
      */
     public CompletableFuture<Integer> isEval() {
         return CefFutures.map(
-            session.request(new V8StackFrameIsEvalRequest(frame, handle), V8StackFrameIsEvalResponse.DECODER),
-            V8StackFrameIsEvalResponse::result);
+            session.request(MessageIds.V8_STACK_FRAME_IS_EVAL_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -150,7 +111,7 @@ public final class V8StackFrame implements AutoCloseable {
      */
     public CompletableFuture<Integer> isConstructor() {
         return CefFutures.map(
-            session.request(new V8StackFrameIsConstructorRequest(frame, handle), V8StackFrameIsConstructorResponse.DECODER),
-            V8StackFrameIsConstructorResponse::result);
+            session.request(MessageIds.V8_STACK_FRAME_IS_CONSTRUCTOR_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

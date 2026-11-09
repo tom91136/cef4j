@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,11 +9,10 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class RequestHandlerGetAuthCredentialsEvent implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 326882809;
 
     private final RemoteHandle browser;
     private final String originUrl;
@@ -77,40 +75,25 @@ public final class RequestHandlerGetAuthCredentialsEvent implements CefMessageVi
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 32 + originUrlBytes.length + hostBytes.length + realmBytes.length + schemeBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(browser.id());
-            __dst.putInt(originUrlBytes.length);
-            __dst.put(originUrlBytes);
-            __dst.putInt(isProxy);
-            __dst.putInt(hostBytes.length);
-            __dst.put(hostBytes);
-            __dst.putInt(port);
-            __dst.putInt(realmBytes.length);
-            __dst.put(realmBytes);
-            __dst.putInt(schemeBytes.length);
-            __dst.put(schemeBytes);
-            __dst.putInt(callback.id());
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(browser.id());
+            WireEncoder.bytes(__out, originUrlBytes);
+            __out.putInt(isProxy);
+            WireEncoder.bytes(__out, hostBytes);
+            __out.putInt(port);
+            WireEncoder.bytes(__out, realmBytes);
+            WireEncoder.bytes(__out, schemeBytes);
+            __out.putInt(callback.id());
+        });
     }
 
-    public static final CefMessageDecoder<RequestHandlerGetAuthCredentialsEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<RequestHandlerGetAuthCredentialsEvent> DECODER = WireDecoder.message("RequestHandlerGetAuthCredentialsEvent", __buf -> {
         final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
         final String originUrl = WireDecoder.utf8(__buf, "originUrl");
         final int isProxy = WireDecoder.int32(__buf, "isProxy");
@@ -119,7 +102,6 @@ public final class RequestHandlerGetAuthCredentialsEvent implements CefMessageVi
         final String realm = WireDecoder.utf8(__buf, "realm");
         final String scheme = WireDecoder.utf8(__buf, "scheme");
         final RemoteHandle callback = WireDecoder.handle(__buf, "callback");
-        WireDecoder.requireFullyConsumed(__buf, "RequestHandlerGetAuthCredentialsEvent");
         return new RequestHandlerGetAuthCredentialsEvent(browser, originUrl, isProxy, host, port, realm, scheme, callback);
-    };
+    });
 }

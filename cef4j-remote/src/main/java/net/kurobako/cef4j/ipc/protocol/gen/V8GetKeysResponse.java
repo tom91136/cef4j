@@ -2,18 +2,15 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class V8GetKeysResponse implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 21;
 
     private final boolean ok;
     private final String[] keys;
@@ -32,38 +29,21 @@ public final class V8GetKeysResponse implements CefMessageView, CefMessageEncode
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return 5 + java.util.Arrays.stream(keys).mapToInt(__s -> 4 + __s.getBytes(StandardCharsets.UTF_8).length).sum();
+        return 5 + WireEncoder.utf8ListSize(keys);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.put((byte) (ok ? 1 : 0));
-            __dst.putInt(keys.length);
-            for (final String __s : keys) {
-                final byte[] __b = __s.getBytes(StandardCharsets.UTF_8);
-                __dst.putInt(__b.length);
-                __dst.put(__b);
-            }
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            WireEncoder.bool(__out, ok);
+            WireEncoder.utf8List(__out, keys);
+        });
     }
 
-    public static final CefMessageDecoder<V8GetKeysResponse> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<V8GetKeysResponse> DECODER = WireDecoder.message("V8GetKeysResponse", __buf -> {
         final boolean ok = WireDecoder.bool(__buf, "ok");
         final String[] keys = WireDecoder.utf8List(__buf, "keys");
-        WireDecoder.requireFullyConsumed(__buf, "V8GetKeysResponse");
         return new V8GetKeysResponse(ok, keys);
-    };
+    });
 }

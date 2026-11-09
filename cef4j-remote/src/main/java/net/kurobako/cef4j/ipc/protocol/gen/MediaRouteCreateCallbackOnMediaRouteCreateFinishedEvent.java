@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,11 +9,10 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class MediaRouteCreateCallbackOnMediaRouteCreateFinishedEvent implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 539651917;
 
     private final int result;
     private final String error;
@@ -41,36 +39,23 @@ public final class MediaRouteCreateCallbackOnMediaRouteCreateFinishedEvent imple
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 12 + errorBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(result);
-            __dst.putInt(errorBytes.length);
-            __dst.put(errorBytes);
-            __dst.putInt(route.id());
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(result);
+            WireEncoder.bytes(__out, errorBytes);
+            __out.putInt(route.id());
+        });
     }
 
-    public static final CefMessageDecoder<MediaRouteCreateCallbackOnMediaRouteCreateFinishedEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<MediaRouteCreateCallbackOnMediaRouteCreateFinishedEvent> DECODER = WireDecoder.message("MediaRouteCreateCallbackOnMediaRouteCreateFinishedEvent", __buf -> {
         final int result = WireDecoder.int32(__buf, "result");
         final String error = WireDecoder.utf8(__buf, "error");
         final RemoteHandle route = WireDecoder.handle(__buf, "route");
-        WireDecoder.requireFullyConsumed(__buf, "MediaRouteCreateCallbackOnMediaRouteCreateFinishedEvent");
         return new MediaRouteCreateCallbackOnMediaRouteCreateFinishedEvent(result, error, route);
-    };
+    });
 }

@@ -14,9 +14,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import javafx.application.Platform;
 import net.kurobako.cef4j.ipc.frame.FrameTransport;
-import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessage;
+import net.kurobako.cef4j.ipc.protocol.gen.EmptyMessage;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeResponse;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
@@ -39,7 +40,8 @@ class RemoteWebViewTest {
         view.resize(640, 480);
 
         view.attach(session);
-        session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(7)));
+        session.emit(
+                MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, new BrowserHandleMessage(new RemoteHandle(7)));
 
         assertThat(session.requests)
                 .filteredOn(SetViewportSizeRequest.class::isInstance)
@@ -64,7 +66,9 @@ class RemoteWebViewTest {
             RemoteWebView view = new RemoteWebView((ignored, browser) -> new FakeFrameTransport());
             view.resize(640, 480);
             view.attach(session);
-            session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(17)));
+            session.emit(
+                    MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT,
+                    new BrowserHandleMessage(new RemoteHandle(17)));
             Platform.runLater(() -> view.resize(640, 480));
             resizeRef.set(view.resizeViewport(512, 384));
             viewRef.set(view);
@@ -78,7 +82,7 @@ class RemoteWebViewTest {
                 });
         CompletableFuture<Void> resized = Objects.requireNonNull(resizeRef.get(), "resize acknowledgement");
         assertThat(resized).isNotDone();
-        session.completeLast(new SetViewportSizeResponse());
+        session.completeLast(new EmptyMessage());
         assertThat(resized).isCompleted();
         Objects.requireNonNull(viewRef.get(), "remote view").release();
     }
@@ -92,7 +96,9 @@ class RemoteWebViewTest {
         onFxThread(() -> {
             RemoteWebView view = new RemoteWebView((ignored, browser) -> new FakeFrameTransport());
             view.attach(session);
-            session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(18)));
+            session.emit(
+                    MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT,
+                    new BrowserHandleMessage(new RemoteHandle(18)));
             Platform.runLater(() -> view.resize(640, 480));
             viewRef.set(view);
         });
@@ -106,7 +112,7 @@ class RemoteWebViewTest {
                     assertThat(request.height()).isEqualTo(384);
                 });
         assertThat(resized).isNotDone();
-        session.completeLast(new SetViewportSizeResponse());
+        session.completeLast(new EmptyMessage());
         assertThat(resized).isCompleted();
         view.release();
     }
@@ -123,7 +129,7 @@ class RemoteWebViewTest {
         assertThatThrownBy(() -> view.attach(second))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("more than one session");
-        first.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(11)));
+        first.emit(MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, new BrowserHandleMessage(new RemoteHandle(11)));
         view.release();
     }
 
@@ -134,7 +140,8 @@ class RemoteWebViewTest {
 
         view.release();
         view.attach(session);
-        session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(13)));
+        session.emit(
+                MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, new BrowserHandleMessage(new RemoteHandle(13)));
 
         assertThat(view.browserReady()).isCompletedWithValue(new RemoteHandle(13));
         view.release();
@@ -151,7 +158,8 @@ class RemoteWebViewTest {
         });
 
         view.attach(session);
-        session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(19)));
+        session.emit(
+                MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, new BrowserHandleMessage(new RemoteHandle(19)));
         assertThat(frames.consumer).isNotNull();
         view.close();
         assertThat(frames.closed).isTrue();
@@ -171,7 +179,8 @@ class RemoteWebViewTest {
         RemoteWebView view = new RemoteWebView((ignored, browser) -> new FakeFrameTransport());
         view.resize(8193, 1);
         view.attach(session);
-        session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(17)));
+        session.emit(
+                MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, new BrowserHandleMessage(new RemoteHandle(17)));
 
         assertThat(session.requests)
                 .filteredOn(SetViewportSizeRequest.class::isInstance)
@@ -188,7 +197,8 @@ class RemoteWebViewTest {
         assertThatThrownBy(() -> view.attach(session)).isInstanceOf(IllegalStateException.class);
         session.rejectRegistration = false;
         view.attach(session);
-        session.emit(new LifeSpanHandlerOnAfterCreatedEvent(new RemoteHandle(23)));
+        session.emit(
+                MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, new BrowserHandleMessage(new RemoteHandle(23)));
 
         assertThat(view.browserReady()).isCompletedWithValue(new RemoteHandle(23));
         view.release();
@@ -244,7 +254,7 @@ class RemoteWebViewTest {
 
         @Override
         public <R extends CefMessageView> CompletableFuture<R> request(
-                CefMessageEncoder request, CefMessageDecoder<R> decoder) {
+                int messageId, CefMessageEncoder request, CefMessageDecoder<R> decoder) {
             requests.add(request);
             CompletableFuture<R> response = new CompletableFuture<>();
             responses.add(response);
@@ -271,8 +281,8 @@ class RemoteWebViewTest {
         }
 
         @SuppressWarnings("unchecked")
-        private <E extends CefMessageView> void emit(E event) {
-            for (Consumer<?> handler : new ArrayList<>(handlers.getOrDefault(event.messageId(), List.of()))) {
+        private <E extends CefMessageView> void emit(int messageId, E event) {
+            for (Consumer<?> handler : new ArrayList<>(handlers.getOrDefault(messageId, List.of()))) {
                 ((Consumer<E>) handler).accept(event);
             }
         }

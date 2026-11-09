@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,11 +9,10 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class PreferenceRegistrarAddPreferenceRequest implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 1852985148;
 
     private final RemoteHandle self;
     private final String name;
@@ -41,36 +39,23 @@ public final class PreferenceRegistrarAddPreferenceRequest implements CefMessage
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 12 + nameBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putInt(nameBytes.length);
-            __dst.put(nameBytes);
-            __dst.putInt(defaultValue.id());
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            WireEncoder.bytes(__out, nameBytes);
+            __out.putInt(defaultValue.id());
+        });
     }
 
-    public static final CefMessageDecoder<PreferenceRegistrarAddPreferenceRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<PreferenceRegistrarAddPreferenceRequest> DECODER = WireDecoder.message("PreferenceRegistrarAddPreferenceRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final String name = WireDecoder.utf8(__buf, "name");
         final RemoteHandle defaultValue = WireDecoder.handle(__buf, "defaultValue");
-        WireDecoder.requireFullyConsumed(__buf, "PreferenceRegistrarAddPreferenceRequest");
         return new PreferenceRegistrarAddPreferenceRequest(self, name, defaultValue);
-    };
+    });
 }

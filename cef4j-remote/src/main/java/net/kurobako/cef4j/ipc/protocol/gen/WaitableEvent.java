@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class WaitableEvent implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class WaitableEvent extends BrowserFacade {
 
     public WaitableEvent(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_waitable_event_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_waitable_event_t");
     }
 
     /**
@@ -57,7 +26,7 @@ public final class WaitableEvent implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__waitable__event_8h.html">cef_waitable_event.h:69</a>
      */
     public CompletableFuture<Void> reset() {
-        return CefFutures.discard(session.request(new WaitableEventResetRequest(handle), WaitableEventResetResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.WAITABLE_EVENT_RESET_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -67,7 +36,7 @@ public final class WaitableEvent implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__waitable__event_8h.html">cef_waitable_event.h:75</a>
      */
     public CompletableFuture<Void> signal() {
-        return CefFutures.discard(session.request(new WaitableEventSignalRequest(handle), WaitableEventSignalResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.WAITABLE_EVENT_SIGNAL_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -78,8 +47,8 @@ public final class WaitableEvent implements AutoCloseable {
      */
     public CompletableFuture<Integer> isSignaled() {
         return CefFutures.map(
-            session.request(new WaitableEventIsSignaledRequest(handle), WaitableEventIsSignaledResponse.DECODER),
-            WaitableEventIsSignaledResponse::result);
+            session.request(MessageIds.WAITABLE_EVENT_IS_SIGNALED_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -89,7 +58,7 @@ public final class WaitableEvent implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__waitable__event_8h.html">cef_waitable_event.h:90</a>
      */
     public CompletableFuture<Void> cefWait() {
-        return CefFutures.discard(session.request(new WaitableEventWaitRequest(handle), WaitableEventWaitResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.WAITABLE_EVENT_WAIT_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -100,7 +69,7 @@ public final class WaitableEvent implements AutoCloseable {
      */
     public CompletableFuture<Integer> timedWait(long maxMs) {
         return CefFutures.map(
-            session.request(new WaitableEventTimedWaitRequest(handle, maxMs), WaitableEventTimedWaitResponse.DECODER),
-            WaitableEventTimedWaitResponse::result);
+            session.request(MessageIds.WAITABLE_EVENT_TIMED_WAIT_REQUEST, new WaitableEventTimedWaitRequest(handle, maxMs), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

@@ -26,11 +26,11 @@ public interface CefStringVisitor {
     void visit(String string);
 
     /**
-     * Wires inbound {@link StringVisitorVisitCallbackEvent} frames into the supplied {@code table} so each visitor invocation
+     * Wires inbound {@code StringVisitorVisitCallbackEvent} frames into the supplied {@code table} so each visitor invocation
      * dispatches to the {@code CefStringVisitor} registered under that callbackId. Call once per session.
      */
     static CefSession.HandlerRegistration route(CefSession session, JvmCallbackTable<CefStringVisitor> table) {
-        return session.on(StringVisitorVisitCallbackEvent.MESSAGE_ID, StringVisitorVisitCallbackEvent.DECODER, ev ->
+        return session.on(MessageIds.STRING_VISITOR_VISIT_CALLBACK_EVENT, StringVisitorVisitCallbackEvent.DECODER, ev ->
                 table.lookup(ev.callbackId()).ifPresent(v -> v.visit(ev.string())));
     }
 }

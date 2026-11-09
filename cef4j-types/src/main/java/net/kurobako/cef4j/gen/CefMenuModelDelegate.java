@@ -1,0 +1,180 @@
+// GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-types
+// -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
+package net.kurobako.cef4j.gen;
+
+import javax.annotation.processing.Generated;
+import net.kurobako.cef4j.policy.NullableBoundary;
+import org.jspecify.annotations.Nullable;
+
+/**
+ * Implement this interface to handle menu model events. The methods of this class will be called on the browser process
+ * UI thread unless otherwise indicated.
+ *
+ * <p>Definition generated from cef_menu_model_delegate_capi.h
+ *
+ * <pre>typedef struct _cef_menu_model_delegate_t {
+ *   cef_base_ref_counted_t base;
+ *   ...
+ * } cef_menu_model_delegate_t;</pre>
+ *
+ * @see <a
+ *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:45</a>
+ */
+@Generated("./mvnw generate-sources -pl cef4j-types -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213")
+@NullableBoundary("generated external ABI")
+public interface CefMenuModelDelegate extends CefClientHandler {
+
+    /**
+     * Perform the action associated with the specified {@code command_id} and optional {@code event_flags}.
+     *
+     * <p>Definition generated from cef_menu_model_delegate_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* execute_command)(struct _cef_menu_model_delegate_t* self, struct _cef_menu_model_t* menu_model, int command_id, cef_event_flags_t event_flags);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:53</a>
+     */
+    default void executeCommand(@Nullable CefMenuModel menuModel, int commandId, CefEventFlags eventFlags) {}
+
+    /**
+     * Called when the user moves the mouse outside the menu and over the owning window.
+     *
+     * <p>Definition generated from cef_menu_model_delegate_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* mouse_outside_menu)(struct _cef_menu_model_delegate_t* self, struct _cef_menu_model_t* menu_model, const cef_point_t* screen_point);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:62</a>
+     */
+    default void mouseOutsideMenu(@Nullable CefMenuModel menuModel, CefPoint screenPoint) {}
+
+    /**
+     * Called on unhandled open submenu keyboard commands. {@code is_rtl} will be {@code true} if the menu is displaying
+     * a right-to-left language.
+     *
+     * <p>Definition generated from cef_menu_model_delegate_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* unhandled_open_submenu)(struct _cef_menu_model_delegate_t* self, struct _cef_menu_model_t* menu_model, int is_rtl);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:70</a>
+     */
+    default void unhandledOpenSubmenu(@Nullable CefMenuModel menuModel, boolean isRtl) {}
+
+    /**
+     * Called on unhandled close submenu keyboard commands. {@code is_rtl} will be {@code true} if the menu is
+     * displaying a right-to-left language.
+     *
+     * <p>Definition generated from cef_menu_model_delegate_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* unhandled_close_submenu)(struct _cef_menu_model_delegate_t* self, struct _cef_menu_model_t* menu_model, int is_rtl);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:78</a>
+     */
+    default void unhandledCloseSubmenu(@Nullable CefMenuModel menuModel, boolean isRtl) {}
+
+    /**
+     * The menu is about to show.
+     *
+     * <p>Definition generated from cef_menu_model_delegate_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* menu_will_show)(struct _cef_menu_model_delegate_t* self, struct _cef_menu_model_t* menu_model);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:86</a>
+     */
+    default void menuWillShow(@Nullable CefMenuModel menuModel) {}
+
+    /**
+     * The menu has closed.
+     *
+     * <p>Definition generated from cef_menu_model_delegate_capi.h
+     *
+     * <pre>
+     * void (CEF_CALLBACK* menu_closed)(struct _cef_menu_model_delegate_t* self, struct _cef_menu_model_t* menu_model);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:92</a>
+     */
+    default void menuClosed(@Nullable CefMenuModel menuModel) {}
+
+    /**
+     * Optionally modify a menu item label. Return {@code true} if {@code label} was modified.
+     *
+     * <p>Definition generated from cef_menu_model_delegate_capi.h
+     *
+     * <pre>
+     * int (CEF_CALLBACK* format_label)(struct _cef_menu_model_delegate_t* self, struct _cef_menu_model_t* menu_model, cef_string_t* label);
+     * </pre>
+     *
+     * @see <a
+     *     href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:98</a>
+     */
+    default boolean formatLabel(@Nullable CefMenuModel menuModel, @Nullable String label) {
+        return false;
+    }
+    /**
+     * Composite that fans callbacks out to every registered delegate. {@code void} methods invoke all delegates in
+     * order; {@code boolean} methods short-circuit on the first {@code true}; handler-returning {@code Optional}s
+     * collect every non-empty delegate and wrap them in the handler's own {@code Delegating} wrapper; any other return
+     * type, including {@code Optional}s of nullable values, yields the first delegate's value.
+     */
+    class Delegating implements CefMenuModelDelegate {
+        private final java.util.List<CefMenuModelDelegate> delegates;
+
+        public Delegating(java.util.List<CefMenuModelDelegate> delegates) {
+            this.delegates = java.util.List.copyOf(delegates);
+        }
+
+        @Override
+        public void executeCommand(@Nullable CefMenuModel menuModel, int commandId, CefEventFlags eventFlags) {
+            for (final CefMenuModelDelegate d : delegates) d.executeCommand(menuModel, commandId, eventFlags);
+        }
+
+        @Override
+        public void mouseOutsideMenu(@Nullable CefMenuModel menuModel, CefPoint screenPoint) {
+            for (final CefMenuModelDelegate d : delegates) d.mouseOutsideMenu(menuModel, screenPoint);
+        }
+
+        @Override
+        public void unhandledOpenSubmenu(@Nullable CefMenuModel menuModel, boolean isRtl) {
+            for (final CefMenuModelDelegate d : delegates) d.unhandledOpenSubmenu(menuModel, isRtl);
+        }
+
+        @Override
+        public void unhandledCloseSubmenu(@Nullable CefMenuModel menuModel, boolean isRtl) {
+            for (final CefMenuModelDelegate d : delegates) d.unhandledCloseSubmenu(menuModel, isRtl);
+        }
+
+        @Override
+        public void menuWillShow(@Nullable CefMenuModel menuModel) {
+            for (final CefMenuModelDelegate d : delegates) d.menuWillShow(menuModel);
+        }
+
+        @Override
+        public void menuClosed(@Nullable CefMenuModel menuModel) {
+            for (final CefMenuModelDelegate d : delegates) d.menuClosed(menuModel);
+        }
+
+        @Override
+        public boolean formatLabel(@Nullable CefMenuModel menuModel, @Nullable String label) {
+            for (final CefMenuModelDelegate d : delegates) {
+                if (d.formatLabel(menuModel, label)) return true;
+            }
+            if (!delegates.isEmpty()) return false;
+            return false;
+        }
+    }
+}

@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -32,7 +33,7 @@ public interface CefMenuModelDelegate {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:62</a>
      */
     @SuppressWarnings("EmptyMethod")
-    default void mouseOutsideMenu(net.kurobako.cef4j.ipc.session.RemoteHandle menuModel, Point screenPoint) {}
+    default void mouseOutsideMenu(net.kurobako.cef4j.ipc.session.RemoteHandle menuModel, net.kurobako.cef4j.gen.CefPoint screenPoint) {}
 
     /**
      * Called on unhandled open submenu keyboard commands. {@code is_rtl} will be {@code true} if the menu is displaying a right-to-left language.
@@ -77,26 +78,26 @@ public interface CefMenuModelDelegate {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__menu__model__delegate_8h.html">cef_menu_model_delegate.h:98</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> formatLabel(net.kurobako.cef4j.ipc.session.RemoteHandle menuModel, String label) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> formatLabel(net.kurobako.cef4j.ipc.session.RemoteHandle menuModel, String label) { return Unhandled.bool(); }
 
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefMenuModelDelegate handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(MenuModelDelegateExecuteCommandEvent.MESSAGE_ID, MenuModelDelegateExecuteCommandEvent.DECODER,
+                session.on(MessageIds.MENU_MODEL_DELEGATE_EXECUTE_COMMAND_EVENT, MenuModelDelegateExecuteCommandEvent.DECODER,
                         ev -> handler.executeCommand(ev.menuModel(), ev.commandId(), ev.eventFlags())),
-                session.on(MenuModelDelegateMouseOutsideMenuEvent.MESSAGE_ID, MenuModelDelegateMouseOutsideMenuEvent.DECODER,
+                session.on(MessageIds.MENU_MODEL_DELEGATE_MOUSE_OUTSIDE_MENU_EVENT, MenuModelDelegateMouseOutsideMenuEvent.DECODER,
                         ev -> handler.mouseOutsideMenu(ev.menuModel(), ev.screenPoint())),
-                session.on(MenuModelDelegateUnhandledOpenSubmenuEvent.MESSAGE_ID, MenuModelDelegateUnhandledOpenSubmenuEvent.DECODER,
+                session.on(MessageIds.MENU_MODEL_DELEGATE_UNHANDLED_OPEN_SUBMENU_EVENT, MenuModelHandleIsRtlIntMessage.DECODER,
                         ev -> handler.unhandledOpenSubmenu(ev.menuModel(), ev.isRtl())),
-                session.on(MenuModelDelegateUnhandledCloseSubmenuEvent.MESSAGE_ID, MenuModelDelegateUnhandledCloseSubmenuEvent.DECODER,
+                session.on(MessageIds.MENU_MODEL_DELEGATE_UNHANDLED_CLOSE_SUBMENU_EVENT, MenuModelHandleIsRtlIntMessage.DECODER,
                         ev -> handler.unhandledCloseSubmenu(ev.menuModel(), ev.isRtl())),
-                session.on(MenuModelDelegateMenuWillShowEvent.MESSAGE_ID, MenuModelDelegateMenuWillShowEvent.DECODER,
+                session.on(MessageIds.MENU_MODEL_DELEGATE_MENU_WILL_SHOW_EVENT, MenuModelHandleMessage.DECODER,
                         ev -> handler.menuWillShow(ev.menuModel())),
-                session.on(MenuModelDelegateMenuClosedEvent.MESSAGE_ID, MenuModelDelegateMenuClosedEvent.DECODER,
+                session.on(MessageIds.MENU_MODEL_DELEGATE_MENU_CLOSED_EVENT, MenuModelHandleMessage.DECODER,
                         ev -> handler.menuClosed(ev.menuModel())),
-                session.intercept(MenuModelDelegateFormatLabelEvent.MESSAGE_ID, MenuModelDelegateFormatLabelEvent.DECODER, ev -> {
+                session.intercept(MessageIds.MENU_MODEL_DELEGATE_FORMAT_LABEL_EVENT, MenuModelDelegateFormatLabelEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.formatLabel(ev.menuModel(), ev.label());
-                    return java.util.Optional.of(new MenuModelDelegateFormatLabelResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.MENU_MODEL_DELEGATE_FORMAT_LABEL_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }));
     }
 }

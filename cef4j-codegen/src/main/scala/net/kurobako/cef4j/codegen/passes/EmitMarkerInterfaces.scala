@@ -72,6 +72,42 @@ public interface CefClientHandler {}
 """
     )
     AtomicFiles.writeString(
+      outJava.resolve("EnumConstant.java"),
+      s"""$banner
+package $javaPackage;
+
+import com.google.errorprone.annotations.Immutable;
+$importLine
+
+/** A named constant of a C enum, as declared by the generated {@code Kind} enums. */
+@Immutable
+$annotation
+public final class EnumConstant {
+    private final long value;
+    private final String expr;
+    private final String name;
+
+    public EnumConstant(long value, String expr, String name) {
+        this.value = value;
+        this.expr = expr;
+        this.name = name;
+    }
+
+    public long value() {
+        return value;
+    }
+
+    public String expr() {
+        return expr;
+    }
+
+    public String name() {
+        return name;
+    }
+}
+"""
+    )
+    AtomicFiles.writeString(
       outJava.resolve("CefEnum.java"),
       s"""$banner
 package $javaPackage;

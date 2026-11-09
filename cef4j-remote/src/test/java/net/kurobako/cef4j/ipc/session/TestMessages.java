@@ -18,11 +18,6 @@ final class TestMessages {
         }
 
         @Override
-        public int messageId() {
-            return messageId;
-        }
-
-        @Override
         public boolean equals(@Nullable Object o) {
             if (this == o) return true;
             if (!(o instanceof BytesView)) return false;
@@ -42,17 +37,10 @@ final class TestMessages {
     }
 
     static final class BytesEncoder implements CefMessageEncoder {
-        private final int messageId;
         private final byte[] bytes;
 
-        BytesEncoder(int messageId, byte[] bytes) {
-            this.messageId = messageId;
+        BytesEncoder(byte[] bytes) {
             this.bytes = bytes;
-        }
-
-        @Override
-        public int messageId() {
-            return messageId;
         }
 
         @Override

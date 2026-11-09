@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class BrowserViewDelegate implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class BrowserViewDelegate extends BrowserFacade {
 
     public BrowserViewDelegate(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_browser_view_delegate_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_browser_view_delegate_t");
     }
 
     /**
@@ -57,7 +26,7 @@ public final class BrowserViewDelegate implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:66</a>
      */
     public CompletableFuture<Void> onBrowserCreated(RemoteHandle browserView, RemoteHandle browser) {
-        return CefFutures.discard(session.request(new BrowserViewDelegateOnBrowserCreatedRequest(handle, browserView, browser), BrowserViewDelegateOnBrowserCreatedResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_VIEW_DELEGATE_ON_BROWSER_CREATED_REQUEST, new SelfHandleBrowserViewHandleBrowserHandleMessage(handle, browserView, browser), EmptyMessage.DECODER));
     }
 
     /**
@@ -67,62 +36,62 @@ public final class BrowserViewDelegate implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__render__process__handler_8h.html">cef_render_process_handler.h:78</a>
      */
     public CompletableFuture<Void> onBrowserDestroyed(RemoteHandle browserView, RemoteHandle browser) {
-        return CefFutures.discard(session.request(new BrowserViewDelegateOnBrowserDestroyedRequest(handle, browserView, browser), BrowserViewDelegateOnBrowserDestroyedResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_VIEW_DELEGATE_ON_BROWSER_DESTROYED_REQUEST, new SelfHandleBrowserViewHandleBrowserHandleMessage(handle, browserView, browser), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code get_delegate_for_popup_browser_view} to the runtime server. */
-    public CompletableFuture<BrowserViewDelegate> getDelegateForPopupBrowserView(RemoteHandle browserView, BrowserSettings settings, RemoteHandle client, int isDevtools) {
+    public CompletableFuture<BrowserViewDelegate> getDelegateForPopupBrowserView(RemoteHandle browserView, net.kurobako.cef4j.gen.CefBrowserSettings settings, RemoteHandle client, int isDevtools) {
         return CefFutures.map(
-            session.request(new BrowserViewDelegateGetDelegateForPopupBrowserViewRequest(handle, browserView, settings, client, isDevtools), BrowserViewDelegateGetDelegateForPopupBrowserViewResponse.DECODER),
+            session.request(MessageIds.BROWSER_VIEW_DELEGATE_GET_DELEGATE_FOR_POPUP_BROWSER_VIEW_REQUEST, new BrowserViewDelegateGetDelegateForPopupBrowserViewRequest(handle, browserView, settings, client, isDevtools), ResultHandleMessage.DECODER),
             __r -> new BrowserViewDelegate(session, __r.result()));
     }
 
     /** Dispatches {@code on_popup_browser_view_created} to the runtime server. */
     public CompletableFuture<Integer> onPopupBrowserViewCreated(RemoteHandle browserView, RemoteHandle popupBrowserView, int isDevtools) {
         return CefFutures.map(
-            session.request(new BrowserViewDelegateOnPopupBrowserViewCreatedRequest(handle, browserView, popupBrowserView, isDevtools), BrowserViewDelegateOnPopupBrowserViewCreatedResponse.DECODER),
-            BrowserViewDelegateOnPopupBrowserViewCreatedResponse::result);
+            session.request(MessageIds.BROWSER_VIEW_DELEGATE_ON_POPUP_BROWSER_VIEW_CREATED_REQUEST, new BrowserViewDelegateOnPopupBrowserViewCreatedRequest(handle, browserView, popupBrowserView, isDevtools), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code get_chrome_toolbar_type} to the runtime server. */
     public CompletableFuture<Integer> getChromeToolbarType(RemoteHandle browserView) {
         return CefFutures.map(
-            session.request(new BrowserViewDelegateGetChromeToolbarTypeRequest(handle, browserView), BrowserViewDelegateGetChromeToolbarTypeResponse.DECODER),
-            BrowserViewDelegateGetChromeToolbarTypeResponse::result);
+            session.request(MessageIds.BROWSER_VIEW_DELEGATE_GET_CHROME_TOOLBAR_TYPE_REQUEST, new SelfHandleBrowserViewHandleMessage(handle, browserView), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code use_frameless_window_for_picture_in_picture} to the runtime server. */
     public CompletableFuture<Integer> useFramelessWindowForPictureInPicture(RemoteHandle browserView) {
         return CefFutures.map(
-            session.request(new BrowserViewDelegateUseFramelessWindowForPictureInPictureRequest(handle, browserView), BrowserViewDelegateUseFramelessWindowForPictureInPictureResponse.DECODER),
-            BrowserViewDelegateUseFramelessWindowForPictureInPictureResponse::result);
+            session.request(MessageIds.BROWSER_VIEW_DELEGATE_USE_FRAMELESS_WINDOW_FOR_PICTURE_IN_PICTURE_REQUEST, new SelfHandleBrowserViewHandleMessage(handle, browserView), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code on_gesture_command} to the runtime server. */
     public CompletableFuture<Integer> onGestureCommand(RemoteHandle browserView, int gestureCommand) {
         return CefFutures.map(
-            session.request(new BrowserViewDelegateOnGestureCommandRequest(handle, browserView, gestureCommand), BrowserViewDelegateOnGestureCommandResponse.DECODER),
-            BrowserViewDelegateOnGestureCommandResponse::result);
+            session.request(MessageIds.BROWSER_VIEW_DELEGATE_ON_GESTURE_COMMAND_REQUEST, new BrowserViewDelegateOnGestureCommandRequest(handle, browserView, gestureCommand), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code get_browser_runtime_style} to the runtime server. */
     public CompletableFuture<Integer> getBrowserRuntimeStyle() {
         return CefFutures.map(
-            session.request(new BrowserViewDelegateGetBrowserRuntimeStyleRequest(handle), BrowserViewDelegateGetBrowserRuntimeStyleResponse.DECODER),
-            BrowserViewDelegateGetBrowserRuntimeStyleResponse::result);
+            session.request(MessageIds.BROWSER_VIEW_DELEGATE_GET_BROWSER_RUNTIME_STYLE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code allow_move_for_picture_in_picture} to the runtime server. */
     public CompletableFuture<Integer> allowMoveForPictureInPicture(RemoteHandle browserView) {
         return CefFutures.map(
-            session.request(new BrowserViewDelegateAllowMoveForPictureInPictureRequest(handle, browserView), BrowserViewDelegateAllowMoveForPictureInPictureResponse.DECODER),
-            BrowserViewDelegateAllowMoveForPictureInPictureResponse::result);
+            session.request(MessageIds.BROWSER_VIEW_DELEGATE_ALLOW_MOVE_FOR_PICTURE_IN_PICTURE_REQUEST, new SelfHandleBrowserViewHandleMessage(handle, browserView), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code allow_picture_in_picture_without_user_activation} to the runtime server. */
     public CompletableFuture<Integer> allowPictureInPictureWithoutUserActivation(RemoteHandle browserView) {
         return CefFutures.map(
-            session.request(new BrowserViewDelegateAllowPictureInPictureWithoutUserActivationRequest(handle, browserView), BrowserViewDelegateAllowPictureInPictureWithoutUserActivationResponse.DECODER),
-            BrowserViewDelegateAllowPictureInPictureWithoutUserActivationResponse::result);
+            session.request(MessageIds.BROWSER_VIEW_DELEGATE_ALLOW_PICTURE_IN_PICTURE_WITHOUT_USER_ACTIVATION_REQUEST, new SelfHandleBrowserViewHandleMessage(handle, browserView), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

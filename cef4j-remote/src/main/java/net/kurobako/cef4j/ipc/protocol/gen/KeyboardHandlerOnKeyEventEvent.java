@@ -2,24 +2,22 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class KeyboardHandlerOnKeyEventEvent implements CefMessageView, CefMessageEncoder {
 
-    public static final int MESSAGE_ID = 1887878341;
-
     private final RemoteHandle browser;
-    private final KeyEvent event;
+    private final net.kurobako.cef4j.gen.CefKeyEvent event;
     private final long osEvent;
 
-    public KeyboardHandlerOnKeyEventEvent(RemoteHandle browser, KeyEvent event, long osEvent) {
+    public KeyboardHandlerOnKeyEventEvent(RemoteHandle browser, net.kurobako.cef4j.gen.CefKeyEvent event, long osEvent) {
         this.browser = browser;
         this.event = event;
         this.osEvent = osEvent;
@@ -29,7 +27,7 @@ public final class KeyboardHandlerOnKeyEventEvent implements CefMessageView, Cef
         return browser;
     }
 
-    public KeyEvent event() {
+    public net.kurobako.cef4j.gen.CefKeyEvent event() {
         return event;
     }
 
@@ -38,35 +36,23 @@ public final class KeyboardHandlerOnKeyEventEvent implements CefMessageView, Cef
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return 12 + event.encodedSize();
+        return 12 + KeyEventCodec.encodedSize(event);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(browser.id());
-            event.encodeInto(__dst);
-            __dst.putLong(osEvent);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(browser.id());
+            KeyEventCodec.encode(__out, event);
+            __out.putLong(osEvent);
+        });
     }
 
-    public static final CefMessageDecoder<KeyboardHandlerOnKeyEventEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<KeyboardHandlerOnKeyEventEvent> DECODER = WireDecoder.message("KeyboardHandlerOnKeyEventEvent", __buf -> {
         final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
-        final KeyEvent event = KeyEvent.decode(__buf);
+        final net.kurobako.cef4j.gen.CefKeyEvent event = KeyEventCodec.decode(__buf);
         final long osEvent = WireDecoder.int64(__buf, "osEvent");
-        WireDecoder.requireFullyConsumed(__buf, "KeyboardHandlerOnKeyEventEvent");
         return new KeyboardHandlerOnKeyEventEvent(browser, event, osEvent);
-    };
+    });
 }

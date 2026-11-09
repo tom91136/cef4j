@@ -30,7 +30,7 @@ public interface CefRunFileDialogCallback {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefRunFileDialogCallback handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(RunFileDialogCallbackOnFileDialogDismissedEvent.MESSAGE_ID, RunFileDialogCallbackOnFileDialogDismissedEvent.DECODER,
+                session.on(MessageIds.RUN_FILE_DIALOG_CALLBACK_ON_FILE_DIALOG_DISMISSED_EVENT, RunFileDialogCallbackOnFileDialogDismissedEvent.DECODER,
                         ev -> handler.onFileDialogDismissed(ev.filePaths())));
     }
 }

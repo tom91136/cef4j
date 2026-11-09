@@ -6,10 +6,11 @@ import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessage;
+import net.kurobako.cef4j.ipc.protocol.gen.EmptyMessage;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.protocol.gen.OsrPaintEvent;
 import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeResponse;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -31,13 +32,12 @@ class ViewportResizeIntegrationTest {
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             LinkedBlockingQueue<OsrPaintEvent> paints = new LinkedBlockingQueue<>();
-            session.on(OsrPaintEvent.MESSAGE_ID, OsrPaintEvent.DECODER, paints::offer);
+            session.on(MessageIds.OSR_PAINT_EVENT, OsrPaintEvent.DECODER, paints::offer);
 
             CompletableFuture<RemoteHandle> handleFuture = new CompletableFuture<>();
-            session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID, LifeSpanHandlerOnAfterCreatedEvent.DECODER, e -> {
-                        if (!handleFuture.isDone()) handleFuture.complete(e.browser());
-                    });
+            session.onLatest(MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, BrowserHandleMessage.DECODER, e -> {
+                if (!handleFuture.isDone()) handleFuture.complete(e.browser());
+            });
             RemoteHandle browserHandle = handleFuture.get(20, TimeUnit.SECONDS);
 
             OsrPaintEvent bootstrap = paints.poll(15, TimeUnit.SECONDS);
@@ -45,7 +45,10 @@ class ViewportResizeIntegrationTest {
             assertThat(bootstrap.width()).isEqualTo(800);
             assertThat(bootstrap.height()).isEqualTo(600);
 
-            session.request(new SetViewportSizeRequest(browserHandle, 1024, 768), SetViewportSizeResponse.DECODER)
+            session.request(
+                            MessageIds.SET_VIEWPORT_SIZE_REQUEST,
+                            new SetViewportSizeRequest(browserHandle, 1024, 768),
+                            EmptyMessage.DECODER)
                     .get(5, TimeUnit.SECONDS);
 
             OsrPaintEvent resized = null;

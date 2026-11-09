@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class BrowserHost implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class BrowserHost extends BrowserFacade {
 
     public BrowserHost(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_browser_host_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_browser_host_t");
     }
 
     /**
@@ -58,7 +27,7 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<Browser> getBrowser() {
         return CefFutures.map(
-            session.request(new BrowserHostGetBrowserRequest(handle), BrowserHostGetBrowserResponse.DECODER),
+            session.request(MessageIds.BROWSER_HOST_GET_BROWSER_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new Browser(session, __r.result()));
     }
 
@@ -71,7 +40,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:339</a>
      */
     public CompletableFuture<Void> closeBrowser(int forceClose) {
-        return CefFutures.discard(session.request(new BrowserHostCloseBrowserRequest(handle, forceClose), BrowserHostCloseBrowserResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_CLOSE_BROWSER_REQUEST, new BrowserHostCloseBrowserRequest(handle, forceClose), EmptyMessage.DECODER));
     }
 
     /**
@@ -82,8 +51,8 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<Integer> tryCloseBrowser() {
         return CefFutures.map(
-            session.request(new BrowserHostTryCloseBrowserRequest(handle), BrowserHostTryCloseBrowserResponse.DECODER),
-            BrowserHostTryCloseBrowserResponse::result);
+            session.request(MessageIds.BROWSER_HOST_TRY_CLOSE_BROWSER_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -94,8 +63,8 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<Integer> isReadyToBeClosed() {
         return CefFutures.map(
-            session.request(new BrowserHostIsReadyToBeClosedRequest(handle), BrowserHostIsReadyToBeClosedResponse.DECODER),
-            BrowserHostIsReadyToBeClosedResponse::result);
+            session.request(MessageIds.BROWSER_HOST_IS_READY_TO_BE_CLOSED_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -105,7 +74,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:397</a>
      */
     public CompletableFuture<Void> setFocus(int focus) {
-        return CefFutures.discard(session.request(new BrowserHostSetFocusRequest(handle, focus), BrowserHostSetFocusResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_SET_FOCUS_REQUEST, new BrowserHostSetFocusRequest(handle, focus), EmptyMessage.DECODER));
     }
 
     /**
@@ -116,8 +85,8 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<Long> getWindowHandle() {
         return CefFutures.map(
-            session.request(new BrowserHostGetWindowHandleRequest(handle), BrowserHostGetWindowHandleResponse.DECODER),
-            BrowserHostGetWindowHandleResponse::result);
+            session.request(MessageIds.BROWSER_HOST_GET_WINDOW_HANDLE_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -128,8 +97,8 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<Long> getOpenerWindowHandle() {
         return CefFutures.map(
-            session.request(new BrowserHostGetOpenerWindowHandleRequest(handle), BrowserHostGetOpenerWindowHandleResponse.DECODER),
-            BrowserHostGetOpenerWindowHandleResponse::result);
+            session.request(MessageIds.BROWSER_HOST_GET_OPENER_WINDOW_HANDLE_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -140,8 +109,8 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<Integer> getOpenerIdentifier() {
         return CefFutures.map(
-            session.request(new BrowserHostGetOpenerIdentifierRequest(handle), BrowserHostGetOpenerIdentifierResponse.DECODER),
-            BrowserHostGetOpenerIdentifierResponse::result);
+            session.request(MessageIds.BROWSER_HOST_GET_OPENER_IDENTIFIER_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -152,8 +121,8 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasView() {
         return CefFutures.map(
-            session.request(new BrowserHostHasViewRequest(handle), BrowserHostHasViewResponse.DECODER),
-            BrowserHostHasViewResponse::result);
+            session.request(MessageIds.BROWSER_HOST_HAS_VIEW_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -164,8 +133,8 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<RemoteHandle> getClient() {
         return CefFutures.map(
-            session.request(new BrowserHostGetClientRequest(handle), BrowserHostGetClientResponse.DECODER),
-            BrowserHostGetClientResponse::result);
+            session.request(MessageIds.BROWSER_HOST_GET_CLIENT_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
+            ResultHandleMessage::result);
     }
 
     /**
@@ -176,7 +145,7 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<RequestContext> getRequestContext() {
         return CefFutures.map(
-            session.request(new BrowserHostGetRequestContextRequest(handle), BrowserHostGetRequestContextResponse.DECODER),
+            session.request(MessageIds.BROWSER_HOST_GET_REQUEST_CONTEXT_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new RequestContext(session, __r.result()));
     }
 
@@ -188,8 +157,8 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<Integer> canZoom(int command) {
         return CefFutures.map(
-            session.request(new BrowserHostCanZoomRequest(handle, command), BrowserHostCanZoomResponse.DECODER),
-            BrowserHostCanZoomResponse::result);
+            session.request(MessageIds.BROWSER_HOST_CAN_ZOOM_REQUEST, new SelfHandleCommandIntMessage(handle, command), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -199,7 +168,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:453</a>
      */
     public CompletableFuture<Void> zoom(int command) {
-        return CefFutures.discard(session.request(new BrowserHostZoomRequest(handle, command), BrowserHostZoomResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_ZOOM_REQUEST, new SelfHandleCommandIntMessage(handle, command), EmptyMessage.DECODER));
     }
 
     /**
@@ -213,7 +182,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:484</a>
      */
     public CompletableFuture<Void> runFileDialog(int mode, String title, String defaultFilePath, String[] acceptFilters, RemoteHandle callback) {
-        return CefFutures.discard(session.request(new BrowserHostRunFileDialogRequest(handle, mode, title, defaultFilePath, acceptFilters, callback), BrowserHostRunFileDialogResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_RUN_FILE_DIALOG_REQUEST, new BrowserHostRunFileDialogRequest(handle, mode, title, defaultFilePath, acceptFilters, callback), EmptyMessage.DECODER));
     }
 
     /**
@@ -223,7 +192,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:508</a>
      */
     public CompletableFuture<Void> startDownload(String url) {
-        return CefFutures.discard(session.request(new BrowserHostStartDownloadRequest(handle, url), BrowserHostStartDownloadResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_START_DOWNLOAD_REQUEST, new SelfHandleUrlStringMessage(handle, url), EmptyMessage.DECODER));
     }
 
     /**
@@ -233,7 +202,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:514</a>
      */
     public CompletableFuture<Void> downloadImage(String imageUrl, int isFavicon, int maxImageSize, int bypassCache, RemoteHandle callback) {
-        return CefFutures.discard(session.request(new BrowserHostDownloadImageRequest(handle, imageUrl, isFavicon, maxImageSize, bypassCache, callback), BrowserHostDownloadImageResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_DOWNLOAD_IMAGE_REQUEST, new BrowserHostDownloadImageRequest(handle, imageUrl, isFavicon, maxImageSize, bypassCache, callback), EmptyMessage.DECODER));
     }
 
     /**
@@ -243,7 +212,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:533</a>
      */
     public CompletableFuture<Void> print() {
-        return CefFutures.discard(session.request(new BrowserHostPrintRequest(handle), BrowserHostPrintResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_PRINT_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -253,7 +222,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:550</a>
      */
     public CompletableFuture<Void> find(String searchText, int forward, int matchCase, int findNext) {
-        return CefFutures.discard(session.request(new BrowserHostFindRequest(handle, searchText, forward, matchCase, findNext), BrowserHostFindResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_FIND_REQUEST, new BrowserHostFindRequest(handle, searchText, forward, matchCase, findNext), EmptyMessage.DECODER));
     }
 
     /**
@@ -263,7 +232,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:565</a>
      */
     public CompletableFuture<Void> stopFinding(int clearSelection) {
-        return CefFutures.discard(session.request(new BrowserHostStopFindingRequest(handle, clearSelection), BrowserHostStopFindingResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_STOP_FINDING_REQUEST, new BrowserHostStopFindingRequest(handle, clearSelection), EmptyMessage.DECODER));
     }
 
     /**
@@ -273,7 +242,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:587</a>
      */
     public CompletableFuture<Void> closeDevTools() {
-        return CefFutures.discard(session.request(new BrowserHostCloseDevToolsRequest(handle), BrowserHostCloseDevToolsResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_CLOSE_DEV_TOOLS_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -284,8 +253,8 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasDevTools() {
         return CefFutures.map(
-            session.request(new BrowserHostHasDevToolsRequest(handle), BrowserHostHasDevToolsResponse.DECODER),
-            BrowserHostHasDevToolsResponse::result);
+            session.request(MessageIds.BROWSER_HOST_HAS_DEV_TOOLS_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -305,8 +274,8 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<Integer> sendDevToolsMessage(byte[] message) {
         return CefFutures.map(
-            session.request(new BrowserHostSendDevToolsMessageRequest(handle, message), BrowserHostSendDevToolsMessageResponse.DECODER),
-            BrowserHostSendDevToolsMessageResponse::result);
+            session.request(MessageIds.BROWSER_HOST_SEND_DEV_TOOLS_MESSAGE_REQUEST, new SelfHandleMessageBytesMessage(handle, message), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -319,8 +288,8 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<Integer> executeDevToolsMethod(int messageId_, String method, RemoteHandle params) {
         return CefFutures.map(
-            session.request(new BrowserHostExecuteDevToolsMethodRequest(handle, messageId_, method, params), BrowserHostExecuteDevToolsMethodResponse.DECODER),
-            BrowserHostExecuteDevToolsMethodResponse::result);
+            session.request(MessageIds.BROWSER_HOST_EXECUTE_DEV_TOOLS_METHOD_REQUEST, new BrowserHostExecuteDevToolsMethodRequest(handle, messageId_, method, params), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -331,8 +300,8 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<RemoteHandle> addDevToolsMessageObserver(RemoteHandle observer) {
         return CefFutures.map(
-            session.request(new BrowserHostAddDevToolsMessageObserverRequest(handle, observer), BrowserHostAddDevToolsMessageObserverResponse.DECODER),
-            BrowserHostAddDevToolsMessageObserverResponse::result);
+            session.request(MessageIds.BROWSER_HOST_ADD_DEV_TOOLS_MESSAGE_OBSERVER_REQUEST, new SelfHandleObserverHandleMessage(handle, observer), ResultHandleMessage.DECODER),
+            ResultHandleMessage::result);
     }
 
     /**
@@ -342,7 +311,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:663</a>
      */
     public CompletableFuture<Void> getNavigationEntries(RemoteHandle visitor, int currentOnly) {
-        return CefFutures.discard(session.request(new BrowserHostGetNavigationEntriesRequest(handle, visitor, currentOnly), BrowserHostGetNavigationEntriesResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_GET_NAVIGATION_ENTRIES_REQUEST, new BrowserHostGetNavigationEntriesRequest(handle, visitor, currentOnly), EmptyMessage.DECODER));
     }
 
     /**
@@ -352,7 +321,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:673</a>
      */
     public CompletableFuture<Void> replaceMisspelling(String word) {
-        return CefFutures.discard(session.request(new BrowserHostReplaceMisspellingRequest(handle, word), BrowserHostReplaceMisspellingResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_REPLACE_MISSPELLING_REQUEST, new SelfHandleWordStringMessage(handle, word), EmptyMessage.DECODER));
     }
 
     /**
@@ -362,7 +331,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:680</a>
      */
     public CompletableFuture<Void> addWordToDictionary(String word) {
-        return CefFutures.discard(session.request(new BrowserHostAddWordToDictionaryRequest(handle, word), BrowserHostAddWordToDictionaryResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_ADD_WORD_TO_DICTIONARY_REQUEST, new SelfHandleWordStringMessage(handle, word), EmptyMessage.DECODER));
     }
 
     /**
@@ -373,8 +342,8 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<Integer> isWindowRenderingDisabled() {
         return CefFutures.map(
-            session.request(new BrowserHostIsWindowRenderingDisabledRequest(handle), BrowserHostIsWindowRenderingDisabledResponse.DECODER),
-            BrowserHostIsWindowRenderingDisabledResponse::result);
+            session.request(MessageIds.BROWSER_HOST_IS_WINDOW_RENDERING_DISABLED_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -384,7 +353,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:692</a>
      */
     public CompletableFuture<Void> wasResized() {
-        return CefFutures.discard(session.request(new BrowserHostWasResizedRequest(handle), BrowserHostWasResizedResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_WAS_RESIZED_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -394,7 +363,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:701</a>
      */
     public CompletableFuture<Void> wasHidden(int hidden) {
-        return CefFutures.discard(session.request(new BrowserHostWasHiddenRequest(handle, hidden), BrowserHostWasHiddenResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_WAS_HIDDEN_REQUEST, new BrowserHostWasHiddenRequest(handle, hidden), EmptyMessage.DECODER));
     }
 
     /**
@@ -410,7 +379,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:709</a>
      */
     public CompletableFuture<Void> notifyScreenInfoChanged() {
-        return CefFutures.discard(session.request(new BrowserHostNotifyScreenInfoChangedRequest(handle), BrowserHostNotifyScreenInfoChangedResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_NOTIFY_SCREEN_INFO_CHANGED_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -420,7 +389,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:732</a>
      */
     public CompletableFuture<Void> invalidate(int type) {
-        return CefFutures.discard(session.request(new BrowserHostInvalidateRequest(handle, type), BrowserHostInvalidateResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_INVALIDATE_REQUEST, new BrowserHostInvalidateRequest(handle, type), EmptyMessage.DECODER));
     }
 
     /**
@@ -430,7 +399,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:740</a>
      */
     public CompletableFuture<Void> sendExternalBeginFrame() {
-        return CefFutures.discard(session.request(new BrowserHostSendExternalBeginFrameRequest(handle), BrowserHostSendExternalBeginFrameResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_SEND_EXTERNAL_BEGIN_FRAME_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -439,8 +408,8 @@ public final class BrowserHost implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:747</a>
      */
-    public CompletableFuture<Void> sendKeyEvent(KeyEvent event) {
-        return CefFutures.discard(session.request(new BrowserHostSendKeyEventRequest(handle, event), BrowserHostSendKeyEventResponse.DECODER));
+    public CompletableFuture<Void> sendKeyEvent(net.kurobako.cef4j.gen.CefKeyEvent event) {
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_SEND_KEY_EVENT_REQUEST, new BrowserHostSendKeyEventRequest(handle, event), EmptyMessage.DECODER));
     }
 
     /**
@@ -449,8 +418,8 @@ public final class BrowserHost implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:753</a>
      */
-    public CompletableFuture<Void> sendMouseClickEvent(MouseEvent event, int type, int mouseUp, int clickCount) {
-        return CefFutures.discard(session.request(new BrowserHostSendMouseClickEventRequest(handle, event, type, mouseUp, clickCount), BrowserHostSendMouseClickEventResponse.DECODER));
+    public CompletableFuture<Void> sendMouseClickEvent(net.kurobako.cef4j.gen.CefMouseEvent event, int type, int mouseUp, int clickCount) {
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_SEND_MOUSE_CLICK_EVENT_REQUEST, new BrowserHostSendMouseClickEventRequest(handle, event, type, mouseUp, clickCount), EmptyMessage.DECODER));
     }
 
     /**
@@ -459,8 +428,8 @@ public final class BrowserHost implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:763</a>
      */
-    public CompletableFuture<Void> sendMouseMoveEvent(MouseEvent event, int mouseLeave) {
-        return CefFutures.discard(session.request(new BrowserHostSendMouseMoveEventRequest(handle, event, mouseLeave), BrowserHostSendMouseMoveEventResponse.DECODER));
+    public CompletableFuture<Void> sendMouseMoveEvent(net.kurobako.cef4j.gen.CefMouseEvent event, int mouseLeave) {
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_SEND_MOUSE_MOVE_EVENT_REQUEST, new BrowserHostSendMouseMoveEventRequest(handle, event, mouseLeave), EmptyMessage.DECODER));
     }
 
     /**
@@ -469,8 +438,8 @@ public final class BrowserHost implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:771</a>
      */
-    public CompletableFuture<Void> sendMouseWheelEvent(MouseEvent event, int deltaX, int deltaY) {
-        return CefFutures.discard(session.request(new BrowserHostSendMouseWheelEventRequest(handle, event, deltaX, deltaY), BrowserHostSendMouseWheelEventResponse.DECODER));
+    public CompletableFuture<Void> sendMouseWheelEvent(net.kurobako.cef4j.gen.CefMouseEvent event, int deltaX, int deltaY) {
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_SEND_MOUSE_WHEEL_EVENT_REQUEST, new BrowserHostSendMouseWheelEventRequest(handle, event, deltaX, deltaY), EmptyMessage.DECODER));
     }
 
     /**
@@ -480,7 +449,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:790</a>
      */
     public CompletableFuture<Void> sendCaptureLostEvent() {
-        return CefFutures.discard(session.request(new BrowserHostSendCaptureLostEventRequest(handle), BrowserHostSendCaptureLostEventResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_SEND_CAPTURE_LOST_EVENT_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -490,7 +459,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:796</a>
      */
     public CompletableFuture<Void> notifyMoveOrResizeStarted() {
-        return CefFutures.discard(session.request(new BrowserHostNotifyMoveOrResizeStartedRequest(handle), BrowserHostNotifyMoveOrResizeStartedResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_NOTIFY_MOVE_OR_RESIZE_STARTED_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -501,8 +470,8 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<Integer> getWindowlessFrameRate() {
         return CefFutures.map(
-            session.request(new BrowserHostGetWindowlessFrameRateRequest(handle), BrowserHostGetWindowlessFrameRateResponse.DECODER),
-            BrowserHostGetWindowlessFrameRateResponse::result);
+            session.request(MessageIds.BROWSER_HOST_GET_WINDOWLESS_FRAME_RATE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -512,7 +481,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:813</a>
      */
     public CompletableFuture<Void> setWindowlessFrameRate(int frameRate) {
-        return CefFutures.discard(session.request(new BrowserHostSetWindowlessFrameRateRequest(handle, frameRate), BrowserHostSetWindowlessFrameRateResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_SET_WINDOWLESS_FRAME_RATE_REQUEST, new BrowserHostSetWindowlessFrameRateRequest(handle, frameRate), EmptyMessage.DECODER));
     }
 
     /**
@@ -523,8 +492,8 @@ public final class BrowserHost implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:855</a>
      */
-    public CompletableFuture<Void> imeCommitText(String text, Range replacementRange, int relativeCursorPos) {
-        return CefFutures.discard(session.request(new BrowserHostImeCommitTextRequest(handle, text, replacementRange, relativeCursorPos), BrowserHostImeCommitTextResponse.DECODER));
+    public CompletableFuture<Void> imeCommitText(String text, net.kurobako.cef4j.gen.CefRange replacementRange, int relativeCursorPos) {
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_IME_COMMIT_TEXT_REQUEST, new BrowserHostImeCommitTextRequest(handle, text, replacementRange, relativeCursorPos), EmptyMessage.DECODER));
     }
 
     /**
@@ -534,7 +503,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:869</a>
      */
     public CompletableFuture<Void> imeFinishComposingText(int keepSelection) {
-        return CefFutures.discard(session.request(new BrowserHostImeFinishComposingTextRequest(handle, keepSelection), BrowserHostImeFinishComposingTextResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_IME_FINISH_COMPOSING_TEXT_REQUEST, new BrowserHostImeFinishComposingTextRequest(handle, keepSelection), EmptyMessage.DECODER));
     }
 
     /**
@@ -544,7 +513,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:878</a>
      */
     public CompletableFuture<Void> imeCancelComposition() {
-        return CefFutures.discard(session.request(new BrowserHostImeCancelCompositionRequest(handle), BrowserHostImeCancelCompositionResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_IME_CANCEL_COMPOSITION_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -553,8 +522,8 @@ public final class BrowserHost implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:887</a>
      */
-    public CompletableFuture<Void> dragTargetDragEnter(RemoteHandle dragData, MouseEvent event, int allowedOps) {
-        return CefFutures.discard(session.request(new BrowserHostDragTargetDragEnterRequest(handle, dragData, event, allowedOps), BrowserHostDragTargetDragEnterResponse.DECODER));
+    public CompletableFuture<Void> dragTargetDragEnter(RemoteHandle dragData, net.kurobako.cef4j.gen.CefMouseEvent event, int allowedOps) {
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_DRAG_TARGET_DRAG_ENTER_REQUEST, new BrowserHostDragTargetDragEnterRequest(handle, dragData, event, allowedOps), EmptyMessage.DECODER));
     }
 
     /**
@@ -563,8 +532,8 @@ public final class BrowserHost implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:901</a>
      */
-    public CompletableFuture<Void> dragTargetDragOver(MouseEvent event, int allowedOps) {
-        return CefFutures.discard(session.request(new BrowserHostDragTargetDragOverRequest(handle, event, allowedOps), BrowserHostDragTargetDragOverResponse.DECODER));
+    public CompletableFuture<Void> dragTargetDragOver(net.kurobako.cef4j.gen.CefMouseEvent event, int allowedOps) {
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_DRAG_TARGET_DRAG_OVER_REQUEST, new BrowserHostDragTargetDragOverRequest(handle, event, allowedOps), EmptyMessage.DECODER));
     }
 
     /**
@@ -574,7 +543,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:911</a>
      */
     public CompletableFuture<Void> dragTargetDragLeave() {
-        return CefFutures.discard(session.request(new BrowserHostDragTargetDragLeaveRequest(handle), BrowserHostDragTargetDragLeaveResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_DRAG_TARGET_DRAG_LEAVE_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -583,8 +552,8 @@ public final class BrowserHost implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:919</a>
      */
-    public CompletableFuture<Void> dragTargetDrop(MouseEvent event) {
-        return CefFutures.discard(session.request(new BrowserHostDragTargetDropRequest(handle, event), BrowserHostDragTargetDropResponse.DECODER));
+    public CompletableFuture<Void> dragTargetDrop(net.kurobako.cef4j.gen.CefMouseEvent event) {
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_DRAG_TARGET_DROP_REQUEST, new BrowserHostDragTargetDropRequest(handle, event), EmptyMessage.DECODER));
     }
 
     /**
@@ -594,7 +563,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:929</a>
      */
     public CompletableFuture<Void> dragSourceEndedAt(int x, int y, int op) {
-        return CefFutures.discard(session.request(new BrowserHostDragSourceEndedAtRequest(handle, x, y, op), BrowserHostDragSourceEndedAtResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_DRAG_SOURCE_ENDED_AT_REQUEST, new BrowserHostDragSourceEndedAtRequest(handle, x, y, op), EmptyMessage.DECODER));
     }
 
     /**
@@ -604,7 +573,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:941</a>
      */
     public CompletableFuture<Void> dragSourceSystemDragEnded() {
-        return CefFutures.discard(session.request(new BrowserHostDragSourceSystemDragEndedRequest(handle), BrowserHostDragSourceSystemDragEndedResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_DRAG_SOURCE_SYSTEM_DRAG_ENDED_REQUEST, new SelfHandleMessage(handle), EmptyMessage.DECODER));
     }
 
     /**
@@ -615,7 +584,7 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<NavigationEntry> getVisibleNavigationEntry() {
         return CefFutures.map(
-            session.request(new BrowserHostGetVisibleNavigationEntryRequest(handle), BrowserHostGetVisibleNavigationEntryResponse.DECODER),
+            session.request(MessageIds.BROWSER_HOST_GET_VISIBLE_NAVIGATION_ENTRY_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new NavigationEntry(session, __r.result()));
     }
 
@@ -630,7 +599,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:960</a>
      */
     public CompletableFuture<Void> setAccessibilityState(int accessibilityState) {
-        return CefFutures.discard(session.request(new BrowserHostSetAccessibilityStateRequest(handle, accessibilityState), BrowserHostSetAccessibilityStateResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_SET_ACCESSIBILITY_STATE_REQUEST, new BrowserHostSetAccessibilityStateRequest(handle, accessibilityState), EmptyMessage.DECODER));
     }
 
     /**
@@ -639,8 +608,8 @@ public final class BrowserHost implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:989</a>
      */
-    public CompletableFuture<Void> setAutoResizeEnabled(int enabled, Size minSize, Size maxSize) {
-        return CefFutures.discard(session.request(new BrowserHostSetAutoResizeEnabledRequest(handle, enabled, minSize, maxSize), BrowserHostSetAutoResizeEnabledResponse.DECODER));
+    public CompletableFuture<Void> setAutoResizeEnabled(int enabled, net.kurobako.cef4j.gen.CefSize minSize, net.kurobako.cef4j.gen.CefSize maxSize) {
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_SET_AUTO_RESIZE_ENABLED_REQUEST, new BrowserHostSetAutoResizeEnabledRequest(handle, enabled, minSize, maxSize), EmptyMessage.DECODER));
     }
 
     /**
@@ -650,7 +619,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:999</a>
      */
     public CompletableFuture<Void> setAudioMuted(int mute) {
-        return CefFutures.discard(session.request(new BrowserHostSetAudioMutedRequest(handle, mute), BrowserHostSetAudioMutedResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_SET_AUDIO_MUTED_REQUEST, new BrowserHostSetAudioMutedRequest(handle, mute), EmptyMessage.DECODER));
     }
 
     /**
@@ -661,8 +630,8 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<Integer> isAudioMuted() {
         return CefFutures.map(
-            session.request(new BrowserHostIsAudioMutedRequest(handle), BrowserHostIsAudioMutedResponse.DECODER),
-            BrowserHostIsAudioMutedResponse::result);
+            session.request(MessageIds.BROWSER_HOST_IS_AUDIO_MUTED_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -673,8 +642,8 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<Integer> isFullscreen() {
         return CefFutures.map(
-            session.request(new BrowserHostIsFullscreenRequest(handle), BrowserHostIsFullscreenResponse.DECODER),
-            BrowserHostIsFullscreenResponse::result);
+            session.request(MessageIds.BROWSER_HOST_IS_FULLSCREEN_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -684,7 +653,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:1022</a>
      */
     public CompletableFuture<Void> exitFullscreen(int willCauseResize) {
-        return CefFutures.discard(session.request(new BrowserHostExitFullscreenRequest(handle, willCauseResize), BrowserHostExitFullscreenResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_EXIT_FULLSCREEN_REQUEST, new BrowserHostExitFullscreenRequest(handle, willCauseResize), EmptyMessage.DECODER));
     }
 
     /**
@@ -695,8 +664,8 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<Integer> canExecuteChromeCommand(int commandId) {
         return CefFutures.map(
-            session.request(new BrowserHostCanExecuteChromeCommandRequest(handle, commandId), BrowserHostCanExecuteChromeCommandResponse.DECODER),
-            BrowserHostCanExecuteChromeCommandResponse::result);
+            session.request(MessageIds.BROWSER_HOST_CAN_EXECUTE_CHROME_COMMAND_REQUEST, new SelfHandleCommandIdIntMessage(handle, commandId), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -706,7 +675,7 @@ public final class BrowserHost implements AutoCloseable {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:1046</a>
      */
     public CompletableFuture<Void> executeChromeCommand(int commandId, int disposition) {
-        return CefFutures.discard(session.request(new BrowserHostExecuteChromeCommandRequest(handle, commandId, disposition), BrowserHostExecuteChromeCommandResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BROWSER_HOST_EXECUTE_CHROME_COMMAND_REQUEST, new BrowserHostExecuteChromeCommandRequest(handle, commandId, disposition), EmptyMessage.DECODER));
     }
 
     /**
@@ -717,8 +686,8 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<Integer> isRenderProcessUnresponsive() {
         return CefFutures.map(
-            session.request(new BrowserHostIsRenderProcessUnresponsiveRequest(handle), BrowserHostIsRenderProcessUnresponsiveResponse.DECODER),
-            BrowserHostIsRenderProcessUnresponsiveResponse::result);
+            session.request(MessageIds.BROWSER_HOST_IS_RENDER_PROCESS_UNRESPONSIVE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -729,7 +698,7 @@ public final class BrowserHost implements AutoCloseable {
      */
     public CompletableFuture<Integer> getRuntimeStyle() {
         return CefFutures.map(
-            session.request(new BrowserHostGetRuntimeStyleRequest(handle), BrowserHostGetRuntimeStyleResponse.DECODER),
-            BrowserHostGetRuntimeStyleResponse::result);
+            session.request(MessageIds.BROWSER_HOST_GET_RUNTIME_STYLE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

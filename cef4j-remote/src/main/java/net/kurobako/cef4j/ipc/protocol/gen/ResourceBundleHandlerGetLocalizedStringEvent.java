@@ -2,18 +2,16 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class ResourceBundleHandlerGetLocalizedStringEvent implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 1871519818;
 
     private final int stringId;
     private final String string;
@@ -34,34 +32,21 @@ public final class ResourceBundleHandlerGetLocalizedStringEvent implements CefMe
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 8 + stringBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(stringId);
-            __dst.putInt(stringBytes.length);
-            __dst.put(stringBytes);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(stringId);
+            WireEncoder.bytes(__out, stringBytes);
+        });
     }
 
-    public static final CefMessageDecoder<ResourceBundleHandlerGetLocalizedStringEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<ResourceBundleHandlerGetLocalizedStringEvent> DECODER = WireDecoder.message("ResourceBundleHandlerGetLocalizedStringEvent", __buf -> {
         final int stringId = WireDecoder.int32(__buf, "stringId");
         final String string = WireDecoder.utf8(__buf, "string");
-        WireDecoder.requireFullyConsumed(__buf, "ResourceBundleHandlerGetLocalizedStringEvent");
         return new ResourceBundleHandlerGetLocalizedStringEvent(stringId, string);
-    };
+    });
 }

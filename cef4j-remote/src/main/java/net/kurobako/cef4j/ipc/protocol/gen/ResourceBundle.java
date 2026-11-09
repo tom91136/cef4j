@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class ResourceBundle implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class ResourceBundle extends BrowserFacade {
 
     public ResourceBundle(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_resource_bundle_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_resource_bundle_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class ResourceBundle implements AutoCloseable {
      */
     public CompletableFuture<String> getLocalizedString(int stringId) {
         return CefFutures.map(
-            session.request(new ResourceBundleGetLocalizedStringRequest(handle, stringId), ResourceBundleGetLocalizedStringResponse.DECODER),
-            ResourceBundleGetLocalizedStringResponse::result);
+            session.request(MessageIds.RESOURCE_BUNDLE_GET_LOCALIZED_STRING_REQUEST, new ResourceBundleGetLocalizedStringRequest(handle, stringId), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -70,7 +39,7 @@ public final class ResourceBundle implements AutoCloseable {
      */
     public CompletableFuture<BinaryValue> getDataResource(int resourceId) {
         return CefFutures.map(
-            session.request(new ResourceBundleGetDataResourceRequest(handle, resourceId), ResourceBundleGetDataResourceResponse.DECODER),
+            session.request(MessageIds.RESOURCE_BUNDLE_GET_DATA_RESOURCE_REQUEST, new ResourceBundleGetDataResourceRequest(handle, resourceId), ResultHandleMessage.DECODER),
             __r -> new BinaryValue(session, __r.result()));
     }
 
@@ -82,7 +51,7 @@ public final class ResourceBundle implements AutoCloseable {
      */
     public CompletableFuture<BinaryValue> getDataResourceForScale(int resourceId, int scaleFactor) {
         return CefFutures.map(
-            session.request(new ResourceBundleGetDataResourceForScaleRequest(handle, resourceId, scaleFactor), ResourceBundleGetDataResourceForScaleResponse.DECODER),
+            session.request(MessageIds.RESOURCE_BUNDLE_GET_DATA_RESOURCE_FOR_SCALE_REQUEST, new ResourceBundleGetDataResourceForScaleRequest(handle, resourceId, scaleFactor), ResultHandleMessage.DECODER),
             __r -> new BinaryValue(session, __r.result()));
     }
 }

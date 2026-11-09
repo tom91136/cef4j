@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,49 +13,19 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class BoxLayout implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class BoxLayout extends BrowserFacade {
 
     public BoxLayout(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_box_layout_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_box_layout_t");
     }
 
     /** Dispatches {@code set_flex_for_view} to the runtime server. */
     public CompletableFuture<Void> setFlexForView(RemoteHandle view, int flex) {
-        return CefFutures.discard(session.request(new BoxLayoutSetFlexForViewRequest(handle, view, flex), BoxLayoutSetFlexForViewResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BOX_LAYOUT_SET_FLEX_FOR_VIEW_REQUEST, new BoxLayoutSetFlexForViewRequest(handle, view, flex), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code clear_flex_for_view} to the runtime server. */
     public CompletableFuture<Void> clearFlexForView(RemoteHandle view) {
-        return CefFutures.discard(session.request(new BoxLayoutClearFlexForViewRequest(handle, view), BoxLayoutClearFlexForViewResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.BOX_LAYOUT_CLEAR_FLEX_FOR_VIEW_REQUEST, new SelfHandleViewHandleMessage(handle, view), EmptyMessage.DECODER));
     }
 }

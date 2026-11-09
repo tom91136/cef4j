@@ -112,7 +112,7 @@ class SharedFileFrameTransportTest {
 
         @Override
         public <R extends CefMessageView> CompletableFuture<R> request(
-                CefMessageEncoder request, CefMessageDecoder<R> decoder) {
+                int messageId, CefMessageEncoder request, CefMessageDecoder<R> decoder) {
             throw new UnsupportedOperationException();
         }
 
@@ -242,7 +242,7 @@ class SharedFileFrameTransportTest {
 
         @Override
         public <R extends CefMessageView> CompletableFuture<R> request(
-                CefMessageEncoder request, CefMessageDecoder<R> decoder) {
+                int messageId, CefMessageEncoder request, CefMessageDecoder<R> decoder) {
             throw new UnsupportedOperationException();
         }
 

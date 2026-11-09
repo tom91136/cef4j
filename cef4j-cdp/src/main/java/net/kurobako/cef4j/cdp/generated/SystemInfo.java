@@ -1,13 +1,14 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpValue;
 import net.kurobako.cef4j.policy.NullableBoundary;
@@ -22,6 +23,15 @@ import net.kurobako.cef4j.policy.NullableBoundary;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class SystemInfo {
     private SystemInfo() {}
+    private static final CdpField<java.util.List<SystemInfo.GPUDevice>> DEVICES = CdpField.of("devices", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(SystemInfo.GPUDevice.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<String>> DRIVER_BUG_WORKAROUNDS = CdpField.of("driverBugWorkarounds", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<Boolean> FEATURE_ENABLED = CdpField.of("featureEnabled", value -> (Boolean) value);
+    private static final CdpField<SystemInfo.GPUInfo> GPU = CdpField.of("gpu", value -> java.util.Objects.requireNonNull(SystemInfo.GPUInfo.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<SystemInfo.Size> MAX_RESOLUTION = CdpField.of("maxResolution", value -> java.util.Objects.requireNonNull(SystemInfo.Size.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<SystemInfo.Size> MIN_RESOLUTION = CdpField.of("minResolution", value -> java.util.Objects.requireNonNull(SystemInfo.Size.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<SystemInfo.ProcessInfo>> PROCESS_INFO = CdpField.of("processInfo", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(SystemInfo.ProcessInfo.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<SystemInfo.VideoDecodeAcceleratorCapability>> VIDEO_DECODING = CdpField.of("videoDecoding", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(SystemInfo.VideoDecodeAcceleratorCapability.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<SystemInfo.VideoEncodeAcceleratorCapability>> VIDEO_ENCODING = CdpField.of("videoEncoding", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(SystemInfo.VideoEncodeAcceleratorCapability.fromMap(CdpObject.requireObjectMap(element0)))));
     /**
      * Describes a single graphics processor (GPU).
      */
@@ -36,56 +46,56 @@ public final class SystemInfo {
          * @return the protocol field value
          */
         public double vendorId() {
-            return ((Number) require("vendorId")).doubleValue();
+            return requireDouble("vendorId");
         }
         /**
          * PCI ID of the GPU device, if available; 0 otherwise.
          * @return the protocol field value
          */
         public double deviceId() {
-            return ((Number) require("deviceId")).doubleValue();
+            return requireDouble("deviceId");
         }
         /**
          * Sub sys ID of the GPU, only available on Windows.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble subSysId() {
-            return raw("subSysId").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("subSysId");
         }
         /**
          * Revision of the GPU, only available on Windows.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble revision() {
-            return raw("revision").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("revision");
         }
         /**
          * String description of the GPU vendor, if the PCI ID is not available.
          * @return the protocol field value
          */
         public String vendorString() {
-            return (String) require("vendorString");
+            return requireString("vendorString");
         }
         /**
          * String description of the GPU device, if the PCI ID is not available.
          * @return the protocol field value
          */
         public String deviceString() {
-            return (String) require("deviceString");
+            return requireString("deviceString");
         }
         /**
          * String description of the GPU driver vendor.
          * @return the protocol field value
          */
         public String driverVendor() {
-            return (String) require("driverVendor");
+            return requireString("driverVendor");
         }
         /**
          * String description of the GPU driver version.
          * @return the protocol field value
          */
         public String driverVersion() {
-            return (String) require("driverVersion");
+            return requireString("driverVersion");
         }
         /**
          * PCI ID of the GPU vendor, if available; 0 otherwise.
@@ -174,14 +184,14 @@ public final class SystemInfo {
          * @return the protocol field value
          */
         public long width() {
-            return ((Number) require("width")).longValue();
+            return requireLong("width");
         }
         /**
          * Height in pixels.
          * @return the protocol field value
          */
         public long height() {
-            return ((Number) require("height")).longValue();
+            return requireLong("height");
         }
         /**
          * Width in pixels.
@@ -216,21 +226,21 @@ public final class SystemInfo {
          * @return the protocol field value
          */
         public String profile() {
-            return (String) require("profile");
+            return requireString("profile");
         }
         /**
          * Maximum video dimensions in pixels supported for this |profile|.
          * @return the protocol field value
          */
         public SystemInfo.Size maxResolution() {
-            return java.util.Objects.requireNonNull(SystemInfo.Size.fromMap(CdpObject.requireObjectMap(require("maxResolution"))));
+            return require(MAX_RESOLUTION);
         }
         /**
          * Minimum video dimensions in pixels supported for this |profile|.
          * @return the protocol field value
          */
         public SystemInfo.Size minResolution() {
-            return java.util.Objects.requireNonNull(SystemInfo.Size.fromMap(CdpObject.requireObjectMap(require("minResolution"))));
+            return require(MIN_RESOLUTION);
         }
         /**
          * Video codec profile that is supported, e.g. VP9 Profile 2.
@@ -274,28 +284,28 @@ public final class SystemInfo {
          * @return the protocol field value
          */
         public String profile() {
-            return (String) require("profile");
+            return requireString("profile");
         }
         /**
          * Maximum video dimensions in pixels supported for this |profile|.
          * @return the protocol field value
          */
         public SystemInfo.Size maxResolution() {
-            return java.util.Objects.requireNonNull(SystemInfo.Size.fromMap(CdpObject.requireObjectMap(require("maxResolution"))));
+            return require(MAX_RESOLUTION);
         }
         /**
          * Maximum encoding framerate in frames per second supported for this |profile|, as fraction&#x27;s numerator and denominator, e.g. 24/1 fps, 24000/1001 fps, etc.
          * @return the protocol field value
          */
         public long maxFramerateNumerator() {
-            return ((Number) require("maxFramerateNumerator")).longValue();
+            return requireLong("maxFramerateNumerator");
         }
         /**
          * Returns the maxFramerateDenominator field.
          * @return the protocol field value
          */
         public long maxFramerateDenominator() {
-            return ((Number) require("maxFramerateDenominator")).longValue();
+            return requireLong("maxFramerateDenominator");
         }
         /**
          * Video codec profile that is supported, e.g H264 Main.
@@ -382,42 +392,42 @@ public final class SystemInfo {
          * @return the protocol field value
          */
         public java.util.List<SystemInfo.GPUDevice> devices() {
-            return CdpObject.requireList(require("devices"), element0 -> java.util.Objects.requireNonNull(SystemInfo.GPUDevice.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(DEVICES);
         }
         /**
          * An optional dictionary of additional GPU related attributes.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> auxAttributes() {
-            return raw("auxAttributes").flatMap(CdpObject::objectMap);
+            return optionalObject("auxAttributes");
         }
         /**
          * An optional dictionary of graphics features and their status.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.Map<String, Object>> featureStatus() {
-            return raw("featureStatus").flatMap(CdpObject::objectMap);
+            return optionalObject("featureStatus");
         }
         /**
          * An optional array of GPU driver bug workarounds.
          * @return the protocol field value
          */
         public java.util.List<String> driverBugWorkarounds() {
-            return CdpObject.requireList(require("driverBugWorkarounds"), element0 -> (String) element0);
+            return require(DRIVER_BUG_WORKAROUNDS);
         }
         /**
          * Supported accelerated video decoding capabilities.
          * @return the protocol field value
          */
         public java.util.List<SystemInfo.VideoDecodeAcceleratorCapability> videoDecoding() {
-            return CdpObject.requireList(require("videoDecoding"), element0 -> java.util.Objects.requireNonNull(SystemInfo.VideoDecodeAcceleratorCapability.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(VIDEO_DECODING);
         }
         /**
          * Supported accelerated video encoding capabilities.
          * @return the protocol field value
          */
         public java.util.List<SystemInfo.VideoEncodeAcceleratorCapability> videoEncoding() {
-            return CdpObject.requireList(require("videoEncoding"), element0 -> java.util.Objects.requireNonNull(SystemInfo.VideoEncodeAcceleratorCapability.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(VIDEO_ENCODING);
         }
         /**
          * The graphics devices on the system. Element 0 is the primary GPU.
@@ -488,21 +498,21 @@ public final class SystemInfo {
          * @return the protocol field value
          */
         public String type() {
-            return (String) require("type");
+            return requireString("type");
         }
         /**
          * Specifies process id.
          * @return the protocol field value
          */
         public long id() {
-            return ((Number) require("id")).longValue();
+            return requireLong("id");
         }
         /**
          * Specifies cumulative CPU usage in seconds across all threads of the process since the process start.
          * @return the protocol field value
          */
         public double cpuTime() {
-            return ((Number) require("cpuTime")).doubleValue();
+            return requireDouble("cpuTime");
         }
         /**
          * Specifies process type.
@@ -537,13 +547,6 @@ public final class SystemInfo {
      */
     public static final class GetFeatureStateRequest extends CdpObject {
         public GetFeatureStateRequest() {}
-        /**
-         * Returns information about the feature state.
-         * @param featureState protocol value
-         */
-        public GetFeatureStateRequest(String featureState) {
-            featureState(featureState);
-        }
         public static GetFeatureStateRequest fromMap(Map<String, Object> values) {
             final GetFeatureStateRequest instance_ = new GetFeatureStateRequest();
             if (values != null) instance_.values.putAll(values);
@@ -554,7 +557,7 @@ public final class SystemInfo {
          * @return the protocol field value
          */
         public String featureState() {
-            return (String) require("featureState");
+            return requireString("featureState");
         }
         /**
          * Sets the featureState field.
@@ -580,28 +583,28 @@ public final class SystemInfo {
          * @return the protocol field value
          */
         public SystemInfo.GPUInfo gpu() {
-            return java.util.Objects.requireNonNull(SystemInfo.GPUInfo.fromMap(CdpObject.requireObjectMap(require("gpu"))));
+            return require(GPU);
         }
         /**
          * A platform-dependent description of the model of the machine. On Mac OS, this is, for example, &#x27;MacBookPro&#x27;. Will be the empty string if not supported.
          * @return the protocol field value
          */
         public String modelName() {
-            return (String) require("modelName");
+            return requireString("modelName");
         }
         /**
          * A platform-dependent description of the version of the machine. On Mac OS, this is, for example, &#x27;10.1&#x27;. Will be the empty string if not supported.
          * @return the protocol field value
          */
         public String modelVersion() {
-            return (String) require("modelVersion");
+            return requireString("modelVersion");
         }
         /**
          * The command line string used to launch the browser. Will be the empty string if not supported.
          * @return the protocol field value
          */
         public String commandLine() {
-            return (String) require("commandLine");
+            return requireString("commandLine");
         }
         /**
          * Information about the GPUs on the system.
@@ -640,15 +643,14 @@ public final class SystemInfo {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Returns information about the system.
          * @return a stage completing with the command result
          */
         public CompletionStage<GetInfoResult> getInfo() {
-            return client.call("SystemInfo.getInfo", null, result_ -> new GetInfoResult(result_));
+            return call("SystemInfo.getInfo", GetInfoResult::fromMap);
         }
         /**
          * Returns information about the feature state.
@@ -656,9 +658,7 @@ public final class SystemInfo {
          * @return a stage completing with the command result
          */
         public CompletionStage<Boolean> getFeatureState(String featureState) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("featureState", CdpObject.json(featureState));
-            return client.call("SystemInfo.getFeatureState", params, result_ -> (Boolean) java.util.Objects.requireNonNull(result_.get("featureEnabled")));
+            return call("SystemInfo.getFeatureState", params("featureState", featureState), FEATURE_ENABLED::require);
         }
         /**
          * Returns information about the feature state.
@@ -666,14 +666,14 @@ public final class SystemInfo {
          * @return a stage completing with the command result
          */
         public CompletionStage<Boolean> getFeatureState(GetFeatureStateRequest request) {
-            return client.call("SystemInfo.getFeatureState", request == null ? null : request.toMap(), result_ -> (Boolean) java.util.Objects.requireNonNull(result_.get("featureEnabled")));
+            return call("SystemInfo.getFeatureState", request, FEATURE_ENABLED::require);
         }
         /**
          * Returns information about all running processes.
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<SystemInfo.ProcessInfo>> getProcessInfo() {
-            return client.call("SystemInfo.getProcessInfo", null, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("processInfo")), element0 -> java.util.Objects.requireNonNull(SystemInfo.ProcessInfo.fromMap(CdpObject.requireObjectMap(element0)))));
+            return call("SystemInfo.getProcessInfo", PROCESS_INFO::require);
         }
     }
 }

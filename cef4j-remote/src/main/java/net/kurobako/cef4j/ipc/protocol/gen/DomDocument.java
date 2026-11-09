@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,48 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class DomDocument implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle frame;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class DomDocument extends RendererFacade {
 
     public DomDocument(CefSession session, RemoteHandle frame, RemoteHandle handle) {
-        this.session = session;
-        this.frame = frame;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-    /** The frame whose V8 context this handle lives in. Renderer-side dispatch enters this frame's
-      * V8 context before invoking methods on the receiver. */
-    public RemoteHandle frame() {
-        return frame;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new RendererReleaseHandleRequest(frame, handle, "cef_domdocument_t"),
-                    RendererReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, frame, handle, "cef_domdocument_t");
     }
 
     /**
@@ -66,8 +27,8 @@ public final class DomDocument implements AutoCloseable {
      */
     public CompletableFuture<Integer> getType() {
         return CefFutures.map(
-            session.request(new DomDocumentGetTypeRequest(frame, handle), DomDocumentGetTypeResponse.DECODER),
-            DomDocumentGetTypeResponse::result);
+            session.request(MessageIds.DOM_DOCUMENT_GET_TYPE_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -78,7 +39,7 @@ public final class DomDocument implements AutoCloseable {
      */
     public CompletableFuture<DomNode> getDocument() {
         return CefFutures.map(
-            session.request(new DomDocumentGetDocumentRequest(frame, handle), DomDocumentGetDocumentResponse.DECODER),
+            session.request(MessageIds.DOM_DOCUMENT_GET_DOCUMENT_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultHandleMessage.DECODER),
             __r -> new DomNode(session, frame, __r.result()));
     }
 
@@ -90,7 +51,7 @@ public final class DomDocument implements AutoCloseable {
      */
     public CompletableFuture<DomNode> getBody() {
         return CefFutures.map(
-            session.request(new DomDocumentGetBodyRequest(frame, handle), DomDocumentGetBodyResponse.DECODER),
+            session.request(MessageIds.DOM_DOCUMENT_GET_BODY_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultHandleMessage.DECODER),
             __r -> new DomNode(session, frame, __r.result()));
     }
 
@@ -102,7 +63,7 @@ public final class DomDocument implements AutoCloseable {
      */
     public CompletableFuture<DomNode> getHead() {
         return CefFutures.map(
-            session.request(new DomDocumentGetHeadRequest(frame, handle), DomDocumentGetHeadResponse.DECODER),
+            session.request(MessageIds.DOM_DOCUMENT_GET_HEAD_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultHandleMessage.DECODER),
             __r -> new DomNode(session, frame, __r.result()));
     }
 
@@ -114,8 +75,8 @@ public final class DomDocument implements AutoCloseable {
      */
     public CompletableFuture<String> getTitle() {
         return CefFutures.map(
-            session.request(new DomDocumentGetTitleRequest(frame, handle), DomDocumentGetTitleResponse.DECODER),
-            DomDocumentGetTitleResponse::result);
+            session.request(MessageIds.DOM_DOCUMENT_GET_TITLE_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -126,7 +87,7 @@ public final class DomDocument implements AutoCloseable {
      */
     public CompletableFuture<DomNode> getElementById(String id) {
         return CefFutures.map(
-            session.request(new DomDocumentGetElementByIdRequest(frame, handle, id), DomDocumentGetElementByIdResponse.DECODER),
+            session.request(MessageIds.DOM_DOCUMENT_GET_ELEMENT_BY_ID_REQUEST, new DomDocumentGetElementByIdRequest(frame, handle, id), ResultHandleMessage.DECODER),
             __r -> new DomNode(session, frame, __r.result()));
     }
 
@@ -138,7 +99,7 @@ public final class DomDocument implements AutoCloseable {
      */
     public CompletableFuture<DomNode> getFocusedNode() {
         return CefFutures.map(
-            session.request(new DomDocumentGetFocusedNodeRequest(frame, handle), DomDocumentGetFocusedNodeResponse.DECODER),
+            session.request(MessageIds.DOM_DOCUMENT_GET_FOCUSED_NODE_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultHandleMessage.DECODER),
             __r -> new DomNode(session, frame, __r.result()));
     }
 
@@ -150,8 +111,8 @@ public final class DomDocument implements AutoCloseable {
      */
     public CompletableFuture<Integer> hasSelection() {
         return CefFutures.map(
-            session.request(new DomDocumentHasSelectionRequest(frame, handle), DomDocumentHasSelectionResponse.DECODER),
-            DomDocumentHasSelectionResponse::result);
+            session.request(MessageIds.DOM_DOCUMENT_HAS_SELECTION_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -162,8 +123,8 @@ public final class DomDocument implements AutoCloseable {
      */
     public CompletableFuture<Integer> getSelectionStartOffset() {
         return CefFutures.map(
-            session.request(new DomDocumentGetSelectionStartOffsetRequest(frame, handle), DomDocumentGetSelectionStartOffsetResponse.DECODER),
-            DomDocumentGetSelectionStartOffsetResponse::result);
+            session.request(MessageIds.DOM_DOCUMENT_GET_SELECTION_START_OFFSET_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -174,8 +135,8 @@ public final class DomDocument implements AutoCloseable {
      */
     public CompletableFuture<Integer> getSelectionEndOffset() {
         return CefFutures.map(
-            session.request(new DomDocumentGetSelectionEndOffsetRequest(frame, handle), DomDocumentGetSelectionEndOffsetResponse.DECODER),
-            DomDocumentGetSelectionEndOffsetResponse::result);
+            session.request(MessageIds.DOM_DOCUMENT_GET_SELECTION_END_OFFSET_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -186,8 +147,8 @@ public final class DomDocument implements AutoCloseable {
      */
     public CompletableFuture<String> getSelectionAsMarkup() {
         return CefFutures.map(
-            session.request(new DomDocumentGetSelectionAsMarkupRequest(frame, handle), DomDocumentGetSelectionAsMarkupResponse.DECODER),
-            DomDocumentGetSelectionAsMarkupResponse::result);
+            session.request(MessageIds.DOM_DOCUMENT_GET_SELECTION_AS_MARKUP_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -198,8 +159,8 @@ public final class DomDocument implements AutoCloseable {
      */
     public CompletableFuture<String> getSelectionAsText() {
         return CefFutures.map(
-            session.request(new DomDocumentGetSelectionAsTextRequest(frame, handle), DomDocumentGetSelectionAsTextResponse.DECODER),
-            DomDocumentGetSelectionAsTextResponse::result);
+            session.request(MessageIds.DOM_DOCUMENT_GET_SELECTION_AS_TEXT_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -210,8 +171,8 @@ public final class DomDocument implements AutoCloseable {
      */
     public CompletableFuture<String> getBaseUrl() {
         return CefFutures.map(
-            session.request(new DomDocumentGetBaseUrlRequest(frame, handle), DomDocumentGetBaseUrlResponse.DECODER),
-            DomDocumentGetBaseUrlResponse::result);
+            session.request(MessageIds.DOM_DOCUMENT_GET_BASE_URL_REQUEST, new FrameHandleSelfHandleMessage(frame, handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -222,7 +183,7 @@ public final class DomDocument implements AutoCloseable {
      */
     public CompletableFuture<String> getCompleteUrl(String partialURL) {
         return CefFutures.map(
-            session.request(new DomDocumentGetCompleteUrlRequest(frame, handle, partialURL), DomDocumentGetCompleteUrlResponse.DECODER),
-            DomDocumentGetCompleteUrlResponse::result);
+            session.request(MessageIds.DOM_DOCUMENT_GET_COMPLETE_URL_REQUEST, new DomDocumentGetCompleteUrlRequest(frame, handle, partialURL), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 }

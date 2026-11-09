@@ -2,18 +2,16 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class MenuModelSetAcceleratorRequest implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 1777643869;
 
     private final RemoteHandle self;
     private final int commandId;
@@ -56,41 +54,29 @@ public final class MenuModelSetAcceleratorRequest implements CefMessageView, Cef
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 24;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putInt(commandId);
-            __dst.putInt(keyCode);
-            __dst.putInt(shiftPressed);
-            __dst.putInt(ctrlPressed);
-            __dst.putInt(altPressed);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            __out.putInt(commandId);
+            __out.putInt(keyCode);
+            __out.putInt(shiftPressed);
+            __out.putInt(ctrlPressed);
+            __out.putInt(altPressed);
+        });
     }
 
-    public static final CefMessageDecoder<MenuModelSetAcceleratorRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<MenuModelSetAcceleratorRequest> DECODER = WireDecoder.message("MenuModelSetAcceleratorRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final int commandId = WireDecoder.int32(__buf, "commandId");
         final int keyCode = WireDecoder.int32(__buf, "keyCode");
         final int shiftPressed = WireDecoder.int32(__buf, "shiftPressed");
         final int ctrlPressed = WireDecoder.int32(__buf, "ctrlPressed");
         final int altPressed = WireDecoder.int32(__buf, "altPressed");
-        WireDecoder.requireFullyConsumed(__buf, "MenuModelSetAcceleratorRequest");
         return new MenuModelSetAcceleratorRequest(self, commandId, keyCode, shiftPressed, ctrlPressed, altPressed);
-    };
+    });
 }

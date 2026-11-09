@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -23,7 +24,7 @@ public interface CefV8Interceptor {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:324</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> setByname(String name, net.kurobako.cef4j.ipc.session.RemoteHandle object, net.kurobako.cef4j.ipc.session.RemoteHandle value, String exception) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> setByname(String name, net.kurobako.cef4j.ipc.session.RemoteHandle object, net.kurobako.cef4j.ipc.session.RemoteHandle value, String exception) { return Unhandled.bool(); }
 
     /**
      * Handle assignment of the interceptor value identified by {@code index}. {@code object} is the receiver ('this' object) of the interceptor. {@code value} is the new value being assigned to the interceptor. If assignment fails, set {@code exception} to the exception that will be thrown. Return {@code true} if interceptor assignment was handled, {@code false} otherwise.
@@ -34,18 +35,18 @@ public interface CefV8Interceptor {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__v8_8h.html">cef_v8.h:338</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> setByindex(int index, net.kurobako.cef4j.ipc.session.RemoteHandle object, net.kurobako.cef4j.ipc.session.RemoteHandle value, String exception) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> setByindex(int index, net.kurobako.cef4j.ipc.session.RemoteHandle object, net.kurobako.cef4j.ipc.session.RemoteHandle value, String exception) { return Unhandled.bool(); }
 
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefV8Interceptor handler) {
         return CefSession.HandlerRegistration.combine(
-                session.intercept(V8InterceptorSetBynameEvent.MESSAGE_ID, V8InterceptorSetBynameEvent.DECODER, ev -> {
+                session.intercept(MessageIds.V8_INTERCEPTOR_SET_BYNAME_EVENT, NameStringObjectHandleValueHandleExceptionStringMessage.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.setByname(ev.name(), ev.object(), ev.value(), ev.exception());
-                    return java.util.Optional.of(new V8InterceptorSetBynameResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.V8_INTERCEPTOR_SET_BYNAME_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),
-                session.intercept(V8InterceptorSetByindexEvent.MESSAGE_ID, V8InterceptorSetByindexEvent.DECODER, ev -> {
+                session.intercept(MessageIds.V8_INTERCEPTOR_SET_BYINDEX_EVENT, V8InterceptorSetByindexEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.setByindex(ev.index(), ev.object(), ev.value(), ev.exception());
-                    return java.util.Optional.of(new V8InterceptorSetByindexResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.V8_INTERCEPTOR_SET_BYINDEX_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }));
     }
 }

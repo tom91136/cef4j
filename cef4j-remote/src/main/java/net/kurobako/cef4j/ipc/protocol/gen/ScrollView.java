@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,86 +13,56 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class ScrollView implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class ScrollView extends BrowserFacade {
 
     public ScrollView(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_scroll_view_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_scroll_view_t");
     }
 
     /** Dispatches {@code set_content_view} to the runtime server. */
     public CompletableFuture<Void> setContentView(RemoteHandle view) {
-        return CefFutures.discard(session.request(new ScrollViewSetContentViewRequest(handle, view), ScrollViewSetContentViewResponse.DECODER));
+        return CefFutures.discard(session.request(MessageIds.SCROLL_VIEW_SET_CONTENT_VIEW_REQUEST, new SelfHandleViewHandleMessage(handle, view), EmptyMessage.DECODER));
     }
 
     /** Dispatches {@code get_content_view} to the runtime server. */
     public CompletableFuture<View> getContentView() {
         return CefFutures.map(
-            session.request(new ScrollViewGetContentViewRequest(handle), ScrollViewGetContentViewResponse.DECODER),
+            session.request(MessageIds.SCROLL_VIEW_GET_CONTENT_VIEW_REQUEST, new SelfHandleMessage(handle), ResultHandleMessage.DECODER),
             __r -> new View(session, __r.result()));
     }
 
     /** Dispatches {@code get_visible_content_rect} to the runtime server. */
-    public CompletableFuture<Rect> getVisibleContentRect() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefRect> getVisibleContentRect() {
         return CefFutures.map(
-            session.request(new ScrollViewGetVisibleContentRectRequest(handle), ScrollViewGetVisibleContentRectResponse.DECODER),
-            ScrollViewGetVisibleContentRectResponse::result);
+            session.request(MessageIds.SCROLL_VIEW_GET_VISIBLE_CONTENT_RECT_REQUEST, new SelfHandleMessage(handle), ResultCefRectMessage.DECODER),
+            ResultCefRectMessage::result);
     }
 
     /** Dispatches {@code has_horizontal_scrollbar} to the runtime server. */
     public CompletableFuture<Integer> hasHorizontalScrollbar() {
         return CefFutures.map(
-            session.request(new ScrollViewHasHorizontalScrollbarRequest(handle), ScrollViewHasHorizontalScrollbarResponse.DECODER),
-            ScrollViewHasHorizontalScrollbarResponse::result);
+            session.request(MessageIds.SCROLL_VIEW_HAS_HORIZONTAL_SCROLLBAR_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code get_horizontal_scrollbar_height} to the runtime server. */
     public CompletableFuture<Integer> getHorizontalScrollbarHeight() {
         return CefFutures.map(
-            session.request(new ScrollViewGetHorizontalScrollbarHeightRequest(handle), ScrollViewGetHorizontalScrollbarHeightResponse.DECODER),
-            ScrollViewGetHorizontalScrollbarHeightResponse::result);
+            session.request(MessageIds.SCROLL_VIEW_GET_HORIZONTAL_SCROLLBAR_HEIGHT_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code has_vertical_scrollbar} to the runtime server. */
     public CompletableFuture<Integer> hasVerticalScrollbar() {
         return CefFutures.map(
-            session.request(new ScrollViewHasVerticalScrollbarRequest(handle), ScrollViewHasVerticalScrollbarResponse.DECODER),
-            ScrollViewHasVerticalScrollbarResponse::result);
+            session.request(MessageIds.SCROLL_VIEW_HAS_VERTICAL_SCROLLBAR_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /** Dispatches {@code get_vertical_scrollbar_width} to the runtime server. */
     public CompletableFuture<Integer> getVerticalScrollbarWidth() {
         return CefFutures.map(
-            session.request(new ScrollViewGetVerticalScrollbarWidthRequest(handle), ScrollViewGetVerticalScrollbarWidthResponse.DECODER),
-            ScrollViewGetVerticalScrollbarWidthResponse::result);
+            session.request(MessageIds.SCROLL_VIEW_GET_VERTICAL_SCROLLBAR_WIDTH_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

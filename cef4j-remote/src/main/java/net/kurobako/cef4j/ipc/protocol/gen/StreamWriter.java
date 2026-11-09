@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class StreamWriter implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class StreamWriter extends BrowserFacade {
 
     public StreamWriter(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_stream_writer_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_stream_writer_t");
     }
 
     /**
@@ -62,8 +31,8 @@ public final class StreamWriter implements AutoCloseable {
      */
     public CompletableFuture<Long> write(byte[] ptr, long n) {
         return CefFutures.map(
-            session.request(new StreamWriterWriteRequest(handle, ptr, n), StreamWriterWriteResponse.DECODER),
-            StreamWriterWriteResponse::result);
+            session.request(MessageIds.STREAM_WRITER_WRITE_REQUEST, new SelfHandlePtrBytesNLongMessage(handle, ptr, n), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -74,8 +43,8 @@ public final class StreamWriter implements AutoCloseable {
      */
     public CompletableFuture<Integer> seek(long offset, int whence) {
         return CefFutures.map(
-            session.request(new StreamWriterSeekRequest(handle, offset, whence), StreamWriterSeekResponse.DECODER),
-            StreamWriterSeekResponse::result);
+            session.request(MessageIds.STREAM_WRITER_SEEK_REQUEST, new SelfHandleOffsetLongWhenceIntMessage(handle, offset, whence), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -86,8 +55,8 @@ public final class StreamWriter implements AutoCloseable {
      */
     public CompletableFuture<Long> tell() {
         return CefFutures.map(
-            session.request(new StreamWriterTellRequest(handle), StreamWriterTellResponse.DECODER),
-            StreamWriterTellResponse::result);
+            session.request(MessageIds.STREAM_WRITER_TELL_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -98,8 +67,8 @@ public final class StreamWriter implements AutoCloseable {
      */
     public CompletableFuture<Integer> flush() {
         return CefFutures.map(
-            session.request(new StreamWriterFlushRequest(handle), StreamWriterFlushResponse.DECODER),
-            StreamWriterFlushResponse::result);
+            session.request(MessageIds.STREAM_WRITER_FLUSH_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -110,7 +79,7 @@ public final class StreamWriter implements AutoCloseable {
      */
     public CompletableFuture<Integer> mayBlock() {
         return CefFutures.map(
-            session.request(new StreamWriterMayBlockRequest(handle), StreamWriterMayBlockResponse.DECODER),
-            StreamWriterMayBlockResponse::result);
+            session.request(MessageIds.STREAM_WRITER_MAY_BLOCK_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

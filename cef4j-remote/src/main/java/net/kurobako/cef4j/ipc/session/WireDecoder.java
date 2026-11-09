@@ -1,8 +1,10 @@
 package net.kurobako.cef4j.ipc.session;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.function.Function;
 
 public final class WireDecoder {
     public static final int MAX_FIELD_BYTES = 64 * 1024 * 1024;
@@ -71,6 +73,16 @@ public final class WireDecoder {
             values[i] = utf8(source, field + "[" + i + "]");
         }
         return values;
+    }
+
+    /** A decoder that reads little-endian from a private view of the payload and rejects trailing bytes. */
+    public static <T extends CefMessageView> CefMessageDecoder<T> message(String type, Function<ByteBuffer, T> body) {
+        return payload -> {
+            final ByteBuffer buf = payload.duplicate().order(ByteOrder.LITTLE_ENDIAN);
+            final T value = body.apply(buf);
+            requireFullyConsumed(buf, type);
+            return value;
+        };
     }
 
     public static void requireFullyConsumed(ByteBuffer source, String type) {

@@ -23,12 +23,12 @@ public interface CefFindHandler {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__find__handler_8h.html">cef_find_handler.h:51</a>
      */
     @SuppressWarnings("EmptyMethod")
-    default void onFindResult(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int identifier, int count, Rect selectionRect, int activeMatchOrdinal, int finalUpdate) {}
+    default void onFindResult(net.kurobako.cef4j.ipc.session.RemoteHandle browser, int identifier, int count, net.kurobako.cef4j.gen.CefRect selectionRect, int activeMatchOrdinal, int finalUpdate) {}
 
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefFindHandler handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(FindHandlerOnFindResultEvent.MESSAGE_ID, FindHandlerOnFindResultEvent.DECODER,
+                session.on(MessageIds.FIND_HANDLER_ON_FIND_RESULT_EVENT, FindHandlerOnFindResultEvent.DECODER,
                         ev -> handler.onFindResult(ev.browser(), ev.identifier(), ev.count(), ev.selectionRect(), ev.activeMatchOrdinal(), ev.finalUpdate())));
     }
 }

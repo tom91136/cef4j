@@ -9,12 +9,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
+import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessage;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserHost;
+import net.kurobako.cef4j.ipc.protocol.gen.EmptyMessage;
 import net.kurobako.cef4j.ipc.protocol.gen.EvaluateJavascriptRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.EvaluateJavascriptResponse;
-import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeRequest;
-import net.kurobako.cef4j.ipc.protocol.gen.SetViewportSizeResponse;
+import net.kurobako.cef4j.ipc.protocol.gen.ValueKindIntBoolValueBoolIntValueIntDoubleValueLongStringValueStringErrorMessageStringEtc6a348bMessage;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSession.HandlerRegistration;
 import net.kurobako.cef4j.ipc.session.JsResult;
@@ -96,8 +97,8 @@ public final class RemoteBrowserBinding implements AutoCloseable {
         HandlerRegistration registration;
         try {
             registration = session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
-                    LifeSpanHandlerOnAfterCreatedEvent.DECODER,
+                    MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT,
+                    BrowserHandleMessage.DECODER,
                     event -> installBrowser(session, event.browser()));
         } catch (RuntimeException failure) {
             this.session = null;
@@ -186,8 +187,10 @@ public final class RemoteBrowserBinding implements AutoCloseable {
             return new Browser(current, handle)
                     .getMainFrame()
                     .thenCompose(frame -> current.request(
+                            MessageIds.EVALUATE_JAVASCRIPT_REQUEST,
                             new EvaluateJavascriptRequest(frame.handle(), script, false),
-                            EvaluateJavascriptResponse.DECODER))
+                            ValueKindIntBoolValueBoolIntValueIntDoubleValueLongStringValueStringErrorMessageStringEtc6a348bMessage
+                                    .DECODER))
                     .thenApply(RemoteBrowserBinding::stringify);
         });
     }
@@ -239,7 +242,10 @@ public final class RemoteBrowserBinding implements AutoCloseable {
         final int height = (int) desired;
         reportedSize.set(desired);
         return expectedSession
-                .request(new SetViewportSizeRequest(handle, width, height), SetViewportSizeResponse.DECODER)
+                .request(
+                        MessageIds.SET_VIEWPORT_SIZE_REQUEST,
+                        new SetViewportSizeRequest(handle, width, height),
+                        EmptyMessage.DECODER)
                 .thenApply(ignored -> (Void) null)
                 .whenComplete((ignored, failure) -> {
                     if (failure != null) {
@@ -304,7 +310,9 @@ public final class RemoteBrowserBinding implements AutoCloseable {
         return ((long) width << 32) | (height & 0xFFFFFFFFL);
     }
 
-    private static String stringify(EvaluateJavascriptResponse response) {
+    private static String stringify(
+            ValueKindIntBoolValueBoolIntValueIntDoubleValueLongStringValueStringErrorMessageStringEtc6a348bMessage
+                    response) {
         return JsResult.fromWire(
                         response.valueKind(),
                         response.boolValue(),

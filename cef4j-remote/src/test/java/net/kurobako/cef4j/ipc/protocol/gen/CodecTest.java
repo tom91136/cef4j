@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import net.kurobako.cef4j.gen.CefBrowserSettings;
+import net.kurobako.cef4j.gen.CefRect;
+import net.kurobako.cef4j.gen.CefState;
 import org.junit.jupiter.api.Test;
 
 class CodecTest {
@@ -18,76 +21,73 @@ class CodecTest {
     @Test
     void frameLoadUrlRoundTrip() {
         net.kurobako.cef4j.ipc.session.RemoteHandle frameHandle = new net.kurobako.cef4j.ipc.session.RemoteHandle(42);
-        FrameLoadUrlRequest original = new FrameLoadUrlRequest(frameHandle, "https://example.com/path?q=1");
-        FrameLoadUrlRequest decoded = FrameLoadUrlRequest.DECODER.decode(encode(original));
+        SelfHandleUrlStringMessage original =
+                new SelfHandleUrlStringMessage(frameHandle, "https://example.com/path?q=1");
+        SelfHandleUrlStringMessage decoded = SelfHandleUrlStringMessage.DECODER.decode(encode(original));
         assertThat(decoded.url()).isEqualTo(original.url());
         assertThat(decoded.self().id()).isEqualTo(frameHandle.id());
     }
 
     @Test
     void frameLoadUrlEmptyRoundTrips() {
-        FrameLoadUrlRequest decoded = FrameLoadUrlRequest.DECODER.decode(
-                encode(new FrameLoadUrlRequest(new net.kurobako.cef4j.ipc.session.RemoteHandle(1), "")));
+        SelfHandleUrlStringMessage decoded = SelfHandleUrlStringMessage.DECODER.decode(
+                encode(new SelfHandleUrlStringMessage(new net.kurobako.cef4j.ipc.session.RemoteHandle(1), "")));
         assertThat(decoded.url()).isEmpty();
     }
 
     @Test
     void frameLoadUrlUnicodeRoundTrips() {
-        FrameLoadUrlRequest decoded = FrameLoadUrlRequest.DECODER.decode(encode(
-                new FrameLoadUrlRequest(new net.kurobako.cef4j.ipc.session.RemoteHandle(1), "https://例え.test/路径")));
+        SelfHandleUrlStringMessage decoded =
+                SelfHandleUrlStringMessage.DECODER.decode(encode(new SelfHandleUrlStringMessage(
+                        new net.kurobako.cef4j.ipc.session.RemoteHandle(1), "https://例え.test/路径")));
         assertThat(decoded.url()).isEqualTo("https://例え.test/路径");
     }
 
     @Test
     void lifeSpanOnAfterCreatedEventRoundTrip() {
-        LifeSpanHandlerOnAfterCreatedEvent original =
-                new LifeSpanHandlerOnAfterCreatedEvent(new net.kurobako.cef4j.ipc.session.RemoteHandle(7));
-        LifeSpanHandlerOnAfterCreatedEvent decoded =
-                LifeSpanHandlerOnAfterCreatedEvent.DECODER.decode(encode(original));
+        BrowserHandleMessage original = new BrowserHandleMessage(new net.kurobako.cef4j.ipc.session.RemoteHandle(7));
+        BrowserHandleMessage decoded = BrowserHandleMessage.DECODER.decode(encode(original));
         assertThat(decoded.browser().id()).isEqualTo(7);
-        assertThat(decoded.messageId()).isEqualTo(LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID);
     }
 
     @Test
     void handWrittenMessageIdsAreStable() {
-        assertThat(ReleaseHandleRequest.MESSAGE_ID).isEqualTo(6);
+        assertThat(MessageIds.RELEASE_HANDLE_REQUEST).isEqualTo(6);
     }
 
     @Test
     void dataStructRoundTripRect() {
-        Rect original = new Rect(10, 20, 800, 600);
-        ByteBuffer buf = ByteBuffer.allocate(original.encodedSize()).order(ByteOrder.LITTLE_ENDIAN);
-        original.encodeInto(buf);
+        CefRect original = new CefRect(10, 20, 800, 600);
+        ByteBuffer buf = ByteBuffer.allocate(RectCodec.encodedSize(original)).order(ByteOrder.LITTLE_ENDIAN);
+        RectCodec.encode(buf, original);
         buf.flip();
-        Rect decoded = Rect.decode(buf);
-        assertThat(decoded.x()).isEqualTo(10);
-        assertThat(decoded.y()).isEqualTo(20);
-        assertThat(decoded.width()).isEqualTo(800);
-        assertThat(decoded.height()).isEqualTo(600);
+        assertThat(RectCodec.decode(buf)).isEqualTo(original);
     }
 
     @Test
     void dataStructRoundTripBrowserSettings() {
-        BrowserSettings settings = BrowserSettings.builder()
-                .windowlessFrameRate(30)
-                .fantasyFontFamily("Times New Roman")
-                .defaultEncoding("UTF-8")
-                .javascript(1)
-                .defaultFontSize(16)
-                .defaultFixedFontSize(13)
-                .minimumLogicalFontSize(6)
-                .backgroundColor(0xFFFFFF)
-                .build();
+        CefBrowserSettings.Mutable settings = new CefBrowserSettings.Mutable();
+        settings.windowlessFrameRate = 30;
+        settings.fantasyFontFamily = "Times New Roman";
+        settings.defaultEncoding = "UTF-8";
+        settings.javascript = CefState.of(CefState.Kind.ENABLED);
+        settings.defaultFontSize = 16;
+        settings.defaultFixedFontSize = 13;
+        settings.minimumLogicalFontSize = 6;
+        settings.backgroundColor = 0xFFFFFF;
 
-        ByteBuffer buf = ByteBuffer.allocate(settings.encodedSize()).order(ByteOrder.LITTLE_ENDIAN);
-        settings.encodeInto(buf);
+        CefBrowserSettings original = settings.toImmutable();
+        ByteBuffer buf =
+                ByteBuffer.allocate(BrowserSettingsCodec.encodedSize(original)).order(ByteOrder.LITTLE_ENDIAN);
+        BrowserSettingsCodec.encode(buf, original);
         buf.flip();
-        BrowserSettings decoded = BrowserSettings.decode(buf);
-        assertThat(decoded.windowlessFrameRate()).isEqualTo(30);
-        assertThat(decoded.fantasyFontFamily()).isEqualTo("Times New Roman");
-        assertThat(decoded.defaultEncoding()).isEqualTo("UTF-8");
-        assertThat(decoded.backgroundColor()).isEqualTo(0xFFFFFF);
-        assertThat(decoded.standardFontFamily()).isEmpty();
-        assertThat(decoded.remoteFonts()).isZero();
+        CefBrowserSettings decoded = BrowserSettingsCodec.decode(buf);
+        assertThat(decoded.windowlessFrameRate).isEqualTo(30);
+        assertThat(decoded.fantasyFontFamily).isEqualTo("Times New Roman");
+        assertThat(decoded.defaultEncoding).isEqualTo("UTF-8");
+        assertThat(decoded.javascript).isEqualTo(CefState.of(CefState.Kind.ENABLED));
+        assertThat(decoded.backgroundColor).isEqualTo(0xFFFFFF);
+        assertThat(decoded.standardFontFamily).isEmpty();
+        assertThat(decoded.remoteFonts).isEqualTo(CefState.of(0));
     }
 }

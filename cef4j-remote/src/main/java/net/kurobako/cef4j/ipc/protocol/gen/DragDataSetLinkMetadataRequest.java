@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,11 +9,10 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class DragDataSetLinkMetadataRequest implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 1356095437;
 
     private final RemoteHandle self;
     private final String data;
@@ -35,34 +33,21 @@ public final class DragDataSetLinkMetadataRequest implements CefMessageView, Cef
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 8 + dataBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putInt(dataBytes.length);
-            __dst.put(dataBytes);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            WireEncoder.bytes(__out, dataBytes);
+        });
     }
 
-    public static final CefMessageDecoder<DragDataSetLinkMetadataRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<DragDataSetLinkMetadataRequest> DECODER = WireDecoder.message("DragDataSetLinkMetadataRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final String data = WireDecoder.utf8(__buf, "data");
-        WireDecoder.requireFullyConsumed(__buf, "DragDataSetLinkMetadataRequest");
         return new DragDataSetLinkMetadataRequest(self, data);
-    };
+    });
 }

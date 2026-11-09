@@ -11,6 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.protocol.gen.V8ContextCreatedEvent;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
@@ -41,7 +42,7 @@ class RemoteNavigationProbeTest {
             CountDownLatch firstObserved = new CountDownLatch(1);
             AtomicReference<CountDownLatch> observed = new AtomicReference<>(firstObserved);
             CefSession.HandlerRegistration registration = session.on(
-                    V8ContextCreatedEvent.MESSAGE_ID,
+                    MessageIds.V8_CONTEXT_CREATED_EVENT,
                     V8ContextCreatedEvent.DECODER,
                     event -> Objects.requireNonNull(observed.get(), "event barrier")
                             .countDown());
@@ -78,7 +79,7 @@ class RemoteNavigationProbeTest {
                 RemoteNavigationProbe navigation = new RemoteNavigationProbe(session, () -> new RemoteHandle(1))) {
             CountDownLatch observed = new CountDownLatch(1);
             CefSession.HandlerRegistration registration = session.on(
-                    V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, event -> observed.countDown());
+                    MessageIds.V8_CONTEXT_CREATED_EVENT, V8ContextCreatedEvent.DECODER, event -> observed.countDown());
             try {
                 CompletableFuture<Void> queued = new CompletableFuture<>();
                 CompletableFuture<Void> loaded =
@@ -180,7 +181,7 @@ class RemoteNavigationProbeTest {
                         Envelope.Kind.EVENT,
                         0,
                         Envelope.NO_CORR_ID,
-                        V8ContextCreatedEvent.MESSAGE_ID));
+                        MessageIds.V8_CONTEXT_CREATED_EVENT));
         event.encodeInto(frame);
         frame.flip();
         peer.send(frame);

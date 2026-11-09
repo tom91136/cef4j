@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -23,14 +24,14 @@ public interface CefClient {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__client_8h.html">cef_client.h:188</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> onProcessMessageReceived(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, int sourceProcess, net.kurobako.cef4j.ipc.session.RemoteHandle message) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> onProcessMessageReceived(net.kurobako.cef4j.ipc.session.RemoteHandle browser, net.kurobako.cef4j.ipc.session.RemoteHandle frame, int sourceProcess, net.kurobako.cef4j.ipc.session.RemoteHandle message) { return Unhandled.bool(); }
 
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefClient handler) {
         return CefSession.HandlerRegistration.combine(
-                session.intercept(ClientOnProcessMessageReceivedEvent.MESSAGE_ID, ClientOnProcessMessageReceivedEvent.DECODER, ev -> {
+                session.intercept(MessageIds.CLIENT_ON_PROCESS_MESSAGE_RECEIVED_EVENT, BrowserHandleFrameHandleSourceProcessIntMessageHandleMessage.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onProcessMessageReceived(ev.browser(), ev.frame(), ev.sourceProcess(), ev.message());
-                    return java.util.Optional.of(new ClientOnProcessMessageReceivedResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.CLIENT_ON_PROCESS_MESSAGE_RECEIVED_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }));
     }
 }

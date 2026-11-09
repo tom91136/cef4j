@@ -3,7 +3,6 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.processing.Generated;
-import org.jspecify.annotations.Nullable;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
@@ -14,40 +13,10 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
  * ref-counted CEF object.
  */
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class ZipReader implements AutoCloseable {
-
-    private final CefSession session;
-    private final RemoteHandle handle;
-    private final Object closeLock = new Object();
-    @Nullable private CompletableFuture<Void> closeFuture;
+public final class ZipReader extends BrowserFacade {
 
     public ZipReader(CefSession session, RemoteHandle handle) {
-        this.session = session;
-        this.handle = handle;
-    }
-
-    public RemoteHandle handle() {
-        return handle;
-    }
-
-    public CompletableFuture<Void> closeAsync() {
-        synchronized (closeLock) {
-            if (closeFuture == null) {
-                closeFuture = CefFutures.discard(session.request(
-                    new ReleaseHandleRequest(handle, "cef_zip_reader_t"), ReleaseHandleResponse.DECODER));
-            }
-            return closeFuture;
-        }
-    }
-
-    public CompletableFuture<Void> releaseHandle() {
-        return closeAsync();
-    }
-
-    @Override
-    @SuppressWarnings("FutureReturnValueIgnored")
-    public void close() {
-        closeAsync();
+        super(session, handle, "cef_zip_reader_t");
     }
 
     /**
@@ -58,8 +27,8 @@ public final class ZipReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> moveToFirstFile() {
         return CefFutures.map(
-            session.request(new ZipReaderMoveToFirstFileRequest(handle), ZipReaderMoveToFirstFileResponse.DECODER),
-            ZipReaderMoveToFirstFileResponse::result);
+            session.request(MessageIds.ZIP_READER_MOVE_TO_FIRST_FILE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -70,8 +39,8 @@ public final class ZipReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> moveToNextFile() {
         return CefFutures.map(
-            session.request(new ZipReaderMoveToNextFileRequest(handle), ZipReaderMoveToNextFileResponse.DECODER),
-            ZipReaderMoveToNextFileResponse::result);
+            session.request(MessageIds.ZIP_READER_MOVE_TO_NEXT_FILE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -82,8 +51,8 @@ public final class ZipReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> moveToFile(String fileName, int caseSensitive) {
         return CefFutures.map(
-            session.request(new ZipReaderMoveToFileRequest(handle, fileName, caseSensitive), ZipReaderMoveToFileResponse.DECODER),
-            ZipReaderMoveToFileResponse::result);
+            session.request(MessageIds.ZIP_READER_MOVE_TO_FILE_REQUEST, new ZipReaderMoveToFileRequest(handle, fileName, caseSensitive), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -94,8 +63,8 @@ public final class ZipReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> cefClose() {
         return CefFutures.map(
-            session.request(new ZipReaderCloseRequest(handle), ZipReaderCloseResponse.DECODER),
-            ZipReaderCloseResponse::result);
+            session.request(MessageIds.ZIP_READER_CLOSE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -106,8 +75,8 @@ public final class ZipReader implements AutoCloseable {
      */
     public CompletableFuture<String> getFileName() {
         return CefFutures.map(
-            session.request(new ZipReaderGetFileNameRequest(handle), ZipReaderGetFileNameResponse.DECODER),
-            ZipReaderGetFileNameResponse::result);
+            session.request(MessageIds.ZIP_READER_GET_FILE_NAME_REQUEST, new SelfHandleMessage(handle), ResultStringMessage.DECODER),
+            ResultStringMessage::result);
     }
 
     /**
@@ -118,8 +87,8 @@ public final class ZipReader implements AutoCloseable {
      */
     public CompletableFuture<Long> getFileSize() {
         return CefFutures.map(
-            session.request(new ZipReaderGetFileSizeRequest(handle), ZipReaderGetFileSizeResponse.DECODER),
-            ZipReaderGetFileSizeResponse::result);
+            session.request(MessageIds.ZIP_READER_GET_FILE_SIZE_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -128,10 +97,10 @@ public final class ZipReader implements AutoCloseable {
      *
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__zip__reader_8h.html">cef_zip_reader.h:101</a>
      */
-    public CompletableFuture<BaseTime> getFileLastModified() {
+    public CompletableFuture<net.kurobako.cef4j.gen.CefBaseTime> getFileLastModified() {
         return CefFutures.map(
-            session.request(new ZipReaderGetFileLastModifiedRequest(handle), ZipReaderGetFileLastModifiedResponse.DECODER),
-            ZipReaderGetFileLastModifiedResponse::result);
+            session.request(MessageIds.ZIP_READER_GET_FILE_LAST_MODIFIED_REQUEST, new SelfHandleMessage(handle), ResultCefBaseTimeMessage.DECODER),
+            ResultCefBaseTimeMessage::result);
     }
 
     /**
@@ -144,8 +113,8 @@ public final class ZipReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> openFile(String password) {
         return CefFutures.map(
-            session.request(new ZipReaderOpenFileRequest(handle, password), ZipReaderOpenFileResponse.DECODER),
-            ZipReaderOpenFileResponse::result);
+            session.request(MessageIds.ZIP_READER_OPEN_FILE_REQUEST, new ZipReaderOpenFileRequest(handle, password), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -156,8 +125,8 @@ public final class ZipReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> closeFile() {
         return CefFutures.map(
-            session.request(new ZipReaderCloseFileRequest(handle), ZipReaderCloseFileResponse.DECODER),
-            ZipReaderCloseFileResponse::result);
+            session.request(MessageIds.ZIP_READER_CLOSE_FILE_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 
     /**
@@ -168,8 +137,8 @@ public final class ZipReader implements AutoCloseable {
      */
     public CompletableFuture<Long> tell() {
         return CefFutures.map(
-            session.request(new ZipReaderTellRequest(handle), ZipReaderTellResponse.DECODER),
-            ZipReaderTellResponse::result);
+            session.request(MessageIds.ZIP_READER_TELL_REQUEST, new SelfHandleMessage(handle), ResultLongMessage.DECODER),
+            ResultLongMessage::result);
     }
 
     /**
@@ -180,7 +149,7 @@ public final class ZipReader implements AutoCloseable {
      */
     public CompletableFuture<Integer> eof() {
         return CefFutures.map(
-            session.request(new ZipReaderEofRequest(handle), ZipReaderEofResponse.DECODER),
-            ZipReaderEofResponse::result);
+            session.request(MessageIds.ZIP_READER_EOF_REQUEST, new SelfHandleMessage(handle), ResultIntMessage.DECODER),
+            ResultIntMessage::result);
     }
 }

@@ -40,9 +40,9 @@ public interface CefMediaObserver {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefMediaObserver handler) {
         return CefSession.HandlerRegistration.combine(
-                session.on(MediaObserverOnRouteStateChangedEvent.MESSAGE_ID, MediaObserverOnRouteStateChangedEvent.DECODER,
+                session.on(MessageIds.MEDIA_OBSERVER_ON_ROUTE_STATE_CHANGED_EVENT, MediaObserverOnRouteStateChangedEvent.DECODER,
                         ev -> handler.onRouteStateChanged(ev.route(), ev.state())),
-                session.on(MediaObserverOnRouteMessageReceivedEvent.MESSAGE_ID, MediaObserverOnRouteMessageReceivedEvent.DECODER,
+                session.on(MessageIds.MEDIA_OBSERVER_ON_ROUTE_MESSAGE_RECEIVED_EVENT, MediaObserverOnRouteMessageReceivedEvent.DECODER,
                         ev -> handler.onRouteMessageReceived(ev.route(), ev.message())));
     }
 }

@@ -1,7 +1,6 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -10,6 +9,8 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
+import net.kurobako.cef4j.cdp.CdpField;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpValue;
@@ -26,6 +27,28 @@ import org.jspecify.annotations.Nullable;
 @NullableBoundary("CDP wire objects use null for absent optional fields")
 public final class LayerTree {
     private LayerTree() {}
+    private static final CdpField<DOM.BackendNodeId> BACKEND_NODE_ID = CdpField.of("backendNodeId", value -> new DOM.BackendNodeId(((Number) value).longValue()));
+    private static final CdpField<DOM.Rect> CLIP = CdpField.of("clip", value -> java.util.Objects.requireNonNull(DOM.Rect.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<DOM.Rect> CLIP_RECT = CdpField.of("clipRect", value -> java.util.Objects.requireNonNull(DOM.Rect.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<java.util.Map<String, Object>>> COMMAND_LOG = CdpField.of("commandLog", value -> CdpObject.requireList(value, element0 -> CdpObject.requireObjectMap(element0)));
+    private static final CdpField<java.util.List<String>> COMPOSITING_REASONS = CdpField.of("compositingReasons", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<java.util.List<String>> COMPOSITING_REASON_IDS = CdpField.of("compositingReasonIds", value -> CdpObject.requireList(value, element0 -> (String) element0));
+    private static final CdpField<DOM.Rect> CONTAINING_BLOCK_RECT = CdpField.of("containingBlockRect", value -> java.util.Objects.requireNonNull(DOM.Rect.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<String> DATA_URL = CdpField.of("dataURL", value -> (String) value);
+    private static final CdpField<java.util.List<LayerTree.Layer>> LAYERS = CdpField.of("layers", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(LayerTree.Layer.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<LayerTree.LayerId> LAYER_ID = CdpField.of("layerId", value -> new LayerTree.LayerId((String) value));
+    private static final CdpField<LayerTree.LayerId> NEAREST_LAYER_SHIFTING_CONTAINING_BLOCK = CdpField.of("nearestLayerShiftingContainingBlock", value -> new LayerTree.LayerId((String) value));
+    private static final CdpField<LayerTree.LayerId> NEAREST_LAYER_SHIFTING_STICKY_BOX = CdpField.of("nearestLayerShiftingStickyBox", value -> new LayerTree.LayerId((String) value));
+    private static final CdpField<LayerTree.LayerId> PARENT_LAYER_ID = CdpField.of("parentLayerId", value -> new LayerTree.LayerId((String) value));
+    private static final CdpField<DOM.Rect> RECT = CdpField.of("rect", value -> java.util.Objects.requireNonNull(DOM.Rect.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<LayerTree.ScrollRect>> SCROLL_RECTS = CdpField.of("scrollRects", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(LayerTree.ScrollRect.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<LayerTree.SnapshotId> SNAPSHOT_ID = CdpField.of("snapshotId", value -> new LayerTree.SnapshotId((String) value));
+    private static final CdpField<DOM.Rect> STICKY_BOX_RECT = CdpField.of("stickyBoxRect", value -> java.util.Objects.requireNonNull(DOM.Rect.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<LayerTree.StickyPositionConstraint> STICKY_POSITION_CONSTRAINT = CdpField.of("stickyPositionConstraint", value -> java.util.Objects.requireNonNull(LayerTree.StickyPositionConstraint.fromMap(CdpObject.requireObjectMap(value))));
+    private static final CdpField<java.util.List<LayerTree.PictureTile>> TILES = CdpField.of("tiles", value -> CdpObject.requireList(value, element0 -> java.util.Objects.requireNonNull(LayerTree.PictureTile.fromMap(CdpObject.requireObjectMap(element0)))));
+    private static final CdpField<java.util.List<java.util.List<Double>>> TIMINGS = CdpField.of("timings", value -> CdpObject.requireList(value, element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
+    private static final CdpField<java.util.List<Double>> TRANSFORM = CdpField.of("transform", value -> CdpObject.requireList(value, element0 -> ((Number) element0).doubleValue()));
+    private static final CdpField<ScrollRect.TypeValues> TYPE = CdpField.of("type", value -> ScrollRect.TypeValues.of((String) value));
     /**
      * Unique Layer identifier.
      */
@@ -87,14 +110,14 @@ public final class LayerTree {
          * @return the protocol field value
          */
         public DOM.Rect rect() {
-            return java.util.Objects.requireNonNull(DOM.Rect.fromMap(CdpObject.requireObjectMap(require("rect"))));
+            return require(RECT);
         }
         /**
          * Reason for rectangle to force scrolling on the main thread
          * @return the protocol field value
          */
         public ScrollRect.TypeValues type() {
-            return ScrollRect.TypeValues.of((String) require("type"));
+            return require(TYPE);
         }
         /**
          * Rectangle itself.
@@ -129,28 +152,28 @@ public final class LayerTree {
          * @return the protocol field value
          */
         public DOM.Rect stickyBoxRect() {
-            return java.util.Objects.requireNonNull(DOM.Rect.fromMap(CdpObject.requireObjectMap(require("stickyBoxRect"))));
+            return require(STICKY_BOX_RECT);
         }
         /**
          * Layout rectangle of the containing block of the sticky element
          * @return the protocol field value
          */
         public DOM.Rect containingBlockRect() {
-            return java.util.Objects.requireNonNull(DOM.Rect.fromMap(CdpObject.requireObjectMap(require("containingBlockRect"))));
+            return require(CONTAINING_BLOCK_RECT);
         }
         /**
          * The nearest sticky layer that shifts the sticky box
          * @return the protocol field value, empty when absent
          */
         public Optional<LayerTree.LayerId> nearestLayerShiftingStickyBox() {
-            return raw("nearestLayerShiftingStickyBox").map(value -> new LayerTree.LayerId((String) value));
+            return optional(NEAREST_LAYER_SHIFTING_STICKY_BOX);
         }
         /**
          * The nearest sticky layer that shifts the containing block
          * @return the protocol field value, empty when absent
          */
         public Optional<LayerTree.LayerId> nearestLayerShiftingContainingBlock() {
-            return raw("nearestLayerShiftingContainingBlock").map(value -> new LayerTree.LayerId((String) value));
+            return optional(NEAREST_LAYER_SHIFTING_CONTAINING_BLOCK);
         }
         /**
          * Layout rectangle of the sticky element before being shifted
@@ -203,21 +226,21 @@ public final class LayerTree {
          * @return the protocol field value
          */
         public double x() {
-            return ((Number) require("x")).doubleValue();
+            return requireDouble("x");
         }
         /**
          * Offset from owning layer top boundary
          * @return the protocol field value
          */
         public double y() {
-            return ((Number) require("y")).doubleValue();
+            return requireDouble("y");
         }
         /**
          * Base64-encoded snapshot data. (Encoded as a base64 string when passed over JSON)
          * @return the protocol field value
          */
         public String picture() {
-            return (String) require("picture");
+            return requireString("picture");
         }
         /**
          * Offset from owning layer left boundary
@@ -261,112 +284,112 @@ public final class LayerTree {
          * @return the protocol field value
          */
         public LayerTree.LayerId layerId() {
-            return new LayerTree.LayerId((String) require("layerId"));
+            return require(LAYER_ID);
         }
         /**
          * The id of parent (not present for root).
          * @return the protocol field value, empty when absent
          */
         public Optional<LayerTree.LayerId> parentLayerId() {
-            return raw("parentLayerId").map(value -> new LayerTree.LayerId((String) value));
+            return optional(PARENT_LAYER_ID);
         }
         /**
          * The backend id for the node associated with this layer.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.BackendNodeId> backendNodeId() {
-            return raw("backendNodeId").map(value -> new DOM.BackendNodeId(((Number) value).longValue()));
+            return optional(BACKEND_NODE_ID);
         }
         /**
          * Offset from parent layer, X coordinate.
          * @return the protocol field value
          */
         public double offsetX() {
-            return ((Number) require("offsetX")).doubleValue();
+            return requireDouble("offsetX");
         }
         /**
          * Offset from parent layer, Y coordinate.
          * @return the protocol field value
          */
         public double offsetY() {
-            return ((Number) require("offsetY")).doubleValue();
+            return requireDouble("offsetY");
         }
         /**
          * Layer width.
          * @return the protocol field value
          */
         public double width() {
-            return ((Number) require("width")).doubleValue();
+            return requireDouble("width");
         }
         /**
          * Layer height.
          * @return the protocol field value
          */
         public double height() {
-            return ((Number) require("height")).doubleValue();
+            return requireDouble("height");
         }
         /**
          * Transformation matrix for layer, default is identity matrix
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<Double>> transform() {
-            return raw("transform").flatMap(value -> list(value, element0 -> ((Number) element0).doubleValue()));
+            return optional(TRANSFORM);
         }
         /**
          * Transform anchor point X, absent if no transform specified
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble anchorX() {
-            return raw("anchorX").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("anchorX");
         }
         /**
          * Transform anchor point Y, absent if no transform specified
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble anchorY() {
-            return raw("anchorY").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("anchorY");
         }
         /**
          * Transform anchor point Z, absent if no transform specified
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble anchorZ() {
-            return raw("anchorZ").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("anchorZ");
         }
         /**
          * Indicates how many time this layer has painted.
          * @return the protocol field value
          */
         public long paintCount() {
-            return ((Number) require("paintCount")).longValue();
+            return requireLong("paintCount");
         }
         /**
          * Indicates whether this layer hosts any content, rather than being used for transform/scrolling purposes only.
          * @return the protocol field value
          */
         public boolean drawsContent() {
-            return (Boolean) require("drawsContent");
+            return requireBoolean("drawsContent");
         }
         /**
          * Set if layer is not visible.
          * @return the protocol field value, empty when absent
          */
         public Optional<Boolean> invisible() {
-            return raw("invisible").map(value -> (Boolean) value);
+            return optionalBoolean("invisible");
         }
         /**
          * Rectangles scrolling on main thread only.
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<LayerTree.ScrollRect>> scrollRects() {
-            return raw("scrollRects").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(LayerTree.ScrollRect.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(SCROLL_RECTS);
         }
         /**
          * Sticky position constraint information
          * @return the protocol field value, empty when absent
          */
         public Optional<LayerTree.StickyPositionConstraint> stickyPositionConstraint() {
-            return raw("stickyPositionConstraint").flatMap(CdpObject::objectMap).map(LayerTree.StickyPositionConstraint::fromMap);
+            return optional(STICKY_POSITION_CONSTRAINT);
         }
         /**
          * The unique id for this layer.
@@ -518,13 +541,6 @@ public final class LayerTree {
      */
     public static final class CompositingReasonsRequest extends CdpObject {
         public CompositingReasonsRequest() {}
-        /**
-         * Provides the reasons why the given layer was composited.
-         * @param layerId protocol value
-         */
-        public CompositingReasonsRequest(LayerTree.LayerId layerId) {
-            layerId(layerId);
-        }
         public static CompositingReasonsRequest fromMap(Map<String, Object> values) {
             final CompositingReasonsRequest instance_ = new CompositingReasonsRequest();
             if (values != null) instance_.values.putAll(values);
@@ -535,7 +551,7 @@ public final class LayerTree {
          * @return the protocol field value
          */
         public LayerTree.LayerId layerId() {
-            return new LayerTree.LayerId((String) require("layerId"));
+            return require(LAYER_ID);
         }
         /**
          * The id of the layer for which we want to get the reasons it was composited.
@@ -552,13 +568,6 @@ public final class LayerTree {
      */
     public static final class LoadSnapshotRequest extends CdpObject {
         public LoadSnapshotRequest() {}
-        /**
-         * Returns the snapshot identifier.
-         * @param tiles protocol value
-         */
-        public LoadSnapshotRequest(java.util.List<LayerTree.PictureTile> tiles) {
-            tiles(tiles);
-        }
         public static LoadSnapshotRequest fromMap(Map<String, Object> values) {
             final LoadSnapshotRequest instance_ = new LoadSnapshotRequest();
             if (values != null) instance_.values.putAll(values);
@@ -569,7 +578,7 @@ public final class LayerTree {
          * @return the protocol field value
          */
         public java.util.List<LayerTree.PictureTile> tiles() {
-            return CdpObject.requireList(require("tiles"), element0 -> java.util.Objects.requireNonNull(LayerTree.PictureTile.fromMap(CdpObject.requireObjectMap(element0))));
+            return require(TILES);
         }
         /**
          * An array of tiles composing the snapshot.
@@ -586,13 +595,6 @@ public final class LayerTree {
      */
     public static final class MakeSnapshotRequest extends CdpObject {
         public MakeSnapshotRequest() {}
-        /**
-         * Returns the layer snapshot identifier.
-         * @param layerId protocol value
-         */
-        public MakeSnapshotRequest(LayerTree.LayerId layerId) {
-            layerId(layerId);
-        }
         public static MakeSnapshotRequest fromMap(Map<String, Object> values) {
             final MakeSnapshotRequest instance_ = new MakeSnapshotRequest();
             if (values != null) instance_.values.putAll(values);
@@ -603,7 +605,7 @@ public final class LayerTree {
          * @return the protocol field value
          */
         public LayerTree.LayerId layerId() {
-            return new LayerTree.LayerId((String) require("layerId"));
+            return require(LAYER_ID);
         }
         /**
          * The id of the layer.
@@ -620,13 +622,6 @@ public final class LayerTree {
      */
     public static final class ProfileSnapshotRequest extends CdpObject {
         public ProfileSnapshotRequest() {}
-        /**
-         * Creates a new ProfileSnapshotRequest with all required parameters.
-         * @param snapshotId protocol value
-         */
-        public ProfileSnapshotRequest(LayerTree.SnapshotId snapshotId) {
-            snapshotId(snapshotId);
-        }
         public static ProfileSnapshotRequest fromMap(Map<String, Object> values) {
             final ProfileSnapshotRequest instance_ = new ProfileSnapshotRequest();
             if (values != null) instance_.values.putAll(values);
@@ -637,28 +632,28 @@ public final class LayerTree {
          * @return the protocol field value
          */
         public LayerTree.SnapshotId snapshotId() {
-            return new LayerTree.SnapshotId((String) require("snapshotId"));
+            return require(SNAPSHOT_ID);
         }
         /**
          * The maximum number of times to replay the snapshot (1, if not specified).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong minRepeatCount() {
-            return raw("minRepeatCount").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("minRepeatCount");
         }
         /**
          * The minimum duration (in seconds) to replay the snapshot.
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble minDuration() {
-            return raw("minDuration").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("minDuration");
         }
         /**
          * The clip rectangle to apply when replaying the snapshot.
          * @return the protocol field value, empty when absent
          */
         public Optional<DOM.Rect> clipRect() {
-            return raw("clipRect").flatMap(CdpObject::objectMap).map(DOM.Rect::fromMap);
+            return optional(CLIP_RECT);
         }
         /**
          * The id of the layer snapshot.
@@ -702,13 +697,6 @@ public final class LayerTree {
      */
     public static final class ReleaseSnapshotRequest extends CdpObject {
         public ReleaseSnapshotRequest() {}
-        /**
-         * Releases layer snapshot captured by the back-end.
-         * @param snapshotId protocol value
-         */
-        public ReleaseSnapshotRequest(LayerTree.SnapshotId snapshotId) {
-            snapshotId(snapshotId);
-        }
         public static ReleaseSnapshotRequest fromMap(Map<String, Object> values) {
             final ReleaseSnapshotRequest instance_ = new ReleaseSnapshotRequest();
             if (values != null) instance_.values.putAll(values);
@@ -719,7 +707,7 @@ public final class LayerTree {
          * @return the protocol field value
          */
         public LayerTree.SnapshotId snapshotId() {
-            return new LayerTree.SnapshotId((String) require("snapshotId"));
+            return require(SNAPSHOT_ID);
         }
         /**
          * The id of the layer snapshot.
@@ -736,13 +724,6 @@ public final class LayerTree {
      */
     public static final class ReplaySnapshotRequest extends CdpObject {
         public ReplaySnapshotRequest() {}
-        /**
-         * Replays the layer snapshot and returns the resulting bitmap.
-         * @param snapshotId protocol value
-         */
-        public ReplaySnapshotRequest(LayerTree.SnapshotId snapshotId) {
-            snapshotId(snapshotId);
-        }
         public static ReplaySnapshotRequest fromMap(Map<String, Object> values) {
             final ReplaySnapshotRequest instance_ = new ReplaySnapshotRequest();
             if (values != null) instance_.values.putAll(values);
@@ -753,28 +734,28 @@ public final class LayerTree {
          * @return the protocol field value
          */
         public LayerTree.SnapshotId snapshotId() {
-            return new LayerTree.SnapshotId((String) require("snapshotId"));
+            return require(SNAPSHOT_ID);
         }
         /**
          * The first step to replay from (replay from the very start if not specified).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong fromStep() {
-            return raw("fromStep").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("fromStep");
         }
         /**
          * The last step to replay to (replay till the end if not specified).
          * @return the protocol field value, empty when absent
          */
         public OptionalLong toStep() {
-            return raw("toStep").flatMap(CdpObject::numberAsLong).stream().mapToLong(Long::longValue).findFirst();
+            return optionalLong("toStep");
         }
         /**
          * The scale to apply while replaying (defaults to 1).
          * @return the protocol field value, empty when absent
          */
         public OptionalDouble scale() {
-            return raw("scale").flatMap(CdpObject::numberAsDouble).stream().mapToDouble(Double::doubleValue).findFirst();
+            return optionalDouble("scale");
         }
         /**
          * The id of the layer snapshot.
@@ -818,13 +799,6 @@ public final class LayerTree {
      */
     public static final class SnapshotCommandLogRequest extends CdpObject {
         public SnapshotCommandLogRequest() {}
-        /**
-         * Replays the layer snapshot and returns canvas log.
-         * @param snapshotId protocol value
-         */
-        public SnapshotCommandLogRequest(LayerTree.SnapshotId snapshotId) {
-            snapshotId(snapshotId);
-        }
         public static SnapshotCommandLogRequest fromMap(Map<String, Object> values) {
             final SnapshotCommandLogRequest instance_ = new SnapshotCommandLogRequest();
             if (values != null) instance_.values.putAll(values);
@@ -835,7 +809,7 @@ public final class LayerTree {
          * @return the protocol field value
          */
         public LayerTree.SnapshotId snapshotId() {
-            return new LayerTree.SnapshotId((String) require("snapshotId"));
+            return require(SNAPSHOT_ID);
         }
         /**
          * The id of the layer snapshot.
@@ -861,14 +835,14 @@ public final class LayerTree {
          * @return the protocol field value
          */
         public java.util.List<String> compositingReasons() {
-            return CdpObject.requireList(require("compositingReasons"), element0 -> (String) element0);
+            return require(COMPOSITING_REASONS);
         }
         /**
          * A list of strings specifying reason IDs for the given layer to become composited.
          * @return the protocol field value
          */
         public java.util.List<String> compositingReasonIds() {
-            return CdpObject.requireList(require("compositingReasonIds"), element0 -> (String) element0);
+            return require(COMPOSITING_REASON_IDS);
         }
         /**
          * A list of strings specifying reasons for the given layer to become composited.
@@ -903,14 +877,14 @@ public final class LayerTree {
          * @return the protocol field value
          */
         public LayerTree.LayerId layerId() {
-            return new LayerTree.LayerId((String) require("layerId"));
+            return require(LAYER_ID);
         }
         /**
          * Clip rectangle.
          * @return the protocol field value
          */
         public DOM.Rect clip() {
-            return java.util.Objects.requireNonNull(DOM.Rect.fromMap(CdpObject.requireObjectMap(require("clip"))));
+            return require(CLIP);
         }
         /**
          * The id of the painted layer.
@@ -945,7 +919,7 @@ public final class LayerTree {
          * @return the protocol field value, empty when absent
          */
         public Optional<java.util.List<LayerTree.Layer>> layers() {
-            return raw("layers").flatMap(value -> list(value, element0 -> java.util.Objects.requireNonNull(LayerTree.Layer.fromMap(CdpObject.requireObjectMap(element0)))));
+            return optional(LAYERS);
         }
         /**
          * Layer tree, absent if not in the compositing mode.
@@ -957,18 +931,15 @@ public final class LayerTree {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Provides the reasons why the given layer was composited.
          * @param layerId protocol value
          * @return a stage completing with the command result
          */
         public CompletionStage<CompositingReasonsResult> compositingReasons(LayerTree.LayerId layerId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("layerId", CdpObject.json(layerId));
-            return client.call("LayerTree.compositingReasons", params, result_ -> new CompositingReasonsResult(result_));
+            return call("LayerTree.compositingReasons", params("layerId", layerId), CompositingReasonsResult::fromMap);
         }
         /**
          * Provides the reasons why the given layer was composited.
@@ -976,21 +947,21 @@ public final class LayerTree {
          * @return a stage completing with the command result
          */
         public CompletionStage<CompositingReasonsResult> compositingReasons(CompositingReasonsRequest request) {
-            return client.call("LayerTree.compositingReasons", request == null ? null : request.toMap(), result_ -> new CompositingReasonsResult(result_));
+            return call("LayerTree.compositingReasons", request, CompositingReasonsResult::fromMap);
         }
         /**
          * Disables compositing tree inspection.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("LayerTree.disable", null);
+            return call("LayerTree.disable");
         }
         /**
          * Enables compositing tree inspection.
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> enable() {
-            return client.call("LayerTree.enable", null);
+            return call("LayerTree.enable");
         }
         /**
          * Returns the snapshot identifier.
@@ -998,9 +969,7 @@ public final class LayerTree {
          * @return a stage completing with the command result
          */
         public CompletionStage<LayerTree.SnapshotId> loadSnapshot(java.util.List<LayerTree.PictureTile> tiles) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("tiles", CdpObject.json(tiles));
-            return client.call("LayerTree.loadSnapshot", params, result_ -> new LayerTree.SnapshotId((String) java.util.Objects.requireNonNull(result_.get("snapshotId"))));
+            return call("LayerTree.loadSnapshot", params("tiles", tiles), SNAPSHOT_ID::require);
         }
         /**
          * Returns the snapshot identifier.
@@ -1008,7 +977,7 @@ public final class LayerTree {
          * @return a stage completing with the command result
          */
         public CompletionStage<LayerTree.SnapshotId> loadSnapshot(LoadSnapshotRequest request) {
-            return client.call("LayerTree.loadSnapshot", request == null ? null : request.toMap(), result_ -> new LayerTree.SnapshotId((String) java.util.Objects.requireNonNull(result_.get("snapshotId"))));
+            return call("LayerTree.loadSnapshot", request, SNAPSHOT_ID::require);
         }
         /**
          * Returns the layer snapshot identifier.
@@ -1016,9 +985,7 @@ public final class LayerTree {
          * @return a stage completing with the command result
          */
         public CompletionStage<LayerTree.SnapshotId> makeSnapshot(LayerTree.LayerId layerId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("layerId", CdpObject.json(layerId));
-            return client.call("LayerTree.makeSnapshot", params, result_ -> new LayerTree.SnapshotId((String) java.util.Objects.requireNonNull(result_.get("snapshotId"))));
+            return call("LayerTree.makeSnapshot", params("layerId", layerId), SNAPSHOT_ID::require);
         }
         /**
          * Returns the layer snapshot identifier.
@@ -1026,7 +993,7 @@ public final class LayerTree {
          * @return a stage completing with the command result
          */
         public CompletionStage<LayerTree.SnapshotId> makeSnapshot(MakeSnapshotRequest request) {
-            return client.call("LayerTree.makeSnapshot", request == null ? null : request.toMap(), result_ -> new LayerTree.SnapshotId((String) java.util.Objects.requireNonNull(result_.get("snapshotId"))));
+            return call("LayerTree.makeSnapshot", request, SNAPSHOT_ID::require);
         }
         /**
          * Invokes LayerTree.profileSnapshot.
@@ -1037,12 +1004,7 @@ public final class LayerTree {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<java.util.List<Double>>> profileSnapshot(LayerTree.SnapshotId snapshotId, @Nullable Long minRepeatCount, @Nullable Double minDuration, DOM.@Nullable Rect clipRect) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("snapshotId", CdpObject.json(snapshotId));
-            if (minRepeatCount != null) params.put("minRepeatCount", CdpObject.json(minRepeatCount));
-            if (minDuration != null) params.put("minDuration", CdpObject.json(minDuration));
-            if (clipRect != null) params.put("clipRect", CdpObject.json(clipRect));
-            return client.call("LayerTree.profileSnapshot", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("timings")), element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
+            return call("LayerTree.profileSnapshot", params("snapshotId", snapshotId, "minRepeatCount", minRepeatCount, "minDuration", minDuration, "clipRect", clipRect), TIMINGS::require);
         }
         /**
          * Invokes LayerTree.profileSnapshot with the required parameters.
@@ -1050,9 +1012,7 @@ public final class LayerTree {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<java.util.List<Double>>> profileSnapshot(LayerTree.SnapshotId snapshotId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("snapshotId", CdpObject.json(snapshotId));
-            return client.call("LayerTree.profileSnapshot", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("timings")), element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
+            return call("LayerTree.profileSnapshot", params("snapshotId", snapshotId), TIMINGS::require);
         }
         /**
          * Invokes LayerTree.profileSnapshot with a request object.
@@ -1060,7 +1020,7 @@ public final class LayerTree {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<java.util.List<Double>>> profileSnapshot(ProfileSnapshotRequest request) {
-            return client.call("LayerTree.profileSnapshot", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("timings")), element0 -> CdpObject.requireList(element0, element1 -> ((Number) element1).doubleValue())));
+            return call("LayerTree.profileSnapshot", request, TIMINGS::require);
         }
         /**
          * Releases layer snapshot captured by the back-end.
@@ -1068,9 +1028,7 @@ public final class LayerTree {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> releaseSnapshot(LayerTree.SnapshotId snapshotId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("snapshotId", CdpObject.json(snapshotId));
-            return client.call("LayerTree.releaseSnapshot", params);
+            return call("LayerTree.releaseSnapshot", params("snapshotId", snapshotId));
         }
         /**
          * Releases layer snapshot captured by the back-end.
@@ -1078,7 +1036,7 @@ public final class LayerTree {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> releaseSnapshot(ReleaseSnapshotRequest request) {
-            return client.call("LayerTree.releaseSnapshot", request == null ? null : request.toMap());
+            return call("LayerTree.releaseSnapshot", request);
         }
         /**
          * Replays the layer snapshot and returns the resulting bitmap.
@@ -1089,12 +1047,7 @@ public final class LayerTree {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> replaySnapshot(LayerTree.SnapshotId snapshotId, @Nullable Long fromStep, @Nullable Long toStep, @Nullable Double scale) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("snapshotId", CdpObject.json(snapshotId));
-            if (fromStep != null) params.put("fromStep", CdpObject.json(fromStep));
-            if (toStep != null) params.put("toStep", CdpObject.json(toStep));
-            if (scale != null) params.put("scale", CdpObject.json(scale));
-            return client.call("LayerTree.replaySnapshot", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("dataURL")));
+            return call("LayerTree.replaySnapshot", params("snapshotId", snapshotId, "fromStep", fromStep, "toStep", toStep, "scale", scale), DATA_URL::require);
         }
         /**
          * Replays the layer snapshot and returns the resulting bitmap.
@@ -1102,9 +1055,7 @@ public final class LayerTree {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> replaySnapshot(LayerTree.SnapshotId snapshotId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("snapshotId", CdpObject.json(snapshotId));
-            return client.call("LayerTree.replaySnapshot", params, result_ -> (String) java.util.Objects.requireNonNull(result_.get("dataURL")));
+            return call("LayerTree.replaySnapshot", params("snapshotId", snapshotId), DATA_URL::require);
         }
         /**
          * Replays the layer snapshot and returns the resulting bitmap.
@@ -1112,7 +1063,7 @@ public final class LayerTree {
          * @return a stage completing with the command result
          */
         public CompletionStage<String> replaySnapshot(ReplaySnapshotRequest request) {
-            return client.call("LayerTree.replaySnapshot", request == null ? null : request.toMap(), result_ -> (String) java.util.Objects.requireNonNull(result_.get("dataURL")));
+            return call("LayerTree.replaySnapshot", request, DATA_URL::require);
         }
         /**
          * Replays the layer snapshot and returns canvas log.
@@ -1120,9 +1071,7 @@ public final class LayerTree {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<java.util.Map<String, Object>>> snapshotCommandLog(LayerTree.SnapshotId snapshotId) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("snapshotId", CdpObject.json(snapshotId));
-            return client.call("LayerTree.snapshotCommandLog", params, result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("commandLog")), element0 -> CdpObject.requireObjectMap(element0)));
+            return call("LayerTree.snapshotCommandLog", params("snapshotId", snapshotId), COMMAND_LOG::require);
         }
         /**
          * Replays the layer snapshot and returns canvas log.
@@ -1130,7 +1079,7 @@ public final class LayerTree {
          * @return a stage completing with the command result
          */
         public CompletionStage<java.util.List<java.util.Map<String, Object>>> snapshotCommandLog(SnapshotCommandLogRequest request) {
-            return client.call("LayerTree.snapshotCommandLog", request == null ? null : request.toMap(), result_ -> CdpObject.requireList(java.util.Objects.requireNonNull(result_.get("commandLog")), element0 -> CdpObject.requireObjectMap(element0)));
+            return call("LayerTree.snapshotCommandLog", request, COMMAND_LOG::require);
         }
         /**
          * Subscribes to LayerTree.layerPainted.
@@ -1138,7 +1087,7 @@ public final class LayerTree {
          * @return a removable subscription
          */
         public CdpSubscription onLayerPainted(Consumer<LayerPaintedEvent> handler) {
-            return client.on("LayerTree.layerPainted", LayerPaintedEvent::fromMap, handler);
+            return on("LayerTree.layerPainted", LayerPaintedEvent::fromMap, handler);
         }
         /**
          * Subscribes to LayerTree.layerTreeDidChange.
@@ -1146,7 +1095,7 @@ public final class LayerTree {
          * @return a removable subscription
          */
         public CdpSubscription onLayerTreeDidChange(Consumer<LayerTreeDidChangeEvent> handler) {
-            return client.on("LayerTree.layerTreeDidChange", LayerTreeDidChangeEvent::fromMap, handler);
+            return on("LayerTree.layerTreeDidChange", LayerTreeDidChangeEvent::fromMap, handler);
         }
     }
 }

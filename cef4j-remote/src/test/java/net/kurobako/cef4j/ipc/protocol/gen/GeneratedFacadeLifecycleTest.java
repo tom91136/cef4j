@@ -16,7 +16,7 @@ class GeneratedFacadeLifecycleTest {
     @Test
     void browserCloseIsIdempotentAcrossAllReleaseEntryPoints() {
         AtomicInteger requests = new AtomicInteger();
-        CefSession session = releaseSession(requests, ReleaseHandleRequest.class, ReleaseHandleResponse::new);
+        CefSession session = releaseSession(requests, ReleaseHandleRequest.class, EmptyMessage::new);
         Browser browser = new Browser(session, new RemoteHandle(7));
 
         CompletableFuture<Void> first = browser.closeAsync();
@@ -70,7 +70,7 @@ class GeneratedFacadeLifecycleTest {
             @Override
             @SuppressWarnings("unchecked")
             public <R extends CefMessageView> CompletableFuture<R> request(
-                    CefMessageEncoder request, CefMessageDecoder<R> decoder) {
+                    int messageId, CefMessageEncoder request, CefMessageDecoder<R> decoder) {
                 assertThat(request).isInstanceOf(requestType);
                 requests.incrementAndGet();
                 return CompletableFuture.completedFuture((R) response.get());
@@ -97,7 +97,7 @@ class GeneratedFacadeLifecycleTest {
         return new CefSession() {
             @Override
             public <R extends CefMessageView> CompletableFuture<R> request(
-                    CefMessageEncoder request, CefMessageDecoder<R> decoder) {
+                    int messageId, CefMessageEncoder request, CefMessageDecoder<R> decoder) {
                 throw new UnsupportedOperationException();
             }
 

@@ -10,6 +10,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import net.kurobako.cef4j.ipc.protocol.gen.InlinePaintEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
 import net.kurobako.cef4j.ipc.session.Envelope;
@@ -76,7 +77,7 @@ final class InlineFrameTransportTest {
         try (CefSession session = new CefSessionImpl(pair.a, Duration.ofSeconds(2))) {
             CountDownLatch stored = new CountDownLatch(1);
             CefSession.HandlerRegistration observer =
-                    session.on(InlinePaintEvent.MESSAGE_ID, InlinePaintEvent.DECODER, ignored -> stored.countDown());
+                    session.on(MessageIds.INLINE_PAINT_EVENT, InlinePaintEvent.DECODER, ignored -> stored.countDown());
             sendEvent(pair.b, new InlinePaintEvent(new RemoteHandle(8), 1L, 1, 1, 0, 0, 0, 1, 1, new byte[4]));
             assertThat(stored.await(2, TimeUnit.SECONDS)).isTrue();
             observer.close();
@@ -100,7 +101,11 @@ final class InlineFrameTransportTest {
         Envelope.writeHeader(
                 frame,
                 new Envelope.Header(
-                        event.encodedSize(), Envelope.Kind.EVENT, 0, Envelope.NO_CORR_ID, InlinePaintEvent.MESSAGE_ID));
+                        event.encodedSize(),
+                        Envelope.Kind.EVENT,
+                        0,
+                        Envelope.NO_CORR_ID,
+                        MessageIds.INLINE_PAINT_EVENT));
         event.encodeInto(frame);
         frame.flip();
         peer.send(frame);

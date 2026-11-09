@@ -28,7 +28,7 @@ class GeneratedMessagesIntegrationTest {
                 try {
                     ByteBuffer view = frame.duplicate();
                     Envelope.Header h = Envelope.readHeader(view);
-                    if (h.kind == Envelope.Kind.REQUEST && h.messageId == NavigateRequest.MESSAGE_ID) {
+                    if (h.kind == Envelope.Kind.REQUEST && h.messageId == MessageIds.NAVIGATE_REQUEST) {
                         NavigateRequest req = NavigateRequest.DECODER.decode(view.slice());
                         NavigateResult result = new NavigateResult(
                                 1,
@@ -44,6 +44,7 @@ class GeneratedMessagesIntegrationTest {
             });
 
             CompletableFuture<NavigateResult> fut = session.request(
+                    MessageIds.NAVIGATE_REQUEST,
                     new NavigateRequest("https://example.com/start", "https://example.com/from", 1, true),
                     NavigateResult.DECODER);
             NavigateResult got = fut.get(2, TimeUnit.SECONDS);

@@ -16,9 +16,13 @@ import javax.tools.ToolProvider
 import scala.jdk.CollectionConverters.*
 
 import net.kurobako.cef4j.codegen.FileSystem
+import net.kurobako.cef4j.codegen.Naming
 import net.kurobako.cef4j.codegen.TempDirectorySuite
 
 class IpcEmitterRoundtripSpec extends TempDirectorySuite {
+
+  private def emit(spec: MessageSpec)(using Naming.Context): String =
+    JavaEmitter.emitShared(SharedMessage(spec.className, spec.packageName, spec.fields))
 
   test("emitter produces a class that round-trips a mix of field types") {
     val spec = MessageSpec(
@@ -35,7 +39,7 @@ class IpcEmitterRoundtripSpec extends TempDirectorySuite {
       )
     )
 
-    val source      = JavaEmitter.emit(spec)
+    val source      = emit(spec)
     val classes     = compileAll(spec.packageName + "." + spec.className -> source)
     val cls         = classes.get(spec.packageName + "." + spec.className)
     val handleClass = cls.getClassLoader.loadClass("net.kurobako.cef4j.ipc.session.RemoteHandle")
@@ -82,8 +86,81 @@ class IpcEmitterRoundtripSpec extends TempDirectorySuite {
     assertEquals(bytesOf(cls.getMethod("digest").invoke(decoded)), digest.toSeq)
     val decodedHandle = cls.getMethod("browser").invoke(decoded)
     assertEquals(intOf(handleClass.getMethod("id").invoke(decodedHandle)), handleId)
-    assertEquals(intOf(staticValue(cls, "MESSAGE_ID")), 100)
-    assertEquals(intOf(cls.getMethod("messageId").invoke(decoded)), 100)
+    assert(!cls.getFields.exists(_.getName == "MESSAGE_ID"), "the id lives in MessageIds")
+    assert(!cls.getMethods.exists(_.getName == "messageId"), "the id belongs to the envelope")
+  }
+
+  test("shared message writes the bytes of the fixed-id message and carries no id") {
+    val fields = List(
+      FieldSpec("self", FieldType.RemoteHandle),
+      FieldSpec("script", FieldType.Utf8String),
+      FieldSpec("digest", FieldType.Bytes),
+      FieldSpec("count", FieldType.I32)
+    )
+    val fixed   = MessageSpec("EvalRequest", "test.gen", 321, fields)
+    val shared  = SharedMessage("SelfHandleScriptStringDigestBytesCountIntMessage", "test.gen", fields)
+    val classes = compileAll(
+      "test.gen.EvalRequest"                                      -> emit(fixed),
+      "test.gen.SelfHandleScriptStringDigestBytesCountIntMessage" -> JavaEmitter.emitShared(shared)
+    )
+    val fixedCls  = classes.get("test.gen.EvalRequest")
+    val sharedCls = classes.get("test.gen.SelfHandleScriptStringDigestBytesCountIntMessage")
+    val handleCls = fixedCls.getClassLoader.loadClass("net.kurobako.cef4j.ipc.session.RemoteHandle")
+    val handle    = handleCls.getConstructor(java.lang.Integer.TYPE).newInstance(9)
+    val digest    = Array[Byte](7, 8, 9)
+
+    val fixedValue  = fixedCls.getConstructors.head.newInstance(handle, "go", digest, Int.box(5))
+    val sharedValue = sharedCls.getConstructors.head.newInstance(handle, "go", digest, Int.box(5))
+
+    def encode(cls: Class[?], value: Any): Seq[Byte] = {
+      val buf = ByteBuffer.allocate(intOf(cls.getMethod("encodedSize").invoke(value)))
+      cls.getMethod("encodeInto", classOf[ByteBuffer]).invoke(value, buf)
+      buf.array().toSeq
+    }
+    assertEquals(encode(sharedCls, sharedValue), encode(fixedCls, fixedValue))
+    assert(!sharedCls.getMethods.exists(_.getName == "messageId"))
+    assert(!sharedCls.getFields.exists(_.getName == "MESSAGE_ID"))
+
+    val iface   = sharedCls.getClassLoader.loadClass("net.kurobako.cef4j.ipc.session.CefMessageDecoder")
+    val payload = ByteBuffer.wrap(encode(fixedCls, fixedValue).toArray)
+    val decoded = iface.getMethod("decode", classOf[ByteBuffer]).invoke(staticValue(sharedCls, "DECODER"), payload)
+    assertEquals(sharedCls.getMethod("script").invoke(decoded), "go")
+    assertEquals(intOf(sharedCls.getMethod("count").invoke(decoded)), 5)
+    assertEquals(bytesOf(sharedCls.getMethod("digest").invoke(decoded)), digest.toSeq)
+  }
+
+  test("generated classes leave byte order and payload framing to the wire helpers") {
+    given Naming.Context = Naming.Context.empty.copy(typesPackage = "test.types")
+    val fields           = List(
+      FieldSpec("self", FieldType.RemoteHandle),
+      FieldSpec("script", FieldType.Utf8String),
+      FieldSpec("tags", FieldType.StringList)
+    )
+    val data = DataStructSpec(
+      className = "Label",
+      packageName = "test.gen",
+      cefStructName = "cef_label_t",
+      fields = List(FieldSpec("text", FieldType.Utf8String)),
+      shared = Some(SharedLayout("test.types.CefLabel", List(SharedMember("text", MemberKind.Str))))
+    )
+    val sources = List(
+      emit(MessageSpec("EvalRequest", "test.gen", 1, fields)),
+      JavaEmitter.emitShared(SharedMessage("SelfHandleScriptStringTagsStringsMessage", "test.gen", fields)),
+      JavaDataCodecEmitter.emit(data)
+    )
+
+    sources.foreach { source =>
+      assert(!source.contains("finally"), source)
+      assert(!source.contains("originalOrder"), source)
+      assert(!source.contains("ByteOrder"), source)
+      assert(!source.contains("duplicate()"), source)
+      assert(!source.contains("requireFullyConsumed"), source)
+    }
+    assert(sources.head.contains("WireEncoder.littleEndian(__dst, __out -> {"), sources.head)
+    assert(sources.head.contains("WireDecoder.message(\"EvalRequest\", __buf -> {"), sources.head)
+    assert(sources(1).contains("WireEncoder.utf8List(__out, tags);"), sources(1))
+    assert(sources(1).contains("WireEncoder.utf8ListSize(tags)"), sources(1))
+    assert(sources(2).contains("WireEncoder.littleEndian(dst, __out -> {"), sources(2))
   }
 
   test("emitter handles a fixed-size-only spec (no variable fields)") {
@@ -93,7 +170,7 @@ class IpcEmitterRoundtripSpec extends TempDirectorySuite {
       messageId = 101,
       fields = List(FieldSpec("seq", FieldType.I32), FieldSpec("ts", FieldType.I64))
     )
-    val source  = JavaEmitter.emit(spec)
+    val source  = emit(spec)
     val classes = compileAll(spec.packageName + "." + spec.className -> source)
     val cls     = classes.get(spec.packageName + "." + spec.className)
 
@@ -121,7 +198,7 @@ class IpcEmitterRoundtripSpec extends TempDirectorySuite {
       messageId = 102,
       fields = List(FieldSpec("name", FieldType.Utf8String))
     )
-    val classes      = compileAll(spec.packageName + "." + spec.className -> JavaEmitter.emit(spec))
+    val classes      = compileAll(spec.packageName + "." + spec.className -> emit(spec))
     val cls          = classes.get(spec.packageName + "." + spec.className)
     val decoder      = staticValue(cls, "DECODER")
     val decoderIface = cls.getClassLoader.loadClass("net.kurobako.cef4j.ipc.session.CefMessageDecoder")
@@ -141,11 +218,13 @@ class IpcEmitterRoundtripSpec extends TempDirectorySuite {
   }
 
   test("nested Java data struct validates lengths while parent enforces exact exhaustion") {
-    val data = DataStructSpec(
+    given Naming.Context = Naming.Context.empty.copy(typesPackage = "test.types")
+    val data             = DataStructSpec(
       className = "Label",
       packageName = "test.gen",
       cefStructName = "cef_label_t",
-      fields = List(FieldSpec("text", FieldType.Utf8String))
+      fields = List(FieldSpec("text", FieldType.Utf8String)),
+      shared = Some(SharedLayout("test.types.CefLabel", List(SharedMember("text", MemberKind.Str))))
     )
     val message = MessageSpec(
       className = "NestedRequest",
@@ -153,9 +232,12 @@ class IpcEmitterRoundtripSpec extends TempDirectorySuite {
       messageId = 103,
       fields = List(FieldSpec("label", FieldType.DataStruct("cef_label_t")), FieldSpec("tail", FieldType.I32))
     )
+    val labelType = "package test.types; public final class CefLabel { public final String text; " +
+      "public CefLabel(String text) { this.text = text; } }"
     val classes = compileAll(
-      data.packageName + "." + data.className       -> JavaDataStructEmitter.emit(data),
-      message.packageName + "." + message.className -> JavaEmitter.emit(message)
+      "test.types.CefLabel"                                              -> labelType,
+      data.packageName + "." + SpecDeriver.codecName(data.cefStructName) -> JavaDataCodecEmitter.emit(data),
+      message.packageName + "." + message.className                      -> emit(message)
     )
     val cls          = classes.get(message.packageName + "." + message.className)
     val decoder      = staticValue(cls, "DECODER")
@@ -176,6 +258,50 @@ class IpcEmitterRoundtripSpec extends TempDirectorySuite {
     val truncated = ByteBuffer.allocate(5).order(ByteOrder.LITTLE_ENDIAN).putInt(2).put('o'.toByte).array()
     val thrown    = intercept[InvocationTargetException](decode.invoke(decoder, ByteBuffer.wrap(truncated)))
     assertIllegalArgument(thrown)
+  }
+
+  test("data codec writes a null string as empty and keeps the wire size field zero") {
+    given Naming.Context = Naming.Context.empty.copy(typesPackage = "test.types")
+    val data             = DataStructSpec(
+      className = "Probe",
+      packageName = "test.gen",
+      cefStructName = "cef_probe_t",
+      fields = List(
+        FieldSpec("size", FieldType.I64),
+        FieldSpec("kind", FieldType.I32),
+        FieldSpec("letter", FieldType.I32),
+        FieldSpec("name", FieldType.Utf8String)
+      ),
+      shared = Some(SharedLayout(
+        "test.types.CefProbe",
+        List(
+          SharedMember("size", MemberKind.WireSize),
+          SharedMember("kind", MemberKind.EnumOf("test.types.CefKind")),
+          SharedMember("letter", MemberKind.Char),
+          SharedMember("name", MemberKind.Str)
+        )
+      ))
+    )
+    val kind = "package test.types; public final class CefKind { public final long value; " +
+      "private CefKind(long v) { this.value = v; } public static CefKind of(long v) { return new CefKind(v); } }"
+    val probe =
+      "package test.types; public final class CefProbe { public final CefKind kind; public final char letter; " +
+        "public final String name; public CefProbe(CefKind kind, char letter, String name) " +
+        "{ this.kind = kind; this.letter = letter; this.name = name; } }"
+    val classes = compileAll(
+      "test.types.CefKind"  -> kind,
+      "test.types.CefProbe" -> probe,
+      "test.gen.ProbeCodec" -> JavaDataCodecEmitter.emit(data)
+    )
+    val codec = classes.get("test.gen.ProbeCodec")
+    val value = classes.get("test.types.CefProbe").getConstructors.head.newInstance(javaNull, Char.box('z'), javaNull)
+    val size  = codec.getMethod("encodedSize", value.getClass).invoke(javaNull, value)
+    assertEquals(intOf(size), 8 + 4 + 4 + 4)
+    val dst = ByteBuffer.allocate(20)
+    codec.getMethod("encode", classOf[ByteBuffer], value.getClass).invoke(javaNull, dst, value)
+    assertEquals(dst.position(), 20)
+    dst.flip().order(ByteOrder.LITTLE_ENDIAN)
+    assertEquals((dst.getLong(), dst.getInt(), dst.getInt(), dst.getInt()), (0L, 0, 'z'.toInt, 0))
   }
 
   test("emitter rejects negative message ids") {
@@ -218,12 +344,11 @@ class IpcEmitterRoundtripSpec extends TempDirectorySuite {
         |""".stripMargin,
     "net.kurobako.cef4j.ipc.session.CefMessageView" ->
       """package net.kurobako.cef4j.ipc.session;
-        |public interface CefMessageView { int messageId(); }
+        |public interface CefMessageView {}
         |""".stripMargin,
     "net.kurobako.cef4j.ipc.session.CefMessageEncoder" ->
       """package net.kurobako.cef4j.ipc.session;
         |public interface CefMessageEncoder {
-        |    int messageId();
         |    int encodedSize();
         |    void encodeInto(java.nio.ByteBuffer dst);
         |}
@@ -233,6 +358,36 @@ class IpcEmitterRoundtripSpec extends TempDirectorySuite {
         |@FunctionalInterface
         |public interface CefMessageDecoder<T extends CefMessageView> {
         |    T decode(java.nio.ByteBuffer payload);
+        |}
+        |""".stripMargin,
+    "net.kurobako.cef4j.ipc.session.WireEncoder" ->
+      """package net.kurobako.cef4j.ipc.session;
+        |public final class WireEncoder {
+        |    public static void littleEndian(java.nio.ByteBuffer dst, java.util.function.Consumer<java.nio.ByteBuffer> body) {
+        |        java.nio.ByteOrder original = dst.order();
+        |        try {
+        |            dst.order(java.nio.ByteOrder.LITTLE_ENDIAN);
+        |            body.accept(dst);
+        |        } finally {
+        |            dst.order(original);
+        |        }
+        |    }
+        |    public static void bytes(java.nio.ByteBuffer dst, byte[] value) {
+        |        dst.putInt(value.length);
+        |        dst.put(value);
+        |    }
+        |    public static void bool(java.nio.ByteBuffer dst, boolean value) {
+        |        dst.put((byte) (value ? 1 : 0));
+        |    }
+        |    public static void utf8List(java.nio.ByteBuffer dst, String[] values) {
+        |        dst.putInt(values.length);
+        |        for (String value : values) bytes(dst, value.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        |    }
+        |    public static int utf8ListSize(String[] values) {
+        |        int size = 0;
+        |        for (String value : values) size += 4 + value.getBytes(java.nio.charset.StandardCharsets.UTF_8).length;
+        |        return size;
+        |    }
         |}
         |""".stripMargin,
     "net.kurobako.cef4j.ipc.session.WireDecoder" ->
@@ -284,6 +439,15 @@ class IpcEmitterRoundtripSpec extends TempDirectorySuite {
         |        String[] values = new String[count(source, field)];
         |        for (int i = 0; i < values.length; i++) values[i] = utf8(source, field + "[" + i + "]");
         |        return values;
+        |    }
+        |    public static <T extends CefMessageView> CefMessageDecoder<T> message(
+        |            String type, java.util.function.Function<java.nio.ByteBuffer, T> body) {
+        |        return payload -> {
+        |            java.nio.ByteBuffer buf = payload.duplicate().order(java.nio.ByteOrder.LITTLE_ENDIAN);
+        |            T value = body.apply(buf);
+        |            requireFullyConsumed(buf, type);
+        |            return value;
+        |        };
         |    }
         |    public static void requireFullyConsumed(java.nio.ByteBuffer source, String type) {
         |        if (source.hasRemaining()) throw new IllegalArgumentException("trailing bytes for " + type);
@@ -350,10 +514,10 @@ class IpcEmitterRoundtripSpec extends TempDirectorySuite {
   }
 
   /** The receiver of a static field, which reflection ignores. */
-  private def noReceiver: AnyRef = Option.empty[AnyRef].orNull
+  private def javaNull: AnyRef = Option.empty[AnyRef].orNull
 
   private def staticValue(owner: Class[?], name: String): Any =
-    owner.getField(name).get(noReceiver)
+    owner.getField(name).get(javaNull)
 
   private def intOf(value: Any): Int = value match {
     case number: Int => number

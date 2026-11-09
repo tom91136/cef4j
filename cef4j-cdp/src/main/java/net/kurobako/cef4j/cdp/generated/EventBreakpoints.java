@@ -1,11 +1,11 @@
 // GENERATED - do not edit. Regenerate via: ./mvnw generate-sources -pl cef4j-cdp -Dcef.version=150.0.18+gdb11278+chromium-150.0.7871.213
 package net.kurobako.cef4j.cdp.generated;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.cdp.CdpClient;
+import net.kurobako.cef4j.cdp.CdpDomainClient;
 import net.kurobako.cef4j.cdp.CdpObject;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
@@ -24,13 +24,6 @@ public final class EventBreakpoints {
      */
     public static final class SetInstrumentationBreakpointRequest extends CdpObject {
         public SetInstrumentationBreakpointRequest() {}
-        /**
-         * Sets breakpoint on particular native event.
-         * @param eventName protocol value
-         */
-        public SetInstrumentationBreakpointRequest(String eventName) {
-            eventName(eventName);
-        }
         public static SetInstrumentationBreakpointRequest fromMap(Map<String, Object> values) {
             final SetInstrumentationBreakpointRequest instance_ = new SetInstrumentationBreakpointRequest();
             if (values != null) instance_.values.putAll(values);
@@ -41,7 +34,7 @@ public final class EventBreakpoints {
          * @return the protocol field value
          */
         public String eventName() {
-            return (String) require("eventName");
+            return requireString("eventName");
         }
         /**
          * Instrumentation name to stop on.
@@ -58,13 +51,6 @@ public final class EventBreakpoints {
      */
     public static final class RemoveInstrumentationBreakpointRequest extends CdpObject {
         public RemoveInstrumentationBreakpointRequest() {}
-        /**
-         * Removes breakpoint on particular native event.
-         * @param eventName protocol value
-         */
-        public RemoveInstrumentationBreakpointRequest(String eventName) {
-            eventName(eventName);
-        }
         public static RemoveInstrumentationBreakpointRequest fromMap(Map<String, Object> values) {
             final RemoveInstrumentationBreakpointRequest instance_ = new RemoveInstrumentationBreakpointRequest();
             if (values != null) instance_.values.putAll(values);
@@ -75,7 +61,7 @@ public final class EventBreakpoints {
          * @return the protocol field value
          */
         public String eventName() {
-            return (String) require("eventName");
+            return requireString("eventName");
         }
         /**
          * Instrumentation name to stop on.
@@ -87,18 +73,15 @@ public final class EventBreakpoints {
             return this;
         }
     }
-    public static final class Client {
-        private final CdpClient client;
-        public Client(CdpClient client) { this.client = client; }
+    public static final class Client extends CdpDomainClient {
+        public Client(CdpClient client) { super(client); }
         /**
          * Sets breakpoint on particular native event.
          * @param eventName protocol value
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setInstrumentationBreakpoint(String eventName) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("eventName", CdpObject.json(eventName));
-            return client.call("EventBreakpoints.setInstrumentationBreakpoint", params);
+            return call("EventBreakpoints.setInstrumentationBreakpoint", params("eventName", eventName));
         }
         /**
          * Sets breakpoint on particular native event.
@@ -106,7 +89,7 @@ public final class EventBreakpoints {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> setInstrumentationBreakpoint(SetInstrumentationBreakpointRequest request) {
-            return client.call("EventBreakpoints.setInstrumentationBreakpoint", request == null ? null : request.toMap());
+            return call("EventBreakpoints.setInstrumentationBreakpoint", request);
         }
         /**
          * Removes breakpoint on particular native event.
@@ -114,9 +97,7 @@ public final class EventBreakpoints {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeInstrumentationBreakpoint(String eventName) {
-            final Map<String, Object> params = new LinkedHashMap<>();
-            params.put("eventName", CdpObject.json(eventName));
-            return client.call("EventBreakpoints.removeInstrumentationBreakpoint", params);
+            return call("EventBreakpoints.removeInstrumentationBreakpoint", params("eventName", eventName));
         }
         /**
          * Removes breakpoint on particular native event.
@@ -124,14 +105,14 @@ public final class EventBreakpoints {
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> removeInstrumentationBreakpoint(RemoveInstrumentationBreakpointRequest request) {
-            return client.call("EventBreakpoints.removeInstrumentationBreakpoint", request == null ? null : request.toMap());
+            return call("EventBreakpoints.removeInstrumentationBreakpoint", request);
         }
         /**
          * Removes all breakpoints
          * @return a stage completing when the command completes
          */
         public CompletionStage<Void> disable() {
-            return client.call("EventBreakpoints.disable", null);
+            return call("EventBreakpoints.disable");
         }
     }
 }

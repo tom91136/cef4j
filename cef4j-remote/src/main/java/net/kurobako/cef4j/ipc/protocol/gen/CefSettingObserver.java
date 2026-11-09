@@ -27,11 +27,11 @@ public interface CefSettingObserver {
     void onSettingChanged(String requestingUrl, String topLevelUrl, int contentType);
 
     /**
-     * Wires inbound {@link SettingObserverOnSettingChangedCallbackEvent} frames into the supplied {@code table} so each visitor invocation
+     * Wires inbound {@code SettingObserverOnSettingChangedCallbackEvent} frames into the supplied {@code table} so each visitor invocation
      * dispatches to the {@code CefSettingObserver} registered under that callbackId. Call once per session.
      */
     static CefSession.HandlerRegistration route(CefSession session, JvmCallbackTable<CefSettingObserver> table) {
-        return session.on(SettingObserverOnSettingChangedCallbackEvent.MESSAGE_ID, SettingObserverOnSettingChangedCallbackEvent.DECODER, ev ->
+        return session.on(MessageIds.SETTING_OBSERVER_ON_SETTING_CHANGED_CALLBACK_EVENT, SettingObserverOnSettingChangedCallbackEvent.DECODER, ev ->
                 table.lookup(ev.callbackId()).ifPresent(v -> v.onSettingChanged(ev.requestingUrl(), ev.topLevelUrl(), ev.contentType())));
     }
 }

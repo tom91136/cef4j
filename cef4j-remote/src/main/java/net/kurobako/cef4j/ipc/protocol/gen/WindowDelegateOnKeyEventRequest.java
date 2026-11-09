@@ -2,24 +2,22 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class WindowDelegateOnKeyEventRequest implements CefMessageView, CefMessageEncoder {
 
-    public static final int MESSAGE_ID = 869228473;
-
     private final RemoteHandle self;
     private final RemoteHandle window;
-    private final KeyEvent event;
+    private final net.kurobako.cef4j.gen.CefKeyEvent event;
 
-    public WindowDelegateOnKeyEventRequest(RemoteHandle self, RemoteHandle window, KeyEvent event) {
+    public WindowDelegateOnKeyEventRequest(RemoteHandle self, RemoteHandle window, net.kurobako.cef4j.gen.CefKeyEvent event) {
         this.self = self;
         this.window = window;
         this.event = event;
@@ -33,40 +31,28 @@ public final class WindowDelegateOnKeyEventRequest implements CefMessageView, Ce
         return window;
     }
 
-    public KeyEvent event() {
+    public net.kurobako.cef4j.gen.CefKeyEvent event() {
         return event;
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
-        return 8 + event.encodedSize();
+        return 8 + KeyEventCodec.encodedSize(event);
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putInt(window.id());
-            event.encodeInto(__dst);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            __out.putInt(window.id());
+            KeyEventCodec.encode(__out, event);
+        });
     }
 
-    public static final CefMessageDecoder<WindowDelegateOnKeyEventRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<WindowDelegateOnKeyEventRequest> DECODER = WireDecoder.message("WindowDelegateOnKeyEventRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final RemoteHandle window = WireDecoder.handle(__buf, "window");
-        final KeyEvent event = KeyEvent.decode(__buf);
-        WireDecoder.requireFullyConsumed(__buf, "WindowDelegateOnKeyEventRequest");
+        final net.kurobako.cef4j.gen.CefKeyEvent event = KeyEventCodec.decode(__buf);
         return new WindowDelegateOnKeyEventRequest(self, window, event);
-    };
+    });
 }

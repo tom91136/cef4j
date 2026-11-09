@@ -3,6 +3,7 @@ package net.kurobako.cef4j.ipc.protocol.gen;
 
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefSession;
+import net.kurobako.cef4j.ipc.session.Unhandled;
 import net.kurobako.cef4j.policy.NullableBoundary;
 
 /**
@@ -23,14 +24,14 @@ public interface CefNavigationEntryVisitor {
      * @see <a href="https://cef-builds.spotifycdn.com/docs/150.0/cef__browser_8h.html">cef_browser.h:226</a>
      */
     @SuppressWarnings("SameReturnValue")
-    default java.util.Optional<Boolean> visit(net.kurobako.cef4j.ipc.session.RemoteHandle entry, int current, int index, int total) { return java.util.Optional.empty(); }
+    default java.util.Optional<Boolean> visit(net.kurobako.cef4j.ipc.session.RemoteHandle entry, int current, int index, int total) { return Unhandled.bool(); }
 
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefNavigationEntryVisitor handler) {
         return CefSession.HandlerRegistration.combine(
-                session.intercept(NavigationEntryVisitorVisitEvent.MESSAGE_ID, NavigationEntryVisitorVisitEvent.DECODER, ev -> {
+                session.intercept(MessageIds.NAVIGATION_ENTRY_VISITOR_VISIT_EVENT, NavigationEntryVisitorVisitEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.visit(ev.entry(), ev.current(), ev.index(), ev.total());
-                    return java.util.Optional.of(new NavigationEntryVisitorVisitResponse(answer.orElse(false)));
+                    return java.util.Optional.of(new CefSession.Reply(MessageIds.NAVIGATION_ENTRY_VISITOR_VISIT_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }));
     }
 }

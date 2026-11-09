@@ -188,6 +188,7 @@ handlers on first use, so install it early, or compose `CefHttp.factory()` with 
 
 | Module | Responsibility |
 | --- | --- |
+| `cef4j-types` | generated CEF enums, structs, object interfaces, and native peers (`net.kurobako.cef4j.gen`) |
 | `cef4j-api` | in-process CEF API |
 | `cef4j-platform-{linux,windows,macos}` | native bridges (published from `cef4j-platform`) |
 | `cef4j-inprocess-{jfx,swing}` | in-process JavaFX and Swing views |

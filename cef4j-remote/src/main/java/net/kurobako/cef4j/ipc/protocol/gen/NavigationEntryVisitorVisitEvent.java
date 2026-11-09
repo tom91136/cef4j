@@ -2,18 +2,16 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class NavigationEntryVisitorVisitEvent implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 1567160477;
 
     private final RemoteHandle entry;
     private final int current;
@@ -44,37 +42,25 @@ public final class NavigationEntryVisitorVisitEvent implements CefMessageView, C
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 16;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(entry.id());
-            __dst.putInt(current);
-            __dst.putInt(index);
-            __dst.putInt(total);
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(entry.id());
+            __out.putInt(current);
+            __out.putInt(index);
+            __out.putInt(total);
+        });
     }
 
-    public static final CefMessageDecoder<NavigationEntryVisitorVisitEvent> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<NavigationEntryVisitorVisitEvent> DECODER = WireDecoder.message("NavigationEntryVisitorVisitEvent", __buf -> {
         final RemoteHandle entry = WireDecoder.handle(__buf, "entry");
         final int current = WireDecoder.int32(__buf, "current");
         final int index = WireDecoder.int32(__buf, "index");
         final int total = WireDecoder.int32(__buf, "total");
-        WireDecoder.requireFullyConsumed(__buf, "NavigationEntryVisitorVisitEvent");
         return new NavigationEntryVisitorVisitEvent(entry, current, index, total);
-    };
+    });
 }

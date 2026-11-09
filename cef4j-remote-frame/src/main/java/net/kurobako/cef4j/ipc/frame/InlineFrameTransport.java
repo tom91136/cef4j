@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
 import net.kurobako.cef4j.ipc.protocol.gen.InlinePaintEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.session.CefFutures;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSession.HandlerRegistration;
@@ -59,8 +60,8 @@ public final class InlineFrameTransport implements FrameTransport {
     private void subscribe(CefSession session) {
         this.session = session;
         registration = browser == null
-                ? session.onLatest(InlinePaintEvent.MESSAGE_ID, InlinePaintEvent.DECODER, this::onPaint)
-                : session.on(InlinePaintEvent.MESSAGE_ID, InlinePaintEvent.DECODER, this::onPaint);
+                ? session.onLatest(MessageIds.INLINE_PAINT_EVENT, InlinePaintEvent.DECODER, this::onPaint)
+                : session.on(MessageIds.INLINE_PAINT_EVENT, InlinePaintEvent.DECODER, this::onPaint);
     }
 
     private void onPaint(InlinePaintEvent event) {

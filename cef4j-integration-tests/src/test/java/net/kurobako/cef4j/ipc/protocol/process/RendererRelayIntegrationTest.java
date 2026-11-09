@@ -6,7 +6,8 @@ import java.time.Duration;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import net.kurobako.cef4j.ipc.protocol.gen.Browser;
-import net.kurobako.cef4j.ipc.protocol.gen.LifeSpanHandlerOnAfterCreatedEvent;
+import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessage;
+import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.protocol.gen.V8ContextCreatedEvent;
 import net.kurobako.cef4j.ipc.session.CefSession;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
@@ -28,14 +29,12 @@ class RendererRelayIntegrationTest {
                 CefSession session = new CefSessionImpl(transport, Duration.ofSeconds(30))) {
 
             LinkedBlockingQueue<V8ContextCreatedEvent> events = new LinkedBlockingQueue<>();
-            session.onLatest(V8ContextCreatedEvent.MESSAGE_ID, V8ContextCreatedEvent.DECODER, events::offer);
-            LinkedBlockingQueue<LifeSpanHandlerOnAfterCreatedEvent> browsers = new LinkedBlockingQueue<>();
+            session.onLatest(MessageIds.V8_CONTEXT_CREATED_EVENT, V8ContextCreatedEvent.DECODER, events::offer);
+            LinkedBlockingQueue<BrowserHandleMessage> browsers = new LinkedBlockingQueue<>();
             session.onLatest(
-                    LifeSpanHandlerOnAfterCreatedEvent.MESSAGE_ID,
-                    LifeSpanHandlerOnAfterCreatedEvent.DECODER,
-                    browsers::offer);
+                    MessageIds.LIFE_SPAN_HANDLER_ON_AFTER_CREATED_EVENT, BrowserHandleMessage.DECODER, browsers::offer);
 
-            LifeSpanHandlerOnAfterCreatedEvent created = browsers.poll(20, TimeUnit.SECONDS);
+            BrowserHandleMessage created = browsers.poll(20, TimeUnit.SECONDS);
             assertThat(created).as("expected bootstrap browser creation event").isNotNull();
             String target = "data:text/html,%3Cscript%3Evoid%200%3C/script%3Ecef4j-navigation-probe";
             Browser browser = new Browser(session, created.browser());

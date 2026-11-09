@@ -13,6 +13,9 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Region;
+import net.kurobako.cef4j.gen.CefKeyEvent;
+import net.kurobako.cef4j.gen.CefKeyEventType;
+import net.kurobako.cef4j.gen.CefMouseEvent;
 import net.kurobako.cef4j.ipc.frame.FrameMetadata;
 import net.kurobako.cef4j.ipc.frame.LatestOnlyDispatcher;
 import net.kurobako.cef4j.ipc.frame.RemoteBrowserBinding;
@@ -92,8 +95,7 @@ public final class RemoteWebView extends Region implements AutoCloseable {
         if (host == null) return;
         final int button = jfxButtonToCef(e.getButton());
         if (button < 0) return; // unsupported (no-button event, etc.)
-        final net.kurobako.cef4j.ipc.protocol.gen.MouseEvent ev =
-                new net.kurobako.cef4j.ipc.protocol.gen.MouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e));
+        final CefMouseEvent ev = new CefMouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e));
         binding.observe(
                 host.sendMouseClickEvent(ev, button, mouseUp ? 1 : 0, e.getClickCount()), "forward mouse click");
     }
@@ -101,16 +103,14 @@ public final class RemoteWebView extends Region implements AutoCloseable {
     private void forwardMouseMove(MouseEvent e, boolean mouseLeave) {
         final BrowserHost host = binding.host().orElse(null);
         if (host == null) return;
-        final net.kurobako.cef4j.ipc.protocol.gen.MouseEvent ev =
-                new net.kurobako.cef4j.ipc.protocol.gen.MouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e));
+        final CefMouseEvent ev = new CefMouseEvent((int) e.getX(), (int) e.getY(), mouseModifiers(e));
         binding.observe(host.sendMouseMoveEvent(ev, mouseLeave ? 1 : 0), "forward mouse move");
     }
 
     private void forwardMouseWheel(ScrollEvent e) {
         final BrowserHost host = binding.host().orElse(null);
         if (host == null) return;
-        final net.kurobako.cef4j.ipc.protocol.gen.MouseEvent ev =
-                new net.kurobako.cef4j.ipc.protocol.gen.MouseEvent((int) e.getX(), (int) e.getY(), 0);
+        final CefMouseEvent ev = new CefMouseEvent((int) e.getX(), (int) e.getY(), 0);
         binding.observe(host.sendMouseWheelEvent(ev, (int) e.getDeltaX(), (int) e.getDeltaY()), "forward mouse wheel");
     }
 
@@ -189,16 +189,15 @@ public final class RemoteWebView extends Region implements AutoCloseable {
         final BrowserHost host = binding.host().orElse(null);
         if (host == null) return;
         binding.observe(
-                host.sendKeyEvent(net.kurobako.cef4j.ipc.protocol.gen.KeyEvent.builder()
-                        .type(eventType)
-                        .modifiers(keyModifiers(jfx))
-                        .windowsKeyCode(keyCode)
-                        .nativeKeyCode(keyCode)
-                        .isSystemKey(0)
-                        .character(character)
-                        .unmodifiedCharacter(character)
-                        .focusOnEditableField(0)
-                        .build()),
+                host.sendKeyEvent(new CefKeyEvent(
+                        CefKeyEventType.of(eventType),
+                        keyModifiers(jfx),
+                        keyCode,
+                        keyCode,
+                        0,
+                        (char) character,
+                        (char) character,
+                        0)),
                 "forward key event");
     }
 

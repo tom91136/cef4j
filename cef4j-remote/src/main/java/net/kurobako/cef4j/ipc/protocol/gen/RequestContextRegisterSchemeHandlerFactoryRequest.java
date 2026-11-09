@@ -2,7 +2,6 @@
 package net.kurobako.cef4j.ipc.protocol.gen;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.processing.Generated;
 import net.kurobako.cef4j.ipc.session.CefMessageDecoder;
@@ -10,11 +9,10 @@ import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefMessageView;
 import net.kurobako.cef4j.ipc.session.WireDecoder;
 import net.kurobako.cef4j.ipc.session.RemoteHandle;
+import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
 public final class RequestContextRegisterSchemeHandlerFactoryRequest implements CefMessageView, CefMessageEncoder {
-
-    public static final int MESSAGE_ID = 1018620355;
 
     private final RemoteHandle self;
     private final String schemeName;
@@ -49,39 +47,25 @@ public final class RequestContextRegisterSchemeHandlerFactoryRequest implements 
     }
 
     @Override
-    public int messageId() {
-        return MESSAGE_ID;
-    }
-
-    @Override
     public int encodedSize() {
         return 16 + schemeNameBytes.length + domainNameBytes.length;
     }
 
     @Override
     public void encodeInto(ByteBuffer __dst) {
-        final ByteOrder originalOrder = __dst.order();
-        try {
-            __dst.order(ByteOrder.LITTLE_ENDIAN);
-            __dst.putInt(self.id());
-            __dst.putInt(schemeNameBytes.length);
-            __dst.put(schemeNameBytes);
-            __dst.putInt(domainNameBytes.length);
-            __dst.put(domainNameBytes);
-            __dst.putInt(factory.id());
-        } finally {
-            __dst.order(originalOrder);
-        }
+        WireEncoder.littleEndian(__dst, __out -> {
+            __out.putInt(self.id());
+            WireEncoder.bytes(__out, schemeNameBytes);
+            WireEncoder.bytes(__out, domainNameBytes);
+            __out.putInt(factory.id());
+        });
     }
 
-    public static final CefMessageDecoder<RequestContextRegisterSchemeHandlerFactoryRequest> DECODER = payload -> {
-        final ByteBuffer __buf = payload.duplicate();
-        __buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static final CefMessageDecoder<RequestContextRegisterSchemeHandlerFactoryRequest> DECODER = WireDecoder.message("RequestContextRegisterSchemeHandlerFactoryRequest", __buf -> {
         final RemoteHandle self = WireDecoder.handle(__buf, "self");
         final String schemeName = WireDecoder.utf8(__buf, "schemeName");
         final String domainName = WireDecoder.utf8(__buf, "domainName");
         final RemoteHandle factory = WireDecoder.handle(__buf, "factory");
-        WireDecoder.requireFullyConsumed(__buf, "RequestContextRegisterSchemeHandlerFactoryRequest");
         return new RequestContextRegisterSchemeHandlerFactoryRequest(self, schemeName, domainName, factory);
-    };
+    });
 }
