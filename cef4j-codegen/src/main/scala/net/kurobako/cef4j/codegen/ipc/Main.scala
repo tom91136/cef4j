@@ -316,7 +316,7 @@ object Main {
       case _ => Nil
     }.filter(_._2.nonEmpty).toMap
 
-    val platformTypes    = IndexPlatformTypes(cefInclude, Platform.Linux)
+    val platformTypes    = IndexPlatformTypes(cefInclude, Platform.detectCurrent)
     val dataStructs      = SpecDeriver.deriveDataStructs(decls, packageName, platformTypes)
     val knownDataStructs = dataStructs.collect { case ds if ds.shared.isDefined => ds.cefStructName }.toSet
     Derived(
