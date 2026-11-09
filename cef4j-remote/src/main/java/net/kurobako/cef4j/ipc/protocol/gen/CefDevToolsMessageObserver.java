@@ -76,7 +76,7 @@ public interface CefDevToolsMessageObserver {
     /** Registers {@code handler} for every event this interface declares. */
     static CefSession.HandlerRegistration register(CefSession session, CefDevToolsMessageObserver handler) {
         return CefSession.HandlerRegistration.combine(
-                session.intercept(MessageIds.DEV_TOOLS_MESSAGE_OBSERVER_ON_DEV_TOOLS_MESSAGE_EVENT, BrowserHandleMessageBytesMessage.DECODER, ev -> {
+                session.intercept(MessageIds.DEV_TOOLS_MESSAGE_OBSERVER_ON_DEV_TOOLS_MESSAGE_EVENT, DevToolsMessageEvent.DECODER, ev -> {
                     final java.util.Optional<Boolean> answer = handler.onDevToolsMessage(ev.browser(), ev.message());
                     return java.util.Optional.of(new CefSession.Reply(MessageIds.DEV_TOOLS_MESSAGE_OBSERVER_ON_DEV_TOOLS_MESSAGE_RESPONSE, new ResultBoolMessage(answer.orElse(false))));
                 }),

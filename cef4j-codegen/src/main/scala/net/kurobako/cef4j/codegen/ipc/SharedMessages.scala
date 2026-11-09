@@ -8,9 +8,11 @@ object SharedMessages {
   private val MaxNameLength = 96
   private val Suffix        = "Message"
 
-  def derive(specs: List[MessageSpec])(using Naming.Context): SharedMessages = {
+  def derive(specs: List[MessageSpec], handWritten: Set[String] = Set.empty)(using Naming.Context): SharedMessages = {
     val groups = specs.groupBy(_.fields).toList.map { case (fields, members) =>
-      val name = members match {
+      // hand-written code names these classes, and the derived messages that share a shape vary by CEF version
+      val named = members.filter(m => handWritten.contains(m.className))
+      val name  = (if (named.isEmpty) members else named) match {
         case single :: Nil => single.className
         case _             => shapeName(fields)
       }

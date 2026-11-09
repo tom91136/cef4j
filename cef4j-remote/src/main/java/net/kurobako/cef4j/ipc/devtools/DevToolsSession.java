@@ -16,8 +16,8 @@ import net.kurobako.cef4j.cdp.CdpRequestTracker;
 import net.kurobako.cef4j.cdp.CdpSubscription;
 import net.kurobako.cef4j.cdp.CdpTransport;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessage;
-import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessageBytesMessage;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserHost;
+import net.kurobako.cef4j.ipc.protocol.gen.DevToolsMessageEvent;
 import net.kurobako.cef4j.ipc.protocol.gen.EmptyMessage;
 import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.session.CefFutures;
@@ -75,8 +75,8 @@ public final class DevToolsSession implements CdpTransport {
         this.browser = browser;
         this.host = host;
         this.codec = codec;
-        messageRegistration = session.on(
-                MessageIds.DEV_TOOLS_MESSAGE_EVENT, BrowserHandleMessageBytesMessage.DECODER, this::handleMessage);
+        messageRegistration =
+                session.on(MessageIds.DEV_TOOLS_MESSAGE_EVENT, DevToolsMessageEvent.DECODER, this::handleMessage);
         detachedRegistration =
                 session.on(MessageIds.DEV_TOOLS_AGENT_DETACHED_EVENT, BrowserHandleMessage.DECODER, event -> {
                     if (browser.equals(event.browser()))
@@ -222,7 +222,7 @@ public final class DevToolsSession implements CdpTransport {
         }
     }
 
-    private void handleMessage(BrowserHandleMessageBytesMessage event) {
+    private void handleMessage(DevToolsMessageEvent event) {
         if (!open.get() || !browser.equals(event.browser())) return;
         try {
             final Map<String, Object> message = asMap(codec.decode(event.message())

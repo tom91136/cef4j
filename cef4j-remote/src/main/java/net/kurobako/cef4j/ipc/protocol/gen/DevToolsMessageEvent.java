@@ -11,12 +11,12 @@ import net.kurobako.cef4j.ipc.session.RemoteHandle;
 import net.kurobako.cef4j.ipc.session.WireEncoder;
 
 @Generated("mvn generate-sources -pl cef4j-remote")
-public final class BrowserHandleMessageBytesMessage implements CefMessageView, CefMessageEncoder {
+public final class DevToolsMessageEvent implements CefMessageView, CefMessageEncoder {
 
     private final RemoteHandle browser;
     private final byte[] message;
 
-    public BrowserHandleMessageBytesMessage(RemoteHandle browser, byte[] message) {
+    public DevToolsMessageEvent(RemoteHandle browser, byte[] message) {
         this.browser = browser;
         this.message = message;
     }
@@ -42,9 +42,9 @@ public final class BrowserHandleMessageBytesMessage implements CefMessageView, C
         });
     }
 
-    public static final CefMessageDecoder<BrowserHandleMessageBytesMessage> DECODER = WireDecoder.message("BrowserHandleMessageBytesMessage", __buf -> {
+    public static final CefMessageDecoder<DevToolsMessageEvent> DECODER = WireDecoder.message("DevToolsMessageEvent", __buf -> {
         final RemoteHandle browser = WireDecoder.handle(__buf, "browser");
         final byte[] message = WireDecoder.bytes(__buf, "message");
-        return new BrowserHandleMessageBytesMessage(browser, message);
+        return new DevToolsMessageEvent(browser, message);
     });
 }

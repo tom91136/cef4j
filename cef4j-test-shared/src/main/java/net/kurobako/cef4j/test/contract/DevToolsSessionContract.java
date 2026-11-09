@@ -19,8 +19,8 @@ import net.kurobako.cef4j.cdp.CdpCodec;
 import net.kurobako.cef4j.cdp.CdpException;
 import net.kurobako.cef4j.ipc.devtools.DevToolsSession;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessage;
-import net.kurobako.cef4j.ipc.protocol.gen.BrowserHandleMessageBytesMessage;
 import net.kurobako.cef4j.ipc.protocol.gen.BrowserHost;
+import net.kurobako.cef4j.ipc.protocol.gen.DevToolsMessageEvent;
 import net.kurobako.cef4j.ipc.protocol.gen.MessageIds;
 import net.kurobako.cef4j.ipc.session.CefMessageEncoder;
 import net.kurobako.cef4j.ipc.session.CefSessionImpl;
@@ -80,7 +80,7 @@ public abstract class DevToolsSessionContract {
             peer.respond(send, successfulSendResponse());
             peer.event(
                     MessageIds.DEV_TOOLS_MESSAGE_EVENT,
-                    new BrowserHandleMessageBytesMessage(
+                    new DevToolsMessageEvent(
                             browser,
                             ("{\"id\":" + commandId + ",\"result\":{\"answer\":42}}")
                                     .getBytes(StandardCharsets.UTF_8)));
@@ -104,7 +104,7 @@ public abstract class DevToolsSessionContract {
             });
             peer.event(
                     MessageIds.DEV_TOOLS_MESSAGE_EVENT,
-                    new BrowserHandleMessageBytesMessage(
+                    new DevToolsMessageEvent(
                             browser,
                             "{\"method\":\"Runtime.consoleAPICalled\",\"params\":{\"type\":\"log\"}}"
                                     .getBytes(StandardCharsets.UTF_8)));
@@ -191,7 +191,7 @@ public abstract class DevToolsSessionContract {
             cancelled.cancel(false);
             peer.event(
                     MessageIds.DEV_TOOLS_MESSAGE_EVENT,
-                    new BrowserHandleMessageBytesMessage(
+                    new DevToolsMessageEvent(
                             browser,
                             ("{\"id\":" + firstId + ",\"result\":{\"stale\":true}}").getBytes(StandardCharsets.UTF_8)));
 
@@ -213,7 +213,7 @@ public abstract class DevToolsSessionContract {
         peer.respond(send, successfulSendResponse());
         peer.event(
                 MessageIds.DEV_TOOLS_MESSAGE_EVENT,
-                new BrowserHandleMessageBytesMessage(
+                new DevToolsMessageEvent(
                         browser, ("{\"id\":" + id + "," + result + "}").getBytes(StandardCharsets.UTF_8)));
     }
 

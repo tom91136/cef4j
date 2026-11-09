@@ -71,7 +71,7 @@ object Main {
     val visitorEvents = visitorEventSpecs.filterNot(s => handWrittenNames.contains(s.className))
     val derivedSpecs  = astFiltered ++ visitorEvents
     val specs         = handWritten ++ derivedSpecs
-    val shared        = SharedMessages.derive(specs)
+    val shared        = SharedMessages.derive(specs, handWrittenNames)
     val refs          = shared.refs
     // Facades cannot target overridden wire shapes.
     val facades = astFacades.map { f =>
