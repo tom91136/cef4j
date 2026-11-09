@@ -163,7 +163,7 @@ public final class CefWebEngine {
      */
     // mirrors javafx.scene.web.WebEngine#executeScript, so code written for WebEngine compiles unchanged
     @Deprecated
-    @SuppressWarnings("baumkuchen:nullable-return")
+    @SuppressWarnings("bonsai:nullable-return")
     public @Nullable Object executeScript(String script) {
         view.executeScript(script);
         return null;
@@ -254,7 +254,7 @@ public final class CefWebEngine {
     }
 
     // mirrors javafx.scene.web.WebEngine#getDocument, so code written for WebEngine compiles unchanged
-    @SuppressWarnings("baumkuchen:nullable-return")
+    @SuppressWarnings("bonsai:nullable-return")
     public @Nullable Document getDocument() {
         return document.get();
     }
@@ -300,7 +300,7 @@ public final class CefWebEngine {
     }
 
     // mirrors javafx.scene.web.WebEngine#getUserDataDirectory, so code written for WebEngine compiles unchanged
-    @SuppressWarnings("baumkuchen:nullable-return")
+    @SuppressWarnings("bonsai:nullable-return")
     public @Nullable File getUserDataDirectory() {
         return userDataDirectory.get();
     }
@@ -314,7 +314,7 @@ public final class CefWebEngine {
     }
 
     // mirrors javafx.scene.web.WebEngine#getOnAlert, so code written for WebEngine compiles unchanged
-    @SuppressWarnings("baumkuchen:nullable-return")
+    @SuppressWarnings("bonsai:nullable-return")
     public @Nullable EventHandler<CefWebEvent<String>> getOnAlert() {
         return onAlert.get();
     }
@@ -328,7 +328,7 @@ public final class CefWebEngine {
     }
 
     // mirrors javafx.scene.web.WebEngine#getOnStatusChanged, so code written for WebEngine compiles unchanged
-    @SuppressWarnings("baumkuchen:nullable-return")
+    @SuppressWarnings("bonsai:nullable-return")
     public @Nullable EventHandler<CefWebEvent<String>> getOnStatusChanged() {
         return onStatusChanged.get();
     }
@@ -342,7 +342,7 @@ public final class CefWebEngine {
     }
 
     // mirrors javafx.scene.web.WebEngine#getOnResized, so code written for WebEngine compiles unchanged
-    @SuppressWarnings("baumkuchen:nullable-return")
+    @SuppressWarnings("bonsai:nullable-return")
     public @Nullable EventHandler<CefWebEvent<Rectangle2D>> getOnResized() {
         return onResized.get();
     }
@@ -356,7 +356,7 @@ public final class CefWebEngine {
     }
 
     // mirrors javafx.scene.web.WebEngine#getOnVisibilityChanged, so code written for WebEngine compiles unchanged
-    @SuppressWarnings("baumkuchen:nullable-return")
+    @SuppressWarnings("bonsai:nullable-return")
     public @Nullable EventHandler<CefWebEvent<Boolean>> getOnVisibilityChanged() {
         return onVisibilityChanged.get();
     }
@@ -370,7 +370,7 @@ public final class CefWebEngine {
     }
 
     // mirrors javafx.scene.web.WebEngine#getCreatePopupHandler, so code written for WebEngine compiles unchanged
-    @SuppressWarnings("baumkuchen:nullable-return")
+    @SuppressWarnings("bonsai:nullable-return")
     public @Nullable Callback<CefPopupFeatures, CefWebEngine> getCreatePopupHandler() {
         return createPopupHandler.get();
     }
@@ -384,7 +384,7 @@ public final class CefWebEngine {
     }
 
     // mirrors javafx.scene.web.WebEngine#getConfirmHandler, so code written for WebEngine compiles unchanged
-    @SuppressWarnings("baumkuchen:nullable-return")
+    @SuppressWarnings("bonsai:nullable-return")
     public @Nullable Callback<String, Boolean> getConfirmHandler() {
         return confirmHandler.get();
     }
@@ -398,7 +398,7 @@ public final class CefWebEngine {
     }
 
     // mirrors javafx.scene.web.WebEngine#getPromptHandler, so code written for WebEngine compiles unchanged
-    @SuppressWarnings("baumkuchen:nullable-return")
+    @SuppressWarnings("bonsai:nullable-return")
     public @Nullable Callback<CefPromptData, String> getPromptHandler() {
         return promptHandler.get();
     }
@@ -412,7 +412,7 @@ public final class CefWebEngine {
     }
 
     // mirrors javafx.scene.web.WebEngine#getOnError, so code written for WebEngine compiles unchanged
-    @SuppressWarnings("baumkuchen:nullable-return")
+    @SuppressWarnings("bonsai:nullable-return")
     public @Nullable EventHandler<CefWebErrorEvent> getOnError() {
         return onError.get();
     }

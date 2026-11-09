@@ -16,7 +16,7 @@ import org.jspecify.annotations.Nullable;
 /** One monotonic timeout budget shared by every asynchronous phase of a test operation. */
 // The action runs on the thread of the scheduler, and a failure in it, of any kind, has to reach the test on the thread
 // that waits for the action; await(...) rethrows it there, so it is not swallowed.
-@SuppressWarnings("baumkuchen:catch-throwable")
+@SuppressWarnings("bonsai:catch-throwable")
 public final class TestDeadline {
     @FunctionalInterface
     public interface CheckedSupplier<T> {

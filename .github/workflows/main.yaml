@@ -388,64 +388,63 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-  # Disabled until the baumkuchen repository is reachable from CI (it has no published release yet).
-  # baumkuchen:
-  #   name: Baumkuchen
-  #   needs: maven-wrapper
-  #   runs-on: ubuntu-24.04
-  #   timeout-minutes: 90
-  #
-  #   steps:
-  #     - uses: actions/checkout@v7
-  #
-  #     # The baumkuchen tools have no published release, so they are built from their own source.
-  #     - uses: actions/checkout@v7
-  #       with:
-  #         repository: ${{ github.repository_owner }}/baumkuchen
-  #         path: baumkuchen
-  #         token: ${{ secrets.SIBLINGS_TOKEN || github.token }}
-  #
-  #     # The scalafix rules read the class files of the JDK, and the ASM that scalafix carries cannot read the class
-  #     # files of JDK 25, so the rules run on a JDK they read.
-  #     - name: Set up JDK 21
-  #       uses: actions/setup-java@v5
-  #       with:
-  #         distribution: corretto
-  #         java-version: '21'
-  #         cache: maven
-  #         cache-dependency-path: '**/pom.xml'
-  #
-  #     - uses: sbt/setup-sbt@v1
-  #
-  #     - uses: ./.github/actions/maven-wrapper
-  #
-  #     - name: Publish the baumkuchen tools
-  #       working-directory: baumkuchen
-  #       run: ./scripts/publish-local.sh
-  #
-  #     - name: Install the baumkuchen tools into the Maven repository
-  #       working-directory: baumkuchen
-  #       env:
-  #         MAVEN_COMMAND: ${{ github.workspace }}/mvnw
-  #       run: ./scripts/publish-maven-local.sh
-  #
-  #     - name: Build and install the baumkuchen Maven plugin
-  #       working-directory: baumkuchen/maven-plugin
-  #       env:
-  #         MAVEN_COMMAND: ${{ github.workspace }}/mvnw
-  #       run: ${{ github.workspace }}/mvnw --batch install
-  #
-  #     - name: Prepare CEF archives
-  #       uses: ./.github/actions/cef-archives
-  #       with:
-  #         version: '150.0.18+gdb11278+chromium-150.0.7871.213'
-  #         platform: linux64
-  #
-  #     # The checks of the tools run in the ci mode here, which fails the build on any finding; no check is left out in
-  #     # .baumkuchen.conf. The build runs the modules one after another, as the analysis reads the fragment of every
-  #     # module of the build and a module that runs in parallel with another may not have written its fragment yet.
-  #     - name: Check the Scala modules
-  #       run: ./mvnw -B -T 1 -pl cef4j-codegen -am clean verify -DskipTests -DskipITs
+  bonsai:
+    name: Bonsai
+    needs: maven-wrapper
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v7
+
+      # The bonsai tools have no published release, so they are built from their own source.
+      - uses: actions/checkout@v7
+        with:
+          repository: tom91136/bonsai
+          path: bonsai
+
+      # The scalafix rules read the class files of the JDK, and the ASM that scalafix carries cannot read the class
+      # files of JDK 25, so the rules run on a JDK they read.
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: corretto
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: '**/pom.xml'
+
+      - uses: sbt/setup-sbt@v1
+
+      - uses: ./.github/actions/maven-wrapper
+
+      - name: Publish the bonsai tools
+        working-directory: bonsai
+        run: ./scripts/publish-local.sh
+
+      - name: Install the bonsai tools into the Maven repository
+        working-directory: bonsai
+        env:
+          MAVEN_COMMAND: ${{ github.workspace }}/mvnw
+        run: ./scripts/publish-maven-local.sh
+
+      - name: Build and install the bonsai Maven plugin
+        working-directory: bonsai/maven-plugin
+        env:
+          MAVEN_COMMAND: ${{ github.workspace }}/mvnw
+        run: ${{ github.workspace }}/mvnw --batch install
+
+      - name: Prepare CEF archives
+        uses: ./.github/actions/cef-archives
+        with:
+          version: '150.0.18+gdb11278+chromium-150.0.7871.213'
+          platform: linux64
+
+      # The checks of the tools run in the ci mode here, which fails the build on any finding; no check is left out in
+      # .bonsai.conf. The build runs the modules one after another, as the analysis reads the fragment of every
+      # module of the build and a module that runs in parallel with another may not have written its fragment yet.
+      - name: Check the Scala modules
+        run: ./mvnw -B -T 1 -pl cef4j-codegen -am clean verify -DskipTests -DskipITs
 
   consumer:
     name: Consumer examples

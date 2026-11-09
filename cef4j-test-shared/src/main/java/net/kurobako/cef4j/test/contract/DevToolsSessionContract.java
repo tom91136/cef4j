@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings("baumkuchen:auto-closeable-resource")
+@SuppressWarnings("bonsai:auto-closeable-resource")
 public abstract class DevToolsSessionContract {
 
     private static boolean hasSendDevToolsMessage = false;

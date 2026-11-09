@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 // XXX: A native library that cannot be loaded is reported as an UnsatisfiedLinkError, which is an Error and not an
 // Exception, so the initialisation failure is caught as a Throwable and reported to the caller.
-@SuppressWarnings({"unused", "ImmutableEnumChecker", "baumkuchen:catch-throwable", "baumkuchen:reflection-member"})
+@SuppressWarnings({"unused", "ImmutableEnumChecker", "bonsai:catch-throwable", "bonsai:reflection-member"})
 public enum Cef implements AutoCloseable {
     INSTANCE;
 

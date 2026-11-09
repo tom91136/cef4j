@@ -25,7 +25,7 @@ object PDL {
   // The analysis reads the parameters every case of a sum shares as fields to hoist into a parent; here the parent is
   // the enum itself, and the cases still name the parameters because a case can only pass them to the parent. Taking
   // the data out of the sum would make every reader match the form of a declaration before it reads its name.
-  @SuppressWarnings(Array("baumkuchen:common-factor"))
+  @SuppressWarnings(Array("bonsai:common-factor"))
   enum Decl(val name: String, val description: Option[String], val flags: Flags) {
     case Type(
         override val name: String,

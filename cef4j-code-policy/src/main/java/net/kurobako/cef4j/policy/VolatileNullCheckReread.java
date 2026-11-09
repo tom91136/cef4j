@@ -34,7 +34,7 @@ import org.jspecify.annotations.Nullable;
  * check anyway. Read the field once into a local and check and use the local.
  */
 // an Error Prone checker reads the symbols and trees of javac itself, which jdk.compiler does not export
-@SuppressWarnings("baumkuchen:jdk-internal-api")
+@SuppressWarnings("bonsai:jdk-internal-api")
 @AutoService(BugChecker.class)
 @BugPattern(
         summary = "Null-checked volatile field is read again; copy it to a local and use that instead",

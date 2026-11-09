@@ -12,7 +12,7 @@ import java.util.function.Function;
  * <p>A mapper that fails must be reported to the caller, so every failure of the mapper is caught and delivered through
  * the returned future rather than being lost in the completion stage.
  */
-@SuppressWarnings("baumkuchen:catch-throwable")
+@SuppressWarnings("bonsai:catch-throwable")
 public final class CefFutures {
     private CefFutures() {}
 

@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 // The arguments of append are the fields of a trace entry, which the writer stamps with the sequence and the time of
 // the entry; the entry type carries those two fields as well, so a parameter object would have to invent the values
 // the writer adds.
-@SuppressWarnings("baumkuchen:data-clump")
+@SuppressWarnings("bonsai:data-clump")
 public final class RecordingCefSession implements CefSession {
     private static final Logger LOG = LoggerFactory.getLogger(RecordingCefSession.class);
 

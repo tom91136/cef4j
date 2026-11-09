@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * <p>A codec that fails must be reported to the caller of the command, so every failure of the codec is caught and
  * delivered through the returned future rather than being lost in the completion stage.
  */
-@SuppressWarnings("baumkuchen:catch-throwable")
+@SuppressWarnings("bonsai:catch-throwable")
 public final class DevToolsSession implements CdpTransport {
     private static final Logger LOG = LoggerFactory.getLogger(DevToolsSession.class);
     private static final java.lang.reflect.@Nullable Method SEND_DEV_TOOLS_METHOD =

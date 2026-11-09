@@ -17,7 +17,7 @@ import org.jspecify.annotations.Nullable;
  * <p>A decoder that fails must be reported to the caller of the command, so every failure of the decoder is caught and
  * delivered through the returned future rather than being lost in the completion stage.
  */
-@SuppressWarnings("baumkuchen:catch-throwable")
+@SuppressWarnings("bonsai:catch-throwable")
 public final class CdpClient implements AutoCloseable {
     private final CdpTransport transport;
     private final CdpCodec codec;

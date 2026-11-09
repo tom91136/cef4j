@@ -20,7 +20,7 @@ import org.jspecify.annotations.Nullable;
  * <p>A mapper that fails must be reported to the caller of the command, so every failure of the mapper is caught and
  * delivered through the returned future rather than being lost in the completion stage.
  */
-@SuppressWarnings("baumkuchen:catch-throwable")
+@SuppressWarnings("bonsai:catch-throwable")
 public final class InProcessCefAutomationBackendFactory implements AutomationBackendFactory {
     private final InProcessBrowserRuntimeFactory runtimeFactory;
     private final WebDriverJsonCodec jsonCodec;

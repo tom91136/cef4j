@@ -149,4 +149,37 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- The compiler configuration above replaces the one the bonsai profile of the parent appends to, so the
+             javac plugin is appended here again. -->
+        <profile>
+            <id>bonsai</id>
+            <activation>
+                <file>
+                    <exists>${user.home}/.m2/repository/net/kurobako/bonsai-maven-plugin</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <annotationProcessorPaths combine.children="append">
+                                <path>
+                                    <groupId>net.kurobako</groupId>
+                                    <artifactId>bonsai-java-plugin_3</artifactId>
+                                    <version>${bonsai.version}</version>
+                                </path>
+                            </annotationProcessorPaths>
+                            <compilerArgs combine.children="append">
+                                <arg>-Xplugin:bonsai ${bonsai.model}</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
  *       CefBrowserView (active tab)
  * </pre>
  */
-@SuppressWarnings({"NullAway.Init", "baumkuchen:not-null-field"})
+@SuppressWarnings({"NullAway.Init", "bonsai:not-null-field"})
 public final class ViewsBrowserApp {
 
     private static final Logger log = LoggerFactory.getLogger(ViewsBrowserApp.class);

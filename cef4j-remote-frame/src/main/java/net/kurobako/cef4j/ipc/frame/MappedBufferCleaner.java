@@ -127,7 +127,7 @@ final class MappedBufferCleaner {
 
     // releasing a mapping before it is collected needs sun.misc.Unsafe.invokeCleaner on Java 11, and without it the
     // mapping is only unmapped once its buffer is collected
-    @SuppressWarnings("baumkuchen:jdk-internal-api")
+    @SuppressWarnings("bonsai:jdk-internal-api")
     private static final class UnsafeCleaner {
         @Nullable
         private static final Object UNSAFE;

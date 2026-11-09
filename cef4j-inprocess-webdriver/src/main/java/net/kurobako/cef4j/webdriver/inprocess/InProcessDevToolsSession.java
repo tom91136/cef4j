@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * <p>An action that fails on the CEF UI thread must be reported to the caller, so every failure of the action is caught
  * and delivered through the returned future rather than being lost in the completion stage.
  */
-@SuppressWarnings("baumkuchen:catch-throwable")
+@SuppressWarnings("bonsai:catch-throwable")
 public final class InProcessDevToolsSession implements CdpTransport {
     private static final Logger LOG = LoggerFactory.getLogger(InProcessDevToolsSession.class);
 

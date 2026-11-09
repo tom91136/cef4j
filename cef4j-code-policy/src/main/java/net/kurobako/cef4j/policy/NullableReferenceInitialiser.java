@@ -28,7 +28,7 @@ import java.util.Optional;
  * non-null. The value type must be declared {@code @Nullable}.
  */
 // an Error Prone checker reads the symbols and trees of javac itself, which jdk.compiler does not export
-@SuppressWarnings("baumkuchen:jdk-internal-api")
+@SuppressWarnings("bonsai:jdk-internal-api")
 @AutoService(BugChecker.class)
 @BugPattern(
         summary =

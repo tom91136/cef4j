@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 // The three parameters of on and onLatest are the subscription the API takes, which the middleware of a session
 // forwards; a parameter object would change the signature of every subscription in the build to name the same three
 // values.
-@SuppressWarnings("baumkuchen:data-clump")
+@SuppressWarnings("bonsai:data-clump")
 public interface CefSession extends Closeable {
 
     /**

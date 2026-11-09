@@ -318,27 +318,27 @@
             </properties>
         </profile>
 
-        <!-- The baumkuchen tools, which have no published release and are installed into the Maven repository by
-             the scripts of the baumkuchen build. A build without them runs without their checks, which is what a
+        <!-- The bonsai tools, which have no published release and are installed into the Maven repository by
+             the scripts of the bonsai build. A build without them runs without their checks, which is what a
              CI server that has not installed them does. This profile holds the parts of the wiring that concern the
              Scala code, the Java code being wired by the profile of the parent. -->
         <profile>
-            <id>baumkuchen-scala</id>
+            <id>bonsai-scala</id>
             <activation>
                 <file>
                     <!-- The plugin is found in the local repository, and its presence there says that the tools are
                          installed, as the presence of the sbt plugin says in a build of sbt. -->
-                    <exists>${user.home}/.m2/repository/net/kurobako/baumkuchen-maven-plugin</exists>
+                    <exists>${user.home}/.m2/repository/net/kurobako/bonsai-maven-plugin</exists>
                 </file>
             </activation>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>net.kurobako</groupId>
-                        <artifactId>baumkuchen-maven-plugin</artifactId>
-                        <version>${baumkuchen.version}</version>
+                        <artifactId>bonsai-maven-plugin</artifactId>
+                        <version>${bonsai.version}</version>
                         <configuration>
-                            <version>${baumkuchen.version}</version>
+                            <version>${bonsai.version}</version>
                         </configuration>
                         <executions>
                             <execution>
@@ -363,7 +363,7 @@
                         <artifactId>scala-maven-plugin</artifactId>
                         <configuration>
                             <args combine.children="append">
-                                <arg>@${baumkuchen.scalac.args}</arg>
+                                <arg>@${bonsai.scalac.args}</arg>
                             </args>
                         </configuration>
                     </plugin>

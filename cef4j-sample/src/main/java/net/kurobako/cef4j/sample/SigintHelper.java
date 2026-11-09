@@ -6,7 +6,7 @@ final class SigintHelper {
     private SigintHelper() {}
 
     // no public API handles SIGINT on Java 11, so without sun.misc onSignal runs from a shutdown hook at JVM exit
-    @SuppressWarnings("baumkuchen:jdk-internal-api")
+    @SuppressWarnings("bonsai:jdk-internal-api")
     static void install(Runnable onSignal) {
         try {
             final Class<?> signalClass = Class.forName("sun.misc.Signal");

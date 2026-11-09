@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** Sample Swing browser using {@link CefBrowserPanel} with tabbed browsing, zoom, and keyboard shortcuts. */
-@SuppressWarnings({"NullAway.Init", "baumkuchen:not-null-field"})
+@SuppressWarnings({"NullAway.Init", "bonsai:not-null-field"})
 public final class SwingBrowserApp {
 
     private static final Logger log = LoggerFactory.getLogger(SwingBrowserApp.class);
