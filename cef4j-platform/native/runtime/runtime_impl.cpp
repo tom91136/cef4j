@@ -13,13 +13,61 @@
   #include <signal.h>
 #endif
 
+#if defined(_WIN32) && defined(_M_ARM64)
+  #include <windows.h>
+#endif
+
 #ifdef __linux__
   #include <mutex>
 
   #include <glib.h>
 #endif
 
+#if defined(_WIN32) && defined(_M_ARM64)
+namespace {
+
+constexpr DWORD kFailureBit = 0x80000000;
+
+thread_local EXCEPTION_RECORD *hiddenRecord = nullptr;
+
+// XXX: HotSpot on Windows ARM64 aborts on any first-chance exception with a failure code, including ones a Windows
+// component raises and handles itself (ngcksp.dll raising NTE_BAD_KEYSET inside an RPC stub). Present such codes as
+// non-failures while HotSpot's vectored handler runs, then restore them for the structured handlers.
+bool isRaisedHResult(DWORD code) { return (code & 0xC0000000) == kFailureBit && (code & 0x0FFF0000) != 0; }
+
+LONG CALLBACK hideFromHotSpot(EXCEPTION_POINTERS *info) {
+  if (isRaisedHResult(info->ExceptionRecord->ExceptionCode)) {
+    info->ExceptionRecord->ExceptionCode &= ~kFailureBit;
+    hiddenRecord = info->ExceptionRecord;
+  }
+  return EXCEPTION_CONTINUE_SEARCH;
+}
+
+LONG CALLBACK restoreAfterHotSpot(EXCEPTION_POINTERS *info) {
+  if (hiddenRecord == info->ExceptionRecord) {
+    info->ExceptionRecord->ExceptionCode |= kFailureBit;
+    hiddenRecord = nullptr;
+  }
+  return EXCEPTION_CONTINUE_SEARCH;
+}
+
+void installHotSpotExceptionShim() {
+  static const bool installed = [] {
+    AddVectoredExceptionHandler(1, hideFromHotSpot);
+    AddVectoredExceptionHandler(0, restoreAfterHotSpot);
+    return true;
+  }();
+  (void)installed;
+}
+
+} // namespace
+#endif
+
 int Cef4jInitialize(const cef_main_args_t *args, const cef_settings_t *settings, cef_app_t *application, void *windowsSandboxInfo) {
+#if defined(_WIN32) && defined(_M_ARM64)
+  installHotSpotExceptionShim();
+#endif
+
 #ifndef _WIN32
   // XXX: CEF 109.1.18 and 116.0.27 lack disable_signal_handlers; preserve HotSpot's fatal handlers until those
   // compatibility lanes are dropped.
