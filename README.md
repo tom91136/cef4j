@@ -231,13 +231,12 @@ already has.
 The tools have no published release, so they are built from source and installed into the Maven repository, and the
 Maven plugin that runs them is installed beside them:
 
-    (cd ../bonsai && ./scripts/publish-local.sh && ./scripts/publish-maven-local.sh)
-    (cd ../bonsai/maven-plugin && mvn install)
+    (cd ../bonsai && sbt installLocal)
 
 A build without them runs without their checks, which is what a build server that has not installed them does. With
 them, a workstation reports the findings without failing the build, and a CI server fails on the ones the build does not
-have yet. `BONSAI_MODE=ci` or `dev` names the mode, and `BONSAI_WRITE_BASELINE=<file>` records the findings of
-the run in the file, which is how the baseline is rewritten.
+have yet. `BONSAI_MODE=relaxed`, `strict`, or `audit` names the mode, and `BONSAI_WRITE_BASELINE=<file>` records the
+findings of the run in the file, which is how the baseline is rewritten.
 
 [DEBUG.md](DEBUG.md) covers native crashes, the runtime server, IPC, and test isolation; [PLAN.md](PLAN.md) tracks
 open work.
