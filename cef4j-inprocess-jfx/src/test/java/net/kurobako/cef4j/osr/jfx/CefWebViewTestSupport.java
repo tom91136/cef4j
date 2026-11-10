@@ -147,6 +147,7 @@ final class CefWebViewTestSupport {
             }
         });
         if (!latch.await(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
+            printThreadDump();
             throw new TimeoutException("Timed out waiting for JavaFX task");
         }
         if (error.get() != null) {
@@ -154,6 +155,15 @@ final class CefWebViewTestSupport {
         }
         JAVA_FX_FAILURES.throwIfPresent();
         return result.get();
+    }
+
+    private static void printThreadDump() {
+        Thread.getAllStackTraces().forEach((thread, stack) -> {
+            System.err.println(thread);
+            for (StackTraceElement frame : stack) {
+                System.err.println("    at " + frame);
+            }
+        });
     }
 
     static void onFxThread(Runnable task) throws Exception {
