@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import net.kurobako.cef4j.gen.CefApp;
 import net.kurobako.cef4j.gen.CefBrowser;
@@ -149,6 +150,7 @@ public enum Cef implements AutoCloseable {
 
     private static final Logger log = LoggerFactory.getLogger(Cef.class);
     private static final String DISABLE_FEATURES = "--disable-features=";
+    private static final long LAUNCHER_DRAIN_TIMEOUT_MILLIS = 2_000;
 
     private volatile State state = State.UNINITIALISED;
     private volatile @Nullable Thread initThread;
@@ -584,6 +586,7 @@ public enum Cef implements AutoCloseable {
             isDaemon = daemonManaged;
         }
         log.debug("CEF shutting down");
+        drainProcessLauncher();
 
         if (isMacOs) {
             SystemBootstrap.quitAndWaitMainThreadMessageLoop();
@@ -614,6 +617,35 @@ public enum Cef implements AutoCloseable {
     @Override
     public void close() {
         terminate();
+    }
+
+    // a child launch still queued from startup would otherwise run after cef_shutdown removes the state it reads
+    private static void drainProcessLauncher() {
+        final CefThreadId uiThread = CefThreadId.of(CefThreadId.Kind.UI);
+        final CefThreadId launcherThread = CefThreadId.of(CefThreadId.Kind.PROCESS_LAUNCHER);
+        final CountDownLatch drained = new CountDownLatch(1);
+        final CefTask release = new CefTask() {
+            @Override
+            public void execute() {
+                drained.countDown();
+            }
+        };
+        final boolean posted = CefGlobals.currentlyOn(uiThread) != 0
+                ? CefGlobals.postTask(launcherThread, release)
+                : CefGlobals.postTask(uiThread, new CefTask() {
+                    @Override
+                    public void execute() {
+                        if (!CefGlobals.postTask(launcherThread, release)) drained.countDown();
+                    }
+                });
+        if (!posted) return;
+        try {
+            if (!drained.await(LAUNCHER_DRAIN_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
+                log.warn("CEF process launcher did not drain before shutdown");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     static void awaitUninterruptibly(CountDownLatch latch) {
