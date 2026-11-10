@@ -126,7 +126,7 @@ object CHeaderParser {
 
     val openingLine = lines(startIdx)
     if (StructClosingRe.findFirstIn(openingLine).isDefined) {
-      val structName = StructCloseRe.findFirstMatchIn(openingLine).map(_.group(1)).getOrElse("unknown_t")
+      val structName = StructCloseRe.findFirstMatchIn(openingLine).fold("unknown_t")(_.group(1))
       (CefDecl.DataStruct(structName, Nil), startIdx + 1)
     } else {
       @tailrec
@@ -158,8 +158,7 @@ object CHeaderParser {
       val closingLine = if (result.idx < lines.length) lines(result.idx) else ""
       val structName  = StructCloseRe
         .findFirstMatchIn(closingLine)
-        .map(_.group(1))
-        .getOrElse("unknown_t")
+        .fold("unknown_t")(_.group(1))
 
       val decl = if (!result.hasBase && result.fields.nonEmpty) {
         CefDecl.DataStruct(structName, result.fields.reverse)
@@ -425,8 +424,7 @@ object CHeaderParser {
     val closingLine = if (result.idx < lines.length) lines(result.idx) else ""
     val enumName    = EnumClosingNameRe
       .findFirstMatchIn(closingLine)
-      .map(_.group(1))
-      .getOrElse("unknown_t")
+      .fold("unknown_t")(_.group(1))
 
     (CefDecl.Enum(enumName, result.values.reverse), result.idx + 1)
   }
@@ -468,9 +466,7 @@ object CHeaderParser {
       parseNumericToken(trimmed).getOrElse {
         unwrapped match {
           case EnumShiftRe(base, shift) =>
-            val baseVal = existing.find(_._1 == base).map(_._2).getOrElse(
-              parseEnumValue(base, existing)
-            )
+            val baseVal = existing.find(_._1 == base).fold(parseEnumValue(base, existing))(_._2)
             baseVal << shift.toInt
           case _ if unwrapped.contains("|") =>
             unwrapped.split("\\|").map(p => parseEnumValue(p.trim, existing)).reduce(_ | _)
@@ -489,9 +485,9 @@ object CHeaderParser {
                     case (Some(acc), List("*", r)) => resolveToken(r).map(acc * _)
                     case _                         => None
                   }
-                  .getOrElse(existing.find(_._1 == unwrapped).map(_._2).getOrElse(0L))
+                  .getOrElse(existing.find(_._1 == unwrapped).fold(0L)(_._2))
               case _ =>
-                existing.find(_._1 == unwrapped).map(_._2).getOrElse(0L)
+                existing.find(_._1 == unwrapped).fold(0L)(_._2)
             }
         }
       }
@@ -549,11 +545,10 @@ object CHeaderParser {
         val line              = lines(idx).trim
         val startsStructBlock = line.startsWith("typedef struct _cef_")
         val nextInStructBlock = inStructBlock || startsStructBlock
-        val nextBraceDepth    = if (nextInStructBlock) braceDepth + line.count(_ == '{') - line.count(_ == '}') else 0
-        val exitsStructBlock  = nextInStructBlock && nextBraceDepth <= 0 && line.contains("}")
-        val continuingStructBlock = nextInStructBlock && !exitsStructBlock
-
         if (nextInStructBlock) {
+          val nextBraceDepth        = braceDepth + line.count(_ == '{') - line.count(_ == '}')
+          val exitsStructBlock      = nextBraceDepth <= 0 && line.contains("}")
+          val continuingStructBlock = !exitsStructBlock
           loop(idx + 1, continuingStructBlock, if (continuingStructBlock) nextBraceDepth else 0, acc)
         } else if (line.startsWith("CEF_EXPORT")) {
           val (fullDecl, nextIdx) = collectExportDecl(lines, idx)

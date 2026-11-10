@@ -325,10 +325,11 @@ object HeaderMetadataIndex {
     ): List[(String, String)] = {
       val methodLineIdx = lines.indices.drop(searchStart).find(i => lines(i).trim.nonEmpty)
       val methodLine    = methodLineIdx.fold("")(i => lines(i).trim)
-      val cls           = methodLineIdx.fold("")(classAtLine)
       extractMethodName(methodLine) match {
-        case Some(name) => emitKeys(name, withSrc(comment, commentIdx), cls, acc)
-        case None       => acc
+        case Some(name) =>
+          val cls = methodLineIdx.fold("")(classAtLine)
+          emitKeys(name, withSrc(comment, commentIdx), cls, acc)
+        case None => acc
       }
     }
 
@@ -377,7 +378,7 @@ object HeaderMetadataIndex {
             case Some(nextLine) if isSingleLineMetaComment(nextLine) => afterComment + 1
             case _                                                   => afterComment
           }
-          val nextLine = lines.drop(searchStart).find(_.trim.nonEmpty).map(_.trim).getOrElse("")
+          val nextLine = lines.drop(searchStart).find(_.trim.nonEmpty).fold("")(_.trim)
           CppClassDeclRe.findFirstMatchIn(nextLine) match {
             case Some(m) => loop(searchStart + 1, (cppNameToCapiName(m.group(1)), withSrc(comment, idx)) :: acc)
             case None    => loop(afterComment, acc)
@@ -407,7 +408,7 @@ object HeaderMetadataIndex {
         if (line.startsWith("///")) {
           val (comment, afterComment) = lineCommentText(lines, idx, docCommentText(_))
           val searchStart             = skipAdditionalDocBlocks(afterComment)
-          val nextLine                = lines.drop(searchStart).find(_.trim.nonEmpty).map(_.trim).getOrElse("")
+          val nextLine                = lines.drop(searchStart).find(_.trim.nonEmpty).fold("")(_.trim)
           StructTypedefNameRe.findFirstMatchIn(nextLine) match {
             case Some(m) => loop(searchStart + 1, (m.group(1), withSrc(comment, idx)) :: acc)
             case None    => loop(afterComment, acc)
@@ -432,10 +433,10 @@ object HeaderMetadataIndex {
         if (line.startsWith("///")) {
           val (comment, afterComment) =
             lineCommentText(lines, idx, commentLines => commentLines.mkString(" ").trim)
-          val nextLine = lines.drop(afterComment).find(_.trim.nonEmpty).map(_.trim).getOrElse("")
+          val nextLine = lines.drop(afterComment).find(_.trim.nonEmpty).fold("")(_.trim)
           if (nextLine.startsWith("typedef enum")) {
             val (constantDocs, enumEnd) = parseEnumConstantDocs(lines, afterComment)
-            val closingLine             = lines.drop(enumEnd).find(_.trim.startsWith("}")).map(_.trim).getOrElse("")
+            val closingLine             = lines.drop(enumEnd).find(_.trim.startsWith("}")).fold("")(_.trim)
             val enumName                = closingLine.stripPrefix("}").stripSuffix(";").trim
             if (enumName.nonEmpty) loop(enumEnd + 1, (enumName -> (comment, constantDocs)) :: acc)
             else loop(enumEnd + 1, acc)
@@ -544,7 +545,7 @@ object HeaderMetadataIndex {
       (capi, cpp) match {
         case (Nil, _) | (_, Nil) => acc
         case (c :: cs, _)        =>
-          val found = (1 to cpp.length).find(n => cpp.take(n).mkString.toLowerCase == c.toLowerCase)
+          val found = cpp.inits.toList.init.findLast(_.mkString.toLowerCase == c.toLowerCase).map(_.length)
           found match {
             case Some(n) if n > 1 => go(cs, cpp.drop(n), (c.toLowerCase, cpp.take(n)) :: acc)
             case Some(n)          => go(cs, cpp.drop(n), acc)

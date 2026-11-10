@@ -311,14 +311,14 @@ $headerIncludes
     val npeChecks      = renderStrictNullChecks(params, optionalParams, guardRet) ++
       renderNarrowPrimitiveChecks(params, guardRet) ++ renderObjectArrayChecks(params, guardRet)
 
-    val argConversions = fn.params.map { p =>
-      val isOpt = optionalParams.contains(p.name)
+    val paramsByLowerName = fn.params.map(q => q.name.toLowerCase -> q).toMap
+    val argConversions    = fn.params.map { p =>
       if (outParam.exists(_ eq p)) outCollectionArg(outColl.get._2)
       else
         p.typ match {
           case CType.ByValueArray(cefName) =>
             val countVar =
-              fn.params.find(_.name.toLowerCase == s"${p.name.toLowerCase}count").map(_.name).getOrElse("0")
+              paramsByLowerName.get(s"${p.name.toLowerCase}count").fold("0")(_.name)
             val arrVar  = s"_${p.name}_arr"
             val sizeVar = s"_${p.name}_sz"
             val pre     = List(
@@ -374,14 +374,12 @@ $headerIncludes
             )
             (pre, s"&$tmp", post)
           case CType.ObjectPtrArray(cefName) =>
-            val countVar = fn.params.find(_.name.toLowerCase == s"${p.name.toLowerCase}count")
-              .map { cp =>
-                cp.typ match {
-                  case CType.OutPrimitivePtr(_) => s"_${cp.name}_val" // pre-extracted local
-                  case _                        => cp.name            // direct param
-                }
+            val countVar = paramsByLowerName.get(s"${p.name.toLowerCase}count").fold("0") { cp =>
+              cp.typ match {
+                case CType.OutPrimitivePtr(_) => s"_${cp.name}_val" // pre-extracted local
+                case _                        => cp.name            // direct param
               }
-              .getOrElse("0")
+            }
             val arrVar  = s"_${p.name}_arr"
             val sizeVar = s"_${p.name}_sz"
             val javaFqn = jniName(cefName)
@@ -400,6 +398,7 @@ $headerIncludes
             )
             (pre, arrVar, post)
           case _ =>
+            val isOpt = optionalParams.contains(p.name)
             convertParamShared(p, isOpt, fn.name.startsWith("get_"), guardRet)
         }
     }
@@ -418,11 +417,10 @@ $headerIncludes
     else
       fn.metaAttrs.collectFirst { case ("count_func", spec) => spec }
         .flatMap(RefineTree.parseCountFunc)
-        .map { case (param, func) =>
+        .fold("") { case (param, func) =>
           val snakeFunc = func.replaceAll("([a-z])([A-Z])|([A-Z]+)([A-Z][a-z])", "$1$3_$2$4").toLowerCase
           s"    size_t ${param}_count = s->$snakeFunc(s);"
         }
-        .getOrElse("")
 
     val preamble = s"$castSelf\n$nullGuard\n"
     val body     = fn.ret match {
@@ -624,9 +622,9 @@ $convertAndReturn"""
       renderNarrowPrimitiveChecks(params, guardRet)
 
     val argConversions = ff.params.map { p =>
-      val isOpt = optionalParams.contains(p.name)
       if (outParam.exists(_ eq p)) outCollectionArg(outColl.get._2)
       else {
+        val isOpt = optionalParams.contains(p.name)
         val isOut = ff.cName.contains("_get_") || ff.cName.startsWith("cef_get_")
         convertParamShared(p, isOpt, isOut, guardRet)
       }
@@ -695,11 +693,12 @@ $convert"""
           )} must be between 0 and 65535"); return${defaultReturn(ret)}; }"""
     }
 
-  private def renderObjectArrayChecks(params: List[Param], ret: CType): List[String] =
+  private def renderObjectArrayChecks(params: List[Param], ret: CType): List[String] = {
+    val paramsByLowerName = params.map(q => q.name.toLowerCase -> q).toMap
     params.flatMap { p =>
       p.typ match {
         case CType.ByValueArray(_) | CType.ObjectPtrArray(_) =>
-          val countParam = params.find(_.name.equalsIgnoreCase(s"${p.name}Count"))
+          val countParam = paramsByLowerName.get(s"${p.name}Count".toLowerCase)
           val lenVar     = s"_${p.name}_len"
           val javaName   = Naming.toCamelCase(p.name)
           countParam.toList.flatMap {
@@ -713,6 +712,7 @@ $convert"""
         case _ => Nil
       }
     }
+  }
 
   private def renderCallBlocks(
       argConversions: List[(List[String], String, List[String])],

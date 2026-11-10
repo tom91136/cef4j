@@ -230,15 +230,11 @@ object DocComments {
       .orElse(qualifiedByCountFunc)
   }
 
+  private val StructuralDocPrefixes = List("<pre", "</pre", "- ", "<ul>", "</ul>", "<li>")
+
   private def isStructuralDocLine(line: String): Boolean = {
     val trimmed = line.trim
-    trimmed.isEmpty ||
-    trimmed.startsWith("<pre") ||
-    trimmed.startsWith("</pre") ||
-    trimmed.startsWith("- ") ||
-    trimmed.startsWith("<ul>") ||
-    trimmed.startsWith("</ul>") ||
-    trimmed.startsWith("<li>")
+    trimmed.isEmpty || StructuralDocPrefixes.exists(trimmed.startsWith(_))
   }
 
   private def joinSoftWrappedLines(lines: List[String]): List[String] = {

@@ -36,10 +36,7 @@ object ParseTree {
     ParsedTree(
       decls = decls,
       structDecls = decls.collect {
-        case d: CefDecl.ObjectStruct  => d
-        case d: CefDecl.HandlerStruct => d
-        case d: CefDecl.DataStruct    => d
-        case d: CefDecl.Enum          => d
+        case d: (CefDecl.ObjectStruct | CefDecl.HandlerStruct | CefDecl.DataStruct | CefDecl.Enum) => d
       },
       freeFunctions = decls.collect { case d: CefDecl.FreeFunction => d },
       knownStructNames = knownStructNames
@@ -47,7 +44,5 @@ object ParseTree {
   }
 
   private def attachSourceHeader(decl: CefDecl, structHeaderMap: Map[String, String]): CefDecl =
-    decl.namedStruct
-      .map(name => decl.withSourceHeader(structHeaderMap.getOrElse(name, "")))
-      .getOrElse(decl)
+    decl.namedStruct.fold(decl)(name => decl.withSourceHeader(structHeaderMap.getOrElse(name, "")))
 }

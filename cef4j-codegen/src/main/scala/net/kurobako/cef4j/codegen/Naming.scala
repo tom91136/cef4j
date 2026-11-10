@@ -162,7 +162,7 @@ object Naming {
   def capitalise(s: String): String = if (s.isEmpty) s else s"${s.head.toUpper}${s.tail}"
 
   def structToJavaName(cefName: String)(using context: Context): String =
-    context.cppClassNames.get(cefName).map(normalizePascal(_)).getOrElse(toPascalCase(cefName.stripSuffix("_t")))
+    context.cppClassNames.get(cefName).fold(toPascalCase(cefName.stripSuffix("_t")))(normalizePascal(_))
 
   private val ReservedMethods: Set[String] = Set(
     "clone",
@@ -308,12 +308,11 @@ object Naming {
   }
 
   def javaImports(ct: CType): Set[String] = ct match {
-    case CType.OutObjectPtr(_)                        => Set("java.util.concurrent.atomic.AtomicReference")
-    case CType.OutOpaquePtr                           => Set("java.util.concurrent.atomic.AtomicReference")
-    case CType.PixelBuffer | CType.Buffer(_)          => Set("java.nio.ByteBuffer")
-    case CType.ConstCStringArray | CType.CStringArray =>
+    case CType.OutObjectPtr(_)               => Set("java.util.concurrent.atomic.AtomicReference")
+    case CType.OutOpaquePtr                  => Set("java.util.concurrent.atomic.AtomicReference")
+    case CType.PixelBuffer | CType.Buffer(_) => Set("java.nio.ByteBuffer")
+    case CType.ConstCStringArray | CType.CStringArray | CType.StringList =>
       Set("java.util.List")
-    case CType.StringList                                                      => Set("java.util.List")
     case CType.StringMap                                                       => Set("java.util.Map")
     case CType.StringMultimap                                                  => Set("java.util.Map", "java.util.List")
     case CType.CountFuncArray(elementType = elem) if !isPrimitiveElement(elem) =>

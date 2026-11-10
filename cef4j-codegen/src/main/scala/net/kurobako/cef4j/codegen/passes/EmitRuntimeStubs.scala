@@ -84,11 +84,11 @@ object EmitRuntimeStubs {
 
   private def scanFile(path: Path): List[NativeMethod] = {
     val source = Files.readString(path)
-    val pkg    = PackageRe.findFirstMatchIn(source).map(_.group(1)).getOrElse("")
 
     ClassRe.findFirstMatchIn(source).map(_.group(1)) match {
       case None      => Nil
       case Some(cls) =>
+        val pkg = PackageRe.findFirstMatchIn(source).fold("")(_.group(1))
         NativeMethodRe.findAllMatchIn(source).map { m =>
           val line       = source.substring(0, m.start).count(_ == '\n')
           val lineStart  = source.lastIndexOf('\n', m.start) + 1

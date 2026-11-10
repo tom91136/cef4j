@@ -7,6 +7,8 @@ object JavaEnumCodeGen {
   private val JavaSafeExprRe = """^[\d\s+\-*/|&^~<>()xXaAbBcCdDeEfFlL]+$""".r
   private val ExprTokenRe    = """0[xX][0-9A-Fa-f]+[UuLl]*|\d+[UuLl]*|<<|>>|[()+\-*/|&^~]|[A-Za-z_]\w*""".r
 
+  private val CompositeOperators = Set("<<", ">>", "+", "-", "*", "/", "|", "&", "^")
+
   def emit(decl: CefDecl.Enum, outDir: Path, sourceHeader: String = "")(using
       Naming.Context,
       DocComments.Context,
@@ -65,12 +67,8 @@ object JavaEnumCodeGen {
     val trimmed = rawExpr.trim
     if (trimmed.isEmpty) trimmed
     else {
-      val noWs            = trimmed.replaceAll("\\s+", "")
-      val tokens          = ExprTokenRe.findAllIn(trimmed).toList
-      val inCompositeExpr =
-        tokens.exists(t =>
-          t == "<<" || t == ">>" || t == "+" || t == "-" || t == "*" || t == "/" || t == "|" || t == "&" || t == "^"
-        )
+      val noWs          = trimmed.replaceAll("\\s+", "")
+      val tokens        = ExprTokenRe.findAllIn(trimmed).toList
       val hasArithmetic = tokens.exists(t => t == "+" || t == "-" || t == "*" || t == "/")
       val hasIdentifier = tokens.exists(IdentifierRe.matches)
       val isUnaryMinus  =
@@ -79,12 +77,14 @@ object JavaEnumCodeGen {
           (DecimalLiteralRe.matches(tokens(1)) || HexLiteralRe.matches(tokens(1)))
       if (tokens.isEmpty || tokens.mkString != noWs) trimmed
       else if (hasArithmetic && !hasIdentifier && !isUnaryMinus) canonicalLargeLiteral(evaluated)
-      else
+      else {
+        val inCompositeExpr = tokens.exists(CompositeOperators.contains(_))
         tokens
           .map(t => normaliseExprToken(t, inCompositeExpr))
           .mkString(" ")
           .replaceAll("\\(\\s+", "(")
           .replaceAll("\\s+\\)", ")")
+      }
     }
   }
 

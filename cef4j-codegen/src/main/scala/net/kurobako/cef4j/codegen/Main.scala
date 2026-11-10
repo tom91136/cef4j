@@ -24,8 +24,7 @@ object Main {
     val cfg        = parseArgs(args.toList)
 
     given Banners = cfg.regenerateCommand
-      .map(Banners.forCommand)
-      .getOrElse(Banners.fromInclude(cfg.cefInclude))
+      .fold(Banners.fromInclude(cfg.cefInclude))(Banners.forCommand)
 
     val headerInputs      = DiscoverHeaders(cfg)
     val preprocessed      = PreprocessHeaders(headerInputs, cfg)

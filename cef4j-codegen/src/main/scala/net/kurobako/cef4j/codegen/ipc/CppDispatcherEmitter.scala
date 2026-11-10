@@ -29,10 +29,12 @@ object CppDispatcherEmitter {
       browserFacades
         .map(f => f -> f.methods.filter(m => isDispatchable(m, facadeStructs, dataStructNames, visitorStructs)))
         .filter(_._2.nonEmpty)
+
+    val dispatchableFacadeNames = dispatchableByFac.map(_._1.cefStructName).toSet
     // Every receiver, parameter, result, and renderer frame needs a handle table.
     val frameAlwaysNeeded = rendererMessageIds.nonEmpty
     val tableStructs      = in.facades.filter { f =>
-      val hasOwnDispatchable = dispatchableByFac.exists(_._1.cefStructName == f.cefStructName)
+      val hasOwnDispatchable = dispatchableFacadeNames.contains(f.cefStructName)
       val referencedByOther  = dispatchableByFac.exists { case (_, ms) =>
         ms.exists(_.handleStructByField.values.toSet.contains(f.cefStructName))
       }
@@ -52,13 +54,15 @@ object CppDispatcherEmitter {
     }.mkString("\n")
     val dispatchableCount = dispatchableByFac.map(_._2.size).sum
     val skippedCount      = browserFacades.flatMap(_.methods).size - dispatchableCount
-    val rendererCount     = in.facades.filter(_.affinity == ProcessAffinity.Renderer).flatMap(_.methods).size
+    val rendererCount     = in.facades.view.filter(_.affinity == ProcessAffinity.Renderer).flatMap(_.methods).size
+
+    val messageSpecsByClass = in.messageSpecs.map(s => s.className -> s).toMap
 
     val perFacadeRendererLabels: List[String] = in.facades
       .filter(_.affinity == ProcessAffinity.Renderer)
       .flatMap { f =>
         f.methods.flatMap { m =>
-          in.messageSpecs.find(_.className == m.requestClassName).map { spec =>
+          messageSpecsByClass.get(m.requestClassName).map { spec =>
             s"        case ${spec.messageId}: // ${m.requestClassName} (${f.cefStructName}::${m.cefMethodName})"
           }
         }
@@ -357,7 +361,7 @@ object CppDispatcherEmitter {
         m.handleStructByField.get(name).exists(s => facadeStructs.contains(s) || visitorStructs.contains(s))
       case FieldType.DataStruct(cefName) => dataStructNames.contains(cefName)
     }
-    m.fieldsSatisfy(fieldOk)
+    m.fieldsSatisfy(fieldOk(_, _))
   }
 
   private def tableFieldName(cefStruct: String)(using Naming.Context): String =
@@ -398,10 +402,8 @@ object CppDispatcherEmitter {
         case FieldType.DataStruct(cefName) => "gen::" + SpecDeriver.cefStructToClassName(cefName)
       }
       val rhs = p.ty match {
-        case FieldType.DataStruct(_) => s"std::move(req.${p.name})"
-        case FieldType.Bytes         => s"std::move(req.${p.name})"
-        case FieldType.StringList    => s"std::move(req.${p.name})"
-        case _                       => s"req.${p.name}"
+        case FieldType.DataStruct(_) | FieldType.Bytes | FieldType.StringList => s"std::move(req.${p.name})"
+        case _                                                                => s"req.${p.name}"
       }
       s"            $cppTy ${p.name} = $rhs;"
     }.mkString("\n")
@@ -475,10 +477,10 @@ object CppDispatcherEmitter {
       case Some(orig) =>
         val byName = m.explicitParams.map(p => p.name -> p).toMap
         val pieces = orig.zipWithIndex.map { case (entry, idx) =>
-          val cArgIdx = idx + 1
           entry match {
             case CCallArg.Explicit(name) =>
-              val p = byName(name)
+              val p       = byName(name)
+              val cArgIdx = idx + 1
               paramArgExpr(p, cFnRef, cArgIdx)
             case CCallArg.BytesSize(bytesField) =>
               s"static_cast<size_t>($bytesField.size())"

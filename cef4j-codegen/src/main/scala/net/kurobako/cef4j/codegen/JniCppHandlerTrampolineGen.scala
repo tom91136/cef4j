@@ -475,7 +475,7 @@ $callAndReturn$popAndReturn
         )
         (pre, jName, Nil)
       case CType.Buffer(sizeParam) =>
-        val sizeExpr = allParams.find(_.name == sizeParam).map(_.name).getOrElse("0")
+        val sizeExpr = allParams.find(_.name == sizeParam).fold("0")(_.name)
         val isConst  = p.rawCType.contains("const")
         val castExpr =
           if (isConst) s"const_cast<void*>(static_cast<const void*>(${p.name}))" else s"static_cast<void*>(${p.name})"

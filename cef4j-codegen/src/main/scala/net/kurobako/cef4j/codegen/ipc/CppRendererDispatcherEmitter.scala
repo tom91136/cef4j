@@ -132,7 +132,7 @@ object CppRendererDispatcherEmitter {
         m.handleStructByField.get(name).exists(facadeStructs.contains)
       case _ => false
     }
-    m.fieldsSatisfy(fieldOk)
+    m.fieldsSatisfy(fieldOk(_, _))
   }
 
   private def tableFieldName(cefStruct: String): String = {

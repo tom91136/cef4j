@@ -238,13 +238,13 @@ ${allLines.mkString("\n")}
   )(using Naming.Context, DocComments.Context): (String, List[String]) = {
     val methods = freeFunctions.map(ff => renderStaticMethod(ff, docs, placement))
 
-    val publicMethods   = methods.map(_._1).mkString("\n\n")
-    val nativeDeclLines = methods.map(_._2)
+    val publicMethods = methods.map(_._1).mkString("\n\n")
 
     if (placement.isClass) {
       val nativeDecls = freeFunctions.map(ff => renderNativeDecl(ff, "    private static native ")).mkString("\n\n")
       (s"$publicMethods\n\n$nativeDecls", List.empty[String])
     } else {
+      val nativeDeclLines = methods.map(_._2)
       (publicMethods, nativeDeclLines)
     }
   }
@@ -423,8 +423,7 @@ ${allLines.mkString("\n")}
     val body       = JavaMethods.renderCallBody(s"$callTarget(${shape.argsExpr})", shape)
 
     val javadoc = DocComments.resolveFreeFunctionDoc(ff, docs)
-      .map(t => renderSimpleJavadoc(t, ff.sourceHeader, DocComments.cPrototypeForFreeFunction(ff)))
-      .getOrElse("")
+      .fold("")(t => renderSimpleJavadoc(t, ff.sourceHeader, DocComments.cPrototypeForFreeFunction(ff)))
 
     val visibility = if (placement.isClass) "public static" else "static"
     (

@@ -11,8 +11,8 @@ object InitialiseDocContext {
   def apply(cefInclude: Path): DocComments.Context = {
     val versionHeader  = cefInclude.resolve("cef_version.h")
     val versionContent = if (Files.exists(versionHeader)) Files.readString(versionHeader) else ""
-    val cefMajor       = CefMajorRe.findFirstMatchIn(versionContent).map(_.group(1).toInt).getOrElse(0)
-    val cefMinor       = CefMinorRe.findFirstMatchIn(versionContent).map(_.group(1).toInt).getOrElse(0)
+    val cefMajor       = CefMajorRe.findFirstMatchIn(versionContent).fold(0)(_.group(1).toInt)
+    val cefMinor       = CefMinorRe.findFirstMatchIn(versionContent).fold(0)(_.group(1).toInt)
     DocComments.baseContext(cefMajor, cefMinor)
   }
 }
